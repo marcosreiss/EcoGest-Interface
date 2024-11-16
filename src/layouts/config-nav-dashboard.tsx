@@ -1,3 +1,5 @@
+import path from 'path';
+import { title } from 'process';
 import { Label } from 'src/components/label';
 import { SvgColor } from 'src/components/svg-color';
 
@@ -14,14 +16,24 @@ export const navData = [
     icon: icon('ic-analytics'),
   },
   {
-    title: 'User',
-    path: '/user',
-    icon: icon('ic-user'),
+    title: 'Vendas',
+    path: '/sales',
+    icon: icon('ic-sales'),
   },
   {
-    title: 'Product',
+    title: 'Compras',
+    path: '/purchases',
+    icon: icon('ic-cart')
+  },
+  {
+    title: 'Clientes',
+    path: '/clients',
+    icon: icon('ic-people')
+  },
+  {
+    title: 'Produtos',
     path: '/products',
-    icon: icon('ic-cart'),
+    icon: icon('ic-soda'),
     info: (
       <Label color="error" variant="inverted">
         +3
@@ -29,18 +41,44 @@ export const navData = [
     ),
   },
   {
-    title: 'Blog',
-    path: '/blog',
-    icon: icon('ic-blog'),
+    title: 'Fornecedores',
+    path: '/suppliers',
+    icon: icon('ic-truck')
   },
   {
-    title: 'Sign in',
-    path: '/sign-in',
-    icon: icon('ic-lock'),
+    title: 'Despesas',
+    path: '/expenses',
+    icon: icon('ic-coins')
   },
   {
-    title: 'Not found',
-    path: '/404',
-    icon: icon('ic-disabled'),
+    title: 'Recibos',
+    path: '/receipts',
+    icon: icon('ic-bill')
   },
+  {
+    title: 'Funcionarios',
+    path: '/employees',
+    icon: icon('ic-employees'),
+  },
+  {
+    title: 'Adm',
+    path: '/adm',
+    icon: icon('ic-adm')
+  },
+  
+  // {
+  //   title: 'Blog',
+  //   path: '/blog',
+  //   icon: icon('ic-blog'),
+  // },
+  // {
+  //   title: 'Sign in',
+  //   path: '/sign-in',
+  //   icon: icon('ic-lock'),
+  // },
+  // {
+  //   title: 'Not found',
+  //   path: '/404',
+  //   icon: icon('ic-disabled'),
+  // },
 ];
