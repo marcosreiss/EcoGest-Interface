@@ -27,7 +27,7 @@ export const navData = [
   },
   {
     title: 'Clientes',
-    path: '/clients',
+    path: '/costomers',
     icon: icon('ic-people')
   },
   {
@@ -62,7 +62,7 @@ export const navData = [
   },
   {
     title: 'Adm',
-    path: '/adm',
+    path: '/admin',
     icon: icon('ic-adm')
   },
   

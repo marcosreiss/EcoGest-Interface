@@ -16,6 +16,15 @@ export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
+export const CostumersPage = lazy(() => import('src/pages/costomers'));
+export const SalesPage = lazy(() => import('src/pages/sales'));
+export const SuppliersPage = lazy(() => import('src/pages/suppliers'));
+export const PurchasesPage = lazy(() => import('src/pages/purchases'));
+export const ExpensesPage = lazy(() => import('src/pages/expenses'));
+export const EmployeesPage = lazy(() => import('src/pages/employees'));
+export const ReceiptsPage = lazy(() => import('src/pages/receipts'));
+export const AdminPage = lazy(() => import('src/pages/admin'));
+
 
 // ----------------------------------------------------------------------
 
@@ -47,6 +56,15 @@ export function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
+        { path: 'costomers', element: <CostumersPage /> },
+        { path: 'sales', element: <SalesPage /> },
+        { path: 'suppliers', element: <SuppliersPage /> },
+        { path: 'purchases', element: <PurchasesPage /> },
+        { path: 'expenses', element: <ExpensesPage /> },
+        { path: 'employees', element: <EmployeesPage /> },
+        { path: 'receipts', element: <ReceiptsPage /> },
+        { path: 'admin', element: <AdminPage /> },
+
       ],
     },
     {
