@@ -49,17 +49,7 @@ export function AuthLayout({ sx, children, header }: AuthLayoutProps) {
                 This is an info Alert.
               </Alert>
             ),
-            leftArea: <Logo />,
-            rightArea: (
-              <Link
-                component={RouterLink}
-                href="#"
-                color="inherit"
-                sx={{ typography: 'subtitle2' }}
-              >
-                Need help?
-              </Link>
-            ),
+            centerArea: <Logo />,
           }}
         />
       }
@@ -77,7 +67,7 @@ export function AuthLayout({ sx, children, header }: AuthLayoutProps) {
           height: 1,
           zIndex: -1,
           content: "''",
-          opacity: 0.24,
+          opacity: 0.30,
           position: 'fixed',
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
