@@ -49,7 +49,7 @@ export default function Page() {
     const navigate = useNavigate();
 
     const handleNavigation = () => {
-        navigate('/blog');
+        navigate('/costumers/create');
     };
         return (
             <>
