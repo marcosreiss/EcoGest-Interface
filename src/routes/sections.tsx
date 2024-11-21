@@ -14,15 +14,15 @@ export const HomePage = lazy(() => import('src/pages/home'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
-export const ProductsPage = lazy(() => import('src/pages/products'));
+export const ProductsPage = lazy(() => import('src/pages/products/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
-export const CostumersPage = lazy(() => import('src/pages/costomers'));
-export const SalesPage = lazy(() => import('src/pages/sales'));
-export const SuppliersPage = lazy(() => import('src/pages/suppliers'));
-export const PurchasesPage = lazy(() => import('src/pages/purchases'));
-export const ExpensesPage = lazy(() => import('src/pages/expenses'));
-export const EmployeesPage = lazy(() => import('src/pages/employees'));
-export const ReceiptsPage = lazy(() => import('src/pages/receipts'));
+export const CostumersPage = lazy(() => import('src/pages/costumers/costomers'));
+export const SalesPage = lazy(() => import('src/pages/sales/sales'));
+export const SuppliersPage = lazy(() => import('src/pages/suppliers/suppliers'));
+export const PurchasesPage = lazy(() => import('src/pages/purchases/purchases'));
+export const ExpensesPage = lazy(() => import('src/pages/expenses/expenses'));
+export const EmployeesPage = lazy(() => import('src/pages/employees/employees'));
+export const ReceiptsPage = lazy(() => import('src/pages/receipts/receipts'));
 export const AdminPage = lazy(() => import('src/pages/admin'));
 
 
