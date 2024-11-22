@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 
-import { Box, Grid, Switch, TextField, Typography, FormControlLabel, Button } from "@mui/material";
+import { Box, Grid, Switch, Button, TextField, Typography, FormControlLabel } from "@mui/material";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
@@ -17,13 +17,14 @@ export default function Page() {
         borderRadius: 2,
         bgcolor: 'background.paper',
     }
-
-    const [personType, setPersonType] = useState('Pessoa Física')
+    const pessoaFisica = 'Pessoa Física';
+    const pessoaJuridica ='Pessoa Jurídica';
+    const [personType, setPersonType] = useState(pessoaFisica)
     const togglePersonType = () => {
-        if (personType === 'Pessoa Física') {
-            setPersonType('Pessoa Jurídica')
+        if (personType === pessoaFisica) {
+            setPersonType(pessoaJuridica)
         } else {
-            setPersonType('Pessoa Física')
+            setPersonType(pessoaFisica)
         }
     }
 
@@ -58,32 +59,35 @@ export default function Page() {
                                     </Grid>
 
                                     <Grid item xs={12}>
+                                        <Typography component='span' fontSize={13.6} marginRight={2}>
+                                            {pessoaFisica}
+                                        </Typography>
                                         <FormControlLabel
                                             control={<Switch onClick={togglePersonType} defaultChecked={false} />}
-                                            label={personType}
+                                            label={pessoaJuridica}
                                         />
                                     </Grid>
 
                                     <Grid item xs={6} >
                                         <TextField
                                             fullWidth
-                                            label="cpf"
+                                            label={personType === pessoaFisica ? 'cpf' : 'disabled'}
                                             placeholder="xxx.xxx.xxx-xx"
                                             name="cpf"
                                             type="number"
-                                            disabled={personType === 'Pessoa Jurídica'}
-                                            required={personType === 'Pessoa Física'}
+                                            disabled={personType === pessoaJuridica}
+                                            required={personType === pessoaFisica}
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
                                         <TextField
                                             fullWidth
-                                            label="cnpj"
+                                            label={personType === pessoaJuridica ? 'cnpj' : 'disabled'}
                                             placeholder="xx.xxx.xxx/xxxx-xx"
                                             name="cnpj"
                                             type="number"
-                                            disabled={personType === 'Pessoa Física'}
-                                            required={personType === 'Pessoa Jurídica'}
+                                            disabled={personType === pessoaFisica}
+                                            required={personType === pessoaJuridica}
                                         />
                                     </Grid>
 
