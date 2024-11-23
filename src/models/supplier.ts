@@ -14,3 +14,11 @@ export interface SupplierListResponse {
 export interface SupplierResponse {
     data: Supplier;
 }
+
+export interface CreateSupplierPayload{
+    name: string;
+    cpf?: string | null;
+    cnpj?: string | null;
+    address?: string | null;
+    contact?: string | null;
+}

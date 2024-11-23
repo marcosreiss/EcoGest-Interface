@@ -4,10 +4,7 @@ export interface Admin {
     password: string;
 }
 
-export interface AdminListResponse {
-    data: Admin[];
-}
-
 export interface AdminResponse {
     data: Admin;
 }
+

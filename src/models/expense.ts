@@ -13,3 +13,10 @@ export interface ExpenseListResponse {
 export interface ExpenseResponse {
     data: Expense;
 }
+
+export interface CreateExpensePayload{
+    type: string;
+    value: number;
+    description?: string | null;
+    purchaseId: number;
+}

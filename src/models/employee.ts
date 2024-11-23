@@ -13,3 +13,10 @@ export interface EmployeeListResponse {
 export interface EmployeeResponse {
     data: Employee;
 }
+
+export interface CreateEmployeePayload{
+    name: string;
+    login: string;
+    password: string;
+    role: string;
+}

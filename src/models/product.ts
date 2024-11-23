@@ -12,3 +12,9 @@ export interface ProductListResponse {
 export interface ProductResponse {
     data: Product;
 }
+
+export interface CreateProductPayload{
+    name: string;
+    quantity: number;
+    price: number;
+}

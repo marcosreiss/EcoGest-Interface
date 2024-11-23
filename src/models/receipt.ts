@@ -11,3 +11,8 @@ export interface ReceiptListResponse {
 export interface ReceiptResponse {
     data: Receipt;
 }
+
+export interface CreateReceiptPayload{
+    saleProductId: number;
+    saleCustomerId: number;
+}

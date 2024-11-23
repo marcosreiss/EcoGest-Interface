@@ -14,3 +14,11 @@ export interface PurchaseListResponse {
 export interface PurchaseResponse {
     data: Purchase;
 }
+
+export interface CreatePurchasePayload{
+    supplierId: number; 
+    productId: number; 
+    description?: string | null; 
+    purchaseDate: string; 
+    status: 'pending' | 'approved' | 'canceled';
+}

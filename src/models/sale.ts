@@ -13,3 +13,10 @@ export interface SaleListResponse {
 export interface SaleResponse {
     data: Sale;
 }
+
+export interface CreateSalePayload{
+    productId: number; 
+    customerId: number; 
+    saleDate: string; 
+    status: 'pending' | 'completed' | 'canceled';
+}

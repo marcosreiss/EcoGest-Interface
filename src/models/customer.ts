@@ -14,3 +14,11 @@ export interface CustomerListResponse {
 export interface CustomerResponse {
     data: Customer;
 }
+
+export interface CreateCustumerPayload{
+    name: string;
+    cpf?: string | null;
+    cnpj?: string | null;
+    address?: string | null;
+    contact?: string | null;
+}
