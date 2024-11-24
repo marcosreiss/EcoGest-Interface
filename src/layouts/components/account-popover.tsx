@@ -52,6 +52,10 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
     },
     [handleClosePopover, router]
   );
+  const handleLogout = useCallback(()=>{
+    logout();
+    router.push("/");
+  }, [logout, router]);
 
   return (
     <>
@@ -132,7 +136,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Box sx={{ p: 1 }}>
-          <Button onClick={logout} fullWidth color="error" size="medium" variant="text">
+          <Button onClick={handleLogout} fullWidth color="error" size="medium" variant="text">
             Sair
           </Button>
         </Box>

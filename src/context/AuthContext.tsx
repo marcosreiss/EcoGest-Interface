@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import { jwtDecode } from "jwt-decode";
 import React, { useMemo, useState, useEffect, useContext, useCallback, createContext } from "react";
 
+import { useRouter } from "src/routes/hooks";
+
 interface AuthContextType {
   token: string | null;
   setToken: (token: string | null) => void;
@@ -22,13 +24,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setTokenState] = useState<string | null>(null);
-
-  useEffect(() => {
-    const savedToken = localStorage.getItem("authToken");
-    if (savedToken) {
-      setTokenState(savedToken);
-    }
-  }, []);
+  const router = useRouter();
 
   const setToken = useCallback((newToken: string | null) => {
     setTokenState(newToken);
@@ -41,23 +37,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Adicione uma verificação de expiração automática assim que o contexto for carregado.
   useEffect(() => {
-    if (token) {
-      const decoded: DecodedToken = jwtDecode(token);
+    const savedToken = localStorage.getItem("authToken");
+  
+    if (savedToken) {
+      setTokenState(savedToken);
+  
+      // Decodifica e verifica o token
+      const decoded: DecodedToken = jwtDecode(savedToken);
       const currentTime = Date.now() / 1000; // Em segundos
+  
       if (decoded.exp <= currentTime) {
-        setToken(null); // Remove o token
+        setToken(null); // Remove o token expirado
+        router.push("/");
       } else {
         // Agenda o logout automático para o momento da expiração
         const timeout = (decoded.exp - currentTime) * 1000;
         const timer = setTimeout(() => {
           setToken(null); // Remove o token após expirar
+          router.push("/");
         }, timeout);
   
         return () => clearTimeout(timer); // Limpa o timeout no unmount
       }
     }
     return undefined;
-  }, [token, setToken]);
+  }, [token, setToken, router]);
+  
   
   const isAuthenticated = useCallback(() => {
     if(!token) return false;
