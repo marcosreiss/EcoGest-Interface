@@ -15,10 +15,10 @@ import { PublicRouter, PrivateRouter } from './routes/sections';
 
 export default function App() {
   useScrollToTop.useScrollToTop();
-  const {auth} = useAuth();
+  const { isAuthenticated } = useAuth();
 
 
-  return auth ? (
+  return isAuthenticated() ? (
     <ThemeProvider>
       <PrivateRouter />
     </ThemeProvider>
