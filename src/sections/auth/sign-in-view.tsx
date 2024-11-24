@@ -46,6 +46,7 @@ export function SignInView() {
         setSnackbarMessage("Login bem-sucedido!");
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
+        router.push('/');
       },
       onError: (error) => {
         setSnackbarMessage(
