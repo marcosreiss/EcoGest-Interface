@@ -15,6 +15,8 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useLogin } from "src/hooks/useAuth";
 
+import { useAuth } from "src/context/AuthContext";
+
 import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
@@ -37,6 +39,8 @@ export function SignInView() {
   // const handleSignIn = useCallback(() => {
   //   router.push('/');
   // }, [router]);
+  const { setAuth } = useAuth();
+
 
   const handleSignIn = (data: LoginPayload) => {
     console.log(data);
@@ -46,7 +50,7 @@ export function SignInView() {
         setSnackbarMessage("Login bem-sucedido!");
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
-        router.push('/');
+        setAuth(true);
       },
       onError: (error) => {
         setSnackbarMessage(

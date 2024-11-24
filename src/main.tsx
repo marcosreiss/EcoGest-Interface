@@ -5,6 +5,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import App from "./app";
+import { AuthProvider } from "./context/AuthContext";
 
 // ----------------------------------------------------------------------
 
@@ -26,11 +27,14 @@ root.render(
     <HelmetProvider>
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
-          <Suspense>
-            <App />
-          </Suspense>
+          <AuthProvider>
+            <Suspense>
+              <App />
+            </Suspense>
+          </AuthProvider>
         </QueryClientProvider>
       </BrowserRouter>
     </HelmetProvider>
   </StrictMode>
 );
+

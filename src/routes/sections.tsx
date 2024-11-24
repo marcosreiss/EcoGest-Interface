@@ -45,7 +45,7 @@ const renderFallback = (
   </Box>
 );
 
-export function Router() {
+export function PrivateRouter() {
   return useRoutes([
     {
       element: (
@@ -74,12 +74,25 @@ export function Router() {
       ],
     },
     {
-      path: 'login',
+      path: '404',
+      element: <Page404 />,
+    },
+    {
+      path: '*',
+      element: <Navigate to="/404" replace />,
+    },
+  ]);
+}
+
+export function PublicRouter(){
+  return useRoutes([
+    {
       element: (
         <AuthLayout>
           <SignInPage />
         </AuthLayout>
       ),
+      index: true
     },
     {
       path: '404',
@@ -89,5 +102,5 @@ export function Router() {
       path: '*',
       element: <Navigate to="/404" replace />,
     },
-  ]);
+  ])
 }
