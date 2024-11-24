@@ -1,7 +1,7 @@
 import type { LoginPayload } from "src/models/login";
 
+import { useState } from 'react';
 import { useForm } from "react-hook-form";
-import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -10,8 +10,6 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Grid, Alert, Snackbar } from "@mui/material";
 import InputAdornment from '@mui/material/InputAdornment';
-
-import { useRouter } from 'src/routes/hooks';
 
 import { useLogin } from "src/hooks/useAuth";
 
@@ -22,7 +20,6 @@ import { Iconify } from 'src/components/iconify';
 // ----------------------------------------------------------------------
 
 export function SignInView() {
-  const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -39,7 +36,7 @@ export function SignInView() {
   // const handleSignIn = useCallback(() => {
   //   router.push('/');
   // }, [router]);
-  const { setAuth } = useAuth();
+  const { setToken } = useAuth();
 
 
   const handleSignIn = (data: LoginPayload) => {
@@ -50,7 +47,9 @@ export function SignInView() {
         setSnackbarMessage("Login bem-sucedido!");
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
-        setAuth(true);
+        if(response.token){
+          setToken(response.token);
+        }
       },
       onError: (error) => {
         setSnackbarMessage(
