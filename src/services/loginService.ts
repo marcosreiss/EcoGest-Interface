@@ -15,17 +15,7 @@ export interface LoginResponse {
   message: string;
 }
 
-export const loginService = async (payload: LoginPayload): Promise<LoginResponse> => {
-  const response = await api.post<LoginResponse>("/login", payload);
-  return response.data;
-};
-
 export const checkAuth = async (payload: LoginPayload): Promise<LoginResponse> => {
     const response = await api.post<LoginResponse>("/login", payload);
     return response.data;
   };
-  
-  export const logoutService = async() : Promise<any> =>{
-    const response = await api.post<any>("/logout");
-    return response;
-  }

@@ -1,19 +1,16 @@
 import type { ReactNode } from "react";
-import type { LoginPayload, LoginResponse} from "src/services/loginService";
 
 import { jwtDecode } from "jwt-decode";
 import React, { useMemo, useState, useEffect, useContext, useCallback, createContext } from "react";
 
 import { useRouter } from "src/routes/hooks";
 
-import { loginService } from "src/services/loginService";
 
 interface AuthContextType {
   token: string | null;
   setToken: (token: string | null) => void;
   isAuthenticated: () => boolean;
   useLogout: () => void;
-  useLogin: (payload: LoginPayload) => void;
 }
 
 interface DecodedToken {
@@ -80,36 +77,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error("Erro ao decodificar o token:", error);
       return false;
     }
-  }, [token]);
-
-  const useLogin = useCallback(
-    async (payload: LoginPayload): Promise<LoginResponse> => {
-      try {
-        const response = await loginService(payload);
-        if (response?.token) {
-          setToken(response.token); // Define o token no contexto
-        } else {
-          throw new Error("Token ausente na resposta do login");
-        }
-        return response;
-      } catch (error) {
-        console.error("Erro ao fazer login:", error);
-        setToken(null); // Remove qualquer token existente, garantindo estado consistente
-        throw error; // Propaga o erro para tratamento no componente que chamou
-      }
-    },
-    [setToken]
-  );
-  
+  }, [token]);  
   
   const useLogout = useCallback(() => {
     setToken(null);
-  }, [setToken]);
+    router.push("/")
+  }, [setToken, router]);
   
 
   const memorizedValue = useMemo(
-    ()=> ({token, setToken, isAuthenticated, useLogout, useLogin}),
-    [token, setToken, isAuthenticated, useLogout, useLogin]
+    ()=> ({token, setToken, isAuthenticated, useLogout}),
+    [token, setToken, isAuthenticated, useLogout]
   )
 
   return (
