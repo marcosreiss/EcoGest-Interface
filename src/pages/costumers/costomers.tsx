@@ -11,6 +11,8 @@ import TableHead from '@mui/material/TableHead';
 import TableContainer from '@mui/material/TableContainer';
 import { Grid, Button, Checkbox, Typography } from '@mui/material';
 
+import { useGetAllCustomersPaginated } from 'src/hooks/useCustomer';
+
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 
@@ -47,6 +49,9 @@ const rows = [
 
 export default function Page() {
     const navigate = useNavigate();
+    const { data } = useGetAllCustomersPaginated(0, 10);
+    // console.log("clientes: ", data);
+    
 
     const handleNavigation = () => {
         navigate('/costumers/create');

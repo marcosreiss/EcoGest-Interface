@@ -1,4 +1,4 @@
-import type { LoginPayload } from "src/models/login";
+import type { LoginPayload } from "src/services/loginService";
 
 import { useState } from 'react';
 import { useForm } from "react-hook-form";
@@ -10,8 +10,6 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Grid, Alert, Snackbar } from "@mui/material";
 import InputAdornment from '@mui/material/InputAdornment';
-
-import { useLogin } from "src/hooks/useAuth";
 
 import { useAuth } from "src/context/AuthContext";
 
@@ -25,57 +23,14 @@ export function SignInView() {
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginPayload>();
 
-  const loginMutation = useLogin();
+  const {useLogin} = useAuth();
 
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
-    "success"
-  );
+
 
   // const handleSignIn = useCallback(() => {
   //   router.push('/');
   // }, [router]);
-  const { setToken } = useAuth();
 
-
-  const handleSignIn = (data: LoginPayload) => {
-    console.log(data);
-    
-    loginMutation.mutate(data, {
-      onSuccess: (response) => {
-        setSnackbarMessage("Login bem-sucedido!");
-        setSnackbarSeverity("success");
-        setSnackbarOpen(true);
-        if(response.token){
-          setToken(response.token);
-        }
-      },
-      onError: (error) => {
-        setSnackbarMessage(
-          "Erro no login. Tente novamente."
-        );
-        setSnackbarSeverity("error");
-        setSnackbarOpen(true);
-      },
-    });
-  }
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
-
-  const snackbarNotification = (
-    <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={4000} // Fecha automaticamente após 4 segundos
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-  );
 
 
   const renderForm = (
@@ -146,7 +101,7 @@ export function SignInView() {
         type="submit"
         color="inherit"
         variant="contained"
-        onClick={() => handleSubmit(handleSignIn)()}
+        onClick={() => handleSubmit(useLogin)()}
       >
         Entrar
       </LoadingButton>
@@ -161,7 +116,6 @@ export function SignInView() {
 
       {renderForm}
 
-      {snackbarNotification}
     </>
   );
 }

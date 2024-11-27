@@ -18,13 +18,12 @@ export default function App() {
   const { isAuthenticated } = useAuth();
 
 
-  return isAuthenticated() ? (
+  return isAuthenticated ? (
     <ThemeProvider>
       <PrivateRouter />
     </ThemeProvider>
   ) : (
     <ThemeProvider>
-      
       <PublicRouter />
     </ThemeProvider>
   )

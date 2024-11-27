@@ -35,7 +35,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
 
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
-  const { logout } = useAuth();
+  const { useLogout } = useAuth();
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenPopover(event.currentTarget);
@@ -52,10 +52,6 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
     },
     [handleClosePopover, router]
   );
-  const handleLogout = useCallback(()=>{
-    logout();
-    router.push("/");
-  }, [logout, router]);
 
   return (
     <>
@@ -136,7 +132,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Box sx={{ p: 1 }}>
-          <Button onClick={handleLogout} fullWidth color="error" size="medium" variant="text">
+          <Button onClick={useLogout} fullWidth color="error" size="medium" variant="text">
             Sair
           </Button>
         </Box>

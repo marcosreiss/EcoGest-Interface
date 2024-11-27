@@ -15,7 +15,7 @@ const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 2, // Tenta novamente em caso de falha (padrão: 3)
+      retry: -1, // Tenta novamente em caso de falha (padrão: 3)
       refetchOnWindowFocus: false, // Não refaz a consulta ao mudar o foco para a janela
       staleTime: 1000 * 60 * 15, // Considera os dados frescos por 15 minutos
     },
