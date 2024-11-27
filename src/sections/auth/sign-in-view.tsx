@@ -1,4 +1,3 @@
-import type { LoginPayload } from "src/models/login";
 
 import { useState } from 'react';
 import { useForm } from "react-hook-form";
@@ -11,11 +10,11 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { Grid, Alert, Snackbar } from "@mui/material";
 import InputAdornment from '@mui/material/InputAdornment';
 
-import { useLogin } from "src/hooks/useAuth";
-
 import { useAuth } from "src/context/AuthContext";
 
 import { Iconify } from 'src/components/iconify';
+
+import { LoginPayload } from 'src/services/loginService';
 
 // ----------------------------------------------------------------------
 
@@ -23,9 +22,7 @@ export function SignInView() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginPayload>();
-
-  const loginMutation = useLogin();
+  const { register, formState: { errors } } = useForm<LoginPayload>();
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -36,30 +33,8 @@ export function SignInView() {
   // const handleSignIn = useCallback(() => {
   //   router.push('/');
   // }, [router]);
-  const { setToken } = useAuth();
+  const { useLogin } = useAuth();
 
-
-  const handleSignIn = (data: LoginPayload) => {
-    console.log(data);
-    
-    loginMutation.mutate(data, {
-      onSuccess: (response) => {
-        setSnackbarMessage("Login bem-sucedido!");
-        setSnackbarSeverity("success");
-        setSnackbarOpen(true);
-        if(response.token){
-          setToken(response.token);
-        }
-      },
-      onError: (error) => {
-        setSnackbarMessage(
-          "Erro no login. Tente novamente."
-        );
-        setSnackbarSeverity("error");
-        setSnackbarOpen(true);
-      },
-    });
-  }
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
@@ -146,7 +121,7 @@ export function SignInView() {
         type="submit"
         color="inherit"
         variant="contained"
-        onClick={() => handleSubmit(handleSignIn)()}
+        onClick={() => useLogin}
       >
         Entrar
       </LoadingButton>
