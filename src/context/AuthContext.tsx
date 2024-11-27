@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Decodifica e verifica o token
       const decoded: DecodedToken = jwtDecode(savedToken);
       const currentTime = Date.now() / 1000; // Em segundos
-  
+
       if (decoded.exp <= currentTime) {
         setToken(null); // Remove o token expirado
         router.push("/");

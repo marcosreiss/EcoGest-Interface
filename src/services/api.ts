@@ -9,14 +9,14 @@ const api = axios.create({
 
 // Adiciona o token no cabeçalho em todas as requisições
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("authToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   console.log("Request Body:", config.data);
   console.log("Request Params:", config.params);
   console.log("Token:", config.headers.Authorization);
-
   
   return config;
 });

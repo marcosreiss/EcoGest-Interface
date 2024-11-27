@@ -3,13 +3,13 @@ import type { LoginPayload, LoginResponse } from "src/services/loginService";
 
 import { useMutation } from "@tanstack/react-query";
 
-import { checkAuth } from "src/services/loginService";
+import { loginService } from "src/services/loginService";
 
 
 // Hook para login
 export const useLogin = () =>
   useMutation<LoginResponse, AxiosError, LoginPayload>({
-    mutationFn: checkAuth, 
+    mutationFn: loginService, 
     onMutate: (variables) => {
       console.log("Iniciando a requisição com os dados:", variables);
     },

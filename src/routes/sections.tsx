@@ -25,8 +25,8 @@ export const ReceiptsPage = lazy(() => import('src/pages/receipts/receipts'));
 export const AdminPage = lazy(() => import('src/pages/admin'));
 
 // ---------- Costumer Components
-export const CostumersPage = lazy(() => import('src/pages/costumers/costomers'));
-export const CostumersCreatePage = lazy(() => import('src/pages/costumers/costumersCreate'));
+export const CostumersPage = lazy(() => import('src/pages/customers/customers'));
+export const CostumersCreatePage = lazy(() => import('src/pages/customers/customersCreate'));
 
 
 
@@ -68,8 +68,8 @@ export function PrivateRouter() {
         { path: 'receipts', element: <ReceiptsPage /> },
         { path: 'admin', element: <AdminPage /> },
         
-        { path: 'costumers', element: <CostumersPage /> },
-        { path: 'costumers/create', element: <CostumersCreatePage /> },
+        { path: 'customers', element: <CostumersPage /> },
+        { path: 'customers/create', element: <CostumersCreatePage /> },
 
       ],
     },
