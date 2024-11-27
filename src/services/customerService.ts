@@ -30,3 +30,8 @@ export const getCustomersPaginadedService = async(skip:number, take:number): Pro
     const response = await api.get<CustomerListResponse>("/customers", {params: {skip, take}});
     return response.data;
 };
+
+export const createCustomerService = async(payload: CreateCustumerPayload) : Promise<CustomerResponse> =>{
+    const response = await api.post<CustomerResponse>("/customers", payload);
+    return response.data;
+}

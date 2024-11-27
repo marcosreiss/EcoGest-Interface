@@ -26,7 +26,7 @@ export default function Page() {
     const customers = data?.data;
 
     const handleNavigation = () => {
-        navigate('/costumers/create');
+        navigate('/customers/create');
     };
     return (
         <>

@@ -25,7 +25,6 @@ export function SignInView() {
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginPayload>();
 
-  const loginMutation = useLogin();
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -37,6 +36,8 @@ export function SignInView() {
   //   router.push('/');
   // }, [router]);
   const { setToken } = useAuth();
+  const loginMutation = useLogin();
+
 
 
   const handleSignIn = (data: LoginPayload) => {
