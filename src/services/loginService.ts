@@ -1,31 +1,10 @@
+import type { LoginPayload, LoginResponse } from "src/models/login";
+
 import api from "./api";
 
-export interface LoginPayload {
-  username: string;
-  password: string;
-}
 
-export interface LoginResponse {
-  token: string;
-  user: {
-    id: number;
-    username: string;
-    role: string;
-  };
-  message: string;
-}
-
-export const loginService = async (payload: LoginPayload): Promise<LoginResponse> => {
+export const userAuthentication = async (payload: LoginPayload): Promise<LoginResponse> => {
     const response = await api.post<LoginResponse>("/login", payload);
     return response.data;
   };
-
-export const checkAuthService = async() : Promise<any> =>{
-  const response = await api.get<any>("/check-auth", {withCredentials: true});
-  return response;
-}
-
-export const logoutService = async() : Promise<any> =>{
-  const response = await api.post<any>("/logout");
-  return response;
-}
+  

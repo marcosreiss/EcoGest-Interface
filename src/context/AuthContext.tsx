@@ -1,16 +1,19 @@
 import type { ReactNode } from "react";
-import type { LoginPayload, LoginResponse} from "src/services/loginService";
 
+import { jwtDecode } from "jwt-decode";
 import React, { useMemo, useState, useEffect, useContext, useCallback, createContext } from "react";
 
 import { useRouter } from "src/routes/hooks";
 
-import { loginService, logoutService, checkAuthService } from "src/services/loginService";
-
 interface AuthContextType {
-  isAuthenticated: boolean;
-  useLogout: () => void;
-  useLogin: (payload: LoginPayload) => Promise<LoginResponse>;
+  token: string | null;
+  setToken: (token: string | null) => void;
+  isAuthenticated: () => boolean;
+  logout: () => void;
+}
+
+interface DecodedToken {
+  exp: number; // Campo de expiração (em segundos desde 1970-01-01T00:00:00Z)
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,67 +23,70 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [token, setTokenState] = useState<string | null>(null);
   const router = useRouter();
 
+  const setToken = useCallback((newToken: string | null) => {
+    setTokenState(newToken);
+    if (newToken) {
+      localStorage.setItem("authToken", newToken); 
+    } else {
+      localStorage.removeItem("authToken");
+    }
+  }, []);
 
-
+  // Adicione uma verificação de expiração automática assim que o contexto for carregado.
   useEffect(() => {
-    const checkAuthentication = async () => {
-      try {
-        console.log("Chamando checkAuthentication...");
-        
-        const response = await checkAuthService();
-      
-        if (response.status === 200) {
-          setIsAuthenticated(true);
-          router.push('/'); 
-        } else {
-          setIsAuthenticated(false);
-        }
-      } catch (error) {
-        console.error('Erro durante a verificação de autenticação:', error);
-        setIsAuthenticated(false);
-      };
-      
-    };
+    const savedToken = localStorage.getItem("authToken");
   
-    if (!isAuthenticated) {
-      checkAuthentication();
+    if (savedToken) {
+      setTokenState(savedToken);
+  
+      // Decodifica e verifica o token
+      const decoded: DecodedToken = jwtDecode(savedToken);
+      const currentTime = Date.now() / 1000; // Em segundos
+  
+      if (decoded.exp <= currentTime) {
+        setToken(null); // Remove o token expirado
+        router.push("/");
+      } else {
+        // Agenda o logout automático para o momento da expiração
+        const timeout = (decoded.exp - currentTime) * 1000;
+        const timer = setTimeout(() => {
+          setToken(null); // Remove o token após expirar
+          router.push("/");
+        }, timeout);
+  
+        return () => clearTimeout(timer); // Limpa o timeout no unmount
+      }
     }
-  }, [isAuthenticated, router]);
+    return undefined;
+  }, [token, setToken, router]);
+  
+  
+  const isAuthenticated = useCallback(() => {
+    if(!token) return false;
 
-  const useLogin = useCallback(async (payload: LoginPayload): Promise<LoginResponse> => {
-    try {
-      console.log("chamando useLogin");
-      
-      const response = await loginService(payload);
-      setIsAuthenticated(true);
-      router.push("/");
-      return response;
-    } catch (error) {
-      console.error("Erro ao fazer login:", error);
-      setIsAuthenticated(false);
-      throw error;
+    // decodifica o token e verifica se ele ainda é válido (24h de validade)
+    try{
+      const decoded: DecodedToken = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+      return decoded.exp > currentTime;
+    } catch(error){
+      console.error("Erro ao decodificar o token:", error);
+      return false;
     }
-  }, [router]);
+  }, [token]);
   
-  const useLogout = useCallback(async () => {
-    try {
-      console.log("chamando useLogut");
-      await logoutService();
-      setIsAuthenticated(false);
-      router.push("/");
-    } catch (error) {
-      console.error("Erro ao fazer logout:", error);
-    }
-  }, [router]);
+  const logout = useCallback(() => {
+    setToken(null);
+  }, [setToken]);
   
 
   const memorizedValue = useMemo(
-    () => ({ isAuthenticated, useLogout, useLogin }),
-    [isAuthenticated, useLogout, useLogin]
-  );  
+    ()=> ({token, setToken, isAuthenticated, logout}),
+    [token, setToken, isAuthenticated, logout]
+  )
 
   return (
     <AuthContext.Provider value={memorizedValue}>
@@ -96,4 +102,3 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
-
