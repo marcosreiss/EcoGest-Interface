@@ -34,7 +34,7 @@ export default function Page() {
     }
 
     const { register, handleSubmit, formState: { errors } } = useForm<CreateCustumerPayload>();
-    const createCostumer = useCreateCustomer(register);
+    const createCostumer = useCreateCustomer();
 
     const onSubmit = (data: CreateCustumerPayload) =>{
         console.log("criando cliente com os dados: ",data);
