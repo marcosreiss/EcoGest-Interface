@@ -42,7 +42,6 @@ export function SignInView() {
 
   const handleSignIn = (data: LoginPayload) => {
     console.log(data);
-    
     loginMutation.mutate(data, {
       onSuccess: (response: { token: string | null; }) => {
         setSnackbarMessage("Login bem-sucedido!");

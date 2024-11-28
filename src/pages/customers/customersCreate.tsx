@@ -38,6 +38,12 @@ export default function Page() {
 
     const onSubmit = (data: CreateCustumerPayload) =>{
         console.log("criando cliente com os dados: ",data);
+
+        if(personType === pessoaFisica){
+            data.cnpj = null;
+        }else{
+            data.cpf = null;
+        }
         createCostumer.mutate(data, {
             onSuccess: (response)=> console.log(response),
             onError: (error) => console.log(error)
