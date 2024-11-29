@@ -40,10 +40,7 @@ export const getCustomersPaginadedService = async (skip: number, take: number): 
 };
 
 export const createCustomerService = async (payload: CreateCustumerPayload): Promise<CustomerResponse> => {
-    console.log("payload de cliente:", payload);
     const response = await api.post<CustomerResponse>("/customers/create", payload);
-    console.log(response.data);
-    console.log(response.status);
     return response.data;
 }
 

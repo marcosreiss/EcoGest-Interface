@@ -18,33 +18,49 @@ export const useGetCustomersPaginaded = (skip: number, take: number) =>
     queryFn: () => getCustomersPaginadedService(skip, take),
   });
 
-// export const useCreateCustomer = () =>
-//   useMutation<CustomerResponse, AxiosError, CreateCustumerPayload>({
+// export const useCreateCustomer = () => {
+//   const queryClient = useQueryClient();
+
+//   return useMutation<CustomerResponse, AxiosError, CreateCustumerPayload>({
 //     mutationFn: (payload) => createCustomerService(payload),
 //     onMutate: (variables) => {
-//       console.log("Criando cliente com os dados:", variables);
+//       // console.log("Criando cliente com os dados:", variables);
+//     },
+//     onSuccess: (response) => {
+//       queryClient.setQueryData(["customers-list"], (oldData: any) => {
+//         if (!oldData) return { data: [response.data] }; 
+//         return {
+//           ...oldData,
+//           data: [...oldData.data, response.data], 
+//         };
+//       });
 //     },
 //   });
+// };
 
 export const useCreateCustomer = () => {
   const queryClient = useQueryClient();
 
   return useMutation<CustomerResponse, AxiosError, CreateCustumerPayload>({
     mutationFn: (payload) => createCustomerService(payload),
-    onMutate: (variables) => {
-      // console.log("Criando cliente com os dados:", variables);
-    },
     onSuccess: (response) => {
-      queryClient.setQueryData(["customers-list"], (oldData: any) => {
-        if (!oldData) return { data: [response.data] }; 
+      console.log(response);
+      
+      queryClient.setQueryData(['customers-list', { skip: 0, take: 100 }], (oldData: any) => {
+        if (!oldData) {
+          return { data: [response] };
+        }
+    
         return {
           ...oldData,
-          data: [...oldData.data, response.data], 
+          data: [...oldData.data, response], 
         };
       });
-    },
+    } // fim do onSuccess
+    
   });
 };
+
 
 export const useUpdateCustomer = () =>
   useMutation<CustomerResponse, AxiosError, { id: number; data: Customer }>({

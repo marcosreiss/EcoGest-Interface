@@ -2,6 +2,7 @@ import ReactDOM from "react-dom/client";
 import { Suspense, StrictMode } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import App from "./app";
@@ -22,11 +23,13 @@ const queryClient = new QueryClient({
   },
 });
 
+
 root.render(
   <StrictMode>
     <HelmetProvider>
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
+          <ReactQueryDevtools initialIsOpen={false} />
           <AuthProvider>
             <Suspense>
               <App />
@@ -37,4 +40,5 @@ root.render(
     </HelmetProvider>
   </StrictMode>
 );
+
 

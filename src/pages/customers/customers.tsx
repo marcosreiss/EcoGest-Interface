@@ -21,7 +21,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 export default function Page() {
     const navigate = useNavigate();
-    const { data, isLoading } = useGetCustomersPaginaded(0, 10);
+    const { data, isLoading } = useGetCustomersPaginaded(0, 100);
     console.log(data);
     const customers = data?.data;
 
@@ -66,8 +66,8 @@ export default function Page() {
                                         {customers?.map((row, index) => (
                                             <TableRow key={index}>
                                                 <TableCell><Checkbox /></TableCell>
-                                                <TableCell>{row.name}</TableCell>
-                                                <TableCell>{row.contact}</TableCell>
+                                                <TableCell>{row?.name}</TableCell>
+                                                <TableCell>{row?.contact}</TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>

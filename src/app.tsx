@@ -24,7 +24,6 @@ export default function App() {
     </ThemeProvider>
   ) : (
     <ThemeProvider>
-      
       <PublicRouter />
     </ThemeProvider>
   )
