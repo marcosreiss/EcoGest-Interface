@@ -1,6 +1,11 @@
 
 import api from "./api";
 
+export enum PersonType {
+    Individual = 'individual',
+    Corporate = 'corporate'
+}
+
 export interface Customer {
     id: number;
     name: string;
@@ -8,7 +13,9 @@ export interface Customer {
     cnpj?: string | null;
     address?: string | null;
     contact?: string | null;
+    personType: PersonType; 
 }
+
 
 export interface CustomerListResponse {
     data: Customer[];
@@ -24,6 +31,7 @@ export interface CreateCustumerPayload {
     cnpj?: string | null;
     address?: string | null;
     contact?: string | null;
+    personType: PersonType; 
 }
 
 export const getCustomersPaginadedService = async (skip: number, take: number): Promise<CustomerListResponse> => {
@@ -32,7 +40,10 @@ export const getCustomersPaginadedService = async (skip: number, take: number): 
 };
 
 export const createCustomerService = async (payload: CreateCustumerPayload): Promise<CustomerResponse> => {
-    const response = await api.post<CustomerResponse>("/customers/", payload);
+    console.log("payload de cliente:", payload);
+    const response = await api.post<CustomerResponse>("/customers/create", payload);
+    console.log(response.data);
+    console.log(response.status);
     return response.data;
 }
 

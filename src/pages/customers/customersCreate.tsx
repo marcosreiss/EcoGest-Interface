@@ -1,15 +1,16 @@
-import type { CreateCustumerPayload } from "src/services/customerService";
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 
 import { Box, Grid, Switch, Button, TextField, Typography, FormControlLabel } from "@mui/material";
 
+import { useRouter } from "src/routes/hooks";
+
 import { useCreateCustomer } from "src/hooks/useCustomer";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
+import { PersonType, type CreateCustumerPayload } from "src/services/customerService";
 
 
 
@@ -35,18 +36,24 @@ export default function Page() {
 
     const { register, handleSubmit, formState: { errors } } = useForm<CreateCustumerPayload>();
     const createCostumer = useCreateCustomer();
+    const router = useRouter()
 
     const onSubmit = (data: CreateCustumerPayload) =>{
-        console.log("criando cliente com os dados: ",data);
 
         if(personType === pessoaFisica){
             data.cnpj = null;
+            data.personType = PersonType.Individual;
         }else{
             data.cpf = null;
+            data.personType = PersonType.Corporate;
         }
         createCostumer.mutate(data, {
-            onSuccess: (response)=> console.log(response),
-            onError: (error) => console.log(error)
+            onSuccess: (response)=> {
+                router.push("/customers")
+            },
+            onError: (error) => {
+                router.push("/customers")
+            }
         })
     }
 
@@ -60,7 +67,6 @@ export default function Page() {
                 <Grid container>
                     <Grid item xs={12} >
                         <Box sx={formStyle}>
-                            <form onSubmit={handleSubmit(onSubmit)}>
                                 <Grid container spacing={2} >
                                     <Grid item xs={6}>
                                         <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
@@ -202,7 +208,6 @@ export default function Page() {
                                     </Grid>
 
                                 </Grid>
-                            </form>
                         </Box>
                     </Grid>
                 </Grid>
