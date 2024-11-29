@@ -17,6 +17,12 @@ export default function App() {
   useScrollToTop.useScrollToTop();
   const { isAuthenticated } = useAuth();
 
+  if(isAuthenticated() === null){
+    return (
+      <div>Carregando...</div>
+    );
+  }
+
 
   return isAuthenticated() ? (
     <ThemeProvider>

@@ -22,7 +22,6 @@ import { DashboardContent } from 'src/layouts/dashboard';
 export default function Page() {
     const navigate = useNavigate();
     const { data, isLoading } = useGetCustomersPaginaded(0, 100);
-    console.log(data);
     const customers = data?.data;
 
     const handleNavigation = () => {

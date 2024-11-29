@@ -9,7 +9,7 @@ import { useRouter } from "src/routes/hooks";
 interface AuthContextType {
   token: string | null;
   setToken: (token: string | null) => void;
-  isAuthenticated: () => boolean;
+  isAuthenticated: () => boolean | null;
   useLogout: () => void;
 }
 
@@ -25,6 +25,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setTokenState] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true); // Adiciona o estado de carregamento
   const router = useRouter();
 
   const setToken = useCallback((newToken: string | null) => {
@@ -36,48 +37,50 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, []);
 
-  // Adicione uma verificação de expiração automática assim que o contexto for carregado.
   useEffect(() => {
     const savedToken = localStorage.getItem("authToken");
   
     if (savedToken) {
       setTokenState(savedToken);
   
-      // Decodifica e verifica o token
       const decoded: DecodedToken = jwtDecode(savedToken);
-      const currentTime = Date.now() / 1000; // Em segundos
-
+      const currentTime = Date.now() / 1000;
+  
       if (decoded.exp <= currentTime) {
         setToken(null); // Remove o token expirado
         router.push("/");
       } else {
-        // Agenda o logout automático para o momento da expiração
         const timeout = (decoded.exp - currentTime) * 1000;
         const timer = setTimeout(() => {
-          setToken(null); // Remove o token após expirar
+          setToken(null);
           router.push("/");
         }, timeout);
   
-        return () => clearTimeout(timer); // Limpa o timeout no unmount
+        setIsLoading(false); // Finaliza o carregamento
+        return () => clearTimeout(timer);
       }
+    } else {
+      setIsLoading(false); // Finaliza o carregamento se não houver token
     }
     return undefined;
-  }, [token, setToken, router]);
+  }, [setToken, router]);
+  
   
   
   const isAuthenticated = useCallback(() => {
-    if(!token) return false;
-
-    // decodifica o token e verifica se ele ainda é válido (24h de validade)
-    try{
+    if (isLoading) return null; // Ou outro comportamento, como mostrar um placeholder
+    if (!token) return false;
+  
+    try {
       const decoded: DecodedToken = jwtDecode(token);
       const currentTime = Date.now() / 1000;
       return decoded.exp > currentTime;
-    } catch(error){
+    } catch (error) {
       console.error("Erro ao decodificar o token:", error);
       return false;
     }
-  }, [token]);  
+  }, [token, isLoading]);
+   
   
   const useLogout = useCallback(() => {
     setToken(null);
