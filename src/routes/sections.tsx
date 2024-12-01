@@ -67,7 +67,7 @@ export function PrivateRouter() {
         { path: 'employees', element: <EmployeesPage /> },
         { path: 'receipts', element: <ReceiptsPage /> },
         { path: 'admin', element: <AdminPage /> },
-        
+
         { path: 'customers', element: <CostumersPage /> },
         { path: 'customers/create', element: <CostumersCreatePage /> },
 
@@ -84,7 +84,7 @@ export function PrivateRouter() {
   ]);
 }
 
-export function PublicRouter(){
+export function PublicRouter() {
   return useRoutes([
     {
       element: (
@@ -94,6 +94,105 @@ export function PublicRouter(){
       ),
       index: true
     },
+
+    {
+      path: 'user',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'products',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'blog',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'sales',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'suppliers',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'purchases',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'expenses',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'employees',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'receipts',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'admin',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+
+    {
+      path: 'customers',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'customers/create',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+
     {
       path: '404',
       element: <Page404 />,
