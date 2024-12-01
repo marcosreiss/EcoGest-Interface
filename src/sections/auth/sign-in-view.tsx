@@ -4,16 +4,17 @@ import { useState } from 'react';
 import { useForm } from "react-hook-form";
 
 import Box from '@mui/material/Box';
+import { Grid } from "@mui/material";
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Grid, Alert, Snackbar } from "@mui/material";
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { useLogin } from "src/hooks/useLogin";
 
 import { useAuth } from "src/context/AuthContext";
+import { useNotification } from "src/context/NotificationContext";
 
 import { Iconify } from 'src/components/iconify';
 
@@ -25,18 +26,10 @@ export function SignInView() {
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginPayload>();
 
-
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
-    "success"
-  );
-
-  // const handleSignIn = useCallback(() => {
-  //   router.push('/');
-  // }, [router]);
+  
   const { setToken } = useAuth();
   const loginMutation = useLogin();
+  const { addNotification } = useNotification();
 
 
 
@@ -44,38 +37,18 @@ export function SignInView() {
     console.log(data);
     loginMutation.mutate(data, {
       onSuccess: (response: { token: string | null; }) => {
-        setSnackbarMessage("Login bem-sucedido!");
-        setSnackbarSeverity("success");
-        setSnackbarOpen(true);
+        addNotification("Login realizado com sucesso!", "success");
         if(response.token){
           setToken(response.token);
         }
       },
       onError: () => {
-        setSnackbarMessage(
-          "Erro no login. Tente novamente."
-        );
-        setSnackbarSeverity("error");
-        setSnackbarOpen(true);
+        addNotification("Erro ao fazer login, tente novamente", "error")
       },
     });
   }
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
 
-  const snackbarNotification = (
-    <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={4000} // Fecha automaticamente após 4 segundos
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-  );
+
 
 
   const renderForm = (
@@ -161,7 +134,6 @@ export function SignInView() {
 
       {renderForm}
 
-      {snackbarNotification}
     </>
   );
 }

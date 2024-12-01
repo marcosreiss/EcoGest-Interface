@@ -7,6 +7,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import App from "./app";
 import { AuthProvider } from "./context/AuthContext";
+import SnackBarComponent from "./components/snack-bar/snackBar";
+import { NotificationProvider } from "./context/NotificationContext";
+
 
 // ----------------------------------------------------------------------
 
@@ -31,14 +34,18 @@ root.render(
         <QueryClientProvider client={queryClient}>
           <ReactQueryDevtools initialIsOpen={false} />
           <AuthProvider>
-            <Suspense>
-              <App />
-            </Suspense>
+            <NotificationProvider>
+              <SnackBarComponent />
+              <Suspense>
+                <App />
+              </Suspense>
+            </NotificationProvider>
           </AuthProvider>
         </QueryClientProvider>
       </BrowserRouter>
     </HelmetProvider>
   </StrictMode>
+
 );
 
 
