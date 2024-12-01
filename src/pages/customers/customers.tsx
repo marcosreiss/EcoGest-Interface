@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,7 +10,9 @@ import TableRow from '@mui/material/TableRow';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
+import TableFooter from '@mui/material/TableFooter';
 import TableContainer from '@mui/material/TableContainer';
+import TablePagination from '@mui/material/TablePagination';
 import { Grid, Button, Checkbox, Typography } from '@mui/material';
 
 import { useGetCustomersPaginaded } from 'src/hooks/useCustomer';
@@ -21,20 +24,36 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 export default function Page() {
     const navigate = useNavigate();
-    const { data, isLoading } = useGetCustomersPaginaded(0, 100);
+    
+    const rowsPerPage = 5; // Número fixo de linhas por página
+    const [page, setPage] = useState(0); // Página atual
+
+    // Chama o hook passando `skip` (page * rowsPerPage) e `rowsPerPage`
+    const { data, isLoading } = useGetCustomersPaginaded(page * rowsPerPage, rowsPerPage);
+    
     const customers = data?.data;
+    const totalItems = data?.meta.totalItems || 0; // Total de registros (corrigido nome)
+    
+    // testes 
+    
+
+
+    // Função chamada ao mudar de página
+    const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+        setPage(newPage);
+    };
 
     const handleNavigation = () => {
         navigate('/customers/create');
     };
+
     return (
         <>
             <Helmet>
                 <title>{`Clientes - ${CONFIG.appName}`}</title>
             </Helmet>
 
-            <DashboardContent maxWidth='md' >
-
+            <DashboardContent maxWidth="md">
                 <Grid container>
                     <Grid item xs={6}>
                         <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
@@ -70,13 +89,24 @@ export default function Page() {
                                             </TableRow>
                                         ))}
                                     </TableBody>
+                                    <TableFooter>
+                                        <TableRow>
+                                            <TablePagination
+                                                rowsPerPageOptions={[]} // Remove opções (fixo)
+                                                count={totalItems} // Total de registros
+                                                rowsPerPage={rowsPerPage} // Fixo
+                                                page={page} // Página atual
+                                                onPageChange={handleChangePage} // Corrigido para usar a função diretamente
+                                                component="div" // Para acessibilidade
+                                            />
+                                        </TableRow>
+                                    </TableFooter>
                                 </Table>
                             </TableContainer>
                         )}
-
                     </Grid>
                 </Grid>
             </DashboardContent>
         </>
-    )
+    );
 }

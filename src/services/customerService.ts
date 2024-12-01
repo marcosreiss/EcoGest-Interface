@@ -19,6 +19,7 @@ export interface Customer {
 
 export interface CustomerListResponse {
     data: Customer[];
+    meta: any;
 }
 
 export interface CustomerResponse {
@@ -36,11 +37,12 @@ export interface CreateCustumerPayload {
 
 export const getCustomersPaginadedService = async (skip: number, take: number): Promise<CustomerListResponse> => {
     const response = await api.get<CustomerListResponse>("/customers", { params: { skip, take } });
+    
     return response.data;
 };
 
 export const createCustomerService = async (payload: CreateCustumerPayload): Promise<CustomerResponse> => {
-    const response = await api.post<CustomerResponse>("/customers/create", payload);
+    const response = await api.post<CustomerResponse>("/customers/create", payload);    
     return response.data;
 }
 

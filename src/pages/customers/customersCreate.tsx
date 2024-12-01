@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
@@ -10,6 +11,7 @@ import { useCreateCustomer } from "src/hooks/useCustomer";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
+import { useNotification } from "src/context/NotificationContext";
 import { PersonType, type CreateCustumerPayload } from "src/services/customerService";
 
 
@@ -37,6 +39,7 @@ export default function Page() {
     const { register, handleSubmit, formState: { errors } } = useForm<CreateCustumerPayload>();
     const createCostumer = useCreateCustomer();
     const router = useRouter()
+    const { addNotification } = useNotification();
 
     const onSubmit = (data: CreateCustumerPayload) =>{
 
@@ -49,10 +52,11 @@ export default function Page() {
         }
         createCostumer.mutate(data, {
             onSuccess: (response)=> {
+                addNotification("Cliente Cadastrado com sucesso!", "success");
                 router.push("/customers")
             },
             onError: (error) => {
-                router.push("/customers")
+                addNotification( `Erro ao cadastrar cliente: ${error.message}` , "error");
             }
         })
     }
