@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Customer, CustomerResponse, CustomerListResponse, CreateCustumerPayload } from "src/services/customerService";
+import type { Customer, CustomerResponse, CustomerListResponse, CreateCustumerPayload } from "src/models/customers";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 

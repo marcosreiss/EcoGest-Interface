@@ -25,7 +25,7 @@ export const ReceiptsPage = lazy(() => import('src/pages/receipts/receipts'));
 export const AdminPage = lazy(() => import('src/pages/admin'));
 
 // ---------- Costumer Components
-export const CostumersPage = lazy(() => import('src/pages/customers/customers'));
+export const CostumersPage = lazy(() => import('src/pages/customers/customersIndex'));
 export const CostumersCreatePage = lazy(() => import('src/pages/customers/customersCreate'));
 
 

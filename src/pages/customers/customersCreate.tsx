@@ -1,4 +1,6 @@
 
+import type { CreateCustumerPayload} from "src/models/customers";
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
@@ -10,9 +12,9 @@ import { useRouter } from "src/routes/hooks";
 import { useCreateCustomer } from "src/hooks/useCustomer";
 
 import { CONFIG } from "src/config-global";
+import { PersonType } from "src/models/customers";
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
-import { PersonType, type CreateCustumerPayload } from "src/services/customerService";
 
 
 

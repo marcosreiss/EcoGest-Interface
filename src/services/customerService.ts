@@ -1,48 +1,25 @@
 
+import type
+{
+    Customer,
+    CustomerResponse,
+    CustomerListResponse,
+    CreateCustumerPayload
+}
+from "src/models/customers";
+
 import api from "./api";
 
-export enum PersonType {
-    Individual = 'individual',
-    Corporate = 'corporate'
-}
 
-export interface Customer {
-    id: number;
-    name: string;
-    cpf?: string | null;
-    cnpj?: string | null;
-    address?: string | null;
-    contact?: string | null;
-    personType: PersonType; 
-}
-
-
-export interface CustomerListResponse {
-    data: Customer[];
-    meta: any;
-}
-
-export interface CustomerResponse {
-    data: Customer;
-}
-
-export interface CreateCustumerPayload {
-    name: string;
-    cpf?: string | null;
-    cnpj?: string | null;
-    address?: string | null;
-    contact?: string | null;
-    personType: PersonType; 
-}
 
 export const getCustomersPaginadedService = async (skip: number, take: number): Promise<CustomerListResponse> => {
     const response = await api.get<CustomerListResponse>("/customers", { params: { skip, take } });
-    
+
     return response.data;
 };
 
 export const createCustomerService = async (payload: CreateCustumerPayload): Promise<CustomerResponse> => {
-    const response = await api.post<CustomerResponse>("/customers/create", payload);    
+    const response = await api.post<CustomerResponse>("/customers/create", payload);
     return response.data;
 }
 
@@ -65,10 +42,10 @@ export const getCustomerByIdService = async (id: number): Promise<CustomerRespon
 
 // Buscar cliente por nome
 export const getCustomerByNameService = async (name: string): Promise<CustomerListResponse> => {
-  const response = await api.get<CustomerListResponse>("/customers", {
-    params: { name },
-  });
-  return response.data;
+    const response = await api.get<CustomerListResponse>("/customers", {
+        params: { name },
+    });
+    return response.data;
 };
 
 
