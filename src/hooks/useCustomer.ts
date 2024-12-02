@@ -44,15 +44,10 @@ export const useCreateCustomer = () => {
   return useMutation<CustomerResponse, AxiosError, CreateCustumerPayload>({
     mutationFn: (payload) => createCustomerService(payload),
     onSuccess: (response) => {
-      queryClient.setQueryData(['customers-list', { skip: 0, take: 100 }], (oldData: any) => {
-        if (!oldData) {
-          return { data: [response] };
-        }
-        return {
-          ...oldData,
-          data: [...oldData.data, response], 
-        };
+      queryClient.invalidateQueries({
+        queryKey: ['customers-list'],
       });
+      
     } // fim do onSuccess
   });
 };
