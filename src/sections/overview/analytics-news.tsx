@@ -42,7 +42,7 @@ export function AnalyticsNews({ title, subheader, list, ...other }: Props) {
           color="inherit"
           endIcon={<Iconify icon="eva:arrow-ios-forward-fill" width={18} sx={{ ml: -0.5 }} />}
         >
-          View all
+          Ver todas
         </Button>
       </Box>
     </Card>

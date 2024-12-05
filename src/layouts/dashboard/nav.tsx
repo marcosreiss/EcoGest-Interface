@@ -113,7 +113,7 @@ export function NavContent({ data, slots, sx }: NavContentProps) {
 
   return (
     <>
-      <Logo />
+      <Logo href="/"/>
 
       {slots?.topArea}
 
