@@ -50,18 +50,18 @@ export const navData = [
     path: '/expenses',
     icon: icon('ic-coins')
   },
+  // {
+  //   title: 'Recibos',
+  //   path: '/receipts',
+  //   icon: icon('ic-bill')
+  // },
+  // {
+  //   title: 'Funcionarios',
+  //   path: '/employees',
+  //   icon: icon('ic-employees'),
+  // },
   {
-    title: 'Recibos',
-    path: '/receipts',
-    icon: icon('ic-bill')
-  },
-  {
-    title: 'Funcionarios',
-    path: '/employees',
-    icon: icon('ic-employees'),
-  },
-  {
-    title: 'Adm',
+    title: 'Balanço',
     path: '/admin',
     icon: icon('ic-adm')
   },
