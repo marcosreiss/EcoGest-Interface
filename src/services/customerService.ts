@@ -35,8 +35,8 @@ export const deleteCustomerService = async (id: number): Promise<void> => {
 };
 
 // Buscar cliente por ID
-export const getCustomerByIdService = async (id: number): Promise<CustomerResponse> => {
-    const response = await api.get<CustomerResponse>(`/customers/${id}`);
+export const getCustomerByIdService = async (id: number): Promise<Customer> => {
+    const response = await api.get<Customer>(`/customers/search/by-id?id=${id}`);
     return response.data;
 };
 

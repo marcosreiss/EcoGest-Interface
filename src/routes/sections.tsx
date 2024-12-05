@@ -71,7 +71,7 @@ export function PrivateRouter() {
 
         { path: 'customers', element: <CustomersPage /> },
         { path: 'customers/create', element: <CustomersCreatePage /> },
-        { path: 'customers/details', element: <CustomersDetailsPage /> }
+        { path: 'customers/details/:id', element: <CustomersDetailsPage /> }
 
       ],
     },
@@ -194,7 +194,7 @@ export function PublicRouter() {
         </AuthLayout>
       ),
     },
-    { path: 'customers/details', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'customers/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
 
     {
       path: '404',

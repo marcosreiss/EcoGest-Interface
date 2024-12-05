@@ -13,6 +13,8 @@ import {
   LinearProgress,
 } from "@mui/material";
 
+import { useRouter } from "src/routes/hooks";
+
 interface TableComponentProps<T> {
   tableName: string; // Nome da tabela
   data: T[]; // Dados genéricos (lista de objetos)
@@ -20,7 +22,7 @@ interface TableComponentProps<T> {
   fieldLabels: Record<string, string>;
 }
 
-const TableComponent = <T extends object>({ tableName, data, isLoading, fieldLabels }: TableComponentProps<T>) => {
+const TableComponent = <T extends { id: number }>({ tableName, data, isLoading, fieldLabels }: TableComponentProps<T>) => {
   // Calcula os campos dinamicamente com base no primeiro objeto
   const fields = data.length > 0 ? (Object.keys(data[0]) as (keyof T)[]) : [];
   const columnsCount = fields.length - 1;
@@ -28,6 +30,7 @@ const TableComponent = <T extends object>({ tableName, data, isLoading, fieldLab
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
+  const navigate = useRouter();
 
   const handleClick = (event: any, item: any) => {
     setAnchorEl(event.currentTarget);
@@ -38,6 +41,11 @@ const TableComponent = <T extends object>({ tableName, data, isLoading, fieldLab
     setAnchorEl(null);
     setSelectedItem(null);
   };
+
+  const handleDetailsClick = (id: number) => {
+    navigate.push(`details/${id}`);
+    handleClose();
+  }
 
   return (
     <Table stickyHeader aria-label={`${tableName} table`}>
@@ -85,11 +93,9 @@ const TableComponent = <T extends object>({ tableName, data, isLoading, fieldLab
               {fields.map((field) => (
                 field !== 'id' && (
                   <TableCell key={String(field)}>
-                  {String(row[field]) || "-"}
-                </TableCell>
-                )
-                
-              ))}
+                    {String(row[field]) || "-"}
+                  </TableCell>
+                )))}
               <TableCell>
                 <IconButton onClick={(event) => handleClick(event, index)} >
                   ︙
@@ -107,7 +113,10 @@ const TableComponent = <T extends object>({ tableName, data, isLoading, fieldLab
                     horizontal: 'right'
                   }}
                 >
-                  <MenuItem>Detalhes</MenuItem>
+                  <MenuItem onClick={() => handleDetailsClick(row.id)}>
+                    Detalhes
+                  </MenuItem>
+
                   <MenuItem>Editar</MenuItem>
                   <MenuItem>Deletar</MenuItem>
                 </Menu>

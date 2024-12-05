@@ -18,26 +18,6 @@ export const useGetCustomersPaginaded = (skip: number, take: number) =>
     queryFn: () => getCustomersPaginadedService(skip, take),
   });
 
-// export const useCreateCustomer = () => {
-//   const queryClient = useQueryClient();
-
-//   return useMutation<CustomerResponse, AxiosError, CreateCustumerPayload>({
-//     mutationFn: (payload) => createCustomerService(payload),
-//     onMutate: (variables) => {
-//       // console.log("Criando cliente com os dados:", variables);
-//     },
-//     onSuccess: (response) => {
-//       queryClient.setQueryData(["customers-list"], (oldData: any) => {
-//         if (!oldData) return { data: [response.data] }; 
-//         return {
-//           ...oldData,
-//           data: [...oldData.data, response.data], 
-//         };
-//       });
-//     },
-//   });
-// };
-
 export const useCreateCustomer = () => {
   const queryClient = useQueryClient();
 
@@ -47,11 +27,9 @@ export const useCreateCustomer = () => {
       queryClient.invalidateQueries({
         queryKey: ['customers-list'],
       });
-      
-    } // fim do onSuccess
+    } 
   });
 };
-
 
 export const useUpdateCustomer = () =>
   useMutation<CustomerResponse, AxiosError, { id: number; data: Customer }>({
@@ -70,7 +48,7 @@ export const useDeleteCustomer = () =>
   });
 
 export const useGetCustomerById = (id: number) =>
-  useQuery<CustomerResponse, AxiosError>({
+  useQuery<Customer, AxiosError>({
     queryKey: ['customer', id],
     queryFn: () => getCustomerByIdService(id),
   });
