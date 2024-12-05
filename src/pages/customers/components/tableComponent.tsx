@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
+  Menu,
   Table,
   TableRow,
   Checkbox,
+  MenuItem,
   TableHead,
   TableCell,
   TableBody,
+  IconButton,
   LinearProgress,
 } from "@mui/material";
 
@@ -20,40 +23,52 @@ interface TableComponentProps<T> {
 const TableComponent = <T extends object>({ tableName, data, isLoading, fieldLabels }: TableComponentProps<T>) => {
   // Calcula os campos dinamicamente com base no primeiro objeto
   const fields = data.length > 0 ? (Object.keys(data[0]) as (keyof T)[]) : [];
-  const columnsCount = fields.length;
+  const columnsCount = fields.length - 1;
   const columnsWidth = 95 / columnsCount;
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const handleClick = (event: any, item: any) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedItem(item);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setSelectedItem(null);
+  };
 
   return (
     <Table stickyHeader aria-label={`${tableName} table`}>
-      {/* Cabeçalho */}
       <TableHead>
         <TableRow>
-          {/* Checkbox fixo */}
           <TableCell
             sx={{
-              width: "5%", // Largura fixa para checkbox
-              minWidth: "50px", // Evita colapsar
+              width: "5%",
+              minWidth: "50px",
             }}
           >
             <Checkbox />
           </TableCell>
-          {/* Geração dinâmica do cabeçalho */}
+
           {fields.map((field) => (
-            <TableCell
-              key={String(field)}
-              sx={{
-                width: `${columnsWidth}%`, // Divide igualmente
-                minWidth: "150px",
-              }}
-            >
-              {/* Usa o label ou o próprio nome do campo como fallback */}
-              {fieldLabels[String(field)] || String(field)}
-            </TableCell>
+            field !== 'id' && (
+              <TableCell
+                key={String(field)}
+                sx={{
+                  width: `${columnsWidth}%`,
+                  minWidth: "150px",
+                }}
+              >
+                {fieldLabels[String(field)] || String(field)}
+              </TableCell>
+            )
           ))}
+          <TableCell>Actions</TableCell>
         </TableRow>
       </TableHead>
 
-      {/* Corpo da Tabela */}
       <TableBody>
         {isLoading ? (
           <TableRow>
@@ -68,10 +83,35 @@ const TableComponent = <T extends object>({ tableName, data, isLoading, fieldLab
                 <Checkbox />
               </TableCell>
               {fields.map((field) => (
-                <TableCell key={String(field)}>
+                field !== 'id' && (
+                  <TableCell key={String(field)}>
                   {String(row[field]) || "-"}
                 </TableCell>
+                )
+                
               ))}
+              <TableCell>
+                <IconButton onClick={(event) => handleClick(event, index)} >
+                  ︙
+                </IconButton>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl && selectedItem === index)}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center'
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right'
+                  }}
+                >
+                  <MenuItem>Detalhes</MenuItem>
+                  <MenuItem>Editar</MenuItem>
+                  <MenuItem>Deletar</MenuItem>
+                </Menu>
+              </TableCell>
             </TableRow>
           ))
         ) : (

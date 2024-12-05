@@ -25,8 +25,9 @@ export const ReceiptsPage = lazy(() => import('src/pages/receipts/receipts'));
 export const AdminPage = lazy(() => import('src/pages/admin'));
 
 // ---------- Costumer Components
-export const CostumersPage = lazy(() => import('src/pages/customers/customersIndex'));
-export const CostumersCreatePage = lazy(() => import('src/pages/customers/customersCreate'));
+export const CustomersPage = lazy(() => import('src/pages/customers/customersIndex'));
+export const CustomersCreatePage = lazy(() => import('src/pages/customers/customersCreate'));
+export const CustomersDetailsPage = lazy(() => import('src/pages/customers/customersDetails'));
 
 
 
@@ -68,8 +69,9 @@ export function PrivateRouter() {
         { path: 'receipts', element: <ReceiptsPage /> },
         { path: 'admin', element: <AdminPage /> },
 
-        { path: 'customers', element: <CostumersPage /> },
-        { path: 'customers/create', element: <CostumersCreatePage /> },
+        { path: 'customers', element: <CustomersPage /> },
+        { path: 'customers/create', element: <CustomersCreatePage /> },
+        { path: 'customers/details', element: <CustomersDetailsPage /> }
 
       ],
     },
@@ -192,6 +194,7 @@ export function PublicRouter() {
         </AuthLayout>
       ),
     },
+    { path: 'customers/details', element: <AuthLayout><SignInPage /></AuthLayout> },
 
     {
       path: '404',

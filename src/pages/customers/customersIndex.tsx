@@ -27,7 +27,8 @@ export default function Page() {
 
     const { data, isLoading } = useGetCustomersPaginaded(page * rowsPerPage, rowsPerPage);
     const customers = data?.data;
-    const filteredCustomers = customers?.map(({ name, contact }) => ({ name, contact })) || [];
+    
+    const filteredCustomers = customers?.map(({ customerId: id, name, contact }) => ({ id, name, contact })) || [];
     
     
     const totalItemsRef = React.useRef(0);
@@ -51,20 +52,21 @@ export default function Page() {
                         <TableContainer
                             component={Paper}
                             sx={{
-                                height: '65vh', // Altura máxima total
+                                height: '65vh', 
                                 display: 'flex',
-                                flexDirection: 'column', // Organiza a tabela e o footer em colunas
+                                flexDirection: 'column', 
                             }}
                         >
                             <Box
                                 component="div"
                                 sx={{
-                                    flex: 1, // Faz a tabela ocupar o espaço disponível
-                                    overflow: 'auto', // Permite scroll apenas no conteúdo da tabela
+                                    flex: 1, 
+                                    overflow: 'auto',
                                 }}
                             >
                                 <TableComponet tableName='customers' data={filteredCustomers || []} fieldLabels={customerFieldLabels} isLoading={isLoading} />
                             </Box>
+
                             <TableFooterComponent setPage={setPage} page={page} rowsPerPage={rowsPerPage} totalItems={totalItems} />
                         </TableContainer>
                     </Grid>

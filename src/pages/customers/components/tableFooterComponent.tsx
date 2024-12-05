@@ -14,13 +14,14 @@ const TableFooterComponent: React.FC<TableFooterComponentProps> = ({ setPage, to
     const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
         setPage(newPage);
     };
+    
 
     return (
-        <Table>
+        <Table >
             <TableFooter>
                 <TableRow>
                     <TableCell colSpan={3}>
-                        <TablePagination
+                        <TablePagination 
                             rowsPerPageOptions={[]} // Remove opções (fixo)
                             count={totalItems} // Total de registros
                             rowsPerPage={rowsPerPage} // Fixo
