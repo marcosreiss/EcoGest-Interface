@@ -15,26 +15,40 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
+import { useDeleteCustomer } from "src/hooks/useCustomer";
+
+import { useNotification } from "src/context/NotificationContext";
+
+import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
+
 interface TableComponentProps<T> {
-  tableName: string; // Nome da tabela
-  data: T[]; // Dados genéricos (lista de objetos)
-  isLoading: boolean; // Indica se está carregando
+  tableName: string;
+  data: T[];
+  isLoading: boolean;
   fieldLabels: Record<string, string>;
 }
 
-const TableComponent = <T extends { id: number }>({ tableName, data, isLoading, fieldLabels }: TableComponentProps<T>) => {
-  // Calcula os campos dinamicamente com base no primeiro objeto
+const TableComponent = <T extends { id: number }>({
+  tableName,
+  data,
+  isLoading,
+  fieldLabels,
+}: TableComponentProps<T>) => {
   const fields = data.length > 0 ? (Object.keys(data[0]) as (keyof T)[]) : [];
   const columnsCount = fields.length - 1;
   const columnsWidth = 95 / columnsCount;
 
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState<number | null>(null); // Agora armazena um id
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
   const navigate = useRouter();
+  const deleteCustomer = useDeleteCustomer();
+  const notification = useNotification();
 
   const handleClick = (event: any, item: any) => {
     setAnchorEl(event.currentTarget);
-    setSelectedItem(item);
+    setSelectedItem(item.id); // Salva o id do item
   };
 
   const handleClose = () => {
@@ -45,21 +59,33 @@ const TableComponent = <T extends { id: number }>({ tableName, data, isLoading, 
   const handleDetailsClick = (id: number) => {
     navigate.push(`details/${id}`);
     handleClose();
-  }
+  };
+
+  const handleDeleteCustomer = (id: number) => {
+    handleClose();
+    deleteCustomer.mutate(id, {
+      onSuccess: () => {
+        notification.addNotification('Cliente deletado com sucesso', 'success');
+        setDeleteModalOpen(false); // Fecha o modal após sucesso
+      },
+      onError: () => {
+        notification.addNotification('Erro ao deletar cliente, tente novamente mais tarde', 'error');
+      }
+    });
+  };
+
+  const handleDeleteClick = (id: number) => {
+    setDeleteModalOpen(true); // Abre o modal de confirmação
+    setSelectedItem(id); // Armazena o id do cliente a ser deletado
+  };
 
   return (
     <Table stickyHeader aria-label={`${tableName} table`}>
       <TableHead>
         <TableRow>
-          <TableCell
-            sx={{
-              width: "5%",
-              minWidth: "50px",
-            }}
-          >
+          <TableCell sx={{ width: "5%", minWidth: "50px" }}>
             <Checkbox />
           </TableCell>
-
           {fields.map((field) => (
             field !== 'id' && (
               <TableCell
@@ -97,12 +123,12 @@ const TableComponent = <T extends { id: number }>({ tableName, data, isLoading, 
                   </TableCell>
                 )))}
               <TableCell>
-                <IconButton onClick={(event) => handleClick(event, index)} >
+                <IconButton onClick={(event) => handleClick(event, row)}>
                   ︙
                 </IconButton>
                 <Menu
                   anchorEl={anchorEl}
-                  open={Boolean(anchorEl && selectedItem === index)}
+                  open={Boolean(anchorEl && selectedItem === row.id)}
                   onClose={handleClose}
                   anchorOrigin={{
                     vertical: 'bottom',
@@ -116,9 +142,10 @@ const TableComponent = <T extends { id: number }>({ tableName, data, isLoading, 
                   <MenuItem onClick={() => handleDetailsClick(row.id)}>
                     Detalhes
                   </MenuItem>
-
                   <MenuItem>Editar</MenuItem>
-                  <MenuItem>Deletar</MenuItem>
+                  <MenuItem onClick={() => handleDeleteClick(row.id)}>
+                    Deletar
+                  </MenuItem>
                 </Menu>
               </TableCell>
             </TableRow>
@@ -129,6 +156,16 @@ const TableComponent = <T extends { id: number }>({ tableName, data, isLoading, 
           </TableRow>
         )}
       </TableBody>
+
+      {/* Modal de confirmação */}
+      <ConfirmationDialog
+        open={deleteModalOpen}
+        confirmButtonText="Deletar"
+        description="Tem certeza que você quer deletar o cliente?"
+        onClose={() => { setDeleteModalOpen(false); handleClose(); }}
+        onConfirm={() => selectedItem && handleDeleteCustomer(selectedItem)} // Chama a função de deleção com o id
+        title="Deletar Cliente"
+      />
     </Table>
   );
 };

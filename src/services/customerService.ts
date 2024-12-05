@@ -31,7 +31,7 @@ export const updateCustomerService = async (payload: Customer, id: number): Prom
 
 // Deletar cliente
 export const deleteCustomerService = async (id: number): Promise<void> => {
-    await api.delete(`/customers/${id}`);
+    await api.delete(`/customers/?id=${id}`);
 };
 
 // Buscar cliente por ID

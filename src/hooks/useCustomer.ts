@@ -39,13 +39,23 @@ export const useUpdateCustomer = () =>
     },
   });
 
-export const useDeleteCustomer = () =>
-  useMutation<void, AxiosError, number>({
+export const useDeleteCustomer = () => {
+
+  const queryClient = useQueryClient();
+
+  return useMutation<void, AxiosError, number>({
     mutationFn: (id) => deleteCustomerService(id),
     onMutate: (variables) => {
       console.log("Deletando cliente com ID:", variables);
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['customers-list'],
+      });
+    }
   });
+}
+  
 
 export const useGetCustomerById = (id: number) =>
   useQuery<Customer, AxiosError>({
