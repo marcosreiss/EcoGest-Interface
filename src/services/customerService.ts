@@ -2,9 +2,9 @@
 import type
 {
     Customer,
+    CustomerPayload,
     CustomerResponse,
-    CustomerListResponse,
-    CreateCustumerPayload
+    CustomerListResponse
 }
 from "src/models/customers";
 
@@ -18,14 +18,14 @@ export const getCustomersPaginadedService = async (skip: number, take: number): 
     return response.data;
 };
 
-export const createCustomerService = async (payload: CreateCustumerPayload): Promise<CustomerResponse> => {
+export const createCustomerService = async (payload: CustomerPayload): Promise<CustomerResponse> => {
     const response = await api.post<CustomerResponse>("/customers/create", payload);
     return response.data;
 }
 
 // Atualizar cliente
 export const updateCustomerService = async (payload: Customer, id: number): Promise<CustomerResponse> => {
-    const response = await api.put<CustomerResponse>(`/customers/${id}`, payload);
+    const response = await api.put<CustomerResponse>(`/customers?id=${id}`, payload);
     return response.data;
 };
 

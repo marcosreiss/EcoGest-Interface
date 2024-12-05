@@ -23,7 +23,7 @@ export interface CustomerResponse {
     data: Customer;
 }
 
-export interface CreateCustumerPayload {
+export interface CustomerPayload {
     name: string;
     cpf?: string | null;
     cnpj?: string | null;

@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Customer, CustomerResponse, CustomerListResponse, CreateCustumerPayload } from "src/models/customers";
+import type { Customer, CustomerPayload, CustomerResponse, CustomerListResponse } from "src/models/customers";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -21,7 +21,7 @@ export const useGetCustomersPaginaded = (skip: number, take: number) =>
 export const useCreateCustomer = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<CustomerResponse, AxiosError, CreateCustumerPayload>({
+  return useMutation<CustomerResponse, AxiosError, CustomerPayload>({
     mutationFn: (payload) => createCustomerService(payload),
     onSuccess: (response) => {
       queryClient.invalidateQueries({

@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 
 import { Box, Grid, Typography, IconButton, LinearProgress } from "@mui/material";
 
+import { useRouter } from "src/routes/hooks";
+
 import { useGetCustomerById } from "src/hooks/useCustomer";
 
 import { CONFIG } from "src/config-global";
@@ -27,6 +29,10 @@ export default function Page() {
         borderRadius: 2,
         bgcolor: 'background.paper',
     }
+    const navigate = useRouter();
+    const handleEditClick = () => {
+        navigate.replace(`/customers/edit/${id}`);
+      };
 
 
     return (
@@ -57,7 +63,7 @@ export default function Page() {
                                         </Grid>
                                         {/* Botão de Voltar ou Editar (dependendo da lógica da aplicação) */}
                                         <Grid item xs={6}>
-                                            <IconButton onClick={() => alert('Editar Cliente')} >
+                                            <IconButton onClick={handleEditClick} >
                                                 <img alt="icon" src="/assets/icons/ic-edit.svg" />
                                             </IconButton>
                                         </Grid>

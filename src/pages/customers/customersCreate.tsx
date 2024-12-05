@@ -1,5 +1,5 @@
 
-import type { CreateCustumerPayload } from "src/models/customers";
+import type { CustomerPayload } from "src/models/customers";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -38,12 +38,12 @@ export default function Page() {
         }
     }
 
-    const { register, handleSubmit, formState: { errors } } = useForm<CreateCustumerPayload>();
+    const { register, handleSubmit, formState: { errors } } = useForm<CustomerPayload>();
     const createCostumer = useCreateCustomer();
     const router = useRouter()
     const { addNotification } = useNotification();
 
-    const onSubmit = (data: CreateCustumerPayload) => {
+    const onSubmit = (data: CustomerPayload) => {
 
         if (personType === pessoaFisica) {
             data.cnpj = null;

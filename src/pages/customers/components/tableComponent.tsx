@@ -60,6 +60,10 @@ const TableComponent = <T extends { id: number }>({
     navigate.push(`details/${id}`);
     handleClose();
   };
+  const handleEditClick = (id: number) => {
+    navigate.push(`edit/${id}`);
+    handleClose();
+  };
 
   const handleDeleteCustomer = (id: number) => {
     handleClose();
@@ -99,7 +103,7 @@ const TableComponent = <T extends { id: number }>({
               </TableCell>
             )
           ))}
-          <TableCell>Actions</TableCell>
+          <TableCell> </TableCell>
         </TableRow>
       </TableHead>
 
@@ -142,7 +146,9 @@ const TableComponent = <T extends { id: number }>({
                   <MenuItem onClick={() => handleDetailsClick(row.id)}>
                     Detalhes
                   </MenuItem>
-                  <MenuItem>Editar</MenuItem>
+                  <MenuItem onClick={() => handleEditClick(row.id)}>
+                  Editar
+                  </MenuItem>
                   <MenuItem onClick={() => handleDeleteClick(row.id)}>
                     Deletar
                   </MenuItem>
