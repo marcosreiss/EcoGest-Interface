@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 const api = axios.create({
   baseURL: "https://ecogest-api.onrender.com/",
   headers: {
@@ -10,11 +9,15 @@ const api = axios.create({
 
 // Adiciona o token no cabeçalho em todas as requisições
 api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("authToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
 
-  console.log("Request Body:", config.data);
-  console.log("Request Params:", config.params);
-  console.log("Token:", config.headers.Authorization);
-
+  // console.log("Request Body:", config.data);
+  // console.log("Request Params:", config.params);
+  // console.log("Token:", config.headers.Authorization);
+  
   return config;
 });
 

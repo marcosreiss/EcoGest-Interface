@@ -25,8 +25,10 @@ export const ReceiptsPage = lazy(() => import('src/pages/receipts/receipts'));
 export const AdminPage = lazy(() => import('src/pages/admin'));
 
 // ---------- Costumer Components
-export const CostumersPage = lazy(() => import('src/pages/costumers/costomers'));
-export const CostumersCreatePage = lazy(() => import('src/pages/costumers/costumersCreate'));
+export const CustomersPage = lazy(() => import('src/pages/customers/customersIndex'));
+export const CustomersCreatePage = lazy(() => import('src/pages/customers/customersCreate'));
+export const CustomersDetailsPage = lazy(() => import('src/pages/customers/customersDetails'));
+export const CustomersEditPage = lazy(() => import('src/pages/customers/cutomersEdit'));
 
 
 
@@ -67,9 +69,11 @@ export function PrivateRouter() {
         { path: 'employees', element: <EmployeesPage /> },
         { path: 'receipts', element: <ReceiptsPage /> },
         { path: 'admin', element: <AdminPage /> },
-        
-        { path: 'costumers', element: <CostumersPage /> },
-        { path: 'costumers/create', element: <CostumersCreatePage /> },
+
+        { path: 'customers', element: <CustomersPage /> },
+        { path: 'customers/create', element: <CustomersCreatePage /> },
+        { path: 'customers/details/:id', element: <CustomersDetailsPage /> },
+        { path: 'customers/edit/:id', element: <CustomersEditPage /> }
 
       ],
     },
@@ -84,7 +88,7 @@ export function PrivateRouter() {
   ]);
 }
 
-export function PublicRouter(){
+export function PublicRouter() {
   return useRoutes([
     {
       element: (
@@ -94,6 +98,107 @@ export function PublicRouter(){
       ),
       index: true
     },
+
+    {
+      path: 'user',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'products',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'blog',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'sales',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'suppliers',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'purchases',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'expenses',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'employees',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'receipts',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'admin',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+
+    {
+      path: 'customers',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    {
+      path: 'customers/create',
+      element: (
+        <AuthLayout>
+          <SignInPage />
+        </AuthLayout>
+      ),
+    },
+    { path: 'customers/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'customers/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+
     {
       path: '404',
       element: <Page404 />,

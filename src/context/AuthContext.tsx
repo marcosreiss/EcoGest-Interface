@@ -1,16 +1,20 @@
 import type { ReactNode } from "react";
-import type { LoginPayload, LoginResponse} from "src/services/loginService";
 
+import { jwtDecode } from "jwt-decode";
 import React, { useMemo, useState, useEffect, useContext, useCallback, createContext } from "react";
 
 import { useRouter } from "src/routes/hooks";
 
-import { loginService, logoutService, checkAuthService } from "src/services/loginService";
 
 interface AuthContextType {
-  isAuthenticated: boolean;
+  token: string | null;
+  setToken: (token: string | null) => void;
+  isAuthenticated: () => boolean | null;
   useLogout: () => void;
-  useLogin: (payload: LoginPayload) => Promise<LoginResponse>;
+}
+
+interface DecodedToken {
+  exp: number; // Campo de expiração (em segundos desde 1970-01-01T00:00:00Z)
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,67 +24,74 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [token, setTokenState] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true); // Adiciona o estado de carregamento
   const router = useRouter();
 
-
+  const setToken = useCallback((newToken: string | null) => {
+    setTokenState(newToken);
+    if (newToken) {
+      localStorage.setItem("authToken", newToken); 
+    } else {
+      localStorage.removeItem("authToken");
+    }
+  }, []);
 
   useEffect(() => {
-    const checkAuthentication = async () => {
-      try {
-        console.log("Chamando checkAuthentication...");
-        
-        const response = await checkAuthService();
-      
-        if (response.status === 200) {
-          setIsAuthenticated(true);
-          router.push('/'); 
-        } else {
-          setIsAuthenticated(false);
-        }
-      } catch (error) {
-        console.error('Erro durante a verificação de autenticação:', error);
-        setIsAuthenticated(false);
-      };
-      
-    };
+    const savedToken = localStorage.getItem("authToken");
   
-    if (!isAuthenticated) {
-      checkAuthentication();
-    }
-  }, [isAuthenticated, router]);
-
-  const useLogin = useCallback(async (payload: LoginPayload): Promise<LoginResponse> => {
-    try {
-      console.log("chamando useLogin");
-      
-      const response = await loginService(payload);
-      setIsAuthenticated(true);
-      router.push("/");
-      return response;
-    } catch (error) {
-      console.error("Erro ao fazer login:", error);
-      setIsAuthenticated(false);
-      throw error;
-    }
-  }, [router]);
+    if (savedToken) {
+      setTokenState(savedToken);
   
-  const useLogout = useCallback(async () => {
-    try {
-      console.log("chamando useLogut");
-      await logoutService();
-      setIsAuthenticated(false);
-      router.push("/");
-    } catch (error) {
-      console.error("Erro ao fazer logout:", error);
+      const decoded: DecodedToken = jwtDecode(savedToken);
+      const currentTime = Date.now() / 1000;
+  
+      if (decoded.exp <= currentTime) {
+        setToken(null); // Remove o token expirado
+        router.push("/");
+      } else {
+        const timeout = (decoded.exp - currentTime) * 1000;
+        const timer = setTimeout(() => {
+          setToken(null);
+          router.push("/");
+        }, timeout);
+  
+        setIsLoading(false); // Finaliza o carregamento
+        return () => clearTimeout(timer);
+      }
+    } else {
+      setIsLoading(false); // Finaliza o carregamento se não houver token
     }
-  }, [router]);
+    return undefined;
+  }, [setToken, router]);
+  
+  
+  
+  const isAuthenticated = useCallback(() => {
+    if (isLoading) return null; // Ou outro comportamento, como mostrar um placeholder
+    if (!token) return false;
+  
+    try {
+      const decoded: DecodedToken = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+      return decoded.exp > currentTime;
+    } catch (error) {
+      console.error("Erro ao decodificar o token:", error);
+      return false;
+    }
+  }, [token, isLoading]);
+   
+  
+  const useLogout = useCallback(() => {
+    setToken(null);
+    router.push("/")
+  }, [setToken, router]);
   
 
   const memorizedValue = useMemo(
-    () => ({ isAuthenticated, useLogout, useLogin }),
-    [isAuthenticated, useLogout, useLogin]
-  );  
+    ()=> ({token, setToken, isAuthenticated, useLogout}),
+    [token, setToken, isAuthenticated, useLogout]
+  )
 
   return (
     <AuthContext.Provider value={memorizedValue}>
@@ -96,4 +107,3 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
-

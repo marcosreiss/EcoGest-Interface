@@ -1,5 +1,4 @@
-import path from 'path';
-import { title } from 'process';
+
 import { Label } from 'src/components/label';
 import { SvgColor } from 'src/components/svg-color';
 
@@ -27,7 +26,7 @@ export const navData = [
   },
   {
     title: 'Clientes',
-    path: '/costumers',
+    path: '/customers',
     icon: icon('ic-people')
   },
   {

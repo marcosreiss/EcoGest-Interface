@@ -17,8 +17,7 @@ export default function App() {
   useScrollToTop.useScrollToTop();
   const { isAuthenticated } = useAuth();
 
-
-  return isAuthenticated ? (
+  return isAuthenticated() ? (
     <ThemeProvider>
       <PrivateRouter />
     </ThemeProvider>

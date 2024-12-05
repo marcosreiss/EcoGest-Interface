@@ -4,14 +4,17 @@ import { useState } from 'react';
 import { useForm } from "react-hook-form";
 
 import Box from '@mui/material/Box';
+import { Grid } from "@mui/material";
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Grid, Alert, Snackbar } from "@mui/material";
 import InputAdornment from '@mui/material/InputAdornment';
 
+import { useLogin } from "src/hooks/useLogin";
+
 import { useAuth } from "src/context/AuthContext";
+import { useNotification } from "src/context/NotificationContext";
 
 import { Iconify } from 'src/components/iconify';
 
@@ -23,13 +26,28 @@ export function SignInView() {
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginPayload>();
 
-  const {useLogin} = useAuth();
+  
+  const { setToken } = useAuth();
+  const loginMutation = useLogin();
+  const { addNotification } = useNotification();
 
 
 
-  // const handleSignIn = useCallback(() => {
-  //   router.push('/');
-  // }, [router]);
+  const handleSignIn = (data: LoginPayload) => {
+    console.log(data);
+    loginMutation.mutate(data, {
+      onSuccess: (response: { token: string | null; }) => {
+        addNotification("Login realizado com sucesso!", "success");
+        if(response.token){
+          setToken(response.token);
+        }
+      },
+      onError: () => {
+        addNotification("Erro ao fazer login, tente novamente", "error")
+      },
+    });
+  }
+
 
 
 
@@ -101,7 +119,7 @@ export function SignInView() {
         type="submit"
         color="inherit"
         variant="contained"
-        onClick={() => handleSubmit(useLogin)()}
+        onClick={() => handleSubmit(handleSignIn)()}
       >
         Entrar
       </LoadingButton>
