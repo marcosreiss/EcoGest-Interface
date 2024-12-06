@@ -1,44 +1,29 @@
 
-import type { Customer } from 'src/models/customers';
 
 import React, { useState } from 'react';
 
 import { Box, Button, TextField, Typography } from '@mui/material';
-
-import { useDeleteCustomer } from 'src/hooks/useCustomer';
-
-import { useNotification } from 'src/context/NotificationContext';
 
 import ConfirmationDialog from 'src/components/confirmation-dialog/confirmationDialog';
 
 
 
 interface TableSearchProps {
-  handleSearchChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  selectedCustomers: Customer[];
+  handleSearchChange: (event: React.ChangeEvent<HTMLInputElement>) => void | null;
+  selectedRows: any[];
+  isSearchDisabled: boolean;
+  handleDelete: ()=>void;
 }
 
-const TableSearch: React.FC<TableSearchProps> = ({ handleSearchChange, selectedCustomers }) => {
+const TableSearch: React.FC<TableSearchProps> = ({ handleSearchChange, selectedRows, isSearchDisabled, handleDelete }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const deleteCustomer = useDeleteCustomer();
-  const notification = useNotification();
   
   const handleOpen = () => setDeleteModalOpen(true);
   const handleClose = () => setDeleteModalOpen(false);
 
-  const handleDeleteCustomer = () => {
+  const handleDeleteRows = () => {
     handleClose();
-    selectedCustomers.forEach((customer) => {
-      deleteCustomer.mutate(customer.customerId, {
-        onSuccess: () => {
-          notification.addNotification('Clientes deletado com sucesso', 'success');
-          setDeleteModalOpen(false);
-        },
-        onError: () => {
-          notification.addNotification('Erro ao deletar cliente, tente novamente mais tarde', 'error');
-        },
-      });
-    });
+    handleDelete();
   };  
 
 
@@ -57,12 +42,13 @@ const TableSearch: React.FC<TableSearchProps> = ({ handleSearchChange, selectedC
       >
         {/* Barra de Pesquisa */}
         <Box sx={{ flex: 1, marginRight: '16px' }}>
-          <TextField
+        <TextField
             fullWidth
-            placeholder="Search..."
+            placeholder={isSearchDisabled ? "desabilitado" : "Pesquisar..."}
             variant="outlined"
             size="small"
             onChange={handleSearchChange}
+            disabled={isSearchDisabled}
             InputProps={{
               sx: {
                 borderRadius: '8px',
@@ -73,7 +59,7 @@ const TableSearch: React.FC<TableSearchProps> = ({ handleSearchChange, selectedC
         </Box>
 
         {/* Botão de Deletar */}
-        {selectedCustomers.length > 0 ? (
+        {selectedRows.length > 0 ? (
           <Button
             variant="contained"
             color="error"
@@ -85,7 +71,7 @@ const TableSearch: React.FC<TableSearchProps> = ({ handleSearchChange, selectedC
             }}
             onClick={handleOpen}
           >
-            Delatar Selecionados ({selectedCustomers.length})
+            Delatar Selecionados ({selectedRows.length})
           </Button>
         ) : (
           <Typography
@@ -100,7 +86,7 @@ const TableSearch: React.FC<TableSearchProps> = ({ handleSearchChange, selectedC
         confirmButtonText="Deletar"
         description="Tem certeza que você quer deletar o cliente?"
         onClose={handleClose}
-        onConfirm={handleDeleteCustomer}
+        onConfirm={handleDeleteRows}
         title="Deletar Cliente"
       />
     </>

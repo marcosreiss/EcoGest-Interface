@@ -1,3 +1,5 @@
+import type { Product } from 'src/models/product';
+
 import * as React from 'react';
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -6,15 +8,16 @@ import Paper from '@mui/material/Paper';
 import { Box, Grid } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 
-import { useGetProductsPaginated } from 'src/hooks/useProduct';
+import { useDeleteProduct, useGetProductsPaginated } from 'src/hooks/useProduct';
 
-import { CONFIG } from 'src/config-global';
-import { DashboardContent } from 'src/layouts/dashboard'; // Ajuste o caminho do hook
-import type { Product } from 'src/models/product';
+import { CONFIG } from 'src/config-global'; 
+import { DashboardContent } from 'src/layouts/dashboard';
+import TableSearch from 'src/layouts/components/tableSearch'; 
+import { useNotification } from 'src/context/NotificationContext';
+import TableFooterComponent from 'src/layouts/components/tableFooterComponent';
+import TableHeaderComponent from 'src/layouts/components/tableHeaderComponent';
 
-import ProductTableComponent from './components/productTableComponent'; // Ajuste o caminho do componente
-import TableFooterComponent from '../customers/components/tableFooterComponent';
-import TableHeaderComponent from '../customers/components/tableHeaderComponent';
+import ProductTableComponent from './components/productTableComponent';
 
 
 // ----------------------------------------------------------------------
@@ -37,6 +40,24 @@ export default function ProductPage() {
 
   const products = data?.data || [];
 
+  const deleteProduct = useDeleteProduct();
+const notification = useNotification();
+
+const handleDeleteProduct = () => {
+  selectedProducts.forEach((product) => {
+    deleteProduct.mutate(product.productId, {
+      onSuccess: () => {
+        notification.addNotification('Produto deletado com sucesso', 'success');
+        setSelectedProducts([]); // Limpa a seleção após a exclusão
+      },
+      onError: () => {
+        notification.addNotification('Erro ao deletar produto, tente novamente mais tarde', 'error');
+      },
+    });
+  });
+};
+
+
   return (
     <>
       <Helmet>
@@ -51,6 +72,7 @@ export default function ProductPage() {
             addButtonPath='/products/create' 
           />
           <Grid item xs={12}>
+            <TableSearch handleDelete={handleDeleteProduct} handleSearchChange={() => null} isSearchDisabled selectedRows={selectedProducts}  />
             <TableContainer component={Paper} sx={{height: '65vh', display: 'flex', flexDirection: 'column' }}>
               <Box component="div" sx={{ flex: 1, overflow: 'auto' }}>
                 <ProductTableComponent 

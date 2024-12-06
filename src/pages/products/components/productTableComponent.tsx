@@ -81,6 +81,24 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
     });
   };
 
+  // Função para formatar o peso
+  const formatWeight = (weightKg: number | undefined): string => {
+    if (weightKg === undefined) return "-";
+    
+    if (weightKg < 1) {
+      // menor que 1kg, converter para gramas
+      const grams = weightKg * 1000;
+      return `${grams}g`;
+    } if (weightKg > 1000) {
+      // maior que 1000kg, converter para toneladas
+      const tons = weightKg / 1000;
+      return `${tons}T`;
+    } 
+      // entre 1 e 1000, continua em kg
+      return `${weightKg}Kg`;
+    
+  };
+
   // Seleciona ou deseleciona todos os produtos ao marcar o checkbox do header
   const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -139,8 +157,8 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
                   />
                 </TableCell>
                 <TableCell>{product.name || "-"}</TableCell>
-                <TableCell>{`${product.weightAmount} Kg`}</TableCell>
-                <TableCell>{`R$${product.price}` }</TableCell>
+                <TableCell>{formatWeight(product.weightAmount)}</TableCell>
+                <TableCell>{product.price !== undefined ? `R$${product.price}` : "-"}</TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, product.productId)}>︙</IconButton>
                   <Menu
