@@ -13,7 +13,9 @@ import type {
   };
   
   export const createProductService = async (payload: CreateProductPayload): Promise<ProductResponse> => {
-    const response = await api.post<ProductResponse>("/products/create", payload);
+    console.log(payload);
+    
+    const response = await api.post<ProductResponse>("/products", payload);
     return response.data;
   };
   
