@@ -15,7 +15,7 @@ import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import TableSearch from './components/tableSearch';
-import TableComponet from './components/tableComponent';
+import TableComponet from './components/customerTableComponent';
 import TableHeaderComponent from './components/tableHeaderComponent';
 import TableFooterComponent from './components/tableFooterComponent';
 

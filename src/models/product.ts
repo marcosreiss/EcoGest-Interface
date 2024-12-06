@@ -1,12 +1,13 @@
 export interface Product {
-    id: number;
+    productId: number;
     name: string;
-    quantity: number;
+    weightAmount: number;
     price: number;
 }
 
 export interface ProductListResponse {
     data: Product[];
+    meta: any;
 }
 
 export interface ProductResponse {
@@ -15,6 +16,6 @@ export interface ProductResponse {
 
 export interface CreateProductPayload{
     name: string;
-    quantity: number;
+    weightAmount: number;
     price: number;
 }

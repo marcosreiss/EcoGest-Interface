@@ -31,10 +31,4 @@ export interface CustomerPayload {
     contact?: string | null;
     personType: PersonType; 
 }
-
-export const customerFieldLabels: Record<string, string> = {
-    name: "Nome",
-    address: "Endereço",
-    contact: "Contato"
-  };
   

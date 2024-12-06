@@ -30,7 +30,7 @@ interface TableComponentProps {
   setSelectedCustomers: React.Dispatch<React.SetStateAction<Customer[]>>;
 }
 
-const TableComponent: React.FC<TableComponentProps> = ({
+const CustomerTableComponent: React.FC<TableComponentProps> = ({
   customers,
   isLoading,
   isSearching,
@@ -190,4 +190,4 @@ const TableComponent: React.FC<TableComponentProps> = ({
   );
 };
 
-export default TableComponent;
+export default CustomerTableComponent;
