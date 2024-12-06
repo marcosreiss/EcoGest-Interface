@@ -67,4 +67,5 @@ export const useGetCustomerByName = (name: string) =>
   useQuery<Customer[], AxiosError>({
     queryKey: ['customers-by-name', name],
     queryFn: () => getCustomerByNameService(name),
+    enabled: name.length >= 3
   });

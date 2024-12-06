@@ -41,8 +41,6 @@ export default function Page() {
 
     const { data: searchResults, isLoading: isSearching } = useGetCustomerByName(debouncedSearchString);
 
-    console.log(searchResults);
-
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value;
         
