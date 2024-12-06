@@ -1,3 +1,5 @@
+import type  { Customer } from "src/models/customers";
+
 import React, { useState } from "react";
 
 import {
@@ -21,34 +23,24 @@ import { useNotification } from "src/context/NotificationContext";
 
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
 
-interface TableComponentProps<T> {
-  tableName: string;
-  data: T[];
+interface TableComponentProps {
+  customers: Customer[];
   isLoading: boolean;
-  fieldLabels: Record<string, string>;
+  isSearching: boolean;
 }
 
-const TableComponent = <T extends { id: number }>({
-  tableName,
-  data,
-  isLoading,
-  fieldLabels,
-}: TableComponentProps<T>) => {
-  const fields = data.length > 0 ? (Object.keys(data[0]) as (keyof T)[]) : [];
-  const columnsCount = fields.length - 1;
-  const columnsWidth = 95 / columnsCount;
-
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedItem, setSelectedItem] = useState<number | null>(null); // Agora armazena um id
+const TableComponent: React.FC<TableComponentProps> = ({ customers, isLoading, isSearching }) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedItem, setSelectedItem] = useState<number | null>(null); // Armazena o customerId
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const navigate = useRouter();
   const deleteCustomer = useDeleteCustomer();
   const notification = useNotification();
 
-  const handleClick = (event: any, item: any) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>, customerId: number) => {
     setAnchorEl(event.currentTarget);
-    setSelectedItem(item.id); // Salva o id do item
+    setSelectedItem(customerId);
   };
 
   const handleClose = () => {
@@ -56,123 +48,113 @@ const TableComponent = <T extends { id: number }>({
     setSelectedItem(null);
   };
 
-  const handleDetailsClick = (id: number) => {
-    navigate.push(`details/${id}`);
-    handleClose();
-  };
-  const handleEditClick = (id: number) => {
-    navigate.push(`edit/${id}`);
+  const handleDetailsClick = (customerId: number) => {
+    navigate.push(`details/${customerId}`);
     handleClose();
   };
 
-  const handleDeleteCustomer = (id: number) => {
+  const handleEditClick = (customerId: number) => {
+    navigate.push(`edit/${customerId}`);
     handleClose();
-    deleteCustomer.mutate(id, {
+  };
+
+  const handleDeleteCustomer = (customerId: number) => {
+    handleClose();
+    deleteCustomer.mutate(customerId, {
       onSuccess: () => {
         notification.addNotification('Cliente deletado com sucesso', 'success');
-        setDeleteModalOpen(false); // Fecha o modal após sucesso
+        setDeleteModalOpen(false); 
       },
       onError: () => {
         notification.addNotification('Erro ao deletar cliente, tente novamente mais tarde', 'error');
-      }
+      },
     });
   };
 
-  const handleDeleteClick = (id: number) => {
-    setDeleteModalOpen(true); // Abre o modal de confirmação
-    setSelectedItem(id); // Armazena o id do cliente a ser deletado
+  const handleDeleteClick = (customerId: number) => {
+    setDeleteModalOpen(true);
+    setSelectedItem(customerId);
   };
 
   return (
-    <Table stickyHeader aria-label={`${tableName} table`}>
-      <TableHead>
-        <TableRow>
-          <TableCell sx={{ width: "5%", minWidth: "50px" }}>
-            <Checkbox />
-          </TableCell>
-          {fields.map((field) => (
-            field !== 'id' && (
-              <TableCell
-                key={String(field)}
-                sx={{
-                  width: `${columnsWidth}%`,
-                  minWidth: "150px",
-                }}
-              >
-                {fieldLabels[String(field)] || String(field)}
-              </TableCell>
-            )
-          ))}
-          <TableCell> </TableCell>
-        </TableRow>
-      </TableHead>
-
-      <TableBody>
-        {isLoading ? (
+    <>
+      <Table stickyHeader aria-label="customers table">
+        <TableHead>
           <TableRow>
-            <TableCell colSpan={columnsCount + 1} sx={{ padding: 0 }}>
-              <LinearProgress sx={{ width: "100%" }} />
+            <TableCell sx={{ width: "5%", minWidth: "50px" }}>
+              <Checkbox />
             </TableCell>
+            <TableCell sx={{ width: "45%", minWidth: "150px" }}>Nome</TableCell>
+            <TableCell sx={{ width: "45%", minWidth: "150px" }}>Contato</TableCell>
+            <TableCell sx={{ width: "5%" }}> </TableCell>
           </TableRow>
-        ) : data.length > 0 ? (
-          data.map((row, index) => (
-            <TableRow key={index}>
-              <TableCell>
-                <Checkbox />
-              </TableCell>
-              {fields.map((field) => (
-                field !== 'id' && (
-                  <TableCell key={String(field)}>
-                    {String(row[field]) || "-"}
-                  </TableCell>
-                )))}
-              <TableCell>
-                <IconButton onClick={(event) => handleClick(event, row)}>
-                  ︙
-                </IconButton>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl && selectedItem === row.id)}
-                  onClose={handleClose}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center'
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                >
-                  <MenuItem onClick={() => handleDetailsClick(row.id)}>
-                    Detalhes
-                  </MenuItem>
-                  <MenuItem onClick={() => handleEditClick(row.id)}>
-                  Editar
-                  </MenuItem>
-                  <MenuItem onClick={() => handleDeleteClick(row.id)}>
-                    Deletar
-                  </MenuItem>
-                </Menu>
+        </TableHead>
+        <TableBody>
+          {isLoading || isSearching ? (
+            <TableRow>
+              <TableCell colSpan={4} sx={{ padding: 0 }}>
+                <LinearProgress sx={{ width: "100%" }} />
               </TableCell>
             </TableRow>
-          ))
-        ) : (
-          <TableRow>
-            <TableCell colSpan={columnsCount + 1}>No data available</TableCell>
-          </TableRow>
-        )}
-      </TableBody>
+          ) : customers.length > 0 ? (
+            customers.map((customer) => (
+              <TableRow key={customer.customerId}>
+                <TableCell>
+                  <Checkbox />
+                </TableCell>
+                <TableCell>
+                  {customer.name || "-"}
+                </TableCell>
+                <TableCell>
+                  {customer.contact || "-"}
+                </TableCell>
+                <TableCell>
+                  <IconButton onClick={(event) => handleClick(event, customer.customerId)}>
+                    ︙
+                  </IconButton>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl && selectedItem === customer.customerId)}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'center'
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right'
+                    }}
+                  >
+                    <MenuItem onClick={() => handleDetailsClick(customer.customerId)}>
+                      Detalhes
+                    </MenuItem>
+                    <MenuItem onClick={() => handleEditClick(customer.customerId)}>
+                      Editar
+                    </MenuItem>
+                    <MenuItem onClick={() => handleDeleteClick(customer.customerId)}>
+                      Deletar
+                    </MenuItem>
+                  </Menu>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={4}>No data available</TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
 
-      {/* Modal de confirmação */}
       <ConfirmationDialog
         open={deleteModalOpen}
         confirmButtonText="Deletar"
         description="Tem certeza que você quer deletar o cliente?"
         onClose={() => { setDeleteModalOpen(false); handleClose(); }}
-        onConfirm={() => selectedItem && handleDeleteCustomer(selectedItem)} // Chama a função de deleção com o id
+        onConfirm={() => selectedItem && handleDeleteCustomer(selectedItem)}
         title="Deletar Cliente"
       />
-    </Table>
+    </>
   );
 };
 

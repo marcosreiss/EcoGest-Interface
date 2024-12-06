@@ -1,8 +1,16 @@
+
 import React from 'react';
 
 import { Box, Button, TextField, Typography } from '@mui/material';
 
-const TableSearch = ({ selectedCount }: { selectedCount: number }) => (
+
+
+interface TableSearchProps {
+  selectedCount: number;
+  handleSearchChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const TableSearch: React.FC<TableSearchProps> = ({ selectedCount, handleSearchChange }) => (
     <Box
       sx={{
         display: 'flex',
@@ -21,6 +29,7 @@ const TableSearch = ({ selectedCount }: { selectedCount: number }) => (
           placeholder="Search..."
           variant="outlined"
           size="small"
+          onChange={handleSearchChange}
           InputProps={{
             sx: {
               borderRadius: '8px',

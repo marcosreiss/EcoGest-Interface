@@ -41,10 +41,8 @@ export const getCustomerByIdService = async (id: number): Promise<Customer> => {
 };
 
 // Buscar cliente por nome
-export const getCustomerByNameService = async (name: string): Promise<CustomerListResponse> => {
-    const response = await api.get<CustomerListResponse>("/customers", {
-        params: { name },
-    });
+export const getCustomerByNameService = async (name: string): Promise<Customer[]> => {
+    const response = await api.get<Customer[]>(`/customers/search/by-name?name=${name}`);
     return response.data;
 };
 

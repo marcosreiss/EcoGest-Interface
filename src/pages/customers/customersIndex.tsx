@@ -1,17 +1,16 @@
 
 import * as React from 'react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 import Paper from '@mui/material/Paper';
 import { Box, Grid } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 
-import { useGetCustomersPaginaded } from 'src/hooks/useCustomer';
+import { useGetCustomerByName, useGetCustomersPaginaded } from 'src/hooks/useCustomer';
 
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { customerFieldLabels } from 'src/models/customers';
 
 import TableSearch from './components/tableSearch';
 import TableComponet from './components/tableComponent';
@@ -25,18 +24,45 @@ export default function Page() {
     const rowsPerPage = 5; 
     const [page, setPage] = useState(0);
 
+
+    const [debouncedSearchString, setDebouncedSearchString] = useState('');
+    const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
     const { data, isLoading } = useGetCustomersPaginaded(page * rowsPerPage, rowsPerPage);
-    const customers = data?.data;
-    
-    const filteredCustomers = customers?.map(({ customerId: id, name, contact }) => ({ id, name, contact })) || [];
     
     
     const totalItemsRef = React.useRef(0);
+
     // Define totalItems apenas na primeira chamada
     if (page === 0 && data?.meta?.totalItems && totalItemsRef.current === 0) {
         totalItemsRef.current = data.meta.totalItems;
     }
     const totalItems = totalItemsRef.current; // Use totalItemsRef.current onde necessário
+
+    const { data: searchResults, isLoading: isSearching } = useGetCustomerByName(debouncedSearchString);
+
+    console.log(searchResults);
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = event.target.value;
+        
+        // Limpa o timeout anterior para reiniciar o debounce
+        if (debounceTimeoutRef.current) {
+          clearTimeout(debounceTimeoutRef.current);
+        }
+    
+        // Se o valor tiver 3 ou mais caracteres, inicia o debounce
+        if (inputValue.length >= 3) {
+          debounceTimeoutRef.current = setTimeout(() => {
+            setDebouncedSearchString(inputValue); // Atualiza o valor com debounce
+          }, 500); // Atraso de 500ms antes de executar a busca
+        } else {
+          // Se o valor for menor que 3 caracteres, limpa a busca
+          setDebouncedSearchString('');
+        }
+      };
+
+      const customers = debouncedSearchString.length >= 3 ? searchResults : data?.data;
     
     return (
         <>
@@ -48,23 +74,13 @@ export default function Page() {
                 <Grid container>
                     <TableHeaderComponent title='Clientes' addButtonName='Cadastrar Client' addButtonPath='/customers/create' />
                     <Grid item xs={12}>
-                        <TableSearch selectedCount={0} />
-                        <TableContainer
-                            component={Paper}
-                            sx={{
-                                height: '65vh', 
-                                display: 'flex',
-                                flexDirection: 'column', 
-                            }}
-                        >
-                            <Box
-                                component="div"
-                                sx={{
-                                    flex: 1, 
-                                    overflow: 'auto',
-                                }}
-                            >
-                                <TableComponet tableName='customers' data={filteredCustomers || []} fieldLabels={customerFieldLabels} isLoading={isLoading} />
+
+                        <TableSearch selectedCount={0} handleSearchChange={handleSearchChange}  />
+
+                        <TableContainer component={Paper} sx={{height: '65vh', display: 'flex',flexDirection: 'column', }}>
+
+                            <Box component="div" sx={{flex: 1, overflow: 'auto',}}>
+                                <TableComponet isSearching={isSearching} customers={customers || []} isLoading={isLoading} />
                             </Box>
 
                             <TableFooterComponent setPage={setPage} page={page} rowsPerPage={rowsPerPage} totalItems={totalItems} />

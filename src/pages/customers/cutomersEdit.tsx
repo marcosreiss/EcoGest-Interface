@@ -263,8 +263,12 @@ export default function Page() {
                     color="primary"
                     fullWidth
                     onClick={() => handleSubmit(onSubmit)()}
+                    disabled={updateCustomer.isPending}
                   >
                     Atualizar
+                    {updateCustomer.isPending && (
+                      <CircularProgress size={20} sx={{marginLeft: "20px"}} />
+                    )}
                   </Button>
                 </Grid>
   

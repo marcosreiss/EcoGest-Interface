@@ -64,7 +64,7 @@ export const useGetCustomerById = (id: number) =>
   });
 
 export const useGetCustomerByName = (name: string) =>
-  useQuery<CustomerListResponse, AxiosError>({
+  useQuery<Customer[], AxiosError>({
     queryKey: ['customers-by-name', name],
     queryFn: () => getCustomerByNameService(name),
   });
