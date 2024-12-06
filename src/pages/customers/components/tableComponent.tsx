@@ -1,4 +1,4 @@
-import type  { Customer } from "src/models/customers";
+import type { Customer } from "src/models/customers";
 
 import React, { useState } from "react";
 
@@ -27,12 +27,20 @@ interface TableComponentProps {
   customers: Customer[];
   isLoading: boolean;
   isSearching: boolean;
+  setSelectedCustomers: React.Dispatch<React.SetStateAction<Customer[]>>;
 }
 
-const TableComponent: React.FC<TableComponentProps> = ({ customers, isLoading, isSearching }) => {
+const TableComponent: React.FC<TableComponentProps> = ({
+  customers,
+  isLoading,
+  isSearching,
+  setSelectedCustomers,
+}) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedItem, setSelectedItem] = useState<number | null>(null); // Armazena o customerId
+  const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const [selectedCustomerIds, setSelectedCustomerIds] = useState<number[]>([]);
 
   const navigate = useRouter();
   const deleteCustomer = useDeleteCustomer();
@@ -63,7 +71,7 @@ const TableComponent: React.FC<TableComponentProps> = ({ customers, isLoading, i
     deleteCustomer.mutate(customerId, {
       onSuccess: () => {
         notification.addNotification('Cliente deletado com sucesso', 'success');
-        setDeleteModalOpen(false); 
+        setDeleteModalOpen(false);
       },
       onError: () => {
         notification.addNotification('Erro ao deletar cliente, tente novamente mais tarde', 'error');
@@ -76,13 +84,40 @@ const TableComponent: React.FC<TableComponentProps> = ({ customers, isLoading, i
     setSelectedItem(customerId);
   };
 
+  // Seleciona ou deseleciona todos os clientes ao marcar o checkbox do header
+  const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      const allIds = customers.map((c) => c.customerId);
+      setSelectedCustomerIds(allIds);
+      setSelectedCustomers(customers);
+    } else {
+      setSelectedCustomerIds([]);
+      setSelectedCustomers([]);
+    }
+  };
+
+  // Seleciona ou deseleciona um cliente específico
+  const handleSelectCustomer = (event: React.ChangeEvent<HTMLInputElement>, customer: Customer) => {
+    if (event.target.checked) {
+      setSelectedCustomerIds((prev) => [...prev, customer.customerId]);
+      setSelectedCustomers((prev) => [...prev, customer]);
+    } else {
+      setSelectedCustomerIds((prev) => prev.filter((id) => id !== customer.customerId));
+      setSelectedCustomers((prev) => prev.filter((c) => c.customerId !== customer.customerId));
+    }
+  };
+
   return (
     <>
       <Table stickyHeader aria-label="customers table">
         <TableHead>
           <TableRow>
             <TableCell sx={{ width: "5%", minWidth: "50px" }}>
-              <Checkbox />
+              <Checkbox
+                checked={customers.length > 0 && selectedCustomerIds.length === customers.length}
+                indeterminate={selectedCustomerIds.length > 0 && selectedCustomerIds.length < customers.length}
+                onChange={handleSelectAll}
+              />
             </TableCell>
             <TableCell sx={{ width: "45%", minWidth: "150px" }}>Nome</TableCell>
             <TableCell sx={{ width: "45%", minWidth: "150px" }}>Contato</TableCell>
@@ -100,18 +135,15 @@ const TableComponent: React.FC<TableComponentProps> = ({ customers, isLoading, i
             customers.map((customer) => (
               <TableRow key={customer.customerId}>
                 <TableCell>
-                  <Checkbox />
+                  <Checkbox
+                    checked={selectedCustomerIds.includes(customer.customerId)}
+                    onChange={(e) => handleSelectCustomer(e, customer)}
+                  />
                 </TableCell>
+                <TableCell>{customer.name || "-"}</TableCell>
+                <TableCell>{customer.contact || "-"}</TableCell>
                 <TableCell>
-                  {customer.name || "-"}
-                </TableCell>
-                <TableCell>
-                  {customer.contact || "-"}
-                </TableCell>
-                <TableCell>
-                  <IconButton onClick={(event) => handleClick(event, customer.customerId)}>
-                    ︙
-                  </IconButton>
+                  <IconButton onClick={(event) => handleClick(event, customer.customerId)}>︙</IconButton>
                   <Menu
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl && selectedItem === customer.customerId)}

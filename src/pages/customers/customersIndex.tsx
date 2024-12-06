@@ -1,4 +1,6 @@
 
+import type { Customer } from 'src/models/customers';
+
 import * as React from 'react';
 import { useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -20,6 +22,8 @@ import TableFooterComponent from './components/tableFooterComponent';
 // ----------------------------------------------------------------------
 
 export default function Page() {
+
+    const [selectedCustomers, setSelectedCustomers] = useState<Customer[]>([]);
 
     const rowsPerPage = 5; 
     const [page, setPage] = useState(0);
@@ -73,12 +77,12 @@ export default function Page() {
                     <TableHeaderComponent title='Clientes' addButtonName='Cadastrar Client' addButtonPath='/customers/create' />
                     <Grid item xs={12}>
 
-                        <TableSearch selectedCount={0} handleSearchChange={handleSearchChange}  />
+                        <TableSearch selectedCustomers={selectedCustomers} handleSearchChange={handleSearchChange}  />
 
                         <TableContainer component={Paper} sx={{height: '65vh', display: 'flex',flexDirection: 'column', }}>
 
                             <Box component="div" sx={{flex: 1, overflow: 'auto',}}>
-                                <TableComponet isSearching={isSearching} customers={customers || []} isLoading={isLoading} />
+                                <TableComponet setSelectedCustomers={setSelectedCustomers} isSearching={isSearching} customers={customers || []} isLoading={isLoading} />
                             </Box>
 
                             <TableFooterComponent setPage={setPage} page={page} rowsPerPage={rowsPerPage} totalItems={totalItems} />
