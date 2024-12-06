@@ -21,9 +21,10 @@ type Props = CardProps & {
   title?: string;
   subheader?: string;
   list: PostItemProps[];
+  hr?: string;
 };
 
-export function AnalyticsNews({ title, subheader, list, ...other }: Props) {
+export function AnalyticsNews({ title, subheader, list, hr, ...other }: Props) {
   return (
     <Card {...other}>
       <CardHeader title={title} subheader={subheader} sx={{ mb: 1 }} />
@@ -41,6 +42,7 @@ export function AnalyticsNews({ title, subheader, list, ...other }: Props) {
           size="small"
           color="inherit"
           endIcon={<Iconify icon="eva:arrow-ios-forward-fill" width={18} sx={{ ml: -0.5 }} />}
+          href={hr}
         >
           Ver todas
         </Button>
@@ -65,23 +67,23 @@ function PostItem({ sx, item, ...other }: BoxProps & { item: Props['list'][numbe
       }}
       {...other}
     >
-      <Avatar
+      {/* <Avatar
         variant="rounded"
         alt={item.title}
         src={item.coverUrl}
         sx={{ width: 48, height: 48, flexShrink: 0 }}
-      />
+      /> */}
 
-      <ListItemText
+      {/* <ListItemText
         primary={item.title}
         secondary={item.description}
         primaryTypographyProps={{ noWrap: true, typography: 'subtitle2' }}
         secondaryTypographyProps={{ mt: 0.5, noWrap: true, component: 'span' }}
-      />
+      /> */}
 
-      <Box sx={{ flexShrink: 0, color: 'text.disabled', typography: 'caption' }}>
+      {/* <Box sx={{ flexShrink: 0, color: 'text.disabled', typography: 'caption' }}>
         {fToNow(item.postedAt)}
-      </Box>
+      </Box> */}
     </Box>
   );
 }

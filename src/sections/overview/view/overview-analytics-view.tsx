@@ -8,7 +8,6 @@ import { AnalyticsNews } from '../analytics-news';
 import { AnalyticsOrderTimeline } from '../analytics-order-timeline';
 import { AnalyticsWidgetSummary } from '../analytics-widget-summary';
 
-
 // ----------------------------------------------------------------------
 
 export function OverviewAnalyticsView() {
@@ -41,7 +40,7 @@ export function OverviewAnalyticsView() {
         
 
         <Grid xs={12} md={6} lg={8}>
-          <AnalyticsNews title="Vendas em processo" list={_posts.slice(0, 5)} />
+          <AnalyticsNews title="Vendas em processo" list={_posts.slice(0, 0)} hr='/sales' />
         </Grid>
 
         <Grid xs={12} md={6} lg={4}>
@@ -49,7 +48,7 @@ export function OverviewAnalyticsView() {
         </Grid>
 
         <Grid xs={12} md={6} lg={8}>
-          <AnalyticsNews title="Compras em processo" list={_posts.slice(0, 5)} />
+          <AnalyticsNews title="Compras em processo" list={_posts.slice(0, 0)} hr='/purchases' />
         </Grid>
 
       </Grid>
