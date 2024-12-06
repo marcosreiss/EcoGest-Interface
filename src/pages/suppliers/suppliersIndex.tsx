@@ -1,5 +1,4 @@
-
-import type { Customer } from 'src/models/customers';
+import type { Supplier } from 'src/models/supplier';
 
 import * as React from 'react';
 import { useRef, useState } from 'react';
@@ -9,22 +8,22 @@ import Paper from '@mui/material/Paper';
 import { Box, Grid } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 
-import { useDeleteCustomer, useGetCustomerByName, useGetCustomersPaginaded } from 'src/hooks/useCustomer';
+import { useDeleteSupplier, useGetSupplierByName, useGetSuppliersPaginated } from 'src/hooks/useSupplier';
 
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useNotification } from 'src/context/NotificationContext';
 
 import TableSearch from '../../layouts/components/tableSearch';
-import TableComponet from './components/customerTableComponent';
+import SupplierTableComponent from './components/supplierTableComponent';
 import TableHeaderComponent from '../../layouts/components/tableHeaderComponent';
 import TableFooterComponent from '../../layouts/components/tableFooterComponent';
 
 // ----------------------------------------------------------------------
 
-export default function CustomersIndex() {
+export default function SuppliersIndex() {
 
-    const [selectedCustomers, setSelectedCustomers] = useState<Customer[]>([]);
+    const [selectedSuppliers, setSelectedSuppliers] = useState<Supplier[]>([]);
 
     const rowsPerPage = 5;
     const [page, setPage] = useState(0);
@@ -33,74 +32,70 @@ export default function CustomersIndex() {
     const [debouncedSearchString, setDebouncedSearchString] = useState('');
     const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const { data, isLoading } = useGetCustomersPaginaded(page * rowsPerPage, rowsPerPage);
+    const { data, isLoading } = useGetSuppliersPaginated(page * rowsPerPage, rowsPerPage);
 
 
     const totalItemsRef = React.useRef(0);
 
-    // Define totalItems apenas na primeira chamada
     if (page === 0 && data?.meta?.totalItems && totalItemsRef.current === 0) {
         totalItemsRef.current = data.meta.totalItems;
     }
-    const totalItems = totalItemsRef.current; // Use totalItemsRef.current onde necessário
+    const totalItems = totalItemsRef.current;
 
-    const { data: searchResults, isLoading: isSearching } = useGetCustomerByName(debouncedSearchString);
+    const { data: searchResults, isLoading: isSearching } = useGetSupplierByName(debouncedSearchString);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value;
 
-        // Limpa o timeout anterior para reiniciar o debounce
         if (debounceTimeoutRef.current) {
             clearTimeout(debounceTimeoutRef.current);
         }
 
-        // Se o valor tiver 3 ou mais caracteres, inicia o debounce
         if (inputValue.length >= 3) {
             debounceTimeoutRef.current = setTimeout(() => {
-                setDebouncedSearchString(inputValue); // Atualiza o valor com debounce
-            }, 500); // Atraso de 500ms antes de executar a busca
+                setDebouncedSearchString(inputValue);
+            }, 500);
         } else {
-            // Se o valor for menor que 3 caracteres, limpa a busca
             setDebouncedSearchString('');
         }
     };
 
-    const deleteCustomer = useDeleteCustomer();
+    const deleteSupplier = useDeleteSupplier();
     const notification = useNotification();
 
-    const handleDeleteCustomer = () => {
-        selectedCustomers.forEach((customer) => {
-            deleteCustomer.mutate(customer.customerId, {
+    const handleDeleteSupplier = () => {
+        selectedSuppliers.forEach((supplier) => {
+            deleteSupplier.mutate(supplier.supplierId, {
                 onSuccess: () => {
-                    notification.addNotification('Clientes deletado com sucesso', 'success');
-                    setSelectedCustomers([]);
+                    notification.addNotification('Fornecedor deletado com sucesso', 'success');
+                    setSelectedSuppliers([]);
                 },
                 onError: () => {
-                    notification.addNotification('Erro ao deletar cliente, tente novamente mais tarde', 'error');
+                    notification.addNotification('Erro ao deletar fornecedor, tente novamente mais tarde', 'error');
                 },
             });
         });
     };
 
-    const customers = debouncedSearchString.length >= 3 ? searchResults : data?.data;
+    const suppliers = debouncedSearchString.length >= 3 ? searchResults : data?.data;
 
     return (
         <>
             <Helmet>
-                <title>{`Clientes - ${CONFIG.appName}`}</title>
+                <title>{`Fornecedores - ${CONFIG.appName}`}</title>
             </Helmet>
 
             <DashboardContent maxWidth="md">
                 <Grid container>
-                    <TableHeaderComponent title='Clientes' addButtonName='Cadastrar Client' addButtonPath='/customers/create' />
+                    <TableHeaderComponent title='Fornecedores' addButtonName='Cadastrar Fornecedor' addButtonPath='/suppliers/create' />
                     <Grid item xs={12}>
 
-                        <TableSearch handleDelete={handleDeleteCustomer} selectedRows={selectedCustomers} handleSearchChange={handleSearchChange} isSearchDisabled={false} />
+                        <TableSearch handleDelete={handleDeleteSupplier} selectedRows={selectedSuppliers} handleSearchChange={handleSearchChange} isSearchDisabled={false} />
 
                         <TableContainer component={Paper} sx={{ height: '65vh', display: 'flex', flexDirection: 'column', }}>
 
                             <Box component="div" sx={{ flex: 1, overflow: 'auto', }}>
-                                <TableComponet setSelectedCustomers={setSelectedCustomers} isSearching={isSearching} customers={customers || []} isLoading={isLoading} />
+                                <SupplierTableComponent setSelectedSuppliers={setSelectedSuppliers} isSearching={isSearching} suppliers={suppliers || []} isLoading={isLoading} />
                             </Box>
 
                             <TableFooterComponent setPage={setPage} page={page} rowsPerPage={rowsPerPage} totalItems={totalItems} />

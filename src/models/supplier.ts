@@ -1,5 +1,5 @@
 export interface Supplier {
-    id: number;
+    supplierId: number;
     name: string;
     cpf?: string | null;
     cnpj?: string | null;
@@ -9,6 +9,7 @@ export interface Supplier {
 
 export interface SupplierListResponse {
     data: Supplier[];
+    meta: any;
 }
 
 export interface SupplierResponse {

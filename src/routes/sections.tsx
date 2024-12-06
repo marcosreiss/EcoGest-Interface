@@ -16,7 +16,6 @@ export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const SalesPage = lazy(() => import('src/pages/sales/sales'));
-export const SuppliersPage = lazy(() => import('src/pages/suppliers/suppliers'));
 export const PurchasesPage = lazy(() => import('src/pages/purchases/purchases'));
 export const ExpensesPage = lazy(() => import('src/pages/expenses/expenses'));
 export const EmployeesPage = lazy(() => import('src/pages/employees/employees'));
@@ -31,9 +30,17 @@ export const CustomersEditPage = lazy(() => import('src/pages/customers/editCust
 
 // ---------- Product Components
 export const ProductsPage = lazy(() => import('src/pages/products/productsIndex'));
-export const CreateProduct = lazy(()=> import('src/pages/products/createProduct'));
-export const EditProduct = lazy(()=> import('src/pages/products/editProduct'));
-export const ProductDetails = lazy(()=> import('src/pages/products/productDetails'));
+export const CreateProduct = lazy(() => import('src/pages/products/createProduct'));
+export const EditProduct = lazy(() => import('src/pages/products/editProduct'));
+export const ProductDetails = lazy(() => import('src/pages/products/productDetails'));
+
+// ---------- Supplier Components
+export const SuppliersPage = lazy(() => import('src/pages/suppliers/suppliersIndex'));
+export const CreateSupplier = lazy(() => import('src/pages/suppliers/createSupplier'));
+export const EditSupplier = lazy(() => import('src/pages/suppliers/editSupplier'));
+export const SupplierDetails = lazy(() => import('src/pages/suppliers/suppliersDetails'));
+
+
 
 
 // ----------------------------------------------------------------------
@@ -66,7 +73,6 @@ export function PrivateRouter() {
         { path: 'user', element: <UserPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'sales', element: <SalesPage /> },
-        { path: 'suppliers', element: <SuppliersPage /> },
         { path: 'purchases', element: <PurchasesPage /> },
         { path: 'expenses', element: <ExpensesPage /> },
         { path: 'employees', element: <EmployeesPage /> },
@@ -82,6 +88,12 @@ export function PrivateRouter() {
         { path: 'products/create', element: <CreateProduct /> },
         { path: 'products/edit/:id', element: <EditProduct /> },
         { path: 'products/details/:id', element: <ProductDetails /> },
+
+        { path: 'suppliers', element: <SuppliersPage /> },
+        { path: 'suppliers/create', element: <CreateSupplier /> },
+        { path: 'suppliers/edit/:id', element: <EditSupplier /> },
+        { path: 'suppliers/details/:id', element: <SupplierDetails /> },
+
 
 
       ],
