@@ -3,7 +3,8 @@ import type {
     Supplier,
     SupplierResponse,
     SupplierListResponse,
-    CreateSupplierPayload
+    CreateSupplierPayload,
+    SuppliersBasicInfoList
 } from "src/models/supplier";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -15,6 +16,7 @@ import {
     getSupplierByIdService,
     getSupplierByNameService,
     getSuppliersPaginatedService,
+    getSuppliersBasicInfoService,
 } from "src/services/supplierService";
 
 export const useGetSuppliersPaginated = (skip: number, take: number) =>
@@ -76,3 +78,13 @@ export const useGetSupplierByName = (name: string) =>
         queryFn: () => getSupplierByNameService(name),
         enabled: name.length >= 3
     });
+
+
+//---------------------------------------------
+
+export const useGetSuppliersBasicInfo = () => 
+    useQuery<SuppliersBasicInfoList, AxiosError>({
+      queryKey: ['suppliers-basic-info'],
+      queryFn: () => getSuppliersBasicInfoService(),
+    });
+  

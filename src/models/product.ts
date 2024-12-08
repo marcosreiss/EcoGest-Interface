@@ -19,3 +19,12 @@ export interface CreateProductPayload{
     weightAmount: number;
     price: number;
 }
+
+export interface ProductBasicInfo{
+    productId: number;
+    name: string;
+}
+
+export interface ProductBasicInfoList{
+    data: ProductBasicInfo[];
+}

@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Product, ProductResponse, ProductListResponse, CreateProductPayload } from "src/models/product";
+import type { Product, ProductResponse, ProductListResponse, CreateProductPayload, ProductBasicInfoList } from "src/models/product";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -9,6 +9,7 @@ import {
   deleteProductService,
   getProductByIdService,
   getProductsPaginatedService,
+  getProductsBasicInfoService,
 } from "src/services/productService";  // Ajuste o path se necessário
 
 export const useGetProductsPaginated = (skip: number, take: number) =>
@@ -63,3 +64,12 @@ export const useGetProductById = (id: number) =>
     queryKey: ['product', id],
     queryFn: () => getProductByIdService(id),
   });
+
+  //---------------------------------------------
+
+  export const useGetProductsBasicInfo = () => 
+    useQuery<ProductBasicInfoList, AxiosError>({
+      queryKey: ['products-basic-info'],
+      queryFn: () => getProductsBasicInfoService(),
+    });
+  

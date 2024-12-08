@@ -23,3 +23,12 @@ export interface CreateSupplierPayload{
     address?: string | null;
     contact?: string | null;
 }
+
+export interface SupplierBasicInfo{
+    supplierId: number;
+    name: string;
+}
+
+export interface SuppliersBasicInfoList{
+    data: SupplierBasicInfo[];
+}

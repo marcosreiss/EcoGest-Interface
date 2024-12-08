@@ -16,7 +16,6 @@ export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const SalesPage = lazy(() => import('src/pages/sales/sales'));
-export const PurchasesPage = lazy(() => import('src/pages/purchases/purchases'));
 export const ExpensesPage = lazy(() => import('src/pages/expenses/expenses'));
 export const EmployeesPage = lazy(() => import('src/pages/employees/employees'));
 export const ReceiptsPage = lazy(() => import('src/pages/receipts/receipts'));
@@ -40,6 +39,11 @@ export const CreateSupplier = lazy(() => import('src/pages/suppliers/createSuppl
 export const EditSupplier = lazy(() => import('src/pages/suppliers/editSupplier'));
 export const SupplierDetails = lazy(() => import('src/pages/suppliers/suppliersDetails'));
 
+// ---------- Purchases Components
+// export const PurchasesPage = lazy(() => import('src/pages/purchases/purchasesIndex'));
+export const CreatePurchase = lazy(() => import('src/pages/purchases/createPurchase'));
+// export const EditPurchase = lazy(() => import('src/pages/purchases/editPurchase'));
+// export const PurchaseDetails = lazy(() => import('src/pages/purchases/purchaseDetails'));
 
 
 
@@ -73,7 +77,6 @@ export function PrivateRouter() {
         { path: 'user', element: <UserPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'sales', element: <SalesPage /> },
-        { path: 'purchases', element: <PurchasesPage /> },
         { path: 'expenses', element: <ExpensesPage /> },
         { path: 'employees', element: <EmployeesPage /> },
         { path: 'receipts', element: <ReceiptsPage /> },
@@ -94,7 +97,10 @@ export function PrivateRouter() {
         { path: 'suppliers/edit/:id', element: <EditSupplier /> },
         { path: 'suppliers/details/:id', element: <SupplierDetails /> },
 
-
+        // { path: 'purchases', element: <PurchasesPage /> },
+        { path: 'purchases/create', element: <CreatePurchase /> },
+        // { path: 'purchases/edit/:id', element: <EditPurchase /> },
+        // { path: 'purchases/details/:id', element: <PurchaseDetails /> },        
 
       ],
     },
@@ -219,6 +225,8 @@ export function PublicRouter() {
     },
     { path: 'customers/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'customers/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+
+    { path: 'purchases/create', element: <AuthLayout><SignInPage /></AuthLayout> },
 
     {
       path: '404',

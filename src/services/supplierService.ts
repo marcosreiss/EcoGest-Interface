@@ -2,7 +2,8 @@ import type {
     Supplier,
     SupplierResponse,
     SupplierListResponse,
-    CreateSupplierPayload
+    CreateSupplierPayload,
+    SuppliersBasicInfoList
 } from "src/models/supplier";
 
 import api from "./api";
@@ -37,5 +38,13 @@ export const getSupplierByIdService = async (id: number): Promise<Supplier> => {
 // Buscar fornecedor por nome
 export const getSupplierByNameService = async (name: string): Promise<Supplier[]> => {
     const response = await api.get<Supplier[]>(`/suppliers/search/by-name?name=${name}`);
+    return response.data;
+};
+
+
+//--------------------------
+
+export const getSuppliersBasicInfoService = async (): Promise<SuppliersBasicInfoList> => {
+    const response = await api.get<SuppliersBasicInfoList>("/suppliers/basic-info");
     return response.data;
 };
