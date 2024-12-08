@@ -61,13 +61,7 @@ function Item({ item, lastItem, ...other }: ItemProps) {
     <TimelineItem {...other}>
       <TimelineSeparator>
         <TimelineDot
-          color={
-            (item.type === 'order1' && 'primary') ||
-            (item.type === 'order2' && 'success') ||
-            (item.type === 'order3' && 'info') ||
-            (item.type === 'order4' && 'warning') ||
-            'error'
-          }
+          color='error'    
         />
         {lastItem ? null : <TimelineConnector />}
       </TimelineSeparator>
