@@ -1,8 +1,9 @@
 import type { CreatePurchasePayload } from "src/models/purchase";
 
-import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
+import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 
 import {
     Box,
@@ -14,24 +15,26 @@ import {
     Typography,
     InputLabel,
     FormControl,
-    OutlinedInput,
     CircularProgress,
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
 
-import { useCreatePurchase } from "src/hooks/usePurchase";
 import { useGetProductsBasicInfo } from "src/hooks/useProduct";
 import { useGetSuppliersBasicInfo } from "src/hooks/useSupplier";
+import { useUpdatePurchase, useGetPurchaseById } from "src/hooks/usePurchase";
 
 import { CONFIG } from "src/config-global";
-import { PurchaseStatus } from 'src/models/purchase';
+import { PurchaseStatus } from "src/models/purchase";
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
 
 // ----------------------------------------------------------------------
 
-export default function CreatePurchasePage() {
+export default function EditPurchasePage() {
+    const { id } = useParams<{ id: string }>();
+    const purchaseId = Number(id);
+
     const formStyle = {
         mx: "auto",
         p: 3,
@@ -42,10 +45,11 @@ export default function CreatePurchasePage() {
 
     const [file, setFile] = useState<Blob | null>(null);
 
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<CreatePurchasePayload>();
-    const createPurchase = useCreatePurchase();
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm<CreatePurchasePayload>();
+    const { data: purchase, isLoading: loadingPurchase } = useGetPurchaseById(purchaseId);
     const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
     const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
+    const updatePurchase = useUpdatePurchase();
     const router = useRouter();
     const { addNotification } = useNotification();
 
@@ -58,28 +62,53 @@ export default function CreatePurchasePage() {
         }
     };
 
+    useEffect(() => {
+        if (purchase) {
+            setValue("supplierId", purchase.supplierId);
+            setValue("productId", purchase.productId);
+            setValue("weightAmount", purchase.product?.weightAmount || 0);
+            setValue("price", purchase.product?.price || 0);
+            setValue("status", purchase.status);
+            setValue("description", purchase.description || "");
+            setValue("purchaseDate", purchase.purchaseDate);
+        }
+    }, [purchase, setValue]);
+
     const onSubmit = (data: CreatePurchasePayload) => {
         const payload: CreatePurchasePayload = {
             ...data,
             paymentSlip: file,
         };
-        console.log(payload);
 
-        createPurchase.mutate(payload, {
-            onSuccess: () => {
-                addNotification("Compra criada com sucesso!", "success");
-                router.push("/purchases");
-            },
-            onError: (error) => {
-                addNotification(`Erro ao criar compra: ${error.message}`, "error");
-            },
-        });
+        updatePurchase.mutate(
+            { id: purchaseId, data: payload },
+            {
+                onSuccess: () => {
+                    addNotification("Compra atualizada com sucesso!", "success");
+                    router.push("/purchases");
+                },
+                onError: (error) => {
+                    addNotification(`Erro ao atualizar compra: ${error.message}`, "error");
+                },
+            }
+        );
     };
+
+    if (loadingPurchase) {
+        return (
+            <DashboardContent>
+                <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                    <CircularProgress />
+                </Box>
+            </DashboardContent>
+        );
+    }
+    console.log(purchase?.purchaseDate);
 
     return (
         <>
             <Helmet>
-                <title>{`Criar Compra - ${CONFIG.appName}`}</title>
+                <title>{`Editar Compra - ${CONFIG.appName}`}</title>
             </Helmet>
 
             <DashboardContent maxWidth="md">
@@ -89,7 +118,7 @@ export default function CreatePurchasePage() {
                             <Grid container spacing={2}>
                                 <Grid item xs={6}>
                                     <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
-                                        Criar Compra
+                                        Editar Compra
                                     </Typography>
                                 </Grid>
 
@@ -100,7 +129,7 @@ export default function CreatePurchasePage() {
                                         <Select
                                             labelId="supplier-label"
                                             label="Fornecedor"
-                                            defaultValue=""
+                                            defaultValue={purchase?.supplierId}
                                             {...register("supplierId", { required: "Selecione um fornecedor." })}
                                         >
                                             {loadingSuppliers ? (
@@ -127,11 +156,11 @@ export default function CreatePurchasePage() {
                                 {/* Produto */}
                                 <Grid item xs={12}>
                                     <FormControl fullWidth>
-                                        <InputLabel id="product-label" >Produto</InputLabel>
+                                        <InputLabel id="product-label">Produto</InputLabel>
                                         <Select
                                             labelId="product-label"
                                             label="Produto"
-                                            defaultValue=""
+                                            defaultValue={purchase?.productId}
                                             {...register("productId", { required: "Selecione um produto." })}
                                         >
                                             {loadingProducts ? (
@@ -153,13 +182,14 @@ export default function CreatePurchasePage() {
                                         )}
                                     </FormControl>
                                 </Grid>
+
+                                {/* Quantidade e Preço */}
                                 <Grid item xs={12}>
                                     <TextField
                                         fullWidth
                                         label="Quantidade (Kg)"
-                                        placeholder="Digite a quantidade em Kg"
                                         type="number"
-                                        {...register("weightAmount", { required: "A quantidade é obrigatória.", min: 0 })}
+                                        {...register("weightAmount", { required: "Digite a quantidade.", min: 0 })}
                                         error={!!errors.weightAmount}
                                         helperText={errors.weightAmount?.message}
                                     />
@@ -169,19 +199,18 @@ export default function CreatePurchasePage() {
                                     <TextField
                                         fullWidth
                                         label="Preço (R$)"
-                                        placeholder="Digite o preço"
                                         type="number"
-                                        {...register("price", { required: "O preço é obrigatório.", min: 0 })}
+                                        {...register("price", { required: "Digite o preço.", min: 0 })}
                                         error={!!errors.price}
                                         helperText={errors.price?.message}
                                     />
                                 </Grid>
+
                                 {/* Status */}
                                 <Grid item xs={12}>
                                     <FormControl fullWidth>
                                         <InputLabel>Status</InputLabel>
                                         <Select
-                                            input={<OutlinedInput />}
                                             defaultValue=""
                                             {...register("status", { required: "Selecione um status." })}
                                         >
@@ -208,7 +237,6 @@ export default function CreatePurchasePage() {
                                     <TextField
                                         fullWidth
                                         label="Descrição"
-                                        placeholder="Descrição da compra"
                                         multiline
                                         rows={4}
                                         {...register("description")}
@@ -222,7 +250,7 @@ export default function CreatePurchasePage() {
                                         label="Data da Compra"
                                         type="date"
                                         InputLabelProps={{ shrink: true }}
-                                        {...register("purchaseDate", { required: "Selecione uma data de compra." })}
+                                        {...register("purchaseDate", { required: "Selecione uma data." })}
                                         error={!!errors.purchaseDate}
                                         helperText={errors.purchaseDate?.message}
                                     />
@@ -243,6 +271,27 @@ export default function CreatePurchasePage() {
                                         <Typography variant="body2">Arquivo: {file.name}</Typography>
                                     )}
 
+                                    {purchase?.paymentSlip && (
+                                        <Grid item xs={12} sx={{ mt: 2 }}>
+                                            <Button
+                                                variant="outlined"
+                                                fullWidth
+                                                onClick={() => {
+                                                    if (purchase?.paymentSlip?.data) {
+                                                        const blob = new Blob([Uint8Array.from(purchase?.paymentSlip.data)], {
+                                                            type: "application/pdf", // Altere o tipo, se necessário
+                                                        });
+                                                        const blobUrl = URL.createObjectURL(blob);
+                                                        window.open(blobUrl, "_blank");
+                                                    }
+                                                }}
+                                            >
+                                                Exibir Arquivo Atual
+                                            </Button>
+                                        </Grid>
+                                    )}
+
+
                                 </Grid>
 
                                 {/* Botão de Enviar */}
@@ -253,10 +302,10 @@ export default function CreatePurchasePage() {
                                         color="primary"
                                         fullWidth
                                         onClick={handleSubmit(onSubmit)}
-                                        disabled={createPurchase.isPending}
+                                        disabled={updatePurchase.isPending}
                                     >
-                                        Enviar
-                                        {createPurchase.isPending && (
+                                        Atualizar
+                                        {updatePurchase.isPending && (
                                             <CircularProgress size={20} sx={{ marginLeft: "20px" }} />
                                         )}
                                     </Button>

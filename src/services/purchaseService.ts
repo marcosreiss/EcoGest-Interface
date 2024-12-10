@@ -43,7 +43,7 @@ export const updatePurchaseService = async (id: number, payload: CreatePurchaseP
         formData.append("paymentSlip", payload.paymentSlip);
     }
 
-    const response = await api.put<PurchaseResponse>(`/purchases/${id}`, payload, {
+    const response = await api.put<PurchaseResponse>(`/purchases?id=${id}`, payload, {
         headers: {
             "Content-Type": "multipart/form-data",
         },
@@ -60,7 +60,7 @@ export const deletePurchaseService = async (id: number): Promise<void> => {
 
 // Buscar compra por ID
 export const getPurchaseByIdService = async (id: number): Promise<Purchase> => {
-    const response = await api.get<Purchase>(`/purchases/${id}`);
+    const response = await api.get<Purchase>(`/purchases/search/by-id?id=${id}`);
     return response.data;
 };
 

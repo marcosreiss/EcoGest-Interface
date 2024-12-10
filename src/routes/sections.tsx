@@ -42,7 +42,7 @@ export const SupplierDetails = lazy(() => import('src/pages/suppliers/suppliersD
 // ---------- Purchases Components
 // export const PurchasesPage = lazy(() => import('src/pages/purchases/purchasesIndex'));
 export const CreatePurchase = lazy(() => import('src/pages/purchases/createPurchase'));
-// export const EditPurchase = lazy(() => import('src/pages/purchases/editPurchase'));
+export const EditPurchase = lazy(() => import('src/pages/purchases/editPurchase'));
 // export const PurchaseDetails = lazy(() => import('src/pages/purchases/purchaseDetails'));
 
 
@@ -99,7 +99,7 @@ export function PrivateRouter() {
 
         // { path: 'purchases', element: <PurchasesPage /> },
         { path: 'purchases/create', element: <CreatePurchase /> },
-        // { path: 'purchases/edit/:id', element: <EditPurchase /> },
+        { path: 'purchases/edit/:id', element: <EditPurchase /> },
         // { path: 'purchases/details/:id', element: <PurchaseDetails /> },        
 
       ],
@@ -227,6 +227,7 @@ export function PublicRouter() {
     { path: 'customers/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
 
     { path: 'purchases/create', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'purchases/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
 
     {
       path: '404',
