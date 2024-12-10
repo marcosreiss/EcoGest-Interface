@@ -14,7 +14,7 @@ export interface Purchase {
     productId: number;
     product: Product | null;
     description?: string | null;
-    purchaseDate: Date;
+    date_time: Date;
     paymentSlip: { data: number[] } | null;
     status: PurchaseStatus;
     weightAmount: number; // Novo atributo
@@ -25,7 +25,7 @@ export interface CreatePurchasePayload {
     supplierId: number;
     productId: number;
     description?: string | null;
-    purchaseDate: Date;
+    date_time: Date;
     status: PurchaseStatus;
     paymentSlip: Blob | null;
     weightAmount: number; // Novo atributo

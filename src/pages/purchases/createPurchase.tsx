@@ -222,9 +222,9 @@ export default function CreatePurchasePage() {
                                         label="Data da Compra"
                                         type="date"
                                         InputLabelProps={{ shrink: true }}
-                                        {...register("purchaseDate", { required: "Selecione uma data de compra." })}
-                                        error={!!errors.purchaseDate}
-                                        helperText={errors.purchaseDate?.message}
+                                        {...register("date_time", { required: "Selecione uma data de compra." })}
+                                        error={!!errors.date_time}
+                                        helperText={errors.date_time?.message}
                                     />
                                 </Grid>
 

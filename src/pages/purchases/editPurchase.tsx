@@ -70,7 +70,7 @@ export default function EditPurchasePage() {
             setValue("price", purchase.product?.price || 0);
             setValue("status", purchase.status);
             setValue("description", purchase.description || "");
-            setValue("purchaseDate", purchase.purchaseDate);
+            setValue("date_time", purchase.date_time);
         }
     }, [purchase, setValue]);
 
@@ -103,7 +103,6 @@ export default function EditPurchasePage() {
             </DashboardContent>
         );
     }
-    console.log(purchase?.purchaseDate);
 
     return (
         <>
@@ -249,10 +248,11 @@ export default function EditPurchasePage() {
                                         fullWidth
                                         label="Data da Compra"
                                         type="date"
+                                        value={purchase?.date_time ? new Date(purchase.date_time).toISOString().split('T')[0] : ''}
                                         InputLabelProps={{ shrink: true }}
-                                        {...register("purchaseDate", { required: "Selecione uma data." })}
-                                        error={!!errors.purchaseDate}
-                                        helperText={errors.purchaseDate?.message}
+                                        {...register("date_time", { required: "Selecione uma data." })}
+                                        error={!!errors.date_time}
+                                        helperText={errors.date_time?.message}
                                     />
                                 </Grid>
 
