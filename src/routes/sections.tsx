@@ -40,10 +40,10 @@ export const EditSupplier = lazy(() => import('src/pages/suppliers/editSupplier'
 export const SupplierDetails = lazy(() => import('src/pages/suppliers/suppliersDetails'));
 
 // ---------- Purchases Components
-// export const PurchasesPage = lazy(() => import('src/pages/purchases/purchasesIndex'));
+export const PurchasesPage = lazy(() => import('src/pages/purchases/purchasesIndex'));
 export const CreatePurchase = lazy(() => import('src/pages/purchases/createPurchase'));
 export const EditPurchase = lazy(() => import('src/pages/purchases/editPurchase'));
-// export const PurchaseDetails = lazy(() => import('src/pages/purchases/purchaseDetails'));
+export const PurchaseDetails = lazy(() => import('src/pages/purchases/purchaseDetails'));
 
 
 
@@ -97,145 +97,46 @@ export function PrivateRouter() {
         { path: 'suppliers/edit/:id', element: <EditSupplier /> },
         { path: 'suppliers/details/:id', element: <SupplierDetails /> },
 
-        // { path: 'purchases', element: <PurchasesPage /> },
+        { path: 'purchases', element: <PurchasesPage /> },
         { path: 'purchases/create', element: <CreatePurchase /> },
         { path: 'purchases/edit/:id', element: <EditPurchase /> },
-        // { path: 'purchases/details/:id', element: <PurchaseDetails /> },        
+        { path: 'purchases/details/:id', element: <PurchaseDetails /> },
 
       ],
     },
-    {
-      path: '404',
-      element: <Page404 />,
-    },
-    {
-      path: '*',
-      element: <Navigate to="/404" replace />,
-    },
+    { path: '404', element: <Page404 />, },
+    { path: '*', element: <Navigate to="/404" replace />, },
   ]);
 }
 
 export function PublicRouter() {
   return useRoutes([
-    {
-      element: (
-        <AuthLayout>
-          <SignInPage />
-        </AuthLayout>
-      ),
-      index: true
-    },
-
-    {
-      path: 'user',
-      element: (
-        <AuthLayout>
-          <SignInPage />
-        </AuthLayout>
-      ),
-    },
-    {
-      path: 'products',
-      element: (
-        <AuthLayout>
-          <SignInPage />
-        </AuthLayout>
-      ),
-    },
-    {
-      path: 'blog',
-      element: (
-        <AuthLayout>
-          <SignInPage />
-        </AuthLayout>
-      ),
-    },
-    {
-      path: 'sales',
-      element: (
-        <AuthLayout>
-          <SignInPage />
-        </AuthLayout>
-      ),
-    },
-    {
-      path: 'suppliers',
-      element: (
-        <AuthLayout>
-          <SignInPage />
-        </AuthLayout>
-      ),
-    },
-    {
-      path: 'purchases',
-      element: (
-        <AuthLayout>
-          <SignInPage />
-        </AuthLayout>
-      ),
-    },
-    {
-      path: 'expenses',
-      element: (
-        <AuthLayout>
-          <SignInPage />
-        </AuthLayout>
-      ),
-    },
-    {
-      path: 'employees',
-      element: (
-        <AuthLayout>
-          <SignInPage />
-        </AuthLayout>
-      ),
-    },
-    {
-      path: 'receipts',
-      element: (
-        <AuthLayout>
-          <SignInPage />
-        </AuthLayout>
-      ),
-    },
-    {
-      path: 'admin',
-      element: (
-        <AuthLayout>
-          <SignInPage />
-        </AuthLayout>
-      ),
-    },
-
-    {
-      path: 'customers',
-      element: (
-        <AuthLayout>
-          <SignInPage />
-        </AuthLayout>
-      ),
-    },
-    {
-      path: 'customers/create',
-      element: (
-        <AuthLayout>
-          <SignInPage />
-        </AuthLayout>
-      ),
-    },
+    { element: <AuthLayout><SignInPage /></AuthLayout>, index: true },
+    { path: 'user', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'products', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'products/create', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'products/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'products/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'blog', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'sales', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'suppliers', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'suppliers/create', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'suppliers/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'suppliers/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'purchases', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'purchases/create', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'purchases/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'purchases/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'expenses', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'employees', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'receipts', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'admin', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'customers', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'customers/create', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'customers/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'customers/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
 
-    { path: 'purchases/create', element: <AuthLayout><SignInPage /></AuthLayout> },
-    { path: 'purchases/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
-
-    {
-      path: '404',
-      element: <Page404 />,
-    },
-    {
-      path: '*',
-      element: <Navigate to="/404" replace />,
-    },
+    { path: '404', element: <Page404 />, },
+    { path: '*', element: <Navigate to="/404" replace />, },
   ])
 }
