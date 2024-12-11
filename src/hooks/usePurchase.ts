@@ -17,6 +17,8 @@ import {
     deletePurchaseService,
     getPurchaseByIdService,
     getPurchasesPaginatedService,
+    getPurchasesByProductService,
+    getPurchasesBySupplierService,
     searchPurchasesByPeriodService,
     getTotalPurchasesInPeriodService,
 } from "src/services/purchaseService";
@@ -86,4 +88,20 @@ export const useGetTotalPurchasesInPeriod = () =>
 export const useSearchPurchasesByPeriod = () =>
     useMutation<PurchaseListResponse, AxiosError, SearchByPeriodRequest>({
         mutationFn: (payload) => searchPurchasesByPeriodService(payload),
+    });
+
+// Hook para buscar compras por fornecedor
+export const useGetPurchasesBySupplier = (supplierId: number) =>
+    useQuery<PurchaseListResponse, AxiosError>({
+        queryKey: ["purchases-by-supplier", supplierId],
+        queryFn: () => getPurchasesBySupplierService(supplierId),
+        enabled: !!supplierId, // Evita chamadas desnecessárias se supplierId for inválido
+    });
+
+// Hook para buscar compras por produto
+export const useGetPurchasesByProduct = (productId: number) =>
+    useQuery<PurchaseListResponse, AxiosError>({
+        queryKey: ["purchases-by-product", productId],
+        queryFn: () => getPurchasesByProductService(productId),
+        enabled: !!productId, // Evita chamadas desnecessárias se productId for inválido
     });

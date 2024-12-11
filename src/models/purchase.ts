@@ -2,10 +2,16 @@ import type { Product } from "./product";
 import type { Supplier } from "./supplier";
 
 export enum PurchaseStatus {
-    pending, 
+    processing, 
     approved, 
     canceled
 }
+export const purchaseStatusMapping: Record<string, string> = {
+    processing: "pendente",
+    approved: "aprovado",
+    canceled: "cancelado",
+};
+
 
 export interface Purchase {
     id: number;
@@ -16,7 +22,7 @@ export interface Purchase {
     description?: string | null;
     date_time: Date;
     paymentSlip: { data: number[] } | null;
-    status: PurchaseStatus;
+    purchaseStatus: PurchaseStatus;
     weightAmount: number; // Novo atributo
     price: number; // Novo atributo
 }

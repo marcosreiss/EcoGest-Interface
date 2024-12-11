@@ -55,7 +55,7 @@ export const updatePurchaseService = async (id: number, payload: CreatePurchaseP
 
 // Deletar uma compra
 export const deletePurchaseService = async (id: number): Promise<void> => {
-    await api.delete(`/purchases/${id}`);
+    await api.delete(`/purchases?id=${id}`);
 };
 
 // Buscar compra por ID
@@ -68,7 +68,7 @@ export const getPurchaseByIdService = async (id: number): Promise<Purchase> => {
 export const getTotalPurchasesInPeriodService = async (
     payload: TotalPushchasesInPeriodRequest
 ): Promise<TotalPushchasesInPeriodResponse> => {
-    const response = await api.post<TotalPushchasesInPeriodResponse>("/purchases/total", payload);
+    const response = await api.post<TotalPushchasesInPeriodResponse>("/purchases/totals/period", payload);
     return response.data;
 };
 
@@ -77,5 +77,15 @@ export const searchPurchasesByPeriodService = async (
     payload: SearchByPeriodRequest
 ): Promise<PurchaseListResponse> => {
     const response = await api.post<PurchaseListResponse>("/search/by-period", payload);
+    return response.data;
+};
+
+export const getPurchasesBySupplierService = async (supplierId: number): Promise<PurchaseListResponse> => {
+    const response = await api.get<PurchaseListResponse>(`/purchases/supplier?supplierId=${supplierId}`);
+    return response.data;
+};
+
+export const getPurchasesByProductService = async (productId: number): Promise<PurchaseListResponse> => {
+    const response = await api.get<PurchaseListResponse>(`/purchases/product?productId=${productId}`);
     return response.data;
 };

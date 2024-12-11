@@ -185,7 +185,7 @@ export default function CreatePurchasePage() {
                                             defaultValue=""
                                             {...register("status", { required: "Selecione um status." })}
                                         >
-                                            <MenuItem value={PurchaseStatus.pending}>
+                                            <MenuItem value={PurchaseStatus.processing}>
                                                 <span style={{ color: "yellow" }}>●</span> Pendente
                                             </MenuItem>
                                             <MenuItem value={PurchaseStatus.approved}>

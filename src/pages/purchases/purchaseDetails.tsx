@@ -103,7 +103,7 @@ export default function PurchaseDetailsPage() {
                     {/* Status */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Status: {purchase?.status}
+                        Status: {purchase?.purchaseStatus}
                       </Typography>
                     </Grid>
 

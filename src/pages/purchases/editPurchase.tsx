@@ -68,7 +68,7 @@ export default function EditPurchasePage() {
             setValue("productId", purchase.productId);
             setValue("weightAmount", purchase.product?.weightAmount || 0);
             setValue("price", purchase.product?.price || 0);
-            setValue("status", purchase.status);
+            setValue("status", purchase.purchaseStatus);
             setValue("description", purchase.description || "");
             setValue("date_time", purchase.date_time);
         }
@@ -213,7 +213,7 @@ export default function EditPurchasePage() {
                                             defaultValue=""
                                             {...register("status", { required: "Selecione um status." })}
                                         >
-                                            <MenuItem value={PurchaseStatus.pending}>
+                                            <MenuItem value={PurchaseStatus.processing}>
                                                 <span style={{ color: "yellow" }}>●</span> Pendente
                                             </MenuItem>
                                             <MenuItem value={PurchaseStatus.approved}>
