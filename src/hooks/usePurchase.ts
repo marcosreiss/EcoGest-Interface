@@ -85,10 +85,13 @@ export const useGetTotalPurchasesInPeriod = () =>
         mutationFn: (payload) => getTotalPurchasesInPeriodService(payload),
     });
 
-export const useSearchPurchasesByPeriod = () =>
-    useMutation<PurchaseListResponse, AxiosError, SearchByPeriodRequest>({
-        mutationFn: (payload) => searchPurchasesByPeriodService(payload),
+export const useSearchPurchasesByPeriod = (payload: SearchByPeriodRequest) =>
+    useQuery<PurchaseListResponse, AxiosError>({
+        queryKey: ['purchasesByPeriod', payload],
+        queryFn: () => searchPurchasesByPeriodService(payload!),
+        enabled: payload?.startDate !== null && payload?.endDate !== null
     });
+
 
 // Hook para buscar compras por fornecedor
 export const useGetPurchasesBySupplier = (supplierId: number) =>

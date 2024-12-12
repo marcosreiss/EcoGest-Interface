@@ -77,6 +77,8 @@ export const searchPurchasesByPeriodService = async (
     payload: SearchByPeriodRequest
 ): Promise<PurchaseListResponse> => {
     const response = await api.post<PurchaseListResponse>("/search/by-period", payload);
+    console.log(response.status);
+    
     return response.data;
 };
 

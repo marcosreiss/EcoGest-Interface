@@ -58,6 +58,6 @@ export interface TotalPushchasesInPeriodResponse {
 }
 
 export interface SearchByPeriodRequest {
-    startDate: string; // Formato ISO
-    endDate: string;   // Formato ISO
+    startDate?: string | null; // Formato ISO
+    endDate?: string | null;   // Formato ISO
 }
