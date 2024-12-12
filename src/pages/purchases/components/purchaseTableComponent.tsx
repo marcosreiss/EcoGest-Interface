@@ -18,7 +18,7 @@ import { useRouter } from "src/routes/hooks";
 import { useDeletePurchase } from "src/hooks/usePurchase";
 
 import { useNotification } from "src/context/NotificationContext";
-import { type Purchase, PurchaseStatus, purchaseStatusMapping } from "src/models/purchase";
+import { type Purchase, purchaseStatusMapping } from "src/models/purchase";
 
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
 
@@ -90,7 +90,7 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
 
   const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const allIds = purchases.map((p) => p.id);
+      const allIds = purchases.map((p) => p.purchaseId);
       setSelectedPurchaseIds(allIds);
       setSelectedPurchases(purchases);
     } else {
@@ -101,14 +101,13 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
 
   const handleSelectPurchase = (event: React.ChangeEvent<HTMLInputElement>, purchase: Purchase) => {
     if (event.target.checked) {
-      setSelectedPurchaseIds((prev) => [...prev, purchase.id]);
+      setSelectedPurchaseIds((prev) => [...prev, purchase.purchaseId]);
       setSelectedPurchases((prev) => [...prev, purchase]);
     } else {
-      setSelectedPurchaseIds((prev) => prev.filter((id) => id !== purchase.id));
-      setSelectedPurchases((prev) => prev.filter((p) => p.id !== purchase.id));
+      setSelectedPurchaseIds((prev) => prev.filter((id) => id !== purchase.purchaseId));
+      setSelectedPurchases((prev) => prev.filter((p) => p.purchaseId !== purchase.purchaseId));
     }
   };
-  console.log(purchases);
   
   return (
     <>
@@ -142,7 +141,7 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
               <TableRow key={index}>
                 <TableCell>
                   <Checkbox
-                    checked={selectedPurchaseIds.includes(purchase.id)}
+                    checked={selectedPurchaseIds.includes(purchase.purchaseId)}
                     onChange={(e) => handleSelectPurchase(e, purchase)}
                   />
                 </TableCell>
@@ -154,16 +153,16 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
 
                 <TableCell>{`R$${purchase.price}`}</TableCell>
                 <TableCell>
-                  <IconButton onClick={(event) => handleClick(event, purchase.id)}>︙</IconButton>
+                  <IconButton onClick={(event) => handleClick(event, purchase.purchaseId)}>︙</IconButton>
                   <Menu
                     anchorEl={anchorEl}
-                    open={Boolean(anchorEl && selectedItem === purchase.id)}
+                    open={Boolean(anchorEl && selectedItem === purchase.purchaseId)}
                     onClose={handleCloseMenu}
                   >
-                    <MenuItem onClick={() => handleDetailsClick(purchase.id)}>Detalhes</MenuItem>
-                    <MenuItem onClick={() => handleEditClick(purchase.id)}>Editar</MenuItem>
+                    <MenuItem onClick={() => handleDetailsClick(purchase.purchaseId)}>Detalhes</MenuItem>
+                    <MenuItem onClick={() => handleEditClick(purchase.purchaseId)}>Editar</MenuItem>
                     <MenuItem onClick={() => handleViewDocumentClick(purchase.paymentSlip)}>Visualizar Documento</MenuItem>
-                    <MenuItem onClick={() => handleDeleteClick(purchase.id)}>Deletar</MenuItem>
+                    <MenuItem onClick={() => handleDeleteClick(purchase.purchaseId)}>Deletar</MenuItem>
                   </Menu>
                 </TableCell>
               </TableRow>

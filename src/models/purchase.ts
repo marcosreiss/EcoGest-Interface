@@ -14,7 +14,7 @@ export const purchaseStatusMapping: Record<string, string> = {
 
 
 export interface Purchase {
-    id: number;
+    purchaseId: number;
     supplierId: number;
     supplier: Supplier | null;
     productId: number;

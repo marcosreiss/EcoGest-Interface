@@ -10,9 +10,9 @@ import TableContainer from '@mui/material/TableContainer';
 
 import { useDeleteProduct, useGetProductsPaginated } from 'src/hooks/useProduct';
 
-import { CONFIG } from 'src/config-global'; 
+import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
-import TableSearch from 'src/layouts/components/tableSearch'; 
+import TableSearch from 'src/layouts/components/tableSearch';
 import { useNotification } from 'src/context/NotificationContext';
 import TableFooterComponent from 'src/layouts/components/tableFooterComponent';
 import TableHeaderComponent from 'src/layouts/components/tableHeaderComponent';
@@ -25,7 +25,7 @@ import ProductTableComponent from './components/productTableComponent';
 export default function ProductPage() {
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
 
-  const rowsPerPage = 5; 
+  const rowsPerPage = 5;
   const [page, setPage] = useState(0);
 
   const { data, isLoading } = useGetProductsPaginated(page * rowsPerPage, rowsPerPage);
@@ -41,21 +41,21 @@ export default function ProductPage() {
   const products = data?.data || [];
 
   const deleteProduct = useDeleteProduct();
-const notification = useNotification();
+  const notification = useNotification();
 
-const handleDeleteProduct = () => {
-  selectedProducts.forEach((product) => {
-    deleteProduct.mutate(product.productId, {
-      onSuccess: () => {
-        notification.addNotification('Produto deletado com sucesso', 'success');
-        setSelectedProducts([]); // Limpa a seleção após a exclusão
-      },
-      onError: () => {
-        notification.addNotification('Erro ao deletar produto, tente novamente mais tarde', 'error');
-      },
+  const handleDeleteProduct = () => {
+    selectedProducts.forEach((product) => {
+      deleteProduct.mutate(product.productId, {
+        onSuccess: () => {
+          notification.addNotification('Produto deletado com sucesso', 'success');
+          setSelectedProducts([]); // Limpa a seleção após a exclusão
+        },
+        onError: () => {
+          notification.addNotification('Erro ao deletar produto, tente novamente mais tarde', 'error');
+        },
+      });
     });
-  });
-};
+  };
 
 
   return (
@@ -66,27 +66,27 @@ const handleDeleteProduct = () => {
 
       <DashboardContent maxWidth="md">
         <Grid container>
-          <TableHeaderComponent 
-            title='Produtos' 
-            addButtonName='Cadastrar Produto' 
-            addButtonPath='/products/create' 
+          <TableHeaderComponent
+            title='Produtos'
+            addButtonName='Cadastrar Produto'
+            addButtonPath='/products/create'
           />
           <Grid item xs={12}>
-            <TableSearch handleDelete={handleDeleteProduct} handleSearchChange={() => null} isSearchDisabled selectedRows={selectedProducts}  />
-            <TableContainer component={Paper} sx={{height: '65vh', display: 'flex', flexDirection: 'column' }}>
+            <TableSearch handleDelete={handleDeleteProduct} handleSearchChange={() => null} isSearchDisabled selectedRows={selectedProducts} />
+            <TableContainer component={Paper} sx={{ height: '65vh', display: 'flex', flexDirection: 'column' }}>
               <Box component="div" sx={{ flex: 1, overflow: 'auto' }}>
-                <ProductTableComponent 
-                  setSelectedProducts={setSelectedProducts} 
-                  products={products} 
-                  isLoading={isLoading} 
+                <ProductTableComponent
+                  setSelectedProducts={setSelectedProducts}
+                  products={products}
+                  isLoading={isLoading}
                 />
               </Box>
 
-              <TableFooterComponent 
-                setPage={setPage} 
-                page={page} 
-                rowsPerPage={rowsPerPage} 
-                totalItems={totalItems} 
+              <TableFooterComponent
+                setPage={setPage}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                totalItems={totalItems}
               />
             </TableContainer>
           </Grid>

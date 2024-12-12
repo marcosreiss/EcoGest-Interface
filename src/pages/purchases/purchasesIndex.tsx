@@ -8,7 +8,7 @@ import Paper from '@mui/material/Paper';
 import { Box, Grid } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 
-import { useGetPurchasesPaginated } from 'src/hooks/usePurchase';
+import { useDeletePurchase, useGetPurchasesPaginated } from 'src/hooks/usePurchase';
 
 import { CONFIG } from 'src/config-global'; 
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -40,11 +40,22 @@ export default function PurchasePage() {
   const purchases = data?.data || [];
 
   const notification = useNotification();
+  const deletePurchase = useDeletePurchase();
 
   const handleDeletePurchase = () => {
-    // Handle deletion logic here if required
-    notification.addNotification('Excluir compra não está implementado.', 'info');
+    selectedPurchases.forEach((purchase) => {
+      deletePurchase.mutate(purchase.purchaseId, {
+        onSuccess: () => {
+          notification.addNotification('Compra deletada com sucesso', 'success');
+          setSelectedPurchases([]); // Limpa a seleção após a exclusão
+        },
+        onError: () => {
+          notification.addNotification('Erro ao deletar compra, tente novamente mais tarde', 'error');
+        },
+      });
+    });
   };
+  
 
   return (
     <>
