@@ -8,14 +8,14 @@ import {
   updateProductService,
   deleteProductService,
   getProductByIdService,
-  getProductsPaginatedService,
+  getProductsPagedService,
   getProductsBasicInfoService,
 } from "src/services/productService";  // Ajuste o path se necessário
 
 export const useGetProductsPaged = (skip: number, take: number) =>
   useQuery<ProductListResponse, AxiosError>({
     queryKey: ['products-list', { skip, take }],
-    queryFn: () => getProductsPaginatedService(skip, take),
+    queryFn: () => getProductsPagedService(skip, take),
   });
 
 export const useCreateProduct = () => {

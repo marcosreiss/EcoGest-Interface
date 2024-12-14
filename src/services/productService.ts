@@ -8,7 +8,7 @@ import type {
 
 import api from "./api";
 
-export const getProductsPaginatedService = async (skip: number, take: number): Promise<ProductListResponse> => {
+export const getProductsPagedService = async (skip: number, take: number): Promise<ProductListResponse> => {
   const response = await api.get<ProductListResponse>("/products", { params: { skip, take } });
   return response.data;
 };
