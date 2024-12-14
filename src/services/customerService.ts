@@ -4,7 +4,8 @@ import type
     Customer,
     CustomerPayload,
     CustomerResponse,
-    CustomerListResponse
+    CustomerListResponse,
+    CustomerBasicInfoList
 }
 from "src/models/customers";
 
@@ -12,7 +13,7 @@ import api from "./api";
 
 
 
-export const getCustomersPaginadedService = async (skip: number, take: number): Promise<CustomerListResponse> => {
+export const getCustomersPagedService = async (skip: number, take: number): Promise<CustomerListResponse> => {
     const response = await api.get<CustomerListResponse>("/customers", { params: { skip, take } });
 
     return response.data;
@@ -46,4 +47,8 @@ export const getCustomerByNameService = async (name: string): Promise<Customer[]
     return response.data;
 };
 
+export const getCustomersBasicInfoService = async (): Promise<CustomerBasicInfoList> =>{
+    const response = await api.get<CustomerBasicInfoList>("/customers/basic-info");
+    return response.data;
+}
 

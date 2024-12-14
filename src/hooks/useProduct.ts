@@ -12,7 +12,7 @@ import {
   getProductsBasicInfoService,
 } from "src/services/productService";  // Ajuste o path se necessário
 
-export const useGetProductsPaginated = (skip: number, take: number) =>
+export const useGetProductsPaged = (skip: number, take: number) =>
   useQuery<ProductListResponse, AxiosError>({
     queryKey: ['products-list', { skip, take }],
     queryFn: () => getProductsPaginatedService(skip, take),

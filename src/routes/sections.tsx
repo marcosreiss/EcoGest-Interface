@@ -15,7 +15,7 @@ export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
-export const SalesPage = lazy(() => import('src/pages/sales/sales'));
+export const SalesPage = lazy(() => import('src/pages/sales/salesIndex'));
 export const ExpensesPage = lazy(() => import('src/pages/expenses/expenses'));
 export const EmployeesPage = lazy(() => import('src/pages/employees/employees'));
 export const ReceiptsPage = lazy(() => import('src/pages/receipts/receipts'));

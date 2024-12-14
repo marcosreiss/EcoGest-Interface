@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Customer, CustomerPayload, CustomerResponse, CustomerListResponse } from "src/models/customers";
+import type { Customer, CustomerPayload, CustomerResponse, CustomerListResponse, CustomerBasicInfoList } from "src/models/customers";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -9,13 +9,14 @@ import {
   deleteCustomerService,
   getCustomerByIdService,
   getCustomerByNameService,
-  getCustomersPaginadedService,
+  getCustomersPagedService,
+  getCustomersBasicInfoService,
 } from "src/services/customerService";
 
 export const useGetCustomersPaginaded = (skip: number, take: number) =>
   useQuery<CustomerListResponse, AxiosError>({
     queryKey: ['customers-list', { skip, take }],
-    queryFn: () => getCustomersPaginadedService(skip, take),
+    queryFn: () => getCustomersPagedService(skip, take),
   });
 
 export const useCreateCustomer = () => {
@@ -69,3 +70,9 @@ export const useGetCustomerByName = (name: string) =>
     queryFn: () => getCustomerByNameService(name),
     enabled: name.length >= 3
   });
+
+export const useGetCustomersBasicInfo = () => 
+  useQuery<CustomerBasicInfoList, AxiosError>({
+    queryKey: ['customers-basic-info'],
+    queryFn: () => getCustomersBasicInfoService(),
+  })

@@ -76,11 +76,15 @@ export const getTotalPurchasesInPeriodService = async (
 export const searchPurchasesByPeriodService = async (
     payload: SearchByPeriodRequest
 ): Promise<PurchaseListResponse> => {
-    const response = await api.post<PurchaseListResponse>("/search/by-period", payload);
-    console.log(response.status);
-    
+    const response = await api.request<PurchaseListResponse>({
+        method: "GET",
+        url: "/search/by-period",
+        data: payload, // Corpo da requisição enviado com o método GET
+    });
+
     return response.data;
 };
+
 
 export const getPurchasesBySupplierService = async (supplierId: number): Promise<PurchaseListResponse> => {
     const response = await api.get<PurchaseListResponse>(`/purchases/supplier?supplierId=${supplierId}`);

@@ -34,7 +34,6 @@ export const getProductByIdService = async (id: number): Promise<Product> => {
   return response.data;
 };
 
-
 //------------------------------------------------
 
 export const getProductsBasicInfoService = async (): Promise<ProductBasicInfoList> => {

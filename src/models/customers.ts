@@ -1,3 +1,5 @@
+import { ProductBasicInfo } from "./product";
+
 export enum PersonType {
     Individual = 'individual',
     Corporate = 'corporate'
@@ -30,5 +32,14 @@ export interface CustomerPayload {
     address?: string | null;
     contact?: string | null;
     personType: PersonType; 
+}
+
+export interface CustomerBasicInfo {
+    customerId: number;
+    name: string;
+}
+
+export interface CustomerBasicInfoList{
+    data: ProductBasicInfo[];
 }
   

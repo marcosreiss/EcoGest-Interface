@@ -8,7 +8,7 @@ import Paper from '@mui/material/Paper';
 import { Box, Grid } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 
-import { useDeleteProduct, useGetProductsPaginated } from 'src/hooks/useProduct';
+import { useDeleteProduct, useGetProductsPaged } from 'src/hooks/useProduct';
 
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -28,7 +28,7 @@ export default function ProductPage() {
   const rowsPerPage = 5;
   const [page, setPage] = useState(0);
 
-  const { data, isLoading } = useGetProductsPaginated(page * rowsPerPage, rowsPerPage);
+  const { data, isLoading } = useGetProductsPaged(page * rowsPerPage, rowsPerPage);
 
   const totalItemsRef = React.useRef(0);
 
