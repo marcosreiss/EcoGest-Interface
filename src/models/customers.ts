@@ -1,4 +1,3 @@
-import { ProductBasicInfo } from "./product";
 
 export enum PersonType {
     Individual = 'individual',
@@ -40,6 +39,6 @@ export interface CustomerBasicInfo {
 }
 
 export interface CustomerBasicInfoList{
-    data: ProductBasicInfo[];
+    data: CustomerBasicInfo[];
 }
   

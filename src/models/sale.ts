@@ -1,8 +1,13 @@
+import type { Product } from "./product";
+import type { Customer } from "./customers";
+
 export interface Sale {
     saleId: number;
     productId: number;
+    product: Product;
     customerId: number;
-    date_time: string; // Representado como string em formato ISO (ex.: "YYYY-MM-DD")
+    customer: Customer;
+    date_time: string;
     saleStatus: 'pending' | 'completed' | 'canceled';
     quantity: number;
     totalPrice: number;

@@ -15,7 +15,6 @@ export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
-export const SalesPage = lazy(() => import('src/pages/sales/salesIndex'));
 export const ExpensesPage = lazy(() => import('src/pages/expenses/expenses'));
 export const EmployeesPage = lazy(() => import('src/pages/employees/employees'));
 export const ReceiptsPage = lazy(() => import('src/pages/receipts/receipts'));
@@ -44,6 +43,13 @@ export const PurchasesPage = lazy(() => import('src/pages/purchases/purchasesInd
 export const CreatePurchase = lazy(() => import('src/pages/purchases/createPurchase'));
 export const EditPurchase = lazy(() => import('src/pages/purchases/editPurchase'));
 export const PurchaseDetails = lazy(() => import('src/pages/purchases/purchaseDetails'));
+
+// ---------- Sales Components
+export const SalesPage = lazy(() => import('src/pages/sales/salesIndex'));
+export const CreateSale = lazy(() => import('src/pages/sales/createSale'));
+export const EditSale = lazy(() => import('src/pages/sales/editSale'));
+export const SaleDetails = lazy(() => import('src/pages/sales/saleDetails'));
+
 
 
 
@@ -102,6 +108,10 @@ export function PrivateRouter() {
         { path: 'purchases/edit/:id', element: <EditPurchase /> },
         { path: 'purchases/details/:id', element: <PurchaseDetails /> },
 
+        { path: 'sales', element: <SalesPage /> },
+        { path: 'sales/create', element: <CreateSale /> },
+        { path: 'sales/edit/:id', element: <EditSale /> },
+        { path: 'sales/details/:id', element: <SaleDetails /> },
       ],
     },
     { path: '404', element: <Page404 />, },
@@ -113,28 +123,39 @@ export function PublicRouter() {
   return useRoutes([
     { element: <AuthLayout><SignInPage /></AuthLayout>, index: true },
     { path: 'user', element: <AuthLayout><SignInPage /></AuthLayout> },
+
     { path: 'products', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'products/create', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'products/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'products/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+
     { path: 'blog', element: <AuthLayout><SignInPage /></AuthLayout> },
-    { path: 'sales', element: <AuthLayout><SignInPage /></AuthLayout> },
+
     { path: 'suppliers', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'suppliers/create', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'suppliers/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'suppliers/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+
     { path: 'purchases', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'purchases/create', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'purchases/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'purchases/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+
     { path: 'expenses', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'employees', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'receipts', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'admin', element: <AuthLayout><SignInPage /></AuthLayout> },
+    
     { path: 'customers', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'customers/create', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'customers/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'customers/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+
+    { path: 'sales', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'sales/create', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'sales/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'sales/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+
 
     { path: '404', element: <Page404 />, },
     { path: '*', element: <Navigate to="/404" replace />, },
