@@ -35,7 +35,8 @@ export default function SaleDetailsPage() {
   const handleEditClick = () => {
     navigate.replace(`/sales/edit/${id}`);
   };
-
+  console.log(sale);
+  
   return (
     <>
       <Helmet>

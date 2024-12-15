@@ -53,11 +53,11 @@ export const navData = [
   //   path: '/receipts',
   //   icon: icon('ic-bill')
   // },
-  // {
-  //   title: 'Funcionarios',
-  //   path: '/employees',
-  //   icon: icon('ic-employees'),
-  // },
+  {
+    title: 'Funcionarios',
+    path: '/employees',
+    icon: icon('ic-employees'),
+  },
   {
     title: 'Balanço',
     path: '/admin',

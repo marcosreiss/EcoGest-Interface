@@ -146,8 +146,8 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                     onChange={(e) => handleSelectSale(e, sale)}
                   />
                 </TableCell>
-                <TableCell>{sale.productId || "-"}</TableCell>
-                <TableCell>{sale.customerId || "-"}</TableCell>
+                <TableCell>{sale.product.name || "-"}</TableCell>
+                <TableCell>{sale.customer.name || "-"}</TableCell>
                 <TableCell>{new Date(sale.date_time).toLocaleDateString() || "-"}</TableCell>
                 <TableCell>
                   {sale.saleStatus === "pending"

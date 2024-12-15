@@ -9,6 +9,7 @@ import {
     deleteEmployeeService,
     getEmployeeByIdService,
     getEmployeesPagedService,
+    getEmployeeByNameService,
 } from "src/services/employeeService"; // Ajuste o path se necessário
 
 // Hook para buscar funcionários paginados
@@ -64,3 +65,11 @@ export const useGetEmployeeById = (id: number) =>
         queryKey: ['employee', id],
         queryFn: () => getEmployeeByIdService(id),
     });
+
+export const useGetEmployeeByName = (name: string) =>
+    useQuery<Employee[], AxiosError>({
+        queryKey: ['employees-by-name', name],
+        queryFn: () => getEmployeeByNameService(name),
+        enabled: name.length >= 3
+    });
+

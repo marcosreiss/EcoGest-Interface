@@ -1,14 +1,14 @@
 import type { Employee } from 'src/models/employee';
 
 import * as React from 'react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 import Paper from '@mui/material/Paper';
 import { Box, Grid } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 
-import { useDeleteEmployee, useGetEmployeesPaged } from 'src/hooks/useEmployee';
+import { useDeleteEmployee, useGetEmployeeByName, useGetEmployeesPaged } from 'src/hooks/useEmployee';
 
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -27,6 +27,9 @@ export default function EmployeePage() {
   const rowsPerPage = 5;
   const [page, setPage] = useState(0);
 
+  const [debouncedSearchString, setDebouncedSearchString] = useState('');
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const { data, isLoading } = useGetEmployeesPaged(page * rowsPerPage, rowsPerPage);
 
   const totalItemsRef = React.useRef(0);
@@ -37,7 +40,26 @@ export default function EmployeePage() {
   }
   const totalItems = totalItemsRef.current;
 
-  const employees = data?.data || [];
+  const { data: searchResults, isLoading: isSearching } = useGetEmployeeByName(debouncedSearchString);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value;
+
+    // Limpa o timeout anterior para reiniciar o debounce
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    // Se o valor tiver 3 ou mais caracteres, inicia o debounce
+    if (inputValue.length >= 3) {
+      debounceTimeoutRef.current = setTimeout(() => {
+        setDebouncedSearchString(inputValue); // Atualiza o valor com debounce
+      }, 500); // Atraso de 500ms antes de executar a busca
+    } else {
+      // Se o valor for menor que 3 caracteres, limpa a busca
+      setDebouncedSearchString('');
+    }
+  };
 
   const deleteEmployee = useDeleteEmployee();
   const notification = useNotification();
@@ -56,6 +78,8 @@ export default function EmployeePage() {
     });
   };
 
+  const employees = debouncedSearchString.length >= 3 ? searchResults : data?.data;
+
   return (
     <>
       <Helmet>
@@ -72,16 +96,16 @@ export default function EmployeePage() {
           <Grid item xs={12}>
             <TableSearch
               handleDelete={handleDeleteEmployee}
-              handleSearchChange={() => null}
-              isSearchDisabled
+              handleSearchChange={handleSearchChange}
+              isSearchDisabled={false}
               selectedRows={selectedEmployees}
             />
             <TableContainer component={Paper} sx={{ height: '65vh', display: 'flex', flexDirection: 'column' }}>
               <Box component="div" sx={{ flex: 1, overflow: 'auto' }}>
                 <EmployeeTableComponent
                   setSelectedEmployees={setSelectedEmployees}
-                  employees={employees}
-                  isLoading={isLoading}
+                  employees={employees || []}
+                  isLoading={isLoading || isSearching}
                 />
               </Box>
 

@@ -35,3 +35,9 @@ export const getEmployeeByIdService = async (id: number): Promise<Employee> => {
     const response = await api.get<Employee>(`/employees/search/by-id?id=${id}`);
     return response.data;
 };
+
+// Serviço para buscar funcionários por nome
+export const getEmployeeByNameService = async (name: string): Promise<Employee[]> => {
+    const response = await api.get<Employee[]>(`/employees/search/by-name?name=${name}`);
+    return response.data;
+};
