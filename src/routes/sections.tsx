@@ -16,7 +16,6 @@ export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const ExpensesPage = lazy(() => import('src/pages/expenses/expenses'));
-export const EmployeesPage = lazy(() => import('src/pages/employees/employees'));
 export const ReceiptsPage = lazy(() => import('src/pages/receipts/receipts'));
 export const AdminPage = lazy(() => import('src/pages/admin'));
 
@@ -49,6 +48,13 @@ export const SalesPage = lazy(() => import('src/pages/sales/salesIndex'));
 export const CreateSale = lazy(() => import('src/pages/sales/createSale'));
 export const EditSale = lazy(() => import('src/pages/sales/editSale'));
 export const SaleDetails = lazy(() => import('src/pages/sales/saleDetails'));
+
+// ---------- Employee Components
+export const EmployeesPage = lazy(() => import('src/pages/employees/employeesIndex'));
+export const CreateEmployee = lazy(() => import('src/pages/employees/createEmployee'));
+export const EditEmployee = lazy(() => import('src/pages/employees/editEmployee'));
+export const EmployeeDetails = lazy(() => import('src/pages/employees/employeeDetails'));
+
 
 
 
@@ -112,6 +118,12 @@ export function PrivateRouter() {
         { path: 'sales/create', element: <CreateSale /> },
         { path: 'sales/edit/:id', element: <EditSale /> },
         { path: 'sales/details/:id', element: <SaleDetails /> },
+
+        { path: 'employees', element: <EmployeesPage /> },
+        { path: 'employees/create', element: <CreateEmployee /> },
+        { path: 'employees/edit/:id', element: <EditEmployee /> },
+        { path: 'employees/details/:id', element: <EmployeeDetails /> },
+
       ],
     },
     { path: '404', element: <Page404 />, },
@@ -145,7 +157,7 @@ export function PublicRouter() {
     { path: 'employees', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'receipts', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'admin', element: <AuthLayout><SignInPage /></AuthLayout> },
-    
+
     { path: 'customers', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'customers/create', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'customers/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
@@ -156,6 +168,10 @@ export function PublicRouter() {
     { path: 'sales/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'sales/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
 
+    { path: 'employees', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'employees/create', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'employees/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'employees/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
 
     { path: '404', element: <Page404 />, },
     { path: '*', element: <Navigate to="/404" replace />, },
