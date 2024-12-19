@@ -95,10 +95,10 @@ export default function SaleDetailsPage() {
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
                         Status:{" "}
-                        {sale?.saleStatus === "pending"
-                          ? "Pendente"
-                          : sale?.saleStatus === "completed"
-                          ? "Concluído"
+                        {sale?.saleStatus === "processing"
+                          ? "Processando"
+                          : sale?.saleStatus === "approved"
+                          ? "Aprovada"
                           : "Cancelado"}
                       </Typography>
                     </Grid>

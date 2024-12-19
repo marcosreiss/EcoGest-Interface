@@ -150,10 +150,10 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                 <TableCell>{sale.customer.name || "-"}</TableCell>
                 <TableCell>{new Date(sale.date_time).toLocaleDateString() || "-"}</TableCell>
                 <TableCell>
-                  {sale.saleStatus === "pending"
-                    ? "Pendente"
-                    : sale.saleStatus === "completed"
-                    ? "Concluída"
+                  {sale.saleStatus === "processing"
+                    ? "Processando"
+                    : sale.saleStatus === "approved"
+                    ? "Aprovada"
                     : "Cancelada"}
                 </TableCell>
                 <TableCell>

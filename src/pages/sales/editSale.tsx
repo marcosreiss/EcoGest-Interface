@@ -190,11 +190,11 @@ export default function EditSalePage() {
                                     <FormControl fullWidth>
                                         <InputLabel>Status</InputLabel>
                                         <Select
-                                            defaultValue={sale?.saleStatus}
+                                            value={sale?.saleStatus}
                                             {...register("saleStatus", { required: "Selecione um status." })}
                                         >
-                                            <MenuItem value="pending">Pendente</MenuItem>
-                                            <MenuItem value="completed">Concluído</MenuItem>
+                                            <MenuItem value="processing">Pendente</MenuItem>
+                                            <MenuItem value="approved">Concluído</MenuItem>
                                             <MenuItem value="canceled">Cancelado</MenuItem>
                                         </Select>
                                         {errors.saleStatus && (

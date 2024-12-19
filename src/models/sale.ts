@@ -8,7 +8,7 @@ export interface Sale {
     customerId: number;
     customer: Customer;
     date_time: string;
-    saleStatus: 'pending' | 'completed' | 'canceled';
+    saleStatus: 'processing' | 'approved' | 'canceled';
     quantity: number;
     totalPrice: number;
 }
@@ -26,7 +26,7 @@ export interface CreateSalePayload {
     productId: number;
     customerId: number;
     date_time: string;
-    saleStatus: 'pending' | 'completed' | 'canceled';
+    saleStatus: 'processing' | 'approved' | 'canceled';
     quantity: number;
     totalPrice: number;
 
