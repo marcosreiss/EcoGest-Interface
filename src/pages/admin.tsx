@@ -3,14 +3,11 @@ import Typography from '@mui/material/Typography';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
-import { CONFIG } from 'src/config-global';
-
+// Importar o seu card
+import FinancialOverviewCard from '../sections/overview/analytics-banking';
 import { AnalyticsCurrentVisits } from '../sections/overview/analytics-current-visits';
 import { AnalyticsWebsiteVisits } from '../sections/overview/analytics-website-visits';
 import { AnalyticsWidgetSummary } from '../sections/overview/analytics-widget-summary';
-
-// Importar o seu card
-import FinancialOverviewCard from '../sections/overview/analytics-banking';
 
 // ----------------------------------------------------------------------
 
@@ -66,17 +63,17 @@ export default function Page() {
                     incomeChangePercentage={8.2}
                     expenses={1989}
                     expenseChangePercentage={-6.6}
-                    chartData={[
-                      { month: 'Jan', value: 5 },
-                      { month: 'Feb', value: 15 },
-                      { month: 'Mar', value: 20 },
-                      { month: 'Apr', value: 35 },
-                      { month: 'May', value: 90 },
-                      { month: 'Jun', value: 70 },
-                      { month: 'Jul', value: 60 },
-                      { month: 'Aug', value: 65 },
-                      { month: 'Sep', value: 70 },
-                    ]}
+                    // chartData={[
+                    //   { month: 'Jan', value: 5 },
+                    //   { month: 'Feb', value: 15 },
+                    //   { month: 'Mar', value: 20 },
+                    //   { month: 'Apr', value: 35 },
+                    //   { month: 'May', value: 90 },
+                    //   { month: 'Jun', value: 70 },
+                    //   { month: 'Jul', value: 60 },
+                    //   { month: 'Aug', value: 65 },
+                    //   { month: 'Sep', value: 70 },
+                    // ]}
                 />
             </Grid>
 

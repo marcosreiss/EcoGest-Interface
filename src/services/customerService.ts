@@ -22,7 +22,7 @@ export const getCustomersPagedService = async (skip: number, take: number): Prom
 export const createCustomerService = async (payload: CustomerPayload): Promise<CustomerResponse> => {
     // console.log('cadastrando cliente como os dados: ', payload);
     
-    const response = await api.post<CustomerResponse>("/customers/create", payload);
+    const response = await api.post<CustomerResponse>("/customers", payload);
     return response.data;
 }
 
