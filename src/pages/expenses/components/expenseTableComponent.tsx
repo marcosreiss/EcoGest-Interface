@@ -100,7 +100,8 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
       setSelectedExpenses((prev) => prev.filter((e) => e.expenseId !== expense.expenseId));
     }
   };
-
+  console.log(expenses);
+  
   return (
     <>
       <Table stickyHeader aria-label="expenses table">
@@ -138,7 +139,7 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
                 </TableCell>
                 <TableCell>{expense.description || "-"}</TableCell>
                 <TableCell>{expense.type}</TableCell>
-                <TableCell>{`R$${expense.value.toFixed(2)}`}</TableCell>
+                <TableCell>{`R$${Number(expense.value).toFixed(2)}`}</TableCell>
                 <TableCell>{expense.weightAmount}</TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, expense.expenseId)}>︙</IconButton>

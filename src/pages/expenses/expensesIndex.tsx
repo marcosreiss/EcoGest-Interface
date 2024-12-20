@@ -1,19 +1,100 @@
-import { Helmet } from 'react-helmet-async';
+import type { Expense } from "src/models/expense";
 
-import { CONFIG } from 'src/config-global';
+import * as React from "react";
+import { useState } from "react";
+import { Helmet } from "react-helmet-async";
+
+import Paper from "@mui/material/Paper";
+import { Box, Grid } from "@mui/material";
+import TableContainer from "@mui/material/TableContainer";
+
+import { useDeleteExpense, useGetExpensesPaginated } from "src/hooks/useExpense";
+
+import { CONFIG } from "src/config-global";
+import { DashboardContent } from "src/layouts/dashboard";
+import TableSearch from "src/layouts/components/tableSearch";
+import { useNotification } from "src/context/NotificationContext";
+import TableFooterComponent from "src/layouts/components/tableFooterComponent";
+import TableHeaderComponent from "src/layouts/components/tableHeaderComponent";
+
+import ExpenseTableComponent from "./components/expenseTableComponent";
 
 // ----------------------------------------------------------------------
 
-export default function Page() {
-    return (
-        <>
-            <Helmet>
-                <title>{`Despesas - ${CONFIG.appName}`}</title>
-            </Helmet>
+export default function ExpensePage() {
+  const [selectedExpenses, setSelectedExpenses] = useState<Expense[]>([]);
 
-            <h1>Despesas</h1>
+  const rowsPerPage = 5;
+  const [page, setPage] = useState(0);
 
-            {/* <ExpensesViews /> */}
-        </>
-    );
+  const { data, isLoading } = useGetExpensesPaginated(page * rowsPerPage, rowsPerPage);
+
+  const totalItemsRef = React.useRef(0);
+
+  // Define totalItems apenas na primeira chamada
+  if (page === 0 && data?.meta?.totalItems && totalItemsRef.current === 0) {
+    totalItemsRef.current = data.meta.totalItems;
+  }
+  const totalItems = totalItemsRef.current;
+
+  const expenses = data?.data || [];
+
+  const deleteExpense = useDeleteExpense();
+  const notification = useNotification();
+
+  const handleDeleteExpense = () => {
+    selectedExpenses.forEach((expense) => {
+      deleteExpense.mutate(expense.expenseId, {
+        onSuccess: () => {
+          notification.addNotification("Despesa deletada com sucesso", "success");
+          setSelectedExpenses([]); // Limpa a seleção após a exclusão
+        },
+        onError: () => {
+          notification.addNotification("Erro ao deletar despesa, tente novamente mais tarde", "error");
+        },
+      });
+    });
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>{`Despesas - ${CONFIG.appName}`}</title>
+      </Helmet>
+
+      <DashboardContent maxWidth="md">
+        <Grid container>
+          <TableHeaderComponent
+            title="Despesas"
+            addButtonName="Cadastrar Despesa"
+            addButtonPath="/expenses/create"
+          />
+          <Grid item xs={12}>
+            <TableSearch
+              handleDelete={handleDeleteExpense}
+              handleSearchChange={() => null} // Pesquisa desativada
+              isSearchDisabled
+              selectedRows={selectedExpenses}
+            />
+            <TableContainer component={Paper} sx={{ height: "65vh", display: "flex", flexDirection: "column" }}>
+              <Box component="div" sx={{ flex: 1, overflow: "auto" }}>
+                <ExpenseTableComponent
+                  setSelectedExpenses={setSelectedExpenses}
+                  expenses={expenses}
+                  isLoading={isLoading}
+                />
+              </Box>
+
+              <TableFooterComponent
+                setPage={setPage}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                totalItems={totalItems}
+              />
+            </TableContainer>
+          </Grid>
+        </Grid>
+      </DashboardContent>
+    </>
+  );
 }

@@ -10,6 +10,7 @@ export interface Expense {
 
 export interface ExpenseListResponse {
     data: Expense[];
+    meta: any;
 }
 
 export interface ExpenseResponse {

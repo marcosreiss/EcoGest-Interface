@@ -15,7 +15,6 @@ export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
-export const ExpensesPage = lazy(() => import('src/pages/expenses/expensesIndex'));
 export const ReceiptsPage = lazy(() => import('src/pages/receipts/receipts'));
 export const AdminPage = lazy(() => import('src/pages/admin'));
 
@@ -56,6 +55,12 @@ export const EditEmployee = lazy(() => import('src/pages/employees/editEmployee'
 export const EmployeeDetails = lazy(() => import('src/pages/employees/employeeDetails'));
 
 
+// ---------- Expenses Components
+// ---------- Expense Components
+export const ExpensesPage = lazy(() => import('src/pages/expenses/expensesIndex'));
+// export const CreateExpense = lazy(() => import('src/pages/expenses/createExpense'));
+// export const EditExpense = lazy(() => import('src/pages/expenses/editExpense'));
+// export const ExpenseDetails = lazy(() => import('src/pages/expenses/expenseDetails'));
 
 
 
@@ -124,6 +129,12 @@ export function PrivateRouter() {
         { path: 'employees/edit/:id', element: <EditEmployee /> },
         { path: 'employees/details/:id', element: <EmployeeDetails /> },
 
+        { path: 'expenses', element: <ExpensesPage /> },
+        // { path: 'expenses/create', element: <CreateExpense /> },
+        // { path: 'expenses/edit/:id', element: <EditExpense /> },
+        // { path: 'expenses/details/:id', element: <ExpenseDetails /> },
+
+
       ],
     },
     { path: '404', element: <Page404 />, },
@@ -172,6 +183,12 @@ export function PublicRouter() {
     { path: 'employees/create', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'employees/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'employees/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+
+    { path: 'expenses', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'expenses/create', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'expenses/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'expenses/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+
 
     { path: '404', element: <Page404 />, },
     { path: '*', element: <Navigate to="/404" replace />, },
