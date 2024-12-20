@@ -1,24 +1,25 @@
-import React, { useState, useMemo } from 'react';
-import {
-  Card,
-  CardContent,
-  Typography,
-  Grid,
-  Box,
-  Tooltip,
-  Button,
-  Stack,
-  TextField,
-} from '@mui/material';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import { LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import React, { useMemo, useState } from 'react';
+import { Line, XAxis, YAxis, LineChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 
-interface DataPoint {
-  month: string;
-  value: number;
-}
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import {
+  Box,
+  Card,
+  Grid,
+  Stack,
+  Button,
+  Tooltip,
+  TextField,
+  Typography,
+  CardContent,
+} from '@mui/material';
+
+// interface DataPoint {
+//   month: string;
+//   value: number;
+// }
 
 // Dados de exemplo
 const DATA_SETS = {
