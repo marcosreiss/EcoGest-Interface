@@ -1,22 +1,33 @@
+import type { Product } from "./product";
+import type { Customer } from "./customers";
+
 export interface Sale {
-    id: number;
-    productId: number; 
-    customerId: number; 
-    saleDate: string; // Representado como string em formato ISO (ex.: "YYYY-MM-DD")
-    status: 'pending' | 'completed' | 'canceled';
+    saleId: number;
+    productId: number;
+    product: Product;
+    customerId: number;
+    customer: Customer;
+    date_time: string;
+    saleStatus: 'processing' | 'approved' | 'canceled';
+    quantity: number;
+    totalPrice: number;
 }
 
 export interface SaleListResponse {
     data: Sale[];
+    meta: any;
 }
 
 export interface SaleResponse {
     data: Sale;
 }
 
-export interface CreateSalePayload{
-    productId: number; 
-    customerId: number; 
-    saleDate: string; 
-    status: 'pending' | 'completed' | 'canceled';
+export interface CreateSalePayload {
+    productId: number;
+    customerId: number;
+    date_time: string;
+    saleStatus: 'processing' | 'approved' | 'canceled';
+    quantity: number;
+    totalPrice: number;
+
 }

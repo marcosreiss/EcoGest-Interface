@@ -25,7 +25,7 @@ export default function SuppliersIndex() {
 
     const [selectedSuppliers, setSelectedSuppliers] = useState<Supplier[]>([]);
 
-    const rowsPerPage = 5;
+    const rowsPerPage = 25;
     const [page, setPage] = useState(0);
 
 
