@@ -27,8 +27,6 @@ import { useNotification } from "src/context/NotificationContext";
 // Opções predefinidas para o tipo de despesa
 const predefinedTypes = ["Transporte", "Material", "Serviço", "Outro"];
 
-// ----------------------------------------------------------------------
-
 export default function EditExpensePage() {
   const { id } = useParams<{ id: string }>();
   const expenseId = Number(id);
@@ -134,6 +132,10 @@ export default function EditExpensePage() {
                         {...field}
                         options={predefinedTypes}
                         freeSolo
+                        value={field.value || ""}
+                        onChange={(_, newValue) => field.onChange(newValue)}
+                        inputValue={field.value || ""}
+                        onInputChange={(_, newInputValue) => field.onChange(newInputValue)}
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -143,7 +145,6 @@ export default function EditExpensePage() {
                             helperText={errors.type?.message}
                           />
                         )}
-                        onInputChange={(_, value) => field.onChange(value)}
                       />
                     )}
                   />

@@ -100,7 +100,6 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
       setSelectedExpenses((prev) => prev.filter((e) => e.expenseId !== expense.expenseId));
     }
   };
-  console.log(expenses);
   
   return (
     <>
