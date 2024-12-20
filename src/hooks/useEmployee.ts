@@ -13,10 +13,10 @@ import {
 } from "src/services/employeeService"; // Ajuste o path se necessário
 
 // Hook para buscar funcionários paginados
-export const useGetEmployeesPaged = (skip: number, take: number) =>
+export const useGetEmployeesPaged = () =>
     useQuery<EmployeeListResponse, AxiosError>({
-        queryKey: ['employees-list', { skip, take }],
-        queryFn: () => getEmployeesPagedService(skip, take),
+        queryKey: ['employees-list'],
+        queryFn: () => getEmployeesPagedService(),
     });
 
 // Hook para criar um novo funcionário

@@ -8,8 +8,8 @@ import type {
 import api from "./api";
 
 // Serviço para buscar funcionários paginados
-export const getEmployeesPagedService = async (skip: number, take: number): Promise<EmployeeListResponse> => {
-    const response = await api.get<EmployeeListResponse>("/employees", { params: { skip, take } });
+export const getEmployeesPagedService = async (): Promise<EmployeeListResponse> => {
+    const response = await api.get<EmployeeListResponse>("/employees");
     return response.data;
 };
 

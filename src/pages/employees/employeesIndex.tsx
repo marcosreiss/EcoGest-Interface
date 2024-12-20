@@ -30,7 +30,8 @@ export default function EmployeePage() {
   const [debouncedSearchString, setDebouncedSearchString] = useState('');
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { data, isLoading } = useGetEmployeesPaged(page * rowsPerPage, rowsPerPage);
+  const { data, isLoading } = useGetEmployeesPaged();
+  
 
   const totalItemsRef = React.useRef(0);
 
@@ -78,7 +79,7 @@ export default function EmployeePage() {
     });
   };
 
-  const employees = debouncedSearchString.length >= 3 ? searchResults : data?.data;
+  const employees = debouncedSearchString.length >= 3 ? searchResults : data?.employees;
 
   return (
     <>

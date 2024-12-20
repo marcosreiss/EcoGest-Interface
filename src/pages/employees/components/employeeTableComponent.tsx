@@ -131,7 +131,7 @@ const EmployeeTableComponent: React.FC<EmployeeTableComponentProps> = ({
                 <TableCell>{employee.nome || "-"}</TableCell>
                 <TableCell>{employee.funcao || "-"}</TableCell>
                 <TableCell>
-                  {employee.salario !== undefined ? `R$${employee.salario.toFixed(2)}` : "-"}
+                  {employee.salario ? `R$ ${Number(employee.salario).toFixed(2)}` : "Não disponível"}
                 </TableCell>
                 <TableCell>{employee.status || "-"}</TableCell>
                 <TableCell>
