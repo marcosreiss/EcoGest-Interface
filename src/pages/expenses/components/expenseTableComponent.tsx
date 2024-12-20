@@ -117,7 +117,6 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
             <TableCell>Descrição</TableCell>
             <TableCell>Tipo</TableCell>
             <TableCell>Valor</TableCell>
-            <TableCell>Peso</TableCell>
             <TableCell>Ações</TableCell>
           </TableRow>
         </TableHead>
@@ -139,8 +138,7 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
                 </TableCell>
                 <TableCell>{expense.description || "-"}</TableCell>
                 <TableCell>{expense.type}</TableCell>
-                <TableCell>{`R$${Number(expense.value).toFixed(2)}`}</TableCell>
-                <TableCell>{expense.weightAmount}</TableCell>
+                <TableCell>{`R$${Number(expense.weightAmount).toFixed(2)}`}</TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, expense.expenseId)}>︙</IconButton>
                   <Menu

@@ -58,8 +58,8 @@ export const EmployeeDetails = lazy(() => import('src/pages/employees/employeeDe
 // ---------- Expenses Components
 // ---------- Expense Components
 export const ExpensesPage = lazy(() => import('src/pages/expenses/expensesIndex'));
-// export const CreateExpense = lazy(() => import('src/pages/expenses/createExpense'));
-// export const EditExpense = lazy(() => import('src/pages/expenses/editExpense'));
+export const CreateExpense = lazy(() => import('src/pages/expenses/createExpense'));
+export const EditExpense = lazy(() => import('src/pages/expenses/editExpense'));
 // export const ExpenseDetails = lazy(() => import('src/pages/expenses/expenseDetails'));
 
 
@@ -130,8 +130,8 @@ export function PrivateRouter() {
         { path: 'employees/details/:id', element: <EmployeeDetails /> },
 
         { path: 'expenses', element: <ExpensesPage /> },
-        // { path: 'expenses/create', element: <CreateExpense /> },
-        // { path: 'expenses/edit/:id', element: <EditExpense /> },
+        { path: 'expenses/create', element: <CreateExpense /> },
+        { path: 'expenses/edit/:id', element: <EditExpense /> },
         // { path: 'expenses/details/:id', element: <ExpenseDetails /> },
 
 
