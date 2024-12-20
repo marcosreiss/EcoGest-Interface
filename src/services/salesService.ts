@@ -10,7 +10,10 @@ export const getSalesPagedService = async (skip: number, take: number): Promise<
 
 // Criar uma nova venda
 export const createSaleService = async (payload: CreateSalePayload): Promise<SaleResponse> => {
+    console.log(payload);
+    
     const response = await api.post<SaleResponse>("/sales", payload);
+    console.log(response);
     return response.data;
 };
 

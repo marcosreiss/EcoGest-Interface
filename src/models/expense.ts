@@ -1,9 +1,11 @@
 export interface Expense {
-    id: number;
+    expenseId: number;
+    purchasesId?: null;
+    employeeId?: number;
     type: string;
     value: number;
     description?: string | null;
-    purchaseId: number;
+    weightAmount?: number;
 }
 
 export interface ExpenseListResponse {
@@ -14,9 +16,12 @@ export interface ExpenseResponse {
     data: Expense;
 }
 
-export interface CreateExpensePayload{
+export interface ExpensePayload{
+    expenseId?: number;
+    purchasesId?: null;
+    employeeId?: number;
     type: string;
     value: number;
     description?: string | null;
-    purchaseId: number;
+    weightAmount: number;
 }
