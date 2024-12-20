@@ -9,6 +9,8 @@ import { AnalyticsCurrentVisits } from '../sections/overview/analytics-current-v
 import { AnalyticsWebsiteVisits } from '../sections/overview/analytics-website-visits';
 import { AnalyticsWidgetSummary } from '../sections/overview/analytics-widget-summary';
 
+// Importar o seu card
+import FinancialOverviewCard from '../sections/overview/analytics-banking';
 
 // ----------------------------------------------------------------------
 
@@ -17,49 +19,69 @@ export default function Page() {
         <DashboardContent maxWidth="xl">
 
         <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
-        Balanço
-      </Typography>
-
-            {/* <AdminViews /> */}
+            Balanço
+        </Typography>
 
         <Grid container spacing={3}>
-        <Grid xs={12} sm={6} md={3}>
-          <AnalyticsWidgetSummary
-            title="Total de Vendas"
-            total={714000}
-            icon={<img alt="icon" src="/assets/icons/glass/ic-glass-bag.svg" />}
-          />
-        </Grid>
+            <Grid xs={12} sm={6} md={3}>
+              <AnalyticsWidgetSummary
+                title="Total de Vendas"
+                total={714000}
+                icon={<img alt="icon" src="/assets/icons/glass/ic-glass-bag.svg" />}
+              />
+            </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
-          <AnalyticsWidgetSummary
-            title="Total de Compras"
-            total={1352831}
-            color="secondary"
-            icon={<img alt="icon" src="/assets/icons/glass/ic-glass-users.svg" />}
-          />
-        </Grid>
+            <Grid xs={12} sm={6} md={3}>
+              <AnalyticsWidgetSummary
+                title="Total de Compras"
+                total={1352831}
+                color="secondary"
+                icon={<img alt="icon" src="/assets/icons/glass/ic-glass-users.svg" />}
+              />
+            </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
-          <AnalyticsWidgetSummary
-            title="Compras em processo:"
-            total={1723315}
-            color="warning"
-            icon={<img alt="icon" src="/assets/icons/glass/ic-glass-buy.svg" />}
-          />
-        </Grid>
+            <Grid xs={12} sm={6} md={3}>
+              <AnalyticsWidgetSummary
+                title="Compras em processo:"
+                total={1723315}
+                color="warning"
+                icon={<img alt="icon" src="/assets/icons/glass/ic-glass-buy.svg" />}
+              />
+            </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
-          <AnalyticsWidgetSummary
-            title="Vendas em processo:"
-            total={234}
-            color="error"
-            icon={<img alt="icon" src="/assets/icons/glass/ic-glass-message.svg" />}
-          />
-        </Grid>
+            <Grid xs={12} sm={6} md={3}>
+              <AnalyticsWidgetSummary
+                title="Vendas em processo:"
+                total={234}
+                color="error"
+                icon={<img alt="icon" src="/assets/icons/glass/ic-glass-message.svg" />}
+              />
+            </Grid>
 
-            <Grid container spacing={3}> {/* Adiciona o container com espaçamento */}
-                <Grid item xs={12} md={6} lg={4}> {/* Define como item */}
+            {/* Aqui inserimos o FinancialOverviewCard */}
+            <Grid item xs={12} md={6} lg={11} paddingBottom={5}> 
+                <FinancialOverviewCard
+                    totalBalance={49990}
+                    income={9990}
+                    incomeChangePercentage={8.2}
+                    expenses={1989}
+                    expenseChangePercentage={-6.6}
+                    chartData={[
+                      { month: 'Jan', value: 5 },
+                      { month: 'Feb', value: 15 },
+                      { month: 'Mar', value: 20 },
+                      { month: 'Apr', value: 35 },
+                      { month: 'May', value: 90 },
+                      { month: 'Jun', value: 70 },
+                      { month: 'Jul', value: 60 },
+                      { month: 'Aug', value: 65 },
+                      { month: 'Sep', value: 70 },
+                    ]}
+                />
+            </Grid>
+
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={6} lg={4}>
                     <AnalyticsCurrentVisits
                         title="Current visits"
                         chart={{
@@ -73,7 +95,7 @@ export default function Page() {
                     />
                 </Grid>
 
-                <Grid item xs={12} md={6} lg={8}> {/* Define como item */}
+                <Grid item xs={12} md={6} lg={8}>
                     <AnalyticsWebsiteVisits
                         title="Website visits"
                         subheader="(+43%) than last year"
@@ -87,8 +109,7 @@ export default function Page() {
                     />
                 </Grid>
             </Grid>
-            
-      </Grid>
+        </Grid>
       </DashboardContent>
     );
 }
