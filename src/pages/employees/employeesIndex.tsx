@@ -31,15 +31,6 @@ export default function EmployeePage() {
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { data, isLoading } = useGetEmployeesPaged();
-  
-
-  const totalItemsRef = React.useRef(0);
-
-  // Define totalItems apenas na primeira chamada
-  if (page === 0 && data?.meta?.totalItems && totalItemsRef.current === 0) {
-    totalItemsRef.current = data.meta.totalItems;
-  }
-  const totalItems = totalItemsRef.current;
 
   const { data: searchResults, isLoading: isSearching } = useGetEmployeeByName(debouncedSearchString);
 
@@ -114,7 +105,7 @@ export default function EmployeePage() {
                 setPage={setPage}
                 page={page}
                 rowsPerPage={rowsPerPage}
-                totalItems={totalItems}
+                totalItems={data?.meta.totalItems}
               />
             </TableContainer>
           </Grid>

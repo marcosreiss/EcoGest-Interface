@@ -30,15 +30,6 @@ export default function SalesIndex() {
 
     const { data, isLoading } = useGetSalesPaged(page * rowsPerPage, rowsPerPage);
 
-    const totalItemsRef = React.useRef(0);
-
-    // Define totalItems apenas na primeira chamada
-    if (page === 0 && data?.meta?.totalItems && totalItemsRef.current === 0) {
-        totalItemsRef.current = data.meta.totalItems;
-    }
-    const totalItems = totalItemsRef.current;
-
-
     // const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     //     const inputValue = event.target.value;
 
@@ -107,7 +98,7 @@ export default function SalesIndex() {
                                 setPage={setPage}
                                 page={page}
                                 rowsPerPage={rowsPerPage}
-                                totalItems={totalItems}
+                                totalItems={data?.meta.totalItems}
                             />
                         </TableContainer>
                     </Grid>

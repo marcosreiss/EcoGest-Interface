@@ -30,14 +30,6 @@ export default function ProductPage() {
 
   const { data, isLoading } = useGetProductsPaged(page * rowsPerPage, rowsPerPage);
 
-  const totalItemsRef = React.useRef(0);
-
-  // Define totalItems apenas na primeira chamada
-  if (page === 0 && data?.meta?.totalItems && totalItemsRef.current === 0) {
-    totalItemsRef.current = data.meta.totalItems;
-  }
-  const totalItems = totalItemsRef.current; // Use totalItemsRef.current onde necessário
-
   const products = data?.data || [];
 
   const deleteProduct = useDeleteProduct();
@@ -86,7 +78,7 @@ export default function ProductPage() {
                 setPage={setPage}
                 page={page}
                 rowsPerPage={rowsPerPage}
-                totalItems={totalItems}
+                totalItems={data?.meta.totalItems}
               />
             </TableContainer>
           </Grid>

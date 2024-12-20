@@ -35,15 +35,6 @@ export default function CustomersIndex() {
 
     const { data, isLoading } = useGetCustomersPaginaded(page * rowsPerPage, rowsPerPage);
 
-
-    const totalItemsRef = React.useRef(0);
-
-    // Define totalItems apenas na primeira chamada
-    if (page === 0 && data?.meta?.totalItems && totalItemsRef.current === 0) {
-        totalItemsRef.current = data.meta.totalItems;
-    }
-    const totalItems = totalItemsRef.current; // Use totalItemsRef.current onde necessário
-
     const { data: searchResults, isLoading: isSearching } = useGetCustomerByName(debouncedSearchString);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,7 +83,7 @@ export default function CustomersIndex() {
 
             <DashboardContent maxWidth="md">
                 <Grid container>
-                    <TableHeaderComponent title='Clientes' addButtonName='Cadastrar Client' addButtonPath='/customers/create' />
+                    <TableHeaderComponent title='Clientes' addButtonName='Cadastrar Cliente' addButtonPath='/customers/create' />
                     <Grid item xs={12}>
 
                         <TableSearch handleDelete={handleDeleteCustomer} selectedRows={selectedCustomers} handleSearchChange={handleSearchChange} isSearchDisabled={false} />
@@ -103,7 +94,7 @@ export default function CustomersIndex() {
                                 <TableComponet setSelectedCustomers={setSelectedCustomers} isSearching={isSearching} customers={customers || []} isLoading={isLoading} />
                             </Box>
 
-                            <TableFooterComponent setPage={setPage} page={page} rowsPerPage={rowsPerPage} totalItems={totalItems} />
+                            <TableFooterComponent setPage={setPage} page={page} rowsPerPage={rowsPerPage} totalItems={data?.meta.totalItems} />
                         </TableContainer>
                     </Grid>
                 </Grid>

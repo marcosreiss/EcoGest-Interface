@@ -34,14 +34,6 @@ export default function SuppliersIndex() {
 
     const { data, isLoading } = useGetSuppliersPaginated(page * rowsPerPage, rowsPerPage);
 
-
-    const totalItemsRef = React.useRef(0);
-
-    if (page === 0 && data?.meta?.totalItems && totalItemsRef.current === 0) {
-        totalItemsRef.current = data.meta.totalItems;
-    }
-    const totalItems = totalItemsRef.current;
-
     const { data: searchResults, isLoading: isSearching } = useGetSupplierByName(debouncedSearchString);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,7 +90,7 @@ export default function SuppliersIndex() {
                                 <SupplierTableComponent setSelectedSuppliers={setSelectedSuppliers} isSearching={isSearching} suppliers={suppliers || []} isLoading={isLoading} />
                             </Box>
 
-                            <TableFooterComponent setPage={setPage} page={page} rowsPerPage={rowsPerPage} totalItems={totalItems} />
+                            <TableFooterComponent setPage={setPage} page={page} rowsPerPage={rowsPerPage} totalItems={data?.meta.totalItems} />
                         </TableContainer>
                     </Grid>
                 </Grid>

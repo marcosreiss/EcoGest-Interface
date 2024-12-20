@@ -29,14 +29,6 @@ export default function ExpensePage() {
 
   const { data, isLoading } = useGetExpensesPaginated(page * rowsPerPage, rowsPerPage);
 
-  const totalItemsRef = React.useRef(0);
-
-  // Define totalItems apenas na primeira chamada
-  if (page === 0 && data?.meta?.totalItems && totalItemsRef.current === 0) {
-    totalItemsRef.current = data.meta.totalItems;
-  }
-  const totalItems = totalItemsRef.current;
-
   const expenses = data?.data || [];
 
   const deleteExpense = useDeleteExpense();
@@ -89,7 +81,7 @@ export default function ExpensePage() {
                 setPage={setPage}
                 page={page}
                 rowsPerPage={rowsPerPage}
-                totalItems={totalItems}
+                totalItems={data?.meta.totalItems}
               />
             </TableContainer>
           </Grid>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 
 import { Table, TableRow, TableCell, TableFooter, TablePagination } from "@mui/material";
 
@@ -10,20 +10,27 @@ interface TableFooterComponentProps {
 }
 
 const TableFooterComponent: React.FC<TableFooterComponentProps> = ({ setPage, totalItems, rowsPerPage, page }) => {
+    const lastValidTotalItems = useRef<number>(totalItems); // Armazena o último valor válido
+
+    // Atualiza o valor de `lastValidTotalItems` sempre que `totalItems` for válido
+    useEffect(() => {
+        if (!Number.isNaN(totalItems) && totalItems !== null && totalItems !== undefined) {
+            lastValidTotalItems.current = totalItems;
+        }
+    }, [totalItems]);
 
     const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
         setPage(newPage);
     };
-    
 
     return (
-        <Table >
+        <Table>
             <TableFooter>
                 <TableRow>
                     <TableCell colSpan={3}>
                         <TablePagination 
                             rowsPerPageOptions={[]} // Remove opções (fixo)
-                            count={totalItems} // Total de registros
+                            count={totalItems || lastValidTotalItems.current} // Usa o último valor válido como fallback
                             rowsPerPage={rowsPerPage} // Fixo
                             page={page} // Página atual
                             onPageChange={handleChangePage} // Corrigido para usar a função diretamente
