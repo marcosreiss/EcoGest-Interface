@@ -10,11 +10,11 @@ interface TableFooterComponentProps {
 }
 
 const TableFooterComponent: React.FC<TableFooterComponentProps> = ({ setPage, totalItems, rowsPerPage, page }) => {
-    const lastValidTotalItems = useRef<number>(totalItems); // Armazena o último valor válido
+    const lastValidTotalItems = useRef<number>(0); // Inicializa com 0 como fallback padrão
 
     // Atualiza o valor de `lastValidTotalItems` sempre que `totalItems` for válido
     useEffect(() => {
-        if (!Number.isNaN(totalItems) && totalItems !== null && totalItems !== undefined) {
+        if (typeof totalItems === "number" && !Number.isNaN(totalItems)) {
             lastValidTotalItems.current = totalItems;
         }
     }, [totalItems]);
@@ -23,6 +23,9 @@ const TableFooterComponent: React.FC<TableFooterComponentProps> = ({ setPage, to
         setPage(newPage);
     };
 
+    // Garante que `count` tenha um valor válido
+    const validCount = typeof totalItems === "number" && !Number.isNaN(totalItems) ? totalItems : lastValidTotalItems.current;
+
     return (
         <Table>
             <TableFooter>
@@ -30,7 +33,7 @@ const TableFooterComponent: React.FC<TableFooterComponentProps> = ({ setPage, to
                     <TableCell colSpan={3}>
                         <TablePagination 
                             rowsPerPageOptions={[]} // Remove opções (fixo)
-                            count={totalItems || lastValidTotalItems.current} // Usa o último valor válido como fallback
+                            count={validCount} // Usa sempre um valor válido
                             rowsPerPage={rowsPerPage} // Fixo
                             page={page} // Página atual
                             onPageChange={handleChangePage} // Corrigido para usar a função diretamente
@@ -43,5 +46,6 @@ const TableFooterComponent: React.FC<TableFooterComponentProps> = ({ setPage, to
         </Table>
     );
 };
+
 
 export default TableFooterComponent;

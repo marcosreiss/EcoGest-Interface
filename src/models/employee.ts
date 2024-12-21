@@ -17,7 +17,7 @@ export interface Employee {
 }
 
 export interface EmployeeListResponse {
-    employees: Employee[];
+    data: Employee[];
     meta: any;
 }
 

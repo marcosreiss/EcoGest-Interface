@@ -31,6 +31,8 @@ export default function EmployeePage() {
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { data, isLoading } = useGetEmployeesPaged();
+  console.log(data);
+  
 
   const { data: searchResults, isLoading: isSearching } = useGetEmployeeByName(debouncedSearchString);
 
@@ -70,8 +72,8 @@ export default function EmployeePage() {
     });
   };
 
-  const employees = debouncedSearchString.length >= 3 ? searchResults : data?.employees;
-
+  const employees = debouncedSearchString.length >= 3 ? searchResults : data?.data;
+  
   return (
     <>
       <Helmet>
