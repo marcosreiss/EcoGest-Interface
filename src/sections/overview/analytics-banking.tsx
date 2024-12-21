@@ -44,6 +44,7 @@ interface FinancialOverviewCardProps {
   expenses: number;
   expenseChangePercentage: number;
   onPeriodChange?: (period: string) => void;
+  chartData: Array<{month: string; value: number}>
 }
 
 const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
@@ -53,6 +54,7 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
   expenses,
   expenseChangePercentage,
   onPeriodChange,
+  chartData
 }) => {
   
   const [selectedPeriod, setSelectedPeriod] = useState('Month');
