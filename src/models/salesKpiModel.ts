@@ -53,8 +53,8 @@ export enum TimeGranularity {
 }
 
 export enum StackBy {
-    Supplier = "supplier",
-    Product = "product"
+    Supplier = "fornecedor",
+    Product = "produto"
 }
 
 export interface SalesKpiParams{

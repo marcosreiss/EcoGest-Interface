@@ -22,7 +22,8 @@ export default function Page() {
     const [params, setParams] = useState<SalesKpiParams>({})
 
     const { data } = useGetSalesKpi(params);
-
+    console.log(data);
+    
 
     return (
         <DashboardContent maxWidth="xl">
