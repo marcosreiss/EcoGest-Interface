@@ -46,7 +46,7 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ handleSearchChange, s
                 }}
             >
                 {/* Barra de Pesquisa */}
-                {/* <Box sx={{ flex: 1, marginRight: '16px' }}>
+                <Box sx={{ flex: 1, marginRight: '16px' }}>
                     <TextField
                         fullWidth
                         label="Data Inicial"
@@ -71,7 +71,7 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ handleSearchChange, s
                             endDate: e.target.value,
                           }))}
                     />
-                </Box> */}
+                </Box>
 
                 {/* Botão de Deletar */}
                 {selectedRows.length > 0 ? (

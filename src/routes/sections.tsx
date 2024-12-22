@@ -16,7 +16,7 @@ export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const ReceiptsPage = lazy(() => import('src/pages/receipts/receipts'));
-export const AdminPage = lazy(() => import('src/pages/admin'));
+export const AdminPage = lazy(() => import('src/pages/admin/admin'));
 
 // ---------- Costumer Components
 export const CustomersPage = lazy(() => import('src/pages/customers/customersIndex'));
