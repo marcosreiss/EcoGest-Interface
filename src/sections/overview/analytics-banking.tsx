@@ -1,4 +1,4 @@
-import type { KpiParams } from 'src/models/kpiParamsModel';
+import type { KpiParams} from 'src/models/kpiParamsModel';
 import type { TotalExpensesData } from 'src/models/ExpensesKpiRespnse';
 import type { TotalSalesApprovedData } from 'src/models/salesKpiResponse';
 
@@ -19,26 +19,7 @@ import {
   CardContent,
 } from '@mui/material';
 
-// interface DataPoint {
-//   month: string;
-//   value: number;
-// }
-
-// Dados de exemplo
-const DATA_SETS = {
-  Income: {
-    Day:    [ { month: 'Mon', value: 100 }, { month: 'Tue', value: 120 }, { month: 'Wed', value: 90 }, { month: 'Thu', value: 150 }, { month: 'Fri', value: 110 } ],
-    Week:   [ { month: 'W1', value: 500 }, { month: 'W2', value: 700 }, { month: 'W3', value: 650 }, { month: 'W4', value: 800 } ],
-    Month:  [ { month: 'Jan', value: 5 }, { month: 'Feb', value: 15 }, { month: 'Mar', value: 20 }, { month: 'Apr', value: 35 }, { month: 'May', value: 90 }, { month: 'Jun', value: 70 }, { month: 'Jul', value: 60 }, { month: 'Aug', value: 65 }, { month: 'Sep', value: 70 } ],
-    Year:   [ { month: '2020', value: 4000 }, { month: '2021', value: 4500 }, { month: '2022', value: 4800 }, { month: '2023', value: 5200 } ],
-  },
-  Expenses: {
-    Day:    [ { month: 'Mon', value: 80 }, { month: 'Tue', value: 100 }, { month: 'Wed', value: 60 }, { month: 'Thu', value: 70 }, { month: 'Fri', value: 90 } ],
-    Week:   [ { month: 'W1', value: 300 }, { month: 'W2', value: 400 }, { month: 'W3', value: 450 }, { month: 'W4', value: 500 } ],
-    Month:  [ { month: 'Jan', value: 2 }, { month: 'Feb', value: 8 }, { month: 'Mar', value: 12 }, { month: 'Apr', value: 18 }, { month: 'May', value: 30 }, { month: 'Jun', value: 28 }, { month: 'Jul', value: 22 }, { month: 'Aug', value: 25 }, { month: 'Sep', value: 27 } ],
-    Year:   [ { month: '2020', value: 2000 }, { month: '2021', value: 2200 }, { month: '2022', value: 2500 }, { month: '2023', value: 2700 } ],
-  },
-};
+import { TimeGranularity } from 'src/models/kpiParamsModel';
 
 interface FinancialOverviewCardProps {
   totalBalance: number;
@@ -46,7 +27,6 @@ interface FinancialOverviewCardProps {
   incomeChangePercentage: number;
   expenses: number;
   expenseChangePercentage: number;
-  onPeriodChange?: (period: string) => void;
   salesData: TotalSalesApprovedData[];
   expensesData: TotalExpensesData[];
   setSalesKpiParams: React.Dispatch<React.SetStateAction<KpiParams>>;
@@ -58,45 +38,40 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
   incomeChangePercentage,
   expenses,
   expenseChangePercentage,
-  onPeriodChange,
   salesData,
   expensesData,
   setSalesKpiParams
 }) => {
-  
-  const [selectedPeriod, setSelectedPeriod] = useState('Month');
-  const [dataType, setDataType] = useState<'Income'|'Expenses'>('Income');
 
-  // Campos de busca: Income => Customers, Products | Expenses => Suppliers, Products
-  const [searchQuery1, setSearchQuery1] = useState('');
-  const [searchQuery2, setSearchQuery2] = useState('');
+  const [selectedPeriod, setSelectedPeriod] = useState<TimeGranularity>(TimeGranularity.Month);
+  const [dataType, setDataType] = useState<'Income' | 'Expenses'>('Income');
 
-  const handlePeriodChange = (period: string) => {
+  const handlePeriodChange = (period: TimeGranularity) => {
     setSelectedPeriod(period);
-    if (onPeriodChange) onPeriodChange(period);
-  };
+    setSalesKpiParams((prevParams) => ({ ...prevParams, period }));
+};
 
-  const handleDataTypeClick = (type: 'Income'|'Expenses') => {
+
+  const handleDataTypeClick = (type: 'Income' | 'Expenses') => {
     setDataType(type);
-    // Zerar buscas ao trocar de tipo (opcional)
-    setSearchQuery1('');
-    setSearchQuery2('');
   };
 
-  // Filtra dados conforme tipo, período, e buscas
   const filteredData = useMemo(() => {
-    const data = DATA_SETS[dataType][selectedPeriod as keyof typeof DATA_SETS['Income']] || [];
+    const data = (dataType === 'Income' ? salesData : expensesData).map((item) => {
+        const periodKey = selectedPeriod.toLowerCase() as keyof TotalSalesApprovedData;
 
-    // Implementação simples: Filtramos o campo month se contiver as strings digitadas
-    // Caso queira lógica mais complexa, ajuste aqui.
-    return data.filter((point) => {
-      const monthLower = point.month.toLowerCase();
-      // Se há alguma busca, verificamos se o month contém essas buscas
-      const matchQ1 = searchQuery1 ? monthLower.includes(searchQuery1.toLowerCase()) : true;
-      const matchQ2 = searchQuery2 ? monthLower.includes(searchQuery2.toLowerCase()) : true;
-      return matchQ1 && matchQ2;
+        return {
+            month: (item as any)[periodKey]?.toString() || '',
+            value: parseFloat(
+                dataType === 'Income'
+                    ? (item as TotalSalesApprovedData).totalSalesApproved
+                    : (item as TotalExpensesData).totalExpenses
+            ),
+        };
     });
-  }, [selectedPeriod, dataType, searchQuery1, searchQuery2]);
+    return data;
+}, [dataType, salesData, expensesData, selectedPeriod]);
+
 
   const incomeIsPositive = incomeChangePercentage >= 0;
   const expenseIsPositive = expenseChangePercentage >= 0;
@@ -104,7 +79,6 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
   const incomeChangeColor = incomeIsPositive ? 'success.main' : 'error.main';
   const expensesChangeColor = expenseIsPositive ? 'success.main' : 'error.main';
 
-  // Estilos condicionais para destacar o box selecionado
   const boxSelectedStyles = {
     border: '2px solid',
     borderColor: 'primary.main',
@@ -118,7 +92,6 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
   return (
     <Card variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
       <CardContent>
-        {/* Linha superior: Título e filtros de período */}
         <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
           <Grid item>
             <Box display="flex" alignItems="center">
@@ -138,29 +111,29 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
             <Stack direction="row" spacing={1} alignItems="center">
               <Stack direction="row" spacing={1}>
                 <Button 
-                  variant={selectedPeriod === 'Day' ? 'contained' : 'text'} 
-                  onClick={() => handlePeriodChange('Day')}
+                  variant={selectedPeriod === TimeGranularity.Day ? 'contained' : 'text'} 
+                  onClick={() => handlePeriodChange(TimeGranularity.Day)}
                   sx={{ textTransform: 'none' }}
                 >
                   Day
                 </Button>
                 <Button 
-                  variant={selectedPeriod === 'Week' ? 'contained' : 'text'} 
-                  onClick={() => handlePeriodChange('Week')}
+                  variant={selectedPeriod === TimeGranularity.Week ? 'contained' : 'text'} 
+                  onClick={() => handlePeriodChange(TimeGranularity.Week)}
                   sx={{ textTransform: 'none' }}
                 >
                   Week
                 </Button>
                 <Button 
-                  variant={selectedPeriod === 'Month' ? 'contained' : 'text'} 
-                  onClick={() => handlePeriodChange('Month')}
+                  variant={selectedPeriod === TimeGranularity.Month ? 'contained' : 'text'} 
+                  onClick={() => handlePeriodChange(TimeGranularity.Month)}
                   sx={{ textTransform: 'none' }}
                 >
                   Month
                 </Button>
                 <Button 
-                  variant={selectedPeriod === 'Year' ? 'contained' : 'text'} 
-                  onClick={() => handlePeriodChange('Year')}
+                  variant={selectedPeriod === TimeGranularity.Year ? 'contained' : 'text'} 
+                  onClick={() => handlePeriodChange(TimeGranularity.Year)}
                   sx={{ textTransform: 'none' }}
                 >
                   Year
@@ -170,7 +143,6 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
           </Grid>
         </Grid>
 
-        {/* Caixa Income como botão */}
         <Grid container spacing={2} sx={{ mb: 2 }}>
           <Grid item xs={12} md={6}>
             <Box 
@@ -221,7 +193,6 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
             </Box>
           </Grid>
 
-          {/* Caixa Expenses como botão */}
           <Grid item xs={12} md={6}>
             <Box 
               onClick={() => handleDataTypeClick('Expenses')}
@@ -272,64 +243,6 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
           </Grid>
         </Grid>
 
-        {/* Campos de busca dinâmicos conforme tipo selecionado */}
-        {/* <Grid container spacing={2} sx={{ mb: 2 }}>
-          {dataType === 'Income' && (
-            <>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label="Search by Customers"
-                  variant="outlined"
-                  size="small"
-                  fullWidth
-                  value={searchQuery1}
-                  onChange={(e) => setSearchQuery1(e.target.value)}
-                  placeholder="Type customer name..."
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label="Search by Products"
-                  variant="outlined"
-                  size="small"
-                  fullWidth
-                  value={searchQuery2}
-                  onChange={(e) => setSearchQuery2(e.target.value)}
-                  placeholder="Type product name..."
-                />
-              </Grid>
-            </>
-          )}
-
-          {dataType === 'Expenses' && (
-            <>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label="Search by Suppliers"
-                  variant="outlined"
-                  size="small"
-                  fullWidth
-                  value={searchQuery1}
-                  onChange={(e) => setSearchQuery1(e.target.value)}
-                  placeholder="Type supplier name..."
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label="Search by Products"
-                  variant="outlined"
-                  size="small"
-                  fullWidth
-                  value={searchQuery2}
-                  onChange={(e) => setSearchQuery2(e.target.value)}
-                  placeholder="Type product name..."
-                />
-              </Grid>
-            </>
-          )}
-        </Grid> */}
-
-        {/* Gráfico */}
         <Box sx={{ width: '100%', height: 250 }}>
           <ResponsiveContainer>
             <LineChart data={filteredData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
