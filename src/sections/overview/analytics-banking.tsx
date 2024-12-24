@@ -96,14 +96,14 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
           <Grid item>
             <Box display="flex" alignItems="center">
               <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600, mr: 0.5 }}>
-                Total balance
+                Saldo Total
               </Typography>
-              <Tooltip title="Your total account balance">
+              <Tooltip title="Seu saldo total">
                 <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
               </Tooltip>
             </Box>
             <Typography variant="h3" sx={{ fontWeight: 'bold', mt: 0.5 }}>
-              ${totalBalance.toLocaleString()}
+              R$ {totalBalance.toLocaleString('pt-BR')}
             </Typography>
           </Grid>
 
@@ -115,28 +115,28 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
                   onClick={() => handlePeriodChange(TimeGranularity.Day)}
                   sx={{ textTransform: 'none' }}
                 >
-                  Day
+                  Dia
                 </Button>
                 <Button 
                   variant={selectedPeriod === TimeGranularity.Week ? 'contained' : 'text'} 
                   onClick={() => handlePeriodChange(TimeGranularity.Week)}
                   sx={{ textTransform: 'none' }}
                 >
-                  Week
+                  Semana
                 </Button>
                 <Button 
                   variant={selectedPeriod === TimeGranularity.Month ? 'contained' : 'text'} 
                   onClick={() => handlePeriodChange(TimeGranularity.Month)}
                   sx={{ textTransform: 'none' }}
                 >
-                  Month
+                  Mês
                 </Button>
                 <Button 
                   variant={selectedPeriod === TimeGranularity.Year ? 'contained' : 'text'} 
                   onClick={() => handlePeriodChange(TimeGranularity.Year)}
                   sx={{ textTransform: 'none' }}
                 >
-                  Year
+                  Ano
                 </Button>
               </Stack>
             </Stack>
@@ -175,14 +175,14 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
                 <Box>
                   <Box display="flex" alignItems="center">
                     <Typography variant="body2" color="text.secondary" sx={{ mr: 0.5 }}>
-                      Income
+                      Receitas
                     </Typography>
-                    <Tooltip title="Total income recorded over this period">
+                    <Tooltip title="Total de receitas registradas neste período">
                       <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
                     </Tooltip>
                   </Box>
                   <Typography variant="h6" fontWeight="bold">
-                    ${income.toLocaleString()}
+                    R$ {income.toLocaleString('pt-BR')}
                   </Typography>
                 </Box>
               </Box>
@@ -224,14 +224,14 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
                 <Box>
                   <Box display="flex" alignItems="center">
                     <Typography variant="body2" color="text.secondary" sx={{ mr: 0.5 }}>
-                      Expenses
+                      Despesas
                     </Typography>
-                    <Tooltip title="Total expenses recorded over this period">
+                    <Tooltip title="Total de despesas registradas neste período">
                       <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
                     </Tooltip>
                   </Box>
                   <Typography variant="h6" fontWeight="bold">
-                    ${expenses.toLocaleString()}
+                    R$ {expenses.toLocaleString('pt-BR')}
                   </Typography>
                 </Box>
               </Box>
@@ -252,6 +252,7 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
               <RechartsTooltip
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 0 10px rgba(0,0,0,0.1)' }}
                 labelStyle={{ fontWeight: 'bold' }}
+                formatter={(value) => `R$ ${value.toLocaleString('pt-BR')}`}
               />
               <Line 
                 type="monotone" 
