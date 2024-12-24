@@ -23,6 +23,10 @@ export interface RevenueByProduct {
 
 export interface TotalSalesApprovedData {
     totalSalesApproved: string;
+    day?: number;
+    week?: any;
+    month?: number;
+    year?: number;
 }
 
 export interface SalesKpiResponse {
@@ -45,23 +49,5 @@ export interface SalesKpiResponse {
     };
 }
 
-export enum TimeGranularity {
-    Day = "day",
-    Week = "week",
-    Month = "month",
-    Year = "year"
-}
 
-export enum StackBy {
-    Supplier = "fornecedor",
-    Product = "produto"
-}
 
-export interface SalesKpiParams{
-    startDate?: string,
-    endDate?: string,
-    productId?: number,
-    supplierId?: number,
-    period?: TimeGranularity,
-    stackBy?: StackBy
-}

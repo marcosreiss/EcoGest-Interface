@@ -1,4 +1,5 @@
-import type { SalesKpiParams } from "src/models/salesKpiModel";
+
+import type { KpiParams} from "src/models/kpiParamsModel";
 
 import React from "react";
 
@@ -16,11 +17,12 @@ import {
 import { useGetProductsBasicInfo } from "src/hooks/useProduct";
 import { useGetSuppliersBasicInfo } from "src/hooks/useSupplier";
 
-import { StackBy, TimeGranularity } from "src/models/salesKpiModel";
+import { StackBy, TimeGranularity } from "src/models/kpiParamsModel";
+
 
 interface KpiFilterProps {
-    setSalesKpiParams: React.Dispatch<React.SetStateAction<SalesKpiParams>>;
-    salesKpiParams: SalesKpiParams;
+    setSalesKpiParams: React.Dispatch<React.SetStateAction<KpiParams>>;
+    salesKpiParams: KpiParams;
 }
 
 const KpiFilter: React.FC<KpiFilterProps> = ({ setSalesKpiParams, salesKpiParams }) => {

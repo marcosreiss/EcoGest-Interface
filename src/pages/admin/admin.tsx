@@ -1,28 +1,36 @@
-
-
-
-import type { SalesKpiParams } from 'src/models/salesKpiModel';
+import type { KpiParams } from 'src/models/kpiParamsModel';
 
 import { useState } from 'react';
 
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
-import { useGetSalesKpi } from 'src/hooks/useKpi';
+import { useGetSalesKpi, useGetExpensesKpi } from 'src/hooks/useKpi';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import KpiFilter from './components/kpiFilter';
 import FinancialOverviewCard from '../../sections/overview/analytics-banking';
-import { AnalyticsCurrentVisits } from '../../sections/overview/analytics-current-visits';
-import { AnalyticsWebsiteVisits } from '../../sections/overview/analytics-website-visits';
-import { AnalyticsWidgetSummary } from '../../sections/overview/analytics-widget-summary';
+// import { AnalyticsCurrentVisits } from '../../sections/overview/analytics-current-visits';
+// import { AnalyticsWebsiteVisits } from '../../sections/overview/analytics-website-visits';
+// import { AnalyticsWidgetSummary } from '../../sections/overview/analytics-widget-summary';
 
 export default function Page() {
-    const [params, setParams] = useState<SalesKpiParams>({})
+    const [params, setParams] = useState<KpiParams>({})
 
-    const { data } = useGetSalesKpi(params);
-    console.log(data);
+    const { data: salesData } = useGetSalesKpi(params);
+    const { data: expensesData} = useGetExpensesKpi(params);
+    
+    const totalSalesAmount = salesData?.data.totalSalesApprovedData.reduce(
+        (acc, data) => acc + parseFloat(data.totalSalesApproved), 0
+    ) ?? 0;
+
+    const totalExpensesAmount = expensesData?.data.totalExpensesData.reduce(
+        (acc, data) => acc + parseFloat(data.totalExpenses), 0
+    ) ?? 0;
+
+    const totalBalanceData = totalSalesAmount - totalExpensesAmount;
+    console.log(expensesData);
     
 
     return (
@@ -34,7 +42,7 @@ export default function Page() {
             <KpiFilter salesKpiParams={params} setSalesKpiParams={setParams}  />
 
             <Grid container spacing={3}>
-                <Grid item xs={12} sm={6} md={3}>
+                {/* <Grid item xs={12} sm={6} md={3}>
                     <AnalyticsWidgetSummary
                         title="Total de Vendas"
                         total={714000}
@@ -67,30 +75,22 @@ export default function Page() {
                         color="error"
                         icon={<img alt="icon" src="/assets/icons/glass/ic-glass-message.svg" />}
                     />
-                </Grid>
+                </Grid> */}
 
                 <Grid item xs={12} md={12} lg={12} paddingBottom={5}>
                     <FinancialOverviewCard
-                        totalBalance={49990}
-                        income={9990}
-                        incomeChangePercentage={8.2}
-                        expenses={1989}
-                        expenseChangePercentage={-6.6}
-                        chartData={[
-                            { month: 'Jan', value: 5 },
-                            { month: 'Feb', value: 15 },
-                            { month: 'Mar', value: 20 },
-                            { month: 'Apr', value: 35 },
-                            { month: 'May', value: 90 },
-                            { month: 'Jun', value: 70 },
-                            { month: 'Jul', value: 60 },
-                            { month: 'Aug', value: 65 },
-                            { month: 'Sep', value: 70 },
-                        ]}
+                        totalBalance={totalBalanceData}
+                        income={totalExpensesAmount}
+                        incomeChangePercentage={0}
+                        expenses={totalExpensesAmount}
+                        expenseChangePercentage={0}
+                        salesData={salesData?.data.totalSalesApprovedData ?? []}
+                        expensesData={expensesData?.data.totalExpensesData ?? []}
+                        setSalesKpiParams={setParams}
                     />
                 </Grid>
 
-                <Grid container spacing={3}>
+                {/* <Grid container spacing={3}>
                     <Grid item xs={12} md={6} lg={4}>
                         <AnalyticsCurrentVisits
                             title="Current visits"
@@ -118,7 +118,7 @@ export default function Page() {
                             }}
                         />
                     </Grid>
-                </Grid>
+                </Grid> */}
             </Grid>
         </DashboardContent>
     );

@@ -1,13 +1,21 @@
 import type { AxiosError } from 'axios';
+import type { KpiParams } from 'src/models/kpiParamsModel';
+import type { ExpensesKpiResponse } from 'src/models/ExpensesKpiRespnse';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getSalesKpiService } from '../services/kpiService';
- 
-import type { SalesKpiParams, SalesKpiResponse } from '../models/salesKpiModel'; 
+import { getSalesKpiService, getExpensesKpiService } from '../services/kpiService';
 
-export const useGetSalesKpi = (salesParams?: SalesKpiParams) =>
+import type { SalesKpiResponse } from '../models/salesKpiResponse';
+
+export const useGetSalesKpi = (salesParams?: KpiParams) =>
     useQuery<SalesKpiResponse, AxiosError>({
         queryKey: ['salesKpi', salesParams],
         queryFn: () => getSalesKpiService(salesParams),
+    });
+
+export const useGetExpensesKpi = (expensesParams?: KpiParams) =>
+    useQuery<ExpensesKpiResponse, AxiosError>({
+        queryKey: ['expensesKpi', expensesParams],
+        queryFn: () => getExpensesKpiService(expensesParams),
     });

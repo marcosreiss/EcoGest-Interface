@@ -1,3 +1,7 @@
+import type { KpiParams } from 'src/models/kpiParamsModel';
+import type { TotalExpensesData } from 'src/models/ExpensesKpiRespnse';
+import type { TotalSalesApprovedData } from 'src/models/salesKpiResponse';
+
 import React, { useMemo, useState } from 'react';
 import { Line, XAxis, YAxis, LineChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 
@@ -11,7 +15,6 @@ import {
   Stack,
   Button,
   Tooltip,
-  TextField,
   Typography,
   CardContent,
 } from '@mui/material';
@@ -44,7 +47,9 @@ interface FinancialOverviewCardProps {
   expenses: number;
   expenseChangePercentage: number;
   onPeriodChange?: (period: string) => void;
-  chartData: Array<{month: string; value: number}>
+  salesData: TotalSalesApprovedData[];
+  expensesData: TotalExpensesData[];
+  setSalesKpiParams: React.Dispatch<React.SetStateAction<KpiParams>>;
 }
 
 const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
@@ -54,7 +59,9 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
   expenses,
   expenseChangePercentage,
   onPeriodChange,
-  chartData
+  salesData,
+  expensesData,
+  setSalesKpiParams
 }) => {
   
   const [selectedPeriod, setSelectedPeriod] = useState('Month');
@@ -266,7 +273,7 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
         </Grid>
 
         {/* Campos de busca dinâmicos conforme tipo selecionado */}
-        <Grid container spacing={2} sx={{ mb: 2 }}>
+        {/* <Grid container spacing={2} sx={{ mb: 2 }}>
           {dataType === 'Income' && (
             <>
               <Grid item xs={12} md={6}>
@@ -320,7 +327,7 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
               </Grid>
             </>
           )}
-        </Grid>
+        </Grid> */}
 
         {/* Gráfico */}
         <Box sx={{ width: '100%', height: 250 }}>
