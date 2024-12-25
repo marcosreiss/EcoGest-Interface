@@ -80,7 +80,7 @@ export default function Page() {
                 <Grid item xs={12} md={12} lg={12} paddingBottom={5}>
                     <FinancialOverviewCard
                         totalBalance={totalBalanceData}
-                        income={totalExpensesAmount}
+                        income={totalSalesAmount}
                         incomeChangePercentage={0}
                         expenses={totalExpensesAmount}
                         expenseChangePercentage={0}
