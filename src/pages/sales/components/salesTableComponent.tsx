@@ -174,9 +174,11 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                     <MenuItem onClick={() => handleDetailsClick(sale.saleId)}>
                       Detalhes
                     </MenuItem>
-                    <MenuItem onClick={() => handleEditClick(sale.saleId)}>
-                      Editar
-                    </MenuItem>
+                    {sale.saleStatus === 'processing' && (
+                        <MenuItem onClick={() => handleEditClick(sale.saleId)}>
+                        Editar
+                      </MenuItem>
+                    )}
                     <MenuItem onClick={() => handleDeleteClick(sale.saleId)}>
                       Deletar
                     </MenuItem>

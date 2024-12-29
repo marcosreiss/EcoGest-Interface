@@ -21,7 +21,7 @@ import {
 import { useRouter } from "src/routes/hooks";
 
 import { useGetProductsBasicInfo } from "src/hooks/useProduct";
-import { useGetCustomersBasicInfo } from "src/hooks/useCustomer";
+// import { useGetCustomersBasicInfo } from "src/hooks/useCustomer";
 import { useUpdateSale, useGetSaleById } from "src/hooks/useSales";
 
 import { CONFIG } from "src/config-global";
@@ -43,11 +43,12 @@ export default function EditSalePage() {
     const { register, handleSubmit, setValue, formState: { errors } } = useForm<CreateSalePayload>();
     const { data: sale, isLoading: loadingSale } = useGetSaleById(saleId);
     const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
-    const { data: customers, isLoading: loadingCustomers } = useGetCustomersBasicInfo();
+    // const { data: customers, isLoading: loadingCustomers } = useGetCustomersBasicInfo();
     const updateSale = useUpdateSale();
     const router = useRouter();
     const { addNotification } = useNotification();
 
+    const navigate = useRouter();
     useEffect(() => {
         if (sale) {
             setValue("customerId", sale.customerId);
@@ -57,7 +58,11 @@ export default function EditSalePage() {
             setValue("saleStatus", sale.saleStatus);
             setValue("date_time", sale.date_time);
         }
-    }, [sale, setValue]);
+        if(sale?.saleStatus !== "processing"){
+            navigate.push('/sales');
+            addNotification("Não é possível editar uma venda aprovada ou cancelada", "warning");
+        }
+    }, [addNotification, navigate, sale, setValue]);
 
     const onSubmit = (data: CreateSalePayload) => {
         updateSale.mutate(
@@ -102,7 +107,7 @@ export default function EditSalePage() {
                                 </Grid>
 
                                 {/* Cliente */}
-                                <Grid item xs={12}>
+                                {/* <Grid item xs={12}>
                                     <FormControl fullWidth>
                                         <InputLabel id="customer-label">Cliente</InputLabel>
                                         <Select
@@ -129,7 +134,7 @@ export default function EditSalePage() {
                                             </Typography>
                                         )}
                                     </FormControl>
-                                </Grid>
+                                </Grid> */}
 
                                 {/* Produto */}
                                 <Grid item xs={12}>

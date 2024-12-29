@@ -4,16 +4,14 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 
+import Autocomplete from "@mui/material/Autocomplete";
 import {
     Box,
     Grid,
     Button,
-    Select,
     MenuItem,
     TextField,
     Typography,
-    InputLabel,
-    FormControl,
     CircularProgress,
 } from "@mui/material";
 
@@ -66,70 +64,68 @@ export default function CreateSalePage() {
                     <Grid item xs={12}>
                         <Box sx={formStyle}>
                             <Grid container spacing={2}>
-                                <Grid item xs={6}>
+                                <Grid item xs={12}>
                                     <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
                                         Criar Venda
                                     </Typography>
                                 </Grid>
 
                                 {/* Cliente */}
-                                <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="customer-label">Cliente</InputLabel>
-                                        <Select
-                                            labelId="customer-label"
-                                            label="Cliente"
-                                            defaultValue=""
-                                            {...register("customerId", { required: "Selecione um cliente." })}
-                                        >
-                                            {loadingCustomers ? (
-                                                <MenuItem disabled>
-                                                    <CircularProgress size={20} />
-                                                </MenuItem>
-                                            ) : (
-                                                customers?.data.map((customer) => (
-                                                    <MenuItem key={customer.customerId} value={customer.customerId}>
-                                                        {customer.name}
-                                                    </MenuItem>
-                                                ))
-                                            )}
-                                        </Select>
-                                        {errors.customerId && (
-                                            <Typography variant="body2" color="error">
-                                                {errors.customerId.message}
-                                            </Typography>
+                                <Grid item xs={12} sm={6} md={12}>
+                                    <Autocomplete
+                                        options={customers?.data || []}
+                                        loading={loadingCustomers}
+                                        getOptionLabel={(option) => option.name}
+                                        isOptionEqualToValue={(option, value) =>
+                                            option.customerId === value.customerId
+                                        }
+                                        onChange={(_, newValue) =>
+                                            register("customerId", { value: newValue?.customerId || undefined })
+                                        }
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Cliente"
+                                                variant="outlined"
+                                                error={!!errors.customerId}
+                                                helperText={errors.customerId?.message}
+                                            />
                                         )}
-                                    </FormControl>
+                                        renderOption={(props, option) => (
+                                            <li {...props} key={option.customerId}>
+                                                {option.name}
+                                            </li>
+                                        )}
+                                    />
                                 </Grid>
 
                                 {/* Produto */}
-                                <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="product-label">Produto</InputLabel>
-                                        <Select
-                                            labelId="product-label"
-                                            label="Produto"
-                                            defaultValue=""
-                                            {...register("productId", { required: "Selecione um produto." })}
-                                        >
-                                            {loadingProducts ? (
-                                                <MenuItem disabled>
-                                                    <CircularProgress size={20} />
-                                                </MenuItem>
-                                            ) : (
-                                                products?.data.map((product) => (
-                                                    <MenuItem key={product.productId} value={product.productId}>
-                                                        {product.name}
-                                                    </MenuItem>
-                                                ))
-                                            )}
-                                        </Select>
-                                        {errors.productId && (
-                                            <Typography variant="body2" color="error">
-                                                {errors.productId.message}
-                                            </Typography>
+                                <Grid item xs={12} sm={6} md={12}>
+                                    <Autocomplete
+                                        options={products?.data || []}
+                                        loading={loadingProducts}
+                                        getOptionLabel={(option) => option.name}
+                                        isOptionEqualToValue={(option, value) =>
+                                            option.productId === value.productId
+                                        }
+                                        onChange={(_, newValue) =>
+                                            register("productId", { value: newValue?.productId || undefined })
+                                        }
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Produto"
+                                                variant="outlined"
+                                                error={!!errors.productId}
+                                                helperText={errors.productId?.message}
+                                            />
                                         )}
-                                    </FormControl>
+                                        renderOption={(props, option) => (
+                                            <li {...props} key={option.productId}>
+                                                {option.name}
+                                            </li>
+                                        )}
+                                    />
                                 </Grid>
 
                                 {/* Quantidade */}
@@ -160,22 +156,19 @@ export default function CreateSalePage() {
 
                                 {/* Status */}
                                 <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Status</InputLabel>
-                                        <Select
-                                            defaultValue=""
-                                            {...register("saleStatus", { required: "Selecione um status." })}
-                                        >
-                                            <MenuItem value="pending">Pendente</MenuItem>
-                                            <MenuItem value="completed">Concluído</MenuItem>
-                                            <MenuItem value="canceled">Cancelado</MenuItem>
-                                        </Select>
-                                        {errors.saleStatus && (
-                                            <Typography variant="body2" color="error">
-                                                {errors.saleStatus.message}
-                                            </Typography>
-                                        )}
-                                    </FormControl>
+                                    <TextField
+                                        select
+                                        label="Status"
+                                        fullWidth
+                                        defaultValue=""
+                                        {...register("saleStatus", { required: "Selecione um status." })}
+                                        error={!!errors.saleStatus}
+                                        helperText={errors.saleStatus?.message}
+                                    >
+                                        <MenuItem value="pending">Pendente</MenuItem>
+                                        <MenuItem value="completed">Concluído</MenuItem>
+                                        <MenuItem value="canceled">Cancelado</MenuItem>
+                                    </TextField>
                                 </Grid>
 
                                 {/* Data da Venda */}

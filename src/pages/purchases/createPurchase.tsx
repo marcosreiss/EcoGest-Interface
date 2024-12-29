@@ -4,17 +4,14 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 
+import Autocomplete from "@mui/material/Autocomplete";
 import {
     Box,
     Grid,
     Button,
-    Select,
     MenuItem,
     TextField,
     Typography,
-    InputLabel,
-    FormControl,
-    OutlinedInput,
     CircularProgress,
 } from "@mui/material";
 
@@ -42,7 +39,7 @@ export default function CreatePurchasePage() {
 
     const [file, setFile] = useState<Blob | null>(null);
 
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<CreatePurchasePayload>();
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm<CreatePurchasePayload>();
     const createPurchase = useCreatePurchase();
     const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
     const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
@@ -87,72 +84,76 @@ export default function CreatePurchasePage() {
                     <Grid item xs={12}>
                         <Box sx={formStyle}>
                             <Grid container spacing={2}>
-                                <Grid item xs={6}>
+                                <Grid item xs={12}>
                                     <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
                                         Criar Compra
                                     </Typography>
                                 </Grid>
 
                                 {/* Fornecedor */}
-                                <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="supplier-label">Fornecedor</InputLabel>
-                                        <Select
-                                            labelId="supplier-label"
-                                            label="Fornecedor"
-                                            defaultValue=""
-                                            {...register("supplierId", { required: "Selecione um fornecedor." })}
-                                        >
-                                            {loadingSuppliers ? (
-                                                <MenuItem disabled>
-                                                    <CircularProgress size={20} />
-                                                </MenuItem>
-                                            ) : (
-                                                suppliers?.data.map((supplier) => (
-                                                    <MenuItem key={supplier.supplierId} value={supplier.supplierId}>
-                                                        {supplier.name}
-                                                    </MenuItem>
-                                                ))
-                                            )}
-                                        </Select>
-                                        {errors.supplierId && (
-                                            <Typography variant="body2" color="error">
-                                                {errors.supplierId.message}
-                                            </Typography>
+                                <Grid item xs={12} sm={6} md={12}>
+                                    <Autocomplete
+                                        options={suppliers?.data || []}
+                                        loading={loadingSuppliers}
+                                        getOptionLabel={(option) => option.name}
+                                        isOptionEqualToValue={(option, value) =>
+                                            option.supplierId === value.supplierId
+                                        }
+                                        onChange={(_, newValue) =>
+                                            setValue("supplierId", newValue?.supplierId || -1, {
+                                                shouldValidate: true,
+                                            })
+                                        }
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Fornecedor"
+                                                variant="outlined"
+                                                error={!!errors.supplierId}
+                                                helperText={errors.supplierId?.message}
+                                                {...register("supplierId", { required: "Selecione um fornecedor." })}
+                                            />
                                         )}
-                                    </FormControl>
+                                        renderOption={(props, option) => (
+                                            <li {...props} key={option.supplierId}>
+                                                {option.name}
+                                            </li>
+                                        )}
+                                    />
                                 </Grid>
-
 
                                 {/* Produto */}
-                                <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="product-label" >Produto</InputLabel>
-                                        <Select
-                                            labelId="product-label"
-                                            label="Produto"
-                                            defaultValue=""
-                                            {...register("productId", { required: "Selecione um produto." })}
-                                        >
-                                            {loadingProducts ? (
-                                                <MenuItem disabled>
-                                                    <CircularProgress size={20} />
-                                                </MenuItem>
-                                            ) : (
-                                                products?.data.map((product) => (
-                                                    <MenuItem key={product.productId} value={product.productId}>
-                                                        {product.name}
-                                                    </MenuItem>
-                                                ))
-                                            )}
-                                        </Select>
-                                        {errors.productId && (
-                                            <Typography variant="body2" color="error">
-                                                {errors.productId.message}
-                                            </Typography>
+                                <Grid item xs={12} sm={6} md={12}>
+                                    <Autocomplete
+                                        options={products?.data || []}
+                                        loading={loadingProducts}
+                                        getOptionLabel={(option) => option.name}
+                                        isOptionEqualToValue={(option, value) =>
+                                            option.productId === value.productId
+                                        }
+                                        onChange={(_, newValue) =>
+                                            setValue("productId", newValue?.productId || -1, {
+                                                shouldValidate: true,
+                                            })
+                                        }
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Produto"
+                                                variant="outlined"
+                                                error={!!errors.productId}
+                                                helperText={errors.productId?.message}
+                                                {...register("productId", { required: "Selecione um produto." })}
+                                            />
                                         )}
-                                    </FormControl>
+                                        renderOption={(props, option) => (
+                                            <li {...props} key={option.productId}>
+                                                {option.name}
+                                            </li>
+                                        )}
+                                    />
                                 </Grid>
+
                                 <Grid item xs={12}>
                                     <TextField
                                         fullWidth
@@ -176,31 +177,28 @@ export default function CreatePurchasePage() {
                                         helperText={errors.price?.message}
                                     />
                                 </Grid>
+
                                 {/* Status */}
                                 <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Status</InputLabel>
-                                        <Select
-                                            input={<OutlinedInput />}
-                                            defaultValue=""
-                                            {...register("status", { required: "Selecione um status." })}
-                                        >
-                                            <MenuItem value={PurchaseStatus.processing}>
-                                                <span style={{ color: "yellow" }}>●</span> Pendente
-                                            </MenuItem>
-                                            <MenuItem value={PurchaseStatus.approved}>
-                                                <span style={{ color: "green" }}>●</span> Aprovado
-                                            </MenuItem>
-                                            <MenuItem value={PurchaseStatus.canceled}>
-                                                <span style={{ color: "red" }}>●</span> Cancelado
-                                            </MenuItem>
-                                        </Select>
-                                        {errors.status && (
-                                            <Typography variant="body2" color="error">
-                                                {errors.status.message}
-                                            </Typography>
-                                        )}
-                                    </FormControl>
+                                    <TextField
+                                        select
+                                        label="Status"
+                                        fullWidth
+                                        defaultValue=""
+                                        {...register("status", { required: "Selecione um status." })}
+                                        error={!!errors.status}
+                                        helperText={errors.status?.message}
+                                    >
+                                        <MenuItem value={PurchaseStatus.processing}>
+                                            <span style={{ color: "yellow" }}>●</span> Pendente
+                                        </MenuItem>
+                                        <MenuItem value={PurchaseStatus.approved}>
+                                            <span style={{ color: "green" }}>●</span> Aprovado
+                                        </MenuItem>
+                                        <MenuItem value={PurchaseStatus.canceled}>
+                                            <span style={{ color: "red" }}>●</span> Cancelado
+                                        </MenuItem>
+                                    </TextField>
                                 </Grid>
 
                                 {/* Descrição */}
