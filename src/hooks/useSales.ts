@@ -9,6 +9,7 @@ import {
     deleteSaleService,
     getSaleByIdService,
     getSalesPagedService,
+    getSaleReceiptService,
     getSalesByProductService,
     getSalesByCustomerService,
 } from "src/services/salesService";
@@ -86,4 +87,12 @@ export const useGetSalesByProduct = (productId: number) =>
     useQuery<SaleListResponse, AxiosError>({
         queryKey: ['sales-by-product', productId],
         queryFn: () => getSalesByProductService(productId),
+    });
+
+// Hook para obter recibo de venda
+export const useGetSaleReceipt = (saleId: number) =>
+    useQuery<Blob, AxiosError>({
+        queryKey: ['sale-receipt', saleId],
+        queryFn: () => getSaleReceiptService(saleId),
+        enabled: !!saleId, // Só executa a consulta se o `saleId` estiver definido
     });
