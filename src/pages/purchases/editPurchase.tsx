@@ -5,16 +5,13 @@ import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
+import Autocomplete from "@mui/material/Autocomplete";
 import {
     Box,
     Grid,
     Button,
-    Select,
-    MenuItem,
     TextField,
     Typography,
-    InputLabel,
-    FormControl,
     CircularProgress,
 } from "@mui/material";
 
@@ -45,7 +42,12 @@ export default function EditPurchasePage() {
 
     const [file, setFile] = useState<Blob | null>(null);
 
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm<CreatePurchasePayload>();
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        formState: { errors },
+    } = useForm<CreatePurchasePayload>();
     const { data: purchase, isLoading: loadingPurchase } = useGetPurchaseById(purchaseId);
     const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
     const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
@@ -115,7 +117,7 @@ export default function EditPurchasePage() {
                     <Grid item xs={12}>
                         <Box sx={formStyle}>
                             <Grid container spacing={2}>
-                                <Grid item xs={6}>
+                                <Grid item xs={12}>
                                     <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
                                         Editar Compra
                                     </Typography>
@@ -123,63 +125,62 @@ export default function EditPurchasePage() {
 
                                 {/* Fornecedor */}
                                 <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="supplier-label">Fornecedor</InputLabel>
-                                        <Select
-                                            labelId="supplier-label"
-                                            label="Fornecedor"
-                                            defaultValue={purchase?.supplierId}
-                                            {...register("supplierId", { required: "Selecione um fornecedor." })}
-                                        >
-                                            {loadingSuppliers ? (
-                                                <MenuItem disabled>
-                                                    <CircularProgress size={20} />
-                                                </MenuItem>
-                                            ) : (
-                                                suppliers?.data.map((supplier) => (
-                                                    <MenuItem key={supplier.supplierId} value={supplier.supplierId}>
-                                                        {supplier.name}
-                                                    </MenuItem>
-                                                ))
-                                            )}
-                                        </Select>
-                                        {errors.supplierId && (
-                                            <Typography variant="body2" color="error">
-                                                {errors.supplierId.message}
-                                            </Typography>
+                                    <Autocomplete
+                                        options={suppliers?.data || []}
+                                        loading={loadingSuppliers}
+                                        getOptionLabel={(option) => option.name}
+                                        isOptionEqualToValue={(option, value) =>
+                                            option.supplierId === value.supplierId
+                                        }
+                                        defaultValue={suppliers?.data.find(
+                                            (supplier) => supplier.supplierId === purchase?.supplierId
                                         )}
-                                    </FormControl>
+                                        onChange={(_, newValue) =>
+                                            setValue("supplierId", newValue?.supplierId || -1, {
+                                                shouldValidate: true,
+                                            })
+                                        }
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Fornecedor"
+                                                variant="outlined"
+                                                error={!!errors.supplierId}
+                                                helperText={errors.supplierId?.message}
+                                                {...register("supplierId", { required: "Selecione um fornecedor." })}
+                                            />
+                                        )}
+                                    />
                                 </Grid>
-
 
                                 {/* Produto */}
                                 <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="product-label">Produto</InputLabel>
-                                        <Select
-                                            labelId="product-label"
-                                            label="Produto"
-                                            defaultValue={purchase?.productId}
-                                            {...register("productId", { required: "Selecione um produto." })}
-                                        >
-                                            {loadingProducts ? (
-                                                <MenuItem disabled>
-                                                    <CircularProgress size={20} />
-                                                </MenuItem>
-                                            ) : (
-                                                products?.data.map((product) => (
-                                                    <MenuItem key={product.productId} value={product.productId}>
-                                                        {product.name}
-                                                    </MenuItem>
-                                                ))
-                                            )}
-                                        </Select>
-                                        {errors.productId && (
-                                            <Typography variant="body2" color="error">
-                                                {errors.productId.message}
-                                            </Typography>
+                                    <Autocomplete
+                                        options={products?.data || []}
+                                        loading={loadingProducts}
+                                        getOptionLabel={(option) => option.name}
+                                        isOptionEqualToValue={(option, value) =>
+                                            option.productId === value.productId
+                                        }
+                                        defaultValue={products?.data.find(
+                                            (product) => product.productId === purchase?.productId
                                         )}
-                                    </FormControl>
+                                        onChange={(_, newValue) =>
+                                            setValue("productId", newValue?.productId || -1, {
+                                                shouldValidate: true,
+                                            })
+                                        }
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Produto"
+                                                variant="outlined"
+                                                error={!!errors.productId}
+                                                helperText={errors.productId?.message}
+                                                {...register("productId", { required: "Selecione um produto." })}
+                                            />
+                                        )}
+                                    />
                                 </Grid>
 
                                 {/* Quantidade e Preço */}
@@ -207,28 +208,19 @@ export default function EditPurchasePage() {
 
                                 {/* Status */}
                                 <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Status</InputLabel>
-                                        <Select
-                                            defaultValue=""
-                                            {...register("status", { required: "Selecione um status." })}
-                                        >
-                                            <MenuItem value={PurchaseStatus.processing}>
-                                                <span style={{ color: "yellow" }}>●</span> Pendente
-                                            </MenuItem>
-                                            <MenuItem value={PurchaseStatus.approved}>
-                                                <span style={{ color: "green" }}>●</span> Aprovado
-                                            </MenuItem>
-                                            <MenuItem value={PurchaseStatus.canceled}>
-                                                <span style={{ color: "red" }}>●</span> Cancelado
-                                            </MenuItem>
-                                        </Select>
-                                        {errors.status && (
-                                            <Typography variant="body2" color="error">
-                                                {errors.status.message}
-                                            </Typography>
-                                        )}
-                                    </FormControl>
+                                    <TextField
+                                        select
+                                        label="Status"
+                                        fullWidth
+                                        defaultValue={purchase?.purchaseStatus || ""}
+                                        {...register("status", { required: "Selecione um status." })}
+                                        error={!!errors.status}
+                                        helperText={errors.status?.message}
+                                    >
+                                        <option value={PurchaseStatus.processing}>Pendente</option>
+                                        <option value={PurchaseStatus.approved}>Aprovado</option>
+                                        <option value={PurchaseStatus.canceled}>Cancelado</option>
+                                    </TextField>
                                 </Grid>
 
                                 {/* Descrição */}
@@ -248,7 +240,11 @@ export default function EditPurchasePage() {
                                         fullWidth
                                         label="Data da Compra"
                                         type="date"
-                                        value={purchase?.date_time ? new Date(purchase.date_time).toISOString().split('T')[0] : ''}
+                                        value={
+                                            purchase?.date_time
+                                                ? new Date(purchase.date_time).toISOString().split("T")[0]
+                                                : ""
+                                        }
                                         InputLabelProps={{ shrink: true }}
                                         {...register("date_time", { required: "Selecione uma data." })}
                                         error={!!errors.date_time}
@@ -270,28 +266,6 @@ export default function EditPurchasePage() {
                                     {file && file instanceof File && (
                                         <Typography variant="body2">Arquivo: {file.name}</Typography>
                                     )}
-
-                                    {purchase?.paymentSlip && (
-                                        <Grid item xs={12} sx={{ mt: 2 }}>
-                                            <Button
-                                                variant="outlined"
-                                                fullWidth
-                                                onClick={() => {
-                                                    if (purchase?.paymentSlip?.data) {
-                                                        const blob = new Blob([Uint8Array.from(purchase?.paymentSlip.data)], {
-                                                            type: "application/pdf", // Altere o tipo, se necessário
-                                                        });
-                                                        const blobUrl = URL.createObjectURL(blob);
-                                                        window.open(blobUrl, "_blank");
-                                                    }
-                                                }}
-                                            >
-                                                Exibir Arquivo Atual
-                                            </Button>
-                                        </Grid>
-                                    )}
-
-
                                 </Grid>
 
                                 {/* Botão de Enviar */}

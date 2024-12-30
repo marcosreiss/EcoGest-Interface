@@ -190,13 +190,13 @@ export default function CreatePurchasePage() {
                                         helperText={errors.status?.message}
                                     >
                                         <MenuItem value={PurchaseStatus.processing}>
-                                            <span style={{ color: "yellow" }}>●</span> Pendente
+                                            Pendente
                                         </MenuItem>
                                         <MenuItem value={PurchaseStatus.approved}>
-                                            <span style={{ color: "green" }}>●</span> Aprovado
+                                            Aprovado
                                         </MenuItem>
                                         <MenuItem value={PurchaseStatus.canceled}>
-                                            <span style={{ color: "red" }}>●</span> Cancelado
+                                            Cancelado
                                         </MenuItem>
                                     </TextField>
                                 </Grid>
