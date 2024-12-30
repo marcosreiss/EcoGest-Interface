@@ -2,9 +2,9 @@ import type { Product } from "./product";
 import type { Supplier } from "./supplier";
 
 export enum PurchaseStatus {
-    processing, 
-    approved, 
-    canceled
+    processing = "processing",
+    approved = "approved",
+    canceled = "canceled"
 }
 export const purchaseStatusMapping: Record<string, string> = {
     processing: "pendente",

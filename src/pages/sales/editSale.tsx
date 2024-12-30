@@ -5,23 +5,19 @@ import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 
+import Autocomplete from "@mui/material/Autocomplete";
 import {
     Box,
     Grid,
     Button,
-    Select,
-    MenuItem,
     TextField,
     Typography,
-    InputLabel,
-    FormControl,
     CircularProgress,
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
 
 import { useGetProductsBasicInfo } from "src/hooks/useProduct";
-// import { useGetCustomersBasicInfo } from "src/hooks/useCustomer";
 import { useUpdateSale, useGetSaleById } from "src/hooks/useSales";
 
 import { CONFIG } from "src/config-global";
@@ -40,10 +36,14 @@ export default function EditSalePage() {
         bgcolor: "background.paper",
     };
 
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm<CreateSalePayload>();
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        formState: { errors },
+    } = useForm<CreateSalePayload>();
     const { data: sale, isLoading: loadingSale } = useGetSaleById(saleId);
     const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
-    // const { data: customers, isLoading: loadingCustomers } = useGetCustomersBasicInfo();
     const updateSale = useUpdateSale();
     const router = useRouter();
     const { addNotification } = useNotification();
@@ -58,8 +58,8 @@ export default function EditSalePage() {
             setValue("saleStatus", sale.saleStatus);
             setValue("date_time", sale.date_time);
         }
-        if(sale?.saleStatus !== "processing"){
-            navigate.push('/sales');
+        if (sale?.saleStatus !== "processing") {
+            navigate.push("/sales");
             addNotification("Não é possível editar uma venda aprovada ou cancelada", "warning");
         }
     }, [addNotification, navigate, sale, setValue]);
@@ -106,64 +106,34 @@ export default function EditSalePage() {
                                     </Typography>
                                 </Grid>
 
-                                {/* Cliente */}
-                                {/* <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="customer-label">Cliente</InputLabel>
-                                        <Select
-                                            labelId="customer-label"
-                                            label="Cliente"
-                                            defaultValue={sale?.customerId}
-                                            {...register("customerId", { required: "Selecione um cliente." })}
-                                        >
-                                            {loadingCustomers ? (
-                                                <MenuItem disabled>
-                                                    <CircularProgress size={20} />
-                                                </MenuItem>
-                                            ) : (
-                                                customers?.data.map((customer) => (
-                                                    <MenuItem key={customer.customerId} value={customer.customerId}>
-                                                        {customer.name}
-                                                    </MenuItem>
-                                                ))
-                                            )}
-                                        </Select>
-                                        {errors.customerId && (
-                                            <Typography variant="body2" color="error">
-                                                {errors.customerId.message}
-                                            </Typography>
-                                        )}
-                                    </FormControl>
-                                </Grid> */}
-
                                 {/* Produto */}
                                 <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="product-label">Produto</InputLabel>
-                                        <Select
-                                            labelId="product-label"
-                                            label="Produto"
-                                            defaultValue={sale?.productId}
-                                            {...register("productId", { required: "Selecione um produto." })}
-                                        >
-                                            {loadingProducts ? (
-                                                <MenuItem disabled>
-                                                    <CircularProgress size={20} />
-                                                </MenuItem>
-                                            ) : (
-                                                products?.data.map((product) => (
-                                                    <MenuItem key={product.productId} value={product.productId}>
-                                                        {product.name}
-                                                    </MenuItem>
-                                                ))
-                                            )}
-                                        </Select>
-                                        {errors.productId && (
-                                            <Typography variant="body2" color="error">
-                                                {errors.productId.message}
-                                            </Typography>
+                                    <Autocomplete
+                                        options={products?.data || []}
+                                        loading={loadingProducts}
+                                        getOptionLabel={(option) => option.name}
+                                        isOptionEqualToValue={(option, value) =>
+                                            option.productId === value.productId
+                                        }
+                                        defaultValue={products?.data.find(
+                                            (product) => product.productId === sale?.productId
                                         )}
-                                    </FormControl>
+                                        onChange={(_, newValue) =>
+                                            setValue("productId", newValue?.productId || -1, {
+                                                shouldValidate: true,
+                                            })
+                                        }
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Produto"
+                                                variant="outlined"
+                                                error={!!errors.productId}
+                                                helperText={errors.productId?.message}
+                                                {...register("productId", { required: "Selecione um produto." })}
+                                            />
+                                        )}
+                                    />
                                 </Grid>
 
                                 {/* Quantidade */}
@@ -192,22 +162,19 @@ export default function EditSalePage() {
 
                                 {/* Status */}
                                 <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Status</InputLabel>
-                                        <Select
-                                            value={sale?.saleStatus}
-                                            {...register("saleStatus", { required: "Selecione um status." })}
-                                        >
-                                            <MenuItem value="processing">Pendente</MenuItem>
-                                            <MenuItem value="approved">Concluído</MenuItem>
-                                            <MenuItem value="canceled">Cancelado</MenuItem>
-                                        </Select>
-                                        {errors.saleStatus && (
-                                            <Typography variant="body2" color="error">
-                                                {errors.saleStatus.message}
-                                            </Typography>
-                                        )}
-                                    </FormControl>
+                                    <TextField
+                                        select
+                                        label="Status"
+                                        fullWidth
+                                        defaultValue={sale?.saleStatus || ""}
+                                        {...register("saleStatus", { required: "Selecione um status." })}
+                                        error={!!errors.saleStatus}
+                                        helperText={errors.saleStatus?.message}
+                                    >
+                                        <option value="processing">Pendente</option>
+                                        <option value="approved">Concluído</option>
+                                        <option value="canceled">Cancelado</option>
+                                    </TextField>
                                 </Grid>
 
                                 {/* Data da Venda */}
@@ -216,7 +183,7 @@ export default function EditSalePage() {
                                         fullWidth
                                         label="Data da Venda"
                                         type="date"
-                                        value={sale?.date_time ? sale.date_time.split("T")[0] : ''}
+                                        value={sale?.date_time ? sale.date_time.split("T")[0] : ""}
                                         InputLabelProps={{ shrink: true }}
                                         {...register("date_time", { required: "Selecione uma data." })}
                                         error={!!errors.date_time}
