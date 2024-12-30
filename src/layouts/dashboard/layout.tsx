@@ -2,6 +2,7 @@ import type { Theme, SxProps, Breakpoint } from '@mui/material/styles';
 
 import { useState } from 'react';
 
+import { useLocation } from 'react-router-dom'; // Para obter a rota atual
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
@@ -29,10 +30,14 @@ export type DashboardLayoutProps = {
 
 export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) {
   const theme = useTheme();
+  const location = useLocation(); // Obter a rota atual
 
   const [navOpen, setNavOpen] = useState(false);
 
   const layoutQuery: Breakpoint = 'lg';
+
+  // Verificar se está na página inicial (dashboard)
+  const isDashboard = location.pathname === '/';
 
   return (
     <LayoutSection
@@ -55,7 +60,7 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
                 This is an info Alert.
               </Alert>
             ),
-            leftArea: (
+            leftArea: !isDashboard && ( // Condição para exibir apenas fora do dashboard
               <>
                 <MenuButton
                   onClick={() => setNavOpen(true)}
@@ -73,7 +78,6 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
             ),
             rightArea: (
               <Box gap={1} display="flex" alignItems="center">
-                {/* <NotificationsPopover data={_notifications} /> */}
                 <AccountPopover
                   data={[
                     {
@@ -92,8 +96,8 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
        * Sidebar
        *************************************** */
       sidebarSection={
-        <NavDesktop data={navData} layoutQuery={layoutQuery} />
-      }
+        !isDashboard && <NavDesktop data={navData} layoutQuery={layoutQuery} />
+      } // Condição para exibir apenas fora do dashboard
       /** **************************************
        * Footer
        *************************************** */
@@ -102,7 +106,7 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
        * Style
        *************************************** */
       cssVars={{
-        '--layout-nav-vertical-width': '300px',
+        '--layout-nav-vertical-width': !isDashboard ? '300px' : '0px', // Ajusta largura da navbar
         '--layout-dashboard-content-pt': theme.spacing(1),
         '--layout-dashboard-content-pb': theme.spacing(8),
         '--layout-dashboard-content-px': theme.spacing(5),
@@ -110,7 +114,7 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
       sx={{
         [`& .${layoutClasses.hasSidebar}`]: {
           [theme.breakpoints.up(layoutQuery)]: {
-            pl: 'var(--layout-nav-vertical-width)',
+            pl: !isDashboard ? 'var(--layout-nav-vertical-width)' : 0, // Remove padding lateral no dashboard
           },
         },
         ...sx,
