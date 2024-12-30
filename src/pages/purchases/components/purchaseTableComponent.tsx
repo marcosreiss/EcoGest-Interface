@@ -108,7 +108,7 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
       setSelectedPurchases((prev) => prev.filter((p) => p.purchaseId !== purchase.purchaseId));
     }
   };
-  
+
   return (
     <>
       <Table stickyHeader aria-label="purchases table">
@@ -161,7 +161,11 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                   >
                     <MenuItem onClick={() => handleDetailsClick(purchase.purchaseId)}>Detalhes</MenuItem>
                     <MenuItem onClick={() => handleEditClick(purchase.purchaseId)}>Editar</MenuItem>
-                    <MenuItem onClick={() => handleViewDocumentClick(purchase.paymentSlip)}>Visualizar Documento</MenuItem>
+                    {purchase.paymentSlip !== null && (
+                      <MenuItem onClick={() => handleViewDocumentClick(purchase.paymentSlip)}>
+                        Visualizar Documento
+                      </MenuItem>
+                    )}
                     <MenuItem onClick={() => handleDeleteClick(purchase.purchaseId)}>Deletar</MenuItem>
                   </Menu>
                 </TableCell>
