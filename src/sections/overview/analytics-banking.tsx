@@ -1,4 +1,4 @@
-import type { KpiParams} from 'src/models/kpiParamsModel';
+import type { KpiParams } from 'src/models/kpiParamsModel';
 import type { TotalExpensesData } from 'src/models/ExpensesKpiRespnse';
 import type { TotalSalesApprovedData } from 'src/models/salesKpiResponse';
 
@@ -49,7 +49,7 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
   const handlePeriodChange = (period: TimeGranularity) => {
     setSelectedPeriod(period);
     setSalesKpiParams((prevParams) => ({ ...prevParams, period }));
-};
+  };
 
 
   const handleDataTypeClick = (type: 'Income' | 'Expenses') => {
@@ -58,19 +58,20 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
 
   const filteredData = useMemo(() => {
     const data = (dataType === 'Income' ? salesData : expensesData).map((item) => {
-        const periodKey = selectedPeriod.toLowerCase() as keyof TotalSalesApprovedData;
+      const periodKey = selectedPeriod.toLowerCase() as keyof TotalSalesApprovedData;
 
-        return {
-            month: (item as any)[periodKey]?.toString() || '',
-            value: parseFloat(
-                dataType === 'Income'
-                    ? (item as TotalSalesApprovedData).totalSalesApproved
-                    : (item as TotalExpensesData).totalExpenses
-            ),
-        };
+      return {
+        month: (item as any)[periodKey]?.toString() || '', // Garantir string vazia
+        valor: parseFloat(
+          dataType === 'Income'
+            ? (item as TotalSalesApprovedData).totalSalesApproved
+            : (item as TotalExpensesData).totalExpenses
+        ) || 0, // Garantir que o valor seja 0 se não existir
+      };
     });
-    return data;
-}, [dataType, salesData, expensesData, selectedPeriod]);
+    return data.length > 0 ? data : [{ month: '', valor: 0 }]; // Retorno padrão se vazio
+  }, [dataType, salesData, expensesData, selectedPeriod]);
+
 
 
   const incomeIsPositive = incomeChangePercentage >= 0;
@@ -96,43 +97,43 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
           <Grid item>
             <Box display="flex" alignItems="center">
               <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600, mr: 0.5 }}>
-                Saldo Total
+                Lucro Total
               </Typography>
               <Tooltip title="Seu saldo total">
                 <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
               </Tooltip>
             </Box>
             <Typography variant="h3" sx={{ fontWeight: 'bold', mt: 0.5 }}>
-              R$ {totalBalance.toLocaleString('pt-BR')}
+              R$ {totalBalance ? totalBalance.toLocaleString('pt-BR') : '0'}
             </Typography>
           </Grid>
 
           <Grid item>
             <Stack direction="row" spacing={1} alignItems="center">
               <Stack direction="row" spacing={1}>
-                <Button 
-                  variant={selectedPeriod === TimeGranularity.Day ? 'contained' : 'text'} 
+                <Button
+                  variant={selectedPeriod === TimeGranularity.Day ? 'contained' : 'text'}
                   onClick={() => handlePeriodChange(TimeGranularity.Day)}
                   sx={{ textTransform: 'none' }}
                 >
                   Dia
                 </Button>
-                <Button 
-                  variant={selectedPeriod === TimeGranularity.Week ? 'contained' : 'text'} 
+                <Button
+                  variant={selectedPeriod === TimeGranularity.Week ? 'contained' : 'text'}
                   onClick={() => handlePeriodChange(TimeGranularity.Week)}
                   sx={{ textTransform: 'none' }}
                 >
                   Semana
                 </Button>
-                <Button 
-                  variant={selectedPeriod === TimeGranularity.Month ? 'contained' : 'text'} 
+                <Button
+                  variant={selectedPeriod === TimeGranularity.Month ? 'contained' : 'text'}
                   onClick={() => handlePeriodChange(TimeGranularity.Month)}
                   sx={{ textTransform: 'none' }}
                 >
                   Mês
                 </Button>
-                <Button 
-                  variant={selectedPeriod === TimeGranularity.Year ? 'contained' : 'text'} 
+                <Button
+                  variant={selectedPeriod === TimeGranularity.Year ? 'contained' : 'text'}
                   onClick={() => handlePeriodChange(TimeGranularity.Year)}
                   sx={{ textTransform: 'none' }}
                 >
@@ -145,25 +146,25 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
 
         <Grid container spacing={2} sx={{ mb: 2 }}>
           <Grid item xs={12} md={6}>
-            <Box 
+            <Box
               onClick={() => handleDataTypeClick('Income')}
               sx={{
-                bgcolor: '#f4f7f8', 
-                borderRadius: 2, 
-                p: 2, 
-                display: 'flex', 
-                alignItems: 'center', 
+                bgcolor: '#f4f7f8',
+                borderRadius: 2,
+                p: 2,
+                display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'space-between',
                 ...(dataType === 'Income' ? boxSelectedStyles : boxDefaultStyles),
               }}
             >
               <Box display="flex" alignItems="center">
-                <Box 
-                  sx={{ 
-                    bgcolor: '#004d45', 
-                    width: 40, 
-                    height: 40, 
-                    borderRadius: '50%', 
+                <Box
+                  sx={{
+                    bgcolor: '#004d45',
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -175,14 +176,14 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
                 <Box>
                   <Box display="flex" alignItems="center">
                     <Typography variant="body2" color="text.secondary" sx={{ mr: 0.5 }}>
-                      Receitas
+                      Vendas
                     </Typography>
-                    <Tooltip title="Total de receitas registradas neste período">
+                    <Tooltip title="Total de vendas registradas neste período">
                       <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
                     </Tooltip>
                   </Box>
                   <Typography variant="h6" fontWeight="bold">
-                    R$ {income.toLocaleString('pt-BR')}
+                    R$ {income ? income.toLocaleString('pt-BR') : '0'}
                   </Typography>
                 </Box>
               </Box>
@@ -194,25 +195,25 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <Box 
+            <Box
               onClick={() => handleDataTypeClick('Expenses')}
               sx={{
-                bgcolor: '#f4f7f8', 
-                borderRadius: 2, 
-                p: 2, 
-                display: 'flex', 
-                alignItems: 'center', 
+                bgcolor: '#f4f7f8',
+                borderRadius: 2,
+                p: 2,
+                display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'space-between',
                 ...(dataType === 'Expenses' ? boxSelectedStyles : boxDefaultStyles),
               }}
             >
               <Box display="flex" alignItems="center">
-                <Box 
-                  sx={{ 
-                    bgcolor: '#8b5e2e', 
-                    width: 40, 
-                    height: 40, 
-                    borderRadius: '50%', 
+                <Box
+                  sx={{
+                    bgcolor: '#8b5e2e',
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -231,7 +232,7 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
                     </Tooltip>
                   </Box>
                   <Typography variant="h6" fontWeight="bold">
-                    R$ {expenses.toLocaleString('pt-BR')}
+                    R$ {expenses ? expenses.toLocaleString('pt-BR') : '0'}
                   </Typography>
                 </Box>
               </Box>
@@ -252,14 +253,22 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
               <RechartsTooltip
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 0 10px rgba(0,0,0,0.1)' }}
                 labelStyle={{ fontWeight: 'bold' }}
-                formatter={(value) => `R$ ${value.toLocaleString('pt-BR')}`}
+                formatter={(valor) => {
+                  if (typeof valor === 'undefined' || valor === null) {
+                    return 'R$ 0'; // Retorna "0" se o valor for undefined ou null
+                  }
+                  if (typeof valor === 'number') {
+                    return `R$ ${valor.toLocaleString('pt-BR')}`; // Formata números
+                  }
+                  return `R$ ${valor.toLocaleString('pt-BR')}`; // Converte strings numéricas para número antes de formatar
+                }}
               />
-              <Line 
-                type="monotone" 
-                dataKey="value" 
-                stroke={dataType === 'Income' ? "#00695f" : "#8b5e2e"} 
-                strokeWidth={3} 
-                dot={false} 
+              <Line
+                type="monotone"
+                dataKey="valor"
+                stroke={dataType === 'Income' ? "#00695f" : "#8b5e2e"}
+                strokeWidth={3}
+                dot={false}
               />
             </LineChart>
           </ResponsiveContainer>
