@@ -68,8 +68,8 @@ export default function EditPurchasePage() {
         if (purchase) {
             setValue("supplierId", purchase.supplierId);
             setValue("productId", purchase.productId);
-            setValue("weightAmount", purchase.product?.weightAmount || 0);
-            setValue("price", purchase.product?.price || 0);
+            setValue("weightAmount", purchase.weightAmount || 0);
+            setValue("price", purchase.price || 0);
             setValue("status", purchase.purchaseStatus);
             setValue("description", purchase.description || "");
             setValue("date_time", purchase.date_time);
@@ -187,9 +187,15 @@ export default function EditPurchasePage() {
                                 <Grid item xs={12}>
                                     <TextField
                                         fullWidth
-                                        label="Quantidade (Kg)"
+                                        label="Quantidade (Toneladas)"
                                         type="number"
-                                        {...register("weightAmount", { required: "Digite a quantidade.", min: 0 })}
+                                        {...register("weightAmount", { 
+                                            required: "Digite a quantidade.", 
+                                            min: {
+                                                value: 0.1,
+                                                message: "A quantidade mínima é 0.1 tonelada."
+                                            }
+                                        })}
                                         error={!!errors.weightAmount}
                                         helperText={errors.weightAmount?.message}
                                     />

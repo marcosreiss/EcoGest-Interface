@@ -35,7 +35,6 @@ export default function SaleDetailsPage() {
   const handleEditClick = () => {
     navigate.replace(`/sales/edit/${id}`);
   };
-  console.log(sale);
   
   return (
     <>
@@ -79,14 +78,14 @@ export default function SaleDetailsPage() {
                     {/* Quantidade */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Quantidade: {sale?.quantity}
+                        Quantidade: {sale?.quantity} Toneladas
                       </Typography>
                     </Grid>
 
                     {/* Preço Total */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Preço Total:{" "}
+                        Preço Total: {" "}
                         {sale?.totalPrice !== undefined ? `R$${sale.totalPrice}` : "-"}
                       </Typography>
                     </Grid>
@@ -94,7 +93,7 @@ export default function SaleDetailsPage() {
                     {/* Status */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Status:{" "}
+                        Status: {" "}
                         {sale?.saleStatus === "processing"
                           ? "Processando"
                           : sale?.saleStatus === "approved"
@@ -106,7 +105,7 @@ export default function SaleDetailsPage() {
                     {/* Data da Venda */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Data da Venda:{" "}
+                        Data da Venda: {" "}
                         {new Date(sale?.date_time || "").toLocaleDateString("pt-BR")}
                       </Typography>
                     </Grid>

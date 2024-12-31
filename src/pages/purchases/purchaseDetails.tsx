@@ -89,7 +89,7 @@ export default function PurchaseDetailsPage() {
                     {/* Quantidade */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Quantidade: {purchase?.weightAmount} Kg
+                        Quantidade: {purchase?.weightAmount} Toneladas
                       </Typography>
                     </Grid>
 
@@ -110,7 +110,7 @@ export default function PurchaseDetailsPage() {
                     {/* Data da Compra */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Data da Compra:{" "}
+                        Data da Compra: {" "}
                         {new Date(purchase?.date_time || "").toLocaleDateString("pt-BR")}
                       </Typography>
                     </Grid>

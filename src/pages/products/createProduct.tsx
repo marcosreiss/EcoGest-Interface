@@ -82,8 +82,8 @@ export default function CreateProductPage() {
                                 <Grid item xs={12}>
                                     <TextField
                                         fullWidth
-                                        label="Quantidade (Kg)"
-                                        placeholder="Ex: 500"
+                                        label="Quantidade (Toneladas)"
+                                        placeholder="Ex: 1.5"
                                         type="number"
                                         inputProps={{ min: 0, step: "any" }}
                                         {...register("weightAmount", { 

@@ -132,10 +132,16 @@ export default function CreateSalePage() {
                                 <Grid item xs={12}>
                                     <TextField
                                         fullWidth
-                                        label="Quantidade"
-                                        placeholder="Digite a quantidade"
+                                        label="Quantidade (Toneladas)"
+                                        placeholder="Digite a quantidade em toneladas"
                                         type="number"
-                                        {...register("quantity", { required: "A quantidade é obrigatória.", min: 1 })}
+                                        {...register("quantity", { 
+                                            required: "A quantidade é obrigatória.", 
+                                            min: {
+                                                value: 0.1,
+                                                message: "A quantidade mínima é 0.1 tonelada."
+                                            }
+                                        })}
                                         error={!!errors.quantity}
                                         helperText={errors.quantity?.message}
                                     />

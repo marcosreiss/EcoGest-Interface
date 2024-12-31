@@ -16,7 +16,7 @@ export default function ProductDetailsPage() {
 
     const response = useGetProductById(productId);
     const product = response.data;
-    const {isLoading} = response;
+    const { isLoading } = response;
 
     const formStyle = {
         mx: 'auto',
@@ -65,7 +65,7 @@ export default function ProductDetailsPage() {
                                         {/* Quantidade */}
                                         <Grid item xs={12}>
                                             <Typography variant="body1" gutterBottom>
-                                                Quantidade: {product?.weightAmount} Kg
+                                                Quantidade: {product?.weightAmount} Toneladas
                                             </Typography>
                                         </Grid>
 

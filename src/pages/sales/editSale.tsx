@@ -140,9 +140,15 @@ export default function EditSalePage() {
                                 <Grid item xs={12}>
                                     <TextField
                                         fullWidth
-                                        label="Quantidade"
+                                        label="Quantidade (Toneladas)"
                                         type="number"
-                                        {...register("quantity", { required: "Digite a quantidade.", min: 1 })}
+                                        {...register("quantity", { 
+                                            required: "Digite a quantidade.", 
+                                            min: {
+                                                value: 0.1,
+                                                message: "A quantidade mínima é 0.1 tonelada."
+                                            }
+                                        })}
                                         error={!!errors.quantity}
                                         helperText={errors.quantity?.message}
                                     />
