@@ -32,7 +32,7 @@ export default function Page() {
     const navigate = useRouter();
     const handleEditClick = () => {
         navigate.replace(`/customers/edit/${id}`);
-      };
+    };
 
 
     return (
@@ -71,7 +71,7 @@ export default function Page() {
                                         {/* Tipo de Pessoa (Física ou Jurídica) */}
                                         <Grid item xs={12}>
                                             <Typography variant="body1" component="span" marginRight={2}>
-                                                Tipo: {customer?.personType}
+                                                Tipo: {customer?.personType === PersonType.Individual ? 'Pessoa Física' : 'Pessoa Jurídica'}
                                             </Typography>
                                         </Grid>
 

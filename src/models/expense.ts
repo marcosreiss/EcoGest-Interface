@@ -4,7 +4,7 @@ export interface Expense {
     employeeId?: number;
     type: string;
     description?: string | null;
-    weightAmount?: number;
+    price?: number;
 }
 
 export interface ExpenseListResponse {
@@ -19,5 +19,5 @@ export interface ExpenseResponse {
 export interface ExpensePayload{
     type: string;
     description?: string | null;
-    weightAmount: number;
+    price: number;
 }

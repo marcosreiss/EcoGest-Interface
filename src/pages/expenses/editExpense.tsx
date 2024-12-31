@@ -57,14 +57,14 @@ export default function EditExpensePage() {
     if (expense) {
       setValue("type", expense.type);
       setValue("description", expense.description || "");
-      setValue("weightAmount", expense.weightAmount || 0);
+      setValue("price", expense.price || 0);
     }
   }, [expense, setValue]);
 
   const onSubmit: SubmitHandler<ExpensePayload> = (data) => {
     const updatedData = {
       ...data,
-      weightAmount: Number(data.weightAmount), // Certifica que o valor é numérico
+      weightAmount: Number(data.price), // Certifica que o valor é numérico
     };
 
     updateExpense.mutate(
@@ -170,12 +170,12 @@ export default function EditExpensePage() {
                     placeholder="Ex: 150.00"
                     type="number"
                     inputProps={{ min: 0, step: "0.01" }}
-                    {...register("weightAmount", {
+                    {...register("price", {
                       required: "O valor é obrigatório.",
                       min: { value: 0, message: "O valor não pode ser negativo." },
                     })}
-                    error={!!errors.weightAmount}
-                    helperText={errors.weightAmount?.message}
+                    error={!!errors.price}
+                    helperText={errors.price?.message}
                   />
                 </Grid>
 

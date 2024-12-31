@@ -47,7 +47,7 @@ export default function CreateExpensePage() {
   const onSubmit = (data: ExpensePayload) => {
     const formattedData = {
       ...data,
-      weightAmount: Number(data.weightAmount), // Converte para número
+      weightAmount: Number(data.price), // Converte para número
     };
 
     createExpense.mutate(formattedData, {
@@ -128,12 +128,12 @@ export default function CreateExpensePage() {
                     placeholder="Ex: 150.00"
                     type="number"
                     inputProps={{ min: 0, step: "0.01" }}
-                    {...register("weightAmount", {
+                    {...register("price", {
                       required: "O valor é obrigatório.",
                       min: { value: 0, message: "O valor não pode ser negativo." },
                     })}
-                    error={!!errors.weightAmount}
-                    helperText={errors.weightAmount?.message}
+                    error={!!errors.price}
+                    helperText={errors.price?.message}
                   />
                 </Grid>
 
