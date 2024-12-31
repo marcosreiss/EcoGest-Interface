@@ -36,28 +36,45 @@ const menuItems = [
 
 export function OverviewMenuView() {
   return (
-    <DashboardContent maxWidth="xl">
-      <Box sx={{ textAlign: 'center', mb: 4, scale: 4, paddingTop: '0.25rem' }}>
+    <DashboardContent
+      sx={{
+        overflowX: 'hidden', // Garante que o DashboardContent não permita transbordamento horizontal
+        width: '100vw', // Limita a largura à viewport
+        boxSizing: 'border-box', // Inclui padding/margin no cálculo do tamanho
+      }}
+      maxWidth="xl"
+    >
+      <Box
+        sx={{
+          textAlign: 'center',
+          mb: 4,
+          scale: 4,
+          paddingTop: '0.25rem',
+        }}
+      >
         ♻️
-        {/* <img
-          src="/path/to/logo.png" // Substitua pelo caminho real da logo
-          alt="EcoGest Logo"
-          style={{ width: '100px', height: 'auto' }}
-        /> */}
       </Box>
 
       <Typography variant="h4" sx={{ mb: { xs: 3, md: 3 }, textAlign: 'center' }}>
-        Bem-Vindo de volta ao EcoGest!
+        EcoGest
       </Typography>
 
-      <Grid container spacing={3}>
+      <Grid
+        container
+        spacing={3}
+        sx={{
+          margin: 0, // Remove margens externas
+          width: '100%', // Evita transbordamento horizontal
+          overflowX: 'hidden', // Oculta transbordamento horizontal no grid
+        }}
+      >
         {menuItems.map((item, index) => (
           <Grid xs={12} sm={6} md={3} key={index}>
             <Card
               sx={{
                 textAlign: 'center',
                 cursor: 'pointer',
-                backgroundColor: '#FFFFFF', // Fundo branco
+                backgroundColor: '#FFFFFF',
                 '&:hover': {
                   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                 },
@@ -70,7 +87,7 @@ export function OverviewMenuView() {
                     variant="body1"
                     fontWeight="bold"
                     sx={{
-                      color: '#546161', // Cinza escuro para o texto
+                      color: '#546161',
                     }}
                   >
                     {item.title}
@@ -84,3 +101,4 @@ export function OverviewMenuView() {
     </DashboardContent>
   );
 }
+
