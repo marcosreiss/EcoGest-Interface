@@ -7,13 +7,13 @@ export interface KpiParams{
     stackBy?: StackBy
 }
 export enum TimeGranularity {
-    Day = "day",
-    Week = "week",
-    Month = "month",
-    Year = "year"
+    Day = "Dia",
+    Week = "Semana",
+    Month = "Mês",
+    Year = "Ano"
 }
 
 export enum StackBy {
-    Supplier = "fornecedor",
-    Product = "produtosa"
+    Supplier = "Fornecedor",
+    Product = "Produtos"
 }

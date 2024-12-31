@@ -19,19 +19,26 @@ export default function Page() {
     const [params, setParams] = useState<KpiParams>({})
 
     const { data: salesData } = useGetSalesKpi(params);
-    const { data: expensesData} = useGetExpensesKpi(params);
-    
-    const totalSalesAmount = salesData?.data.totalSalesApprovedData.reduce(
-        (acc, data) => acc + parseFloat(data.totalSalesApproved), 0
-    ) ?? 0;
+    const { data: expensesData } = useGetExpensesKpi(params);
 
-    const totalExpensesAmount = expensesData?.data.totalExpensesData.reduce(
-        (acc, data) => acc + parseFloat(data.totalExpenses), 0
-    ) ?? 0;
+    const totalSalesAmount = salesData?.data?.totalSalesApprovedData?.length
+        ? salesData.data.totalSalesApprovedData.reduce(
+            (acc, data) => acc + parseFloat(data.totalSalesApproved),
+            0
+        )
+        : 0;
+
+    const totalExpensesAmount = expensesData?.data?.totalExpensesData?.length
+        ? expensesData.data.totalExpensesData.reduce(
+            (acc, data) => acc + parseFloat(data.totalExpenses),
+            0
+        )
+        : 0;
+
 
     const totalBalanceData = totalSalesAmount - totalExpensesAmount;
     console.log(expensesData);
-    
+
 
     return (
         <DashboardContent maxWidth="xl">
@@ -39,7 +46,7 @@ export default function Page() {
                 Balanço
             </Typography>
 
-            <KpiFilter salesKpiParams={params} setSalesKpiParams={setParams}  />
+            <KpiFilter salesKpiParams={params} setSalesKpiParams={setParams} />
 
             <Grid container spacing={3}>
                 {/* <Grid item xs={12} sm={6} md={3}>
