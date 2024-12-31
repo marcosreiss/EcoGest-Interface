@@ -26,7 +26,7 @@ export function SignInView() {
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginPayload>();
 
-  
+
   const { setToken } = useAuth();
   const loginMutation = useLogin();
   const { addNotification } = useNotification();
@@ -38,7 +38,7 @@ export function SignInView() {
     loginMutation.mutate(data, {
       onSuccess: (response: { token: string | null; }) => {
         addNotification("Login realizado com sucesso!", "success");
-        if(response.token){
+        if (response.token) {
           setToken(response.token);
         }
       },
@@ -57,7 +57,7 @@ export function SignInView() {
         <TextField
           fullWidth
           // name="email"
-          label="Email address"
+          label="Usuário"
           InputLabelProps={{ shrink: true }}
           {...register("username", { required: true })}
         />
@@ -82,7 +82,7 @@ export function SignInView() {
         <TextField
           fullWidth
           // name="password"
-          label="Password"
+          label="Senha"
           InputLabelProps={{ shrink: true }}
           type={showPassword ? 'text' : 'password'}
           InputProps={{
@@ -120,19 +120,32 @@ export function SignInView() {
         color="inherit"
         variant="contained"
         onClick={() => handleSubmit(handleSignIn)()}
+        sx={{
+          "&:hover": {
+            backgroundColor: "#2E7D32", // Cor verde ecológica
+            color: "#ffffff", // Cor do texto branco para contraste
+          },
+        }}
       >
         Entrar
       </LoadingButton>
+
     </Box>
   );
 
   return (
     <>
-      <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 5 }}>
-        <Typography variant="h5">Eco♻️Gest</Typography>
-      </Box>
 
+      <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 2 }}>
+        <Typography variant="h5">Login</Typography>
+      </Box>
       {renderForm}
+
+      <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" paddingTop={2}>
+        <Typography sx={{ color: "#2E7D32" }}>
+          ECO BRITO RECICLAGEM LTDA.
+        </Typography>
+      </Box>
 
     </>
   );

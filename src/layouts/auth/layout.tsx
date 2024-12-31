@@ -67,7 +67,7 @@ export function AuthLayout({ sx, children, header }: AuthLayoutProps) {
           height: 1,
           zIndex: -1,
           content: "''",
-          opacity: 0.30,
+          opacity: 0.4,
           position: 'fixed',
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
