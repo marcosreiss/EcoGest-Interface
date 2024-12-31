@@ -17,7 +17,7 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
-import { useDeleteSale, useGetSaleReceipt } from "src/hooks/useSales";
+import { useDeleteSale } from "src/hooks/useSales";
 
 import { useNotification } from "src/context/NotificationContext";
 
@@ -43,8 +43,6 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
   const navigate = useRouter();
   const deleteSale = useDeleteSale();
   const notification = useNotification();
-
-  const { data: receipt, refetch: fetchReceipt } = useGetSaleReceipt(selectedItem || 0);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>, saleId: number) => {
     setAnchorEl(event.currentTarget);
@@ -85,25 +83,6 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
   const handleDeleteClick = (saleId: number) => {
     setDeleteModalOpen(true);
     setSelectedItem(saleId);
-  };
-
-  const handleGenerateReceipt = async (saleId: number) => {
-    try {
-      await fetchReceipt(); // Requisição para obter o recibo
-      if (receipt) {
-        const url = window.URL.createObjectURL(receipt);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `receipt-${saleId}.pdf`;
-        link.click();
-        window.URL.revokeObjectURL(url);
-        notification.addNotification("Recibo gerado com sucesso", "success");
-      }
-    } catch (error) {
-      notification.addNotification("Erro ao gerar o recibo", "error");
-    } finally {
-      handleClose();
-    }
   };
 
   const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -169,13 +148,15 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                 </TableCell>
                 <TableCell>{sale.product.name || "-"}</TableCell>
                 <TableCell>{sale.customer.name || "-"}</TableCell>
-                <TableCell>{new Date(sale.date_time).toLocaleDateString() || "-"}</TableCell>
+                <TableCell>
+                  {new Date(new Date(sale.date_time).setDate(new Date(sale.date_time).getDate())).toLocaleDateString() || "-"}
+                </TableCell>
                 <TableCell>
                   {sale.saleStatus === "processing"
                     ? "Processando"
                     : sale.saleStatus === "approved"
-                    ? "Aprovada"
-                    : "Cancelada"}
+                      ? "Aprovada"
+                      : "Cancelada"}
                 </TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, sale.saleId)}>︙</IconButton>
@@ -200,9 +181,6 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                         Editar
                       </MenuItem>
                     )}
-                    <MenuItem onClick={() => handleGenerateReceipt(sale.saleId)}>
-                      Gerar Recibo
-                    </MenuItem>
                     <MenuItem onClick={() => handleDeleteClick(sale.saleId)}>
                       Deletar
                     </MenuItem>

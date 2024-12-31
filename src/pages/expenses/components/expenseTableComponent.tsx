@@ -15,6 +15,7 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
+import { useGetSaleReceipt } from "src/hooks/useSales";
 import { useDeleteExpense } from "src/hooks/useExpense";
 
 import { type Expense } from "src/models/expense";
@@ -37,6 +38,8 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const { data: receipt, refetch: fetchReceipt } = useGetSaleReceipt(selectedItem || 0);
 
   const navigate = useRouter();
   const deleteExpense = useDeleteExpense();
@@ -80,6 +83,25 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
     });
   };
 
+  const handleGenerateReceipt = async (expenseId: number) => {
+    try {
+      await fetchReceipt(); // Requisição para obter o recibo
+      if (receipt) {
+        const url = window.URL.createObjectURL(receipt);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `receipt-${expenseId}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        notification.addNotification("Recibo gerado com sucesso", "success");
+      }
+    } catch (error) {
+      notification.addNotification("Erro ao gerar o recibo", "error");
+    } finally {
+      handleCloseMenu();
+    }
+  };
+
   const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const allIds = expenses.map((e) => e.expenseId);
@@ -100,7 +122,7 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
       setSelectedExpenses((prev) => prev.filter((e) => e.expenseId !== expense.expenseId));
     }
   };
-  
+
   return (
     <>
       <Table stickyHeader aria-label="expenses table">
@@ -147,6 +169,7 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
                   >
                     <MenuItem onClick={() => handleDetailsClick(expense.expenseId)}>Detalhes</MenuItem>
                     <MenuItem onClick={() => handleEditClick(expense.expenseId)}>Editar</MenuItem>
+                    <MenuItem onClick={() => handleGenerateReceipt(expense.expenseId)}>Gerar Recibo</MenuItem>
                     <MenuItem onClick={() => handleDeleteClick(expense.expenseId)}>Deletar</MenuItem>
                   </Menu>
                 </TableCell>
