@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Sale, SaleResponse, SaleListResponse, CreateSalePayload } from "src/models/sale";
+import type { Sale, SaleResponse, SaleListResponse, CreateSalePayload, SearchByPeriodRequest } from "src/models/sale";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -12,10 +12,11 @@ import {
     getSaleReceiptService,
     getSalesByProductService,
     getSalesByCustomerService,
+    searchSalesByPeriodService,
 } from "src/services/salesService";
 
 // Hook para obter vendas paginadas
-export const useGetSalesPaged = (skip: number, take: number) =>
+export const useGetSalesPaged = (skip: number, take: number, debouncedSearchString?: string) =>
     useQuery<SaleListResponse, AxiosError>({
         queryKey: ['sales-list', { skip, take }],
         queryFn: () => getSalesPagedService(skip, take),
@@ -95,4 +96,11 @@ export const useGetSaleReceipt = (saleId: number) =>
         queryKey: ['sale-receipt', saleId],
         queryFn: () => getSaleReceiptService(saleId),
         enabled: !!saleId, // Só executa a consulta se o `saleId` estiver definido
+    });
+
+export const useSearchSalesByPeriod = (payload: SearchByPeriodRequest) =>
+    useQuery<SaleListResponse, AxiosError>({
+        queryKey: ['salesByPeriod', payload],
+        queryFn: () => searchSalesByPeriodService(payload.startDate!, payload.endDate!),
+        enabled: !!payload?.startDate && !!payload?.endDate,
     });

@@ -100,7 +100,7 @@ export default function CreatePurchasePage() {
                                             option.supplierId === value.supplierId
                                         }
                                         onChange={(_, newValue) =>
-                                            setValue("supplierId", newValue?.supplierId || -1, {
+                                            setValue("supplierId", newValue ? Number(newValue.supplierId) : -1, {
                                                 shouldValidate: true,
                                             })
                                         }
@@ -111,7 +111,9 @@ export default function CreatePurchasePage() {
                                                 variant="outlined"
                                                 error={!!errors.supplierId}
                                                 helperText={errors.supplierId?.message}
-                                                {...register("supplierId", { required: "Selecione um fornecedor." })}
+                                                {...register("supplierId", {
+                                                    required: "Selecione um fornecedor.",
+                                                })}
                                             />
                                         )}
                                         renderOption={(props, option) => (
@@ -132,7 +134,7 @@ export default function CreatePurchasePage() {
                                             option.productId === value.productId
                                         }
                                         onChange={(_, newValue) =>
-                                            setValue("productId", newValue?.productId || -1, {
+                                            setValue("productId", newValue ? Number(newValue.productId) : -1, {
                                                 shouldValidate: true,
                                             })
                                         }
@@ -143,7 +145,9 @@ export default function CreatePurchasePage() {
                                                 variant="outlined"
                                                 error={!!errors.productId}
                                                 helperText={errors.productId?.message}
-                                                {...register("productId", { required: "Selecione um produto." })}
+                                                {...register("productId", {
+                                                    required: "Selecione um produto.",
+                                                })}
                                             />
                                         )}
                                         renderOption={(props, option) => (
@@ -154,14 +158,15 @@ export default function CreatePurchasePage() {
                                     />
                                 </Grid>
 
+
                                 <Grid item xs={12}>
                                     <TextField
                                         fullWidth
                                         label="Quantidade (Toneladas)"
                                         placeholder="Digite a quantidade em toneladas"
                                         type="number"
-                                        {...register("weightAmount", { 
-                                            required: "A quantidade é obrigatória.", 
+                                        {...register("weightAmount", {
+                                            required: "A quantidade é obrigatória.",
                                             min: {
                                                 value: 0.1,
                                                 message: "A quantidade mínima é 0.1 tonelada."
@@ -184,7 +189,7 @@ export default function CreatePurchasePage() {
                                     />
                                 </Grid>
 
-                                {/* Status */}
+                                {/* Status
                                 <Grid item xs={12}>
                                     <TextField
                                         select
@@ -205,7 +210,7 @@ export default function CreatePurchasePage() {
                                             Cancelado
                                         </MenuItem>
                                     </TextField>
-                                </Grid>
+                                </Grid> */}
 
                                 {/* Descrição */}
                                 <Grid item xs={12}>

@@ -65,7 +65,7 @@ export default function CreateSalePage() {
                         <Box sx={formStyle}>
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
-                                    <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
+                                    <Typography variant="h4" sx={{ mb: { xs: 3, md: 1 } }}>
                                         Criar Venda
                                     </Typography>
                                 </Grid>
@@ -147,7 +147,7 @@ export default function CreateSalePage() {
                                     />
                                 </Grid>
 
-                                {/* Preço Total */}
+                                {/* Preço Total
                                 <Grid item xs={12}>
                                     <TextField
                                         fullWidth
@@ -160,7 +160,7 @@ export default function CreateSalePage() {
                                     />
                                 </Grid>
 
-                                {/* Status */}
+                                {/* //Status 
                                 <Grid item xs={12}>
                                     <TextField
                                         select
@@ -175,7 +175,7 @@ export default function CreateSalePage() {
                                         <MenuItem value="completed">Concluído</MenuItem>
                                         <MenuItem value="canceled">Cancelado</MenuItem>
                                     </TextField>
-                                </Grid>
+                                </Grid> */}
 
                                 {/* Data da Venda */}
                                 <Grid item xs={12}>

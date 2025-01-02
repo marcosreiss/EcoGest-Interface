@@ -11,7 +11,7 @@ export const getSalesPagedService = async (skip: number, take: number): Promise<
 // Criar uma nova venda
 export const createSaleService = async (payload: CreateSalePayload): Promise<SaleResponse> => {
     console.log(payload);
-    
+
     const response = await api.post<SaleResponse>("/sales", payload);
     console.log(response);
     return response.data;
@@ -53,4 +53,14 @@ export const getSaleReceiptService = async (saleId: number): Promise<Blob> => {
         responseType: "blob", // Necessário para lidar com arquivos binários
     });
     return response.data;
+};
+
+export const searchSalesByPeriodService = async (startDate: string, endDate: string): Promise<SaleListResponse> => {
+    try {
+        const response = await api.get<SaleListResponse>(`/sales/period?startDate=${startDate}&endDate=${endDate}`);
+        return response.data;
+    } catch (error) {
+        console.error('[searchSalesByPeriodService] Error:', error);
+        throw new Error('Error fetching sales by period.');
+    }
 };

@@ -16,28 +16,26 @@ import {
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
-
 import { useDeleteSale } from "src/hooks/useSales";
-
 import { useNotification } from "src/context/NotificationContext";
-
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
 
 interface TableComponentProps {
   sales: Sale[];
   isLoading: boolean;
   setSelectedSales: React.Dispatch<React.SetStateAction<Sale[]>>;
+  sortOrder?: "asc" | "desc";
 }
 
 const SaleTableComponent: React.FC<TableComponentProps> = ({
   sales,
   isLoading,
   setSelectedSales,
+  sortOrder = "asc",
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-
   const [selectedSaleIds, setSelectedSaleIds] = useState<number[]>([]);
 
   const navigate = useRouter();
@@ -109,6 +107,15 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
     }
   };
 
+  const sortedSales = React.useMemo(() => {
+    if (!sales) return [];
+    return [...sales].sort((a, b) => {
+      const dateA = new Date(a.date_time).getTime();
+      const dateB = new Date(b.date_time).getTime();
+      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+    });
+  }, [sales, sortOrder]);
+
   return (
     <>
       <Table stickyHeader aria-label="sales table">
@@ -116,9 +123,12 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
           <TableRow>
             <TableCell sx={{ width: "5%", minWidth: "50px" }}>
               <Checkbox
-                checked={sales.length > 0 && selectedSaleIds.length === sales.length}
+                checked={
+                  sales.length > 0 && selectedSaleIds.length === sales.length
+                }
                 indeterminate={
-                  selectedSaleIds.length > 0 && selectedSaleIds.length < sales.length
+                  selectedSaleIds.length > 0 &&
+                  selectedSaleIds.length < sales.length
                 }
                 onChange={handleSelectAll}
               />
@@ -137,8 +147,8 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                 <LinearProgress sx={{ width: "100%" }} />
               </TableCell>
             </TableRow>
-          ) : sales.length > 0 ? (
-            sales.map((sale) => (
+          ) : sortedSales.length > 0 ? (
+            sortedSales.map((sale) => (
               <TableRow key={sale.saleId}>
                 <TableCell>
                   <Checkbox
@@ -146,20 +156,22 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                     onChange={(e) => handleSelectSale(e, sale)}
                   />
                 </TableCell>
-                <TableCell>{sale.product.name || "-"}</TableCell>
-                <TableCell>{sale.customer.name || "-"}</TableCell>
+                <TableCell>{sale.product?.name || "N/A"}</TableCell>
+                <TableCell>{sale.customer?.name || "N/A"}</TableCell>
                 <TableCell>
-                  {new Date(new Date(sale.date_time).setDate(new Date(sale.date_time).getDate())).toLocaleDateString() || "-"}
+                  {new Date(sale.date_time).toLocaleDateString() || "N/A"}
                 </TableCell>
                 <TableCell>
                   {sale.saleStatus === "processing"
                     ? "Processando"
                     : sale.saleStatus === "approved"
-                      ? "Aprovada"
-                      : "Cancelada"}
+                    ? "Aprovada"
+                    : "Cancelada"}
                 </TableCell>
                 <TableCell>
-                  <IconButton onClick={(event) => handleClick(event, sale.saleId)}>︙</IconButton>
+                  <IconButton onClick={(event) => handleClick(event, sale.saleId)}>
+                    ︙
+                  </IconButton>
                   <Menu
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl && selectedItem === sale.saleId)}
@@ -176,7 +188,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                     <MenuItem onClick={() => handleDetailsClick(sale.saleId)}>
                       Detalhes
                     </MenuItem>
-                    {sale.saleStatus === 'processing' && (
+                    {sale.saleStatus === "processing" && (
                       <MenuItem onClick={() => handleEditClick(sale.saleId)}>
                         Editar
                       </MenuItem>
@@ -190,7 +202,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6}>No data available</TableCell>
+              <TableCell colSpan={6}>Nenhuma venda encontrada.</TableCell>
             </TableRow>
           )}
         </TableBody>

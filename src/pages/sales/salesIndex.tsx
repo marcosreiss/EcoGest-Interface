@@ -1,21 +1,21 @@
-import type { Sale } from 'src/models/sale';
+import type { Sale, SearchByPeriodRequest } from 'src/models/sale';
 
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 import Paper from '@mui/material/Paper';
 import { Box, Grid } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 
-import { useDeleteSale, useGetSalesPaged } from 'src/hooks/useSales';
+import { useDeleteSale, useGetSalesPaged, useSearchSalesByPeriod } from 'src/hooks/useSales';
 
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useNotification } from 'src/context/NotificationContext';
 
 import TableComponent from './components/salesTableComponent';
-import TableSearch from '../../layouts/components/tableSearch';
+import SalesTableSearch from './components/salesTableSearch'; // Importando a nova table
 import TableHeaderComponent from '../../layouts/components/tableHeaderComponent';
 import TableFooterComponent from '../../layouts/components/tableFooterComponent';
 
@@ -23,32 +23,29 @@ import TableFooterComponent from '../../layouts/components/tableFooterComponent'
 
 export default function SalesIndex() {
     const [selectedSales, setSelectedSales] = useState<Sale[]>([]);
-
     const rowsPerPage = 5;
     const [page, setPage] = useState(0);
 
+    // Estados para gerenciar os dados
+    const { data: pagedData, isLoading: isPagedLoading } = useGetSalesPaged(page * rowsPerPage, rowsPerPage);
 
-    const { data, isLoading } = useGetSalesPaged(page * rowsPerPage, rowsPerPage);
+    // Estados para filtro por período
+    const [searchByPeriodRequest, setSearchByPeriod] = useState<SearchByPeriodRequest>({
+        startDate: null,
+        endDate: null,
+    });
 
-    // const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     const inputValue = event.target.value;
+    const { data: filteredData, isLoading: isFilteredLoading } = useSearchSalesByPeriod(searchByPeriodRequest);
 
-    //     // Limpa o timeout anterior para reiniciar o debounce
-    //     if (debounceTimeoutRef.current) {
-    //         clearTimeout(debounceTimeoutRef.current);
-    //     }
+    // Define os dados para exibição (filtro ou geral)
+    const sales = searchByPeriodRequest.startDate && searchByPeriodRequest.endDate
+        ? filteredData?.data ?? []
+        : pagedData?.data ?? [];
 
-    //     // Se o valor tiver 3 ou mais caracteres, inicia o debounce
-    //     if (inputValue.length >= 3) {
-    //         debounceTimeoutRef.current = setTimeout(() => {
-    //             setDebouncedSearchString(inputValue); // Atualiza o valor com debounce
-    //         }, 500); // Atraso de 500ms antes de executar a busca
-    //     } else {
-    //         // Se o valor for menor que 3 caracteres, limpa a busca
-    //         setDebouncedSearchString('');
-    //     }
-    // };
+    // Define o estado de carregamento com base no contexto
+    const isLoading = isFilteredLoading || isPagedLoading;
 
+    // Gerenciar exclusão de vendas
     const deleteSale = useDeleteSale();
     const notification = useNotification();
 
@@ -66,8 +63,6 @@ export default function SalesIndex() {
         });
     };
 
-    const sales =  data?.data;
-
     return (
         <>
             <Helmet>
@@ -78,27 +73,28 @@ export default function SalesIndex() {
                 <Grid container>
                     <TableHeaderComponent title="Vendas" addButtonName="Cadastrar Venda" addButtonPath="/sales/create" />
                     <Grid item xs={12}>
-                        <TableSearch
+                        <SalesTableSearch
                             handleDelete={handleDeleteSale}
                             selectedRows={selectedSales}
-                            handleSearchChange={() => null}
-                            isSearchDisabled
+                            setSearchByPeriod={setSearchByPeriod}
+                            isSearchDisabled={false}
+                            handleSearchChange={() => null} // Não utilizado no novo componente
                         />
 
                         <TableContainer component={Paper} sx={{ height: '65vh', display: 'flex', flexDirection: 'column' }}>
                             <Box component="div" sx={{ flex: 1, overflow: 'auto' }}>
-                                <TableComponent
-                                    setSelectedSales={setSelectedSales}
-                                    sales={sales || []}
-                                    isLoading={isLoading}
-                                />
+                                <TableComponent setSelectedSales={setSelectedSales} sales={sales} isLoading={isLoading} />
                             </Box>
 
                             <TableFooterComponent
                                 setPage={setPage}
                                 page={page}
                                 rowsPerPage={rowsPerPage}
-                                totalItems={data?.meta.totalItems}
+                                totalItems={
+                                    searchByPeriodRequest.startDate && searchByPeriodRequest.endDate
+                                        ? filteredData?.meta?.totalItems || 0 // Se undefined, retorna 0
+                                        : pagedData?.meta?.totalItems || 0 // Se undefined, retorna 0
+                                }
                             />
                         </TableContainer>
                     </Grid>

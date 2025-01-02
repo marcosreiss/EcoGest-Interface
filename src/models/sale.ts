@@ -31,3 +31,8 @@ export interface CreateSalePayload {
     totalPrice: number;
 
 }
+
+export interface SearchByPeriodRequest {
+    startDate: string | null; 
+    endDate: string | null;   
+}

@@ -14,7 +14,7 @@ export const getSuppliersPaginatedService = async (skip: number, take: number): 
 };
 
 export const createSupplierService = async (payload: CreateSupplierPayload): Promise<SupplierResponse> => {
-    const response = await api.post<SupplierResponse>("/suppliers/create", payload);
+    const response = await api.post<SupplierResponse>("/suppliers", payload);
     return response.data;
 };
 
