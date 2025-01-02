@@ -118,13 +118,13 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
                 >
                   Dia
                 </Button>
-                <Button
+                {/* <Button
                   variant={selectedPeriod === TimeGranularity.Week ? 'contained' : 'text'}
                   onClick={() => handlePeriodChange(TimeGranularity.Week)}
                   sx={{ textTransform: 'none' }}
                 >
                   Semana
-                </Button>
+                </Button> */}
                 <Button
                   variant={selectedPeriod === TimeGranularity.Month ? 'contained' : 'text'}
                   onClick={() => handlePeriodChange(TimeGranularity.Month)}

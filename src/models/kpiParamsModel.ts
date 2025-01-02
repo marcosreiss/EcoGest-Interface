@@ -8,7 +8,7 @@ export interface KpiParams{
 }
 export enum TimeGranularity {
     Day = "Dia",
-    Week = "Semana",
+    // Week = "Semana",
     Month = "Mês",
     Year = "Ano"
 }

@@ -168,7 +168,7 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
                     onClose={handleCloseMenu}
                   >
                     <MenuItem onClick={() => handleDetailsClick(expense.expenseId)}>Detalhes</MenuItem>
-                    <MenuItem onClick={() => handleEditClick(expense.expenseId)}>Editar</MenuItem>
+                    {/* <MenuItem onClick={() => handleEditClick(expense.expenseId)}>Editar</MenuItem> */}
                     <MenuItem onClick={() => handleGenerateReceipt(expense.expenseId)}>Gerar Recibo</MenuItem>
                     <MenuItem onClick={() => handleDeleteClick(expense.expenseId)}>Deletar</MenuItem>
                   </Menu>
