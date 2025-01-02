@@ -10,6 +10,23 @@ import { useGetProductById } from "src/hooks/useProduct";
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
 
+// Função para formatar o peso em PT-BR
+const formatWeight = (weightKg: number | string | undefined): string => {
+    if (weightKg === undefined || weightKg === null) return "-";
+    const weight = typeof weightKg === "string" ? parseFloat(weightKg) : weightKg;
+    return `${weight.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} Toneladas`;
+};
+
+// Função para formatar o preço em PT-BR
+const formatPrice = (price: number | string | undefined): string => {
+    if (price === undefined || price === null) return "-";
+    const parsedPrice = typeof price === "string" ? parseFloat(price) : price;
+    return `R$ ${parsedPrice.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    })}`;
+};
+
 export default function ProductDetailsPage() {
     const { id } = useParams<{ id: string }>();
     const productId = parseInt(id!, 10);
@@ -52,7 +69,7 @@ export default function ProductDetailsPage() {
                                         {/* Nome */}
                                         <Grid item xs={6}>
                                             <Typography variant="h6" gutterBottom>
-                                                Nome: {product?.name}
+                                                Nome: {product?.name || "-"}
                                             </Typography>
                                         </Grid>
                                         {/* Botão de Editar */}
@@ -65,14 +82,14 @@ export default function ProductDetailsPage() {
                                         {/* Quantidade */}
                                         <Grid item xs={12}>
                                             <Typography variant="body1" gutterBottom>
-                                                Quantidade: {product?.weightAmount} Toneladas
+                                                Quantidade: {formatWeight(product?.weightAmount)}
                                             </Typography>
                                         </Grid>
 
                                         {/* Preço */}
                                         <Grid item xs={12}>
                                             <Typography variant="body1" gutterBottom>
-                                                Preço: {product?.price !== undefined ? `R$${product.price}` : "-"}
+                                                Preço: {formatPrice(product?.price)}
                                             </Typography>
                                         </Grid>
                                     </Grid>

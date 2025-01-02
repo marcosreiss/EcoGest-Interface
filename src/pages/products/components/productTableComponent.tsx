@@ -72,31 +72,30 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
     handleCloseMenu();
     deleteProduct.mutate(productId, {
       onSuccess: () => {
-        notification.addNotification('Produto deletado com sucesso', 'success');
+        notification.addNotification("Produto deletado com sucesso", "success");
         setDeleteModalOpen(false);
       },
       onError: () => {
-        notification.addNotification('Erro ao deletar produto, tente novamente mais tarde', 'error');
+        notification.addNotification("Erro ao deletar produto, tente novamente mais tarde", "error");
       },
     });
   };
 
-  // Função para formatar o peso
+  // Função para formatar o peso em PT-BR
   const formatWeight = (weightKg: number | undefined): string => {
     if (weightKg === undefined) return "-";
-    
-    if (weightKg < 1) {
-      // menor que 1kg, converter para gramas
-      const grams = weightKg * 1000;
-      return `${grams}g`;
-    } if (weightKg > 1000) {
-      // maior que 1000kg, converter para toneladas
-      const tons = weightKg / 1000;
-      return `${tons}T`;
-    } 
-      // entre 1 e 1000, continua em kg
-      return `${weightKg}Kg`;
-    
+
+    return `${weightKg.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} Ton`;
+  };
+
+  // Função para formatar o preço em PT-BR
+  const formatPrice = (price: number | undefined): string => {
+    if (price === undefined) return "-";
+
+    return `R$ ${price.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
   };
 
   // Seleciona ou deseleciona todos os produtos ao marcar o checkbox do header
@@ -130,7 +129,9 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
             <TableCell sx={{ width: "5%", minWidth: "50px" }}>
               <Checkbox
                 checked={products.length > 0 && selectedProductIds.length === products.length}
-                indeterminate={selectedProductIds.length > 0 && selectedProductIds.length < products.length}
+                indeterminate={
+                  selectedProductIds.length > 0 && selectedProductIds.length < products.length
+                }
                 onChange={handleSelectAll}
               />
             </TableCell>
@@ -157,8 +158,8 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
                   />
                 </TableCell>
                 <TableCell>{product.name || "-"}</TableCell>
-                <TableCell>{formatWeight(product.weightAmount)}</TableCell>
-                <TableCell>{product.price !== undefined ? `R$${product.price}` : "-"}</TableCell>
+                <TableCell>{formatWeight(Number(product.weightAmount))}</TableCell>
+                <TableCell>{formatPrice(Number(product.price))}</TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, product.productId)}>︙</IconButton>
                   <Menu
@@ -166,23 +167,17 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
                     open={Boolean(anchorEl && selectedItem === product.productId)}
                     onClose={handleCloseMenu}
                     anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'center'
+                      vertical: "bottom",
+                      horizontal: "center",
                     }}
                     transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right'
+                      vertical: "top",
+                      horizontal: "right",
                     }}
                   >
-                    <MenuItem onClick={() => handleDetailsClick(product.productId)}>
-                      Detalhes
-                    </MenuItem>
-                    <MenuItem onClick={() => handleEditClick(product.productId)}>
-                      Editar
-                    </MenuItem>
-                    <MenuItem onClick={() => handleDeleteClick(product.productId)}>
-                      Deletar
-                    </MenuItem>
+                    <MenuItem onClick={() => handleDetailsClick(product.productId)}>Detalhes</MenuItem>
+                    <MenuItem onClick={() => handleEditClick(product.productId)}>Editar</MenuItem>
+                    <MenuItem onClick={() => handleDeleteClick(product.productId)}>Deletar</MenuItem>
                   </Menu>
                 </TableCell>
               </TableRow>
@@ -199,7 +194,10 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
         open={deleteModalOpen}
         confirmButtonText="Deletar"
         description="Tem certeza que você quer deletar o produto?"
-        onClose={() => { setDeleteModalOpen(false); handleCloseMenu(); }}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          handleCloseMenu();
+        }}
         onConfirm={() => selectedItem && handleDeleteProduct(selectedItem)}
         title="Deletar Produto"
       />
