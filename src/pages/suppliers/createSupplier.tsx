@@ -31,6 +31,7 @@ export default function CreateSupplierPage() {
         setPersonType(prev => prev === pessoaFisica ? pessoaJuridica : pessoaFisica);
     };
 
+
     const { register, handleSubmit, formState: { errors } } = useForm<CreateSupplierPayload>();
     const createSupplier = useCreateSupplier();
     const router = useRouter();
@@ -39,8 +40,10 @@ export default function CreateSupplierPage() {
     const onSubmit = (data: CreateSupplierPayload) => {
         if (personType === pessoaFisica) {
             data.cnpj = null;
+            data.personType = "individual";
         } else {
             data.cpf = null;
+            data.personType = "corporate";
         }
         createSupplier.mutate(data, {
             onSuccess: () => {

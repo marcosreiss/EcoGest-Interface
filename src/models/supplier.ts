@@ -20,6 +20,7 @@ export interface CreateSupplierPayload{
     name: string;
     cpf?: string | null;
     cnpj?: string | null;
+    personType: string;
     address?: string | null;
     contact?: string | null;
 }
