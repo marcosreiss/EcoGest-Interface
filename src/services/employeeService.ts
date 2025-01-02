@@ -31,8 +31,8 @@ export const deleteEmployeeService = async (id: number): Promise<void> => {
 };
 
 // Serviço para buscar um funcionário por ID
-export const getEmployeeByIdService = async (id: number): Promise<Employee> => {
-    const response = await api.get<Employee>(`/employees/search/by-id?id=${id}`);
+export const getEmployeeByIdService = async (id: number): Promise<EmployeeResponse> => {
+    const response = await api.get<EmployeeResponse>(`/employees/search/by-id?id=${id}`);
     return response.data;
 };
 

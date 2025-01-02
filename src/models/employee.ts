@@ -8,10 +8,10 @@ export interface Employee {
     contato: string;
     funcao: string;
     salario: number;
-    dataAdmissao: Date;
-    dataDemissao?: Date;
+    dataAdmissao: Date | null;
+    dataDemissao?: Date | null;
     periodoFerias?: string;
-    dataDePagamento?: Date;
+    dataDePagamento?: Date | null;
     status: 'Empregado' | 'Demitido' | 'Férias';
     isDeleted: boolean;
 }
@@ -34,7 +34,7 @@ export interface EmployeePayload{
     contato: string;
     funcao: string;
     salario: number;
-    dataAdmissao: Date;
+    dataAdmissao: Date | null;
     dataDemissao?: Date;
     periodoFerias?: string;
     dataDePagamento?: Date;

@@ -61,7 +61,7 @@ export const useDeleteEmployee = () => {
 
 // Hook para buscar um funcionário por ID
 export const useGetEmployeeById = (id: number) =>
-    useQuery<Employee, AxiosError>({
+    useQuery<EmployeeResponse, AxiosError>({
         queryKey: ['employee', id],
         queryFn: () => getEmployeeByIdService(id),
     });

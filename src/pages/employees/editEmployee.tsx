@@ -46,7 +46,10 @@ export default function EditEmployeePage() {
   const router = useRouter();
   const { addNotification } = useNotification();
 
-  const { data: employee, isLoading, isError, error } = useGetEmployeeById(employeeId);
+  const { data, isLoading, isError, error } = useGetEmployeeById(employeeId);
+
+  // Acessando o dado encapsulado dentro de `data`
+  const employee = data?.data;
 
   useEffect(() => {
     if (employee) {
@@ -59,16 +62,18 @@ export default function EditEmployeePage() {
       setValue("funcao", employee.funcao);
       setValue("salario", employee.salario);
       setValue("dataAdmissao", employee.dataAdmissao);
-      setValue("dataDemissao", employee.dataDemissao || undefined);
+      setValue("dataDemissao", employee.dataDemissao ? new Date(employee.dataDemissao) : undefined);
       setValue("periodoFerias", employee.periodoFerias || undefined);
-      setValue("dataDePagamento", employee.dataDePagamento || undefined);
+      setValue("dataDePagamento", employee.dataDePagamento ? new Date(employee.dataDePagamento) : undefined);
       setValue("status", employee.status);
     }
   }, [employee, setValue]);
 
-  const onSubmit: SubmitHandler<EmployeePayload> = (data) => {
+
+
+  const onSubmit: SubmitHandler<EmployeePayload> = (formData) => {
     const updatedData: EmployeePayload = {
-      ...data,
+      ...formData,
     };
 
     updateEmployee.mutate(
@@ -218,13 +223,14 @@ export default function EditEmployeePage() {
                     label="Data de Admissão"
                     type="date"
                     InputLabelProps={{ shrink: true }}
-                    {...register("dataAdmissao", { required: "A data de admissão é obrigatória." })}
+                    {...register("dataAdmissao")}
                     error={!!errors.dataAdmissao}
                     helperText={errors.dataAdmissao?.message}
+                    value={employee?.dataAdmissao ? new Date(employee.dataAdmissao).toISOString().split("T")[0] : ""}
                   />
                 </Grid>
 
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Data de Demissão"
@@ -232,7 +238,7 @@ export default function EditEmployeePage() {
                     InputLabelProps={{ shrink: true }}
                     {...register("dataDemissao")}
                   />
-                </Grid>
+                </Grid> */}
 
                 <Grid item xs={12}>
                   <TextField
@@ -257,7 +263,7 @@ export default function EditEmployeePage() {
                   <FormControl fullWidth>
                     <InputLabel>Status</InputLabel>
                     <Select
-                      defaultValue=""
+                      defaultValue= {employee?.status}
                       {...register("status", { required: "Selecione um status." })}
                     >
                       <MenuItem value="Empregado">Empregado</MenuItem>
