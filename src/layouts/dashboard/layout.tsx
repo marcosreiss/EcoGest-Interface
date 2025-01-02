@@ -1,7 +1,6 @@
 import type { Theme, SxProps, Breakpoint } from '@mui/material/styles';
 
 import { useState } from 'react';
-
 import { useLocation } from 'react-router-dom'; // Para obter a rota atual
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';

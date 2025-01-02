@@ -1,4 +1,4 @@
-import type { LoginPayload } from "src/services/loginService";
+import type { LoginPayload, LoginResponse } from "src/services/loginService";
 
 import { useState } from 'react';
 import { useForm } from "react-hook-form";
@@ -27,7 +27,7 @@ export function SignInView() {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginPayload>();
 
 
-  const { setToken } = useAuth();
+  const { setToken, setUsername, setRole } = useAuth();
   const loginMutation = useLogin();
   const { addNotification } = useNotification();
 
@@ -36,10 +36,12 @@ export function SignInView() {
   const handleSignIn = (data: LoginPayload) => {
     console.log(data);
     loginMutation.mutate(data, {
-      onSuccess: (response: { token: string | null; }) => {
+      onSuccess: (response: LoginResponse) => {
         addNotification("Login realizado com sucesso!", "success");
         if (response.token) {
           setToken(response.token);
+          setUsername(response.user.username)
+          setRole(response.user.role)
         }
       },
       onError: () => {

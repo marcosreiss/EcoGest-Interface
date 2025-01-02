@@ -5,16 +5,21 @@ import React, { useMemo, useState, useEffect, useContext, useCallback, createCon
 
 import { useRouter } from "src/routes/hooks";
 
-
 interface AuthContextType {
   token: string | null;
+  username: string | null;
+  role: string | null;
   setToken: (token: string | null) => void;
+  setUsername: (username: string | null) => void;
+  setRole: (role: string | null) => void;
   isAuthenticated: () => boolean | null;
   useLogout: () => void;
 }
 
 interface DecodedToken {
   exp: number; // Campo de expiração (em segundos desde 1970-01-01T00:00:00Z)
+  username?: string; // Nome de usuário
+  role?: string; // Papel do usuário
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,6 +30,8 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setTokenState] = useState<string | null>(null);
+  const [username, setUsernameState] = useState<string | null>(null);
+  const [role, setRoleState] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true); // Adiciona o estado de carregamento
   const router = useRouter();
 
@@ -37,40 +44,71 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, []);
 
+  const setUsername = useCallback((newUsername: string | null) => {
+    setUsernameState(newUsername);
+    if (newUsername) {
+      localStorage.setItem("authUsername", newUsername);
+    } else {
+      localStorage.removeItem("authUsername");
+    }
+  }, []);
+
+  const setRole = useCallback((newRole: string | null) => {
+    setRoleState(newRole);
+    if (newRole) {
+      localStorage.setItem("authRole", newRole);
+    } else {
+      localStorage.removeItem("authRole");
+    }
+  }, []);
+
   useEffect(() => {
     const savedToken = localStorage.getItem("authToken");
-  
+    const savedUsername = localStorage.getItem("authUsername");
+    const savedRole = localStorage.getItem("authRole");
+
     if (savedToken) {
       setTokenState(savedToken);
-  
-      const decoded: DecodedToken = jwtDecode(savedToken);
-      const currentTime = Date.now() / 1000;
-  
-      if (decoded.exp <= currentTime) {
-        setToken(null); // Remove o token expirado
-        router.push("/");
-      } else {
-        const timeout = (decoded.exp - currentTime) * 1000;
-        const timer = setTimeout(() => {
-          setToken(null);
+      setUsernameState(savedUsername);
+      setRoleState(savedRole);
+
+      try {
+        const decoded: DecodedToken = jwtDecode(savedToken);
+        const currentTime = Date.now() / 1000;
+
+        if (decoded.exp <= currentTime) {
+          setToken(null); // Remove o token expirado
+          setUsername(null);
+          setRole(null);
           router.push("/");
-        }, timeout);
-  
-        setIsLoading(false); // Finaliza o carregamento
-        return () => clearTimeout(timer);
+        } else {
+          const timeout = (decoded.exp - currentTime) * 1000;
+          const timer = setTimeout(() => {
+            setToken(null);
+            setUsername(null);
+            setRole(null);
+            router.push("/");
+          }, timeout);
+
+          setIsLoading(false); // Finaliza o carregamento
+          return () => clearTimeout(timer);
+        }
+      } catch (error) {
+        console.error("Erro ao decodificar o token:", error);
+        setToken(null);
+        setUsername(null);
+        setRole(null);
       }
     } else {
       setIsLoading(false); // Finaliza o carregamento se não houver token
     }
     return undefined;
-  }, [setToken, router]);
-  
-  
-  
+  }, [setToken, setUsername, setRole, router]);
+
   const isAuthenticated = useCallback(() => {
     if (isLoading) return null; // Ou outro comportamento, como mostrar um placeholder
     if (!token) return false;
-  
+
     try {
       const decoded: DecodedToken = jwtDecode(token);
       const currentTime = Date.now() / 1000;
@@ -80,18 +118,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return false;
     }
   }, [token, isLoading]);
-   
-  
+
   const useLogout = useCallback(() => {
     setToken(null);
-    router.push("/")
-  }, [setToken, router]);
-  
+    setUsername(null);
+    setRole(null);
+    router.push("/");
+  }, [setToken, setUsername, setRole, router]);
 
   const memorizedValue = useMemo(
-    ()=> ({token, setToken, isAuthenticated, useLogout}),
-    [token, setToken, isAuthenticated, useLogout]
-  )
+    () => ({ token, username, role, setToken, setUsername, setRole, isAuthenticated, useLogout }),
+    [token, username, role, setToken, setUsername, setRole, isAuthenticated, useLogout]
+  );
 
   return (
     <AuthContext.Provider value={memorizedValue}>
