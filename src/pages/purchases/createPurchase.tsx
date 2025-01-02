@@ -4,6 +4,12 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 
+import type { SupplierBasicInfo } from 'src/models/supplier';
+
+import type { ProductBasicInfo } from 'src/models/product';
+
+
+
 import Autocomplete from "@mui/material/Autocomplete";
 import {
     Box,
@@ -97,10 +103,10 @@ export default function CreatePurchasePage() {
                                         loading={loadingSuppliers}
                                         getOptionLabel={(option) => option.name}
                                         isOptionEqualToValue={(option, value) =>
-                                            option.supplierId === value.supplierId
+                                            option.supplierId === (value as SupplierBasicInfo)?.supplierId
                                         }
                                         onChange={(_, newValue) =>
-                                            setValue("supplierId", newValue ? Number(newValue.supplierId) : -1, {
+                                            setValue("supplierId", newValue ? newValue.supplierId : -1, {
                                                 shouldValidate: true,
                                             })
                                         }
@@ -111,9 +117,6 @@ export default function CreatePurchasePage() {
                                                 variant="outlined"
                                                 error={!!errors.supplierId}
                                                 helperText={errors.supplierId?.message}
-                                                {...register("supplierId", {
-                                                    required: "Selecione um fornecedor.",
-                                                })}
                                             />
                                         )}
                                         renderOption={(props, option) => (
@@ -131,10 +134,10 @@ export default function CreatePurchasePage() {
                                         loading={loadingProducts}
                                         getOptionLabel={(option) => option.name}
                                         isOptionEqualToValue={(option, value) =>
-                                            option.productId === value.productId
+                                            option.productId === (value as ProductBasicInfo)?.productId
                                         }
                                         onChange={(_, newValue) =>
-                                            setValue("productId", newValue ? Number(newValue.productId) : -1, {
+                                            setValue("productId", newValue ? newValue.productId : -1, {
                                                 shouldValidate: true,
                                             })
                                         }
@@ -145,9 +148,6 @@ export default function CreatePurchasePage() {
                                                 variant="outlined"
                                                 error={!!errors.productId}
                                                 helperText={errors.productId?.message}
-                                                {...register("productId", {
-                                                    required: "Selecione um produto.",
-                                                })}
                                             />
                                         )}
                                         renderOption={(props, option) => (
