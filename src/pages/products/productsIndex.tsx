@@ -1,14 +1,14 @@
 import type { Product } from 'src/models/product';
 
 import * as React from 'react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 import Paper from '@mui/material/Paper';
 import { Box, Grid } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 
-import { useDeleteProduct, useGetProductsPaged } from 'src/hooks/useProduct';
+import { useDeleteProduct, useGetProductsPaged, useGetProductByName } from 'src/hooks/useProduct';
 
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -19,7 +19,6 @@ import TableHeaderComponent from 'src/layouts/components/tableHeaderComponent';
 
 import ProductTableComponent from './components/productTableComponent';
 
-
 // ----------------------------------------------------------------------
 
 export default function ProductPage() {
@@ -28,9 +27,31 @@ export default function ProductPage() {
   const rowsPerPage = 5;
   const [page, setPage] = useState(0);
 
+  const [debouncedSearchString, setDebouncedSearchString] = useState('');
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const { data, isLoading } = useGetProductsPaged(page * rowsPerPage, rowsPerPage);
 
-  const products = data?.data || [];
+  const { data: searchResults, isLoading: isSearching } = useGetProductByName(debouncedSearchString);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value;
+
+    // Limpa o timeout anterior para reiniciar o debounce
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    // Se o valor tiver 3 ou mais caracteres, inicia o debounce
+    if (inputValue.length >= 3) {
+      debounceTimeoutRef.current = setTimeout(() => {
+        setDebouncedSearchString(inputValue); // Atualiza o valor com debounce
+      }, 500); // Atraso de 500ms antes de executar a busca
+    } else {
+      // Se o valor for menor que 3 caracteres, limpa a busca
+      setDebouncedSearchString('');
+    }
+  };
 
   const deleteProduct = useDeleteProduct();
   const notification = useNotification();
@@ -49,6 +70,7 @@ export default function ProductPage() {
     });
   };
 
+  const products = debouncedSearchString.length >= 3 ? searchResults : data?.data;
 
   return (
     <>
@@ -64,13 +86,18 @@ export default function ProductPage() {
             addButtonPath='/products/create'
           />
           <Grid item xs={12}>
-            <TableSearch handleDelete={handleDeleteProduct} handleSearchChange={() => null} isSearchDisabled selectedRows={selectedProducts} />
+            <TableSearch
+              handleDelete={handleDeleteProduct}
+              handleSearchChange={handleSearchChange}
+              isSearchDisabled={false}
+              selectedRows={selectedProducts}
+            />
             <TableContainer component={Paper} sx={{ height: '65vh', display: 'flex', flexDirection: 'column' }}>
               <Box component="div" sx={{ flex: 1, overflow: 'auto' }}>
                 <ProductTableComponent
                   setSelectedProducts={setSelectedProducts}
-                  products={products}
-                  isLoading={isLoading}
+                  products={products || []}
+                  isLoading={isLoading || isSearching}
                 />
               </Box>
 

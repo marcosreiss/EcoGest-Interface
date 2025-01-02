@@ -9,8 +9,9 @@ import {
   deleteProductService,
   getProductByIdService,
   getProductsPagedService,
+  getProductByNameService,
   getProductsBasicInfoService,
-} from "src/services/productService";  // Ajuste o path se necessário
+} from "src/services/productService";
 
 export const useGetProductsPaged = (skip: number, take: number) =>
   useQuery<ProductListResponse, AxiosError>({
@@ -65,7 +66,12 @@ export const useGetProductById = (id: number) =>
     queryFn: () => getProductByIdService(id),
   });
 
-  //---------------------------------------------
+  export const useGetProductByName = (name: string) =>
+    useQuery<Product[], AxiosError>({
+      queryKey: ['products-by-name', name],
+      queryFn: () => getProductByNameService(name),
+      enabled: name.length >= 3,
+    });
 
   export const useGetProductsBasicInfo = () => 
     useQuery<ProductBasicInfoList, AxiosError>({
