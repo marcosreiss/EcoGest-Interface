@@ -9,7 +9,7 @@ interface AuthContextType {
   token: string | null;
   username: string | null;
   role: string | null;
-  setToken: (token: string | null) => void;
+  setToken: (token: string | null, user?: { username: string; role: string }) => void;
   setUsername: (username: string | null) => void;
   setRole: (role: string | null) => void;
   isAuthenticated: () => boolean | null;
