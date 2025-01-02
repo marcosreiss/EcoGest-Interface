@@ -1,11 +1,14 @@
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
 import CardContent from '@mui/material/CardContent';
-import Box from '@mui/material/Box';
-import { SvgColor } from 'src/components/svg-color';
+import CardActionArea from '@mui/material/CardActionArea';
+
+import { useAuth } from 'src/context/AuthContext';
 import { DashboardContent } from 'src/layouts/dashboard';
+
+import { SvgColor } from 'src/components/svg-color';
 
 // Função para criar o ícone com cor personalizada
 const icon = (name: string, color: string) => (
@@ -29,12 +32,13 @@ const menuItems = [
   { title: 'Vendas', icon: icon('ic-sales', '#34B864'), path: '/sales' }, // Verde
   { title: 'Compras', icon: icon('ic-cart', '#FF9D1E'), path: '/purchases' }, // Laranja
   { title: 'Produtos', icon: icon('ic-soda', '#1E6A3A'), path: '/products' }, // Verde Escuro
-  { title: 'Funcionários', icon: icon('ic-employees', '#546161'), path: '/employees' }, // Cinza
-  { title: 'Despesas', icon: icon('ic-coins', '#F45752'), path: '/expenses' }, // Vermelho
-  { title: 'Balanço', icon: icon('ic-adm', '#38A95A'), path: '/admin' }, // Verde
+  { title: 'Funcionários', icon: icon('ic-employees', '#546161'), path: '/employees', adminOnly: true }, // Cinza
+  { title: 'Despesas', icon: icon('ic-coins', '#F45752'), path: '/expenses', adminOnly: true }, // Vermelho
+  { title: 'Balanço', icon: icon('ic-adm', '#38A95A'), path: '/admin', adminOnly: true }, // Verde
 ];
 
 export function OverviewMenuView() {
+  const { role } = useAuth();
   return (
     <DashboardContent
       sx={{
@@ -68,37 +72,38 @@ export function OverviewMenuView() {
           overflowX: 'hidden', // Oculta transbordamento horizontal no grid
         }}
       >
-        {menuItems.map((item, index) => (
-          <Grid xs={12} sm={6} md={3} key={index}>
-            <Card
-              sx={{
-                textAlign: 'center',
-                cursor: 'pointer',
-                backgroundColor: '#FFFFFF',
-                '&:hover': {
-                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                },
-              }}
-            >
-              <CardActionArea href={item.path}>
-                {item.icon}
-                <CardContent>
-                  <Typography
-                    variant="body1"
-                    fontWeight="bold"
-                    sx={{
-                      color: '#546161',
-                    }}
-                  >
-                    {item.title}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-        ))}
+        {menuItems
+          .filter((item) => !item.adminOnly || role === 'admin')
+          .map((item, index) => (
+            <Grid xs={12} sm={6} md={3} key={index}>
+              <Card
+                sx={{
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  backgroundColor: '#FFFFFF',
+                  '&:hover': {
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                  },
+                }}
+              >
+                <CardActionArea href={item.path}>
+                  {item.icon}
+                  <CardContent>
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      sx={{
+                        color: '#546161',
+                      }}
+                    >
+                      {item.title}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+          ))}
       </Grid>
     </DashboardContent>
   );
 }
-
