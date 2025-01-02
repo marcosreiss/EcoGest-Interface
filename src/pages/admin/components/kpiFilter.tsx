@@ -1,236 +1,208 @@
+import type { KpiParams } from "src/models/kpiParamsModel";
 
-import type { KpiParams} from "src/models/kpiParamsModel";
-
-import React from "react";
+import React, { useState } from "react";
 
 import {
     Box,
     Card,
     Grid,
     Button,
-    Select,
-    MenuItem,
     TextField,
     Autocomplete,
+    Typography,
+    MenuItem
 } from "@mui/material";
 
 import { useGetProductsBasicInfo } from "src/hooks/useProduct";
 import { useGetSuppliersBasicInfo } from "src/hooks/useSupplier";
 
-import { StackBy, TimeGranularity } from "src/models/kpiParamsModel";
-
+import { TimeGranularity } from "src/models/kpiParamsModel";
 
 interface KpiFilterProps {
     setSalesKpiParams: React.Dispatch<React.SetStateAction<KpiParams>>;
     salesKpiParams: KpiParams;
 }
 
+type FilterOption = "specificPeriod" | "timePeriod" | "client" | "supplier";
+
 const KpiFilter: React.FC<KpiFilterProps> = ({ setSalesKpiParams, salesKpiParams }) => {
+    const [selectedFilter, setSelectedFilter] = useState<FilterOption | "">("");
+
     const { data: productsData, isLoading: isProductsLoading } = useGetProductsBasicInfo();
     const { data: suppliersData, isLoading: isSuppliersLoading } = useGetSuppliersBasicInfo();
 
-    const products = productsData?.data || []; // Corrigido para acessar a propriedade "data"
-    const suppliers = suppliersData?.data || []; // Corrigido para acessar a propriedade "data"
-
-    const isFilterActive = Object.values(salesKpiParams).some(
-        (value) => value !== undefined && value !== null && value !== ""
-    );
+    const suppliers = suppliersData?.data || [];
+    const products = productsData?.data || [];
 
     const handleClearFilters = () => {
         setSalesKpiParams({});
+        setSelectedFilter("");
     };
 
     return (
         <Grid container spacing={2} paddingBottom={5}>
-            <Grid item xs={12} md={12}>
+            <Grid item xs={12}>
                 <Card variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
-                    {/* Botão alinhado à direita */}
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "flex-end", // Alinha o botão à direita
-                            marginBottom: 3,
-                        }}
-                    >
+                    {/* Botões de Filtro e Limpar */}
+                    <Box sx={{ marginBottom: 3, display: "flex", gap: 2, alignItems: "center" }}>
+                        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flexGrow: 1 }}>
+                            <Button
+                                variant={selectedFilter === "specificPeriod" ? "contained" : "outlined"}
+                                onClick={() => setSelectedFilter("specificPeriod")}
+                            >
+                                Período Específico
+                            </Button>
+                            <Button
+                                variant={selectedFilter === "timePeriod" ? "contained" : "outlined"}
+                                onClick={() => setSelectedFilter("timePeriod")}
+                            >
+                                Período
+                            </Button>
+                            <Button
+                                variant={selectedFilter === "client" ? "contained" : "outlined"}
+                                onClick={() => setSelectedFilter("client")}
+                            >
+                                Cliente
+                            </Button>
+                            <Button
+                                variant={selectedFilter === "supplier" ? "contained" : "outlined"}
+                                onClick={() => setSelectedFilter("supplier")}
+                            >
+                                Fornecedor
+                            </Button>
+                        </Box>
                         <Button
                             variant="contained"
                             color="error"
                             onClick={handleClearFilters}
-                            disabled={!isFilterActive}
-                            sx={{
-                                width: { xs: "100%", sm: "150px" },
-                                height: "56px",
-                            }}
+                            disabled={!selectedFilter}
                         >
                             Limpar Filtros
                         </Button>
                     </Box>
 
-                    {/* Campos de Filtros */}
-                    <Grid container spacing={2}>
-                        {/* Data Inicial */}
-                        <Grid item xs={12} sm={6} md={4}>
-                            <TextField
-                                label="Data Inicial"
-                                type="date"
-                                value={salesKpiParams.startDate || ""}
-                                InputLabelProps={{ shrink: true }}
-                                fullWidth
-                                onChange={(e) =>
-                                    setSalesKpiParams((prev) => ({
-                                        ...prev,
-                                        startDate: e.target.value,
-                                    }))
-                                }
-                            />
+                    {/* Filtros Dinâmicos */}
+                    {selectedFilter === "specificPeriod" && (
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Data Inicial"
+                                    type="date"
+                                    value={salesKpiParams.startDate || ""}
+                                    InputLabelProps={{ shrink: true }}
+                                    fullWidth
+                                    onChange={(e) =>
+                                        setSalesKpiParams((prev) => ({
+                                            ...prev,
+                                            startDate: e.target.value,
+                                        }))
+                                    }
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Data Final"
+                                    type="date"
+                                    value={salesKpiParams.endDate || ""}
+                                    InputLabelProps={{ shrink: true }}
+                                    fullWidth
+                                    onChange={(e) =>
+                                        setSalesKpiParams((prev) => ({
+                                            ...prev,
+                                            endDate: e.target.value,
+                                        }))
+                                    }
+                                />
+                            </Grid>
                         </Grid>
+                    )}
 
-                        {/* Data Final */}
-                        <Grid item xs={12} sm={6} md={4}>
-                            <TextField
-                                label="Data Final"
-                                type="date"
-                                value={salesKpiParams.endDate || ""}
-                                InputLabelProps={{ shrink: true }}
-                                fullWidth
-                                onChange={(e) =>
-                                    setSalesKpiParams((prev) => ({
-                                        ...prev,
-                                        endDate: e.target.value,
-                                    }))
-                                }
-                            />
-                        </Grid>
-
-                        {/* Produto */}
-                        <Grid item xs={12} sm={6} md={4}>
-                            <Autocomplete
-                                disabled={salesKpiParams.supplierId != null}
-                                options={products}
-                                loading={isProductsLoading}
-                                getOptionLabel={(option) => option.name}
-                                isOptionEqualToValue={(option, value) =>
-                                    option.productId === value.productId
-                                }
-                                value={
-                                    products.find(
-                                        (product) => product.productId === salesKpiParams.productId
-                                    ) || null
-                                }
-                                onChange={(_, newValue) =>
-                                    setSalesKpiParams((prev) => ({
-                                        ...prev,
-                                        productId: newValue?.productId || undefined,
-                                    }))
-                                }
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Produto"
-                                        variant="outlined"
-                                        fullWidth
-                                    />
-                                )}
-                                renderOption={(props, option) => (
-                                    <li {...props} key={option.productId}>
-                                        {option.name}
-                                    </li>
-                                )}
-                            />
-
-                        </Grid>
-
-                        {/* Fornecedor */}
-                        <Grid item xs={12} sm={6} md={4}>
-                            <Autocomplete
-                                disabled={salesKpiParams.productId != null}
-                                options={suppliers}
-                                loading={isSuppliersLoading}
-                                getOptionLabel={(option) => option.name}
-                                isOptionEqualToValue={(option, value) =>
-                                    option.supplierId === value.supplierId
-                                }
-                                value={
-                                    suppliers.find(
-                                        (supplier) =>
-                                            supplier.supplierId === salesKpiParams.supplierId
-                                    ) || null
-                                }
-                                onChange={(_, newValue) =>
-                                    setSalesKpiParams((prev) => ({
-                                        ...prev,
-                                        supplierId: newValue?.supplierId || undefined,
-                                    }))
-                                }
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Fornecedor"
-                                        variant="outlined"
-                                        fullWidth
-                                    />
-                                )}
-                                renderOption={(props, option) => (
-                                    <li {...props} key={option.supplierId}>
-                                        {option.name}
-                                    </li>
-                                )}
-                            />
-
-                        </Grid>
-
-                        {/* Período */}
-                        <Grid item xs={12} sm={6} md={4}>
-                            <Select
-                                value={salesKpiParams.period || ""}
-                                onChange={(e) =>
-                                    setSalesKpiParams((prev) => ({
-                                        ...prev,
-                                        period: e.target.value ? (e.target.value as TimeGranularity) : undefined,
-                                    }))
-                                }
-                                displayEmpty
-                                fullWidth
-                            >
-                                {/* Placeholder */}
-                                <MenuItem value="" disabled>
-                                    Período
-                                </MenuItem>
-
-                                {/* Opções */}
-                                {Object.values(TimeGranularity).map((value) => (
-                                    <MenuItem key={value} value={value}>
-                                        {value}
+                    {selectedFilter === "timePeriod" && (
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    select
+                                    label="Período"
+                                    value={salesKpiParams.period || ""}
+                                    onChange={(e) =>
+                                        setSalesKpiParams((prev) => ({
+                                            ...prev,
+                                            period: e.target.value as TimeGranularity,
+                                        }))
+                                    }
+                                    fullWidth
+                                    InputLabelProps={{ shrink: true }}
+                                >
+                                    <MenuItem value="" disabled>
+                                        Selecione o Período
                                     </MenuItem>
-                                ))}
-                            </Select>
+                                    {Object.values(TimeGranularity).map((value) => (
+                                        <MenuItem key={value} value={value}>
+                                            {value}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </Grid>
                         </Grid>
+                    )}
 
-
-                        {/* Agrupar por */}
-                        <Grid item xs={12} sm={6} md={4}>
-                            <Select
-                                value={salesKpiParams.stackBy || ""}
-                                onChange={(e) =>
-                                    setSalesKpiParams((prev) => ({
-                                        ...prev,
-                                        stackBy: e.target.value as StackBy,
-                                    }))
-                                }
-                                displayEmpty
-                                fullWidth
-                            >
-                                <MenuItem value="" disabled>
-                                    Agrupar por
-                                </MenuItem>
-                                {Object.values(StackBy).map((value) => (
-                                    <MenuItem key={value} value={value}>
-                                        {value}
-                                    </MenuItem>
-                                ))}
-                            </Select>
+                    {selectedFilter === "client" && (
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <Autocomplete
+                                    options={products}
+                                    loading={isProductsLoading}
+                                    getOptionLabel={(option) => option.name}
+                                    isOptionEqualToValue={(option, value) =>
+                                        option.productId === value.productId
+                                    }
+                                    value={
+                                        products.find(
+                                            (product) => product.productId === salesKpiParams.productId
+                                        ) || null
+                                    }
+                                    onChange={(_, newValue) =>
+                                        setSalesKpiParams((prev) => ({
+                                            ...prev,
+                                            productId: newValue?.productId || undefined,
+                                        }))
+                                    }
+                                    renderInput={(params) => (
+                                        <TextField {...params} label="Cliente" fullWidth />
+                                    )}
+                                />
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    )}
+
+                    {selectedFilter === "supplier" && (
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <Autocomplete
+                                    options={suppliers}
+                                    loading={isSuppliersLoading}
+                                    getOptionLabel={(option) => option.name}
+                                    isOptionEqualToValue={(option, value) =>
+                                        option.supplierId === value.supplierId
+                                    }
+                                    value={
+                                        suppliers.find(
+                                            (supplier) => supplier.supplierId === salesKpiParams.supplierId
+                                        ) || null
+                                    }
+                                    onChange={(_, newValue) =>
+                                        setSalesKpiParams((prev) => ({
+                                            ...prev,
+                                            supplierId: newValue?.supplierId || undefined,
+                                        }))
+                                    }
+                                    renderInput={(params) => (
+                                        <TextField {...params} label="Fornecedor" fullWidth />
+                                    )}
+                                />
+                            </Grid>
+                        </Grid>
+                    )}
                 </Card>
             </Grid>
         </Grid>
