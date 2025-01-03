@@ -5,7 +5,17 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 
-import { Box, Grid, Button, Select, MenuItem, TextField, Typography, InputLabel, FormControl } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Button,
+  Select,
+  MenuItem,
+  TextField,
+  Typography,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
 
@@ -15,31 +25,41 @@ import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
 
-// ----------------------------------------------------------------------
-
 export default function CreateEmployeePage() {
   const formStyle = {
-    mx: 'auto',
+    mx: "auto",
     p: 3,
     boxShadow: 3,
     borderRadius: 2,
-    bgcolor: 'background.paper',
+    bgcolor: "background.paper",
   };
 
-  const { register, handleSubmit, formState: { errors } } = useForm<EmployeePayload>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm<EmployeePayload>();
+
   const createEmployee = useCreateEmployee();
   const router = useRouter();
   const { addNotification } = useNotification();
 
   const onSubmit: SubmitHandler<EmployeePayload> = (data) => {
-    createEmployee.mutate(data, {
+    // Converte vírgulas para pontos no salário
+    const sanitizedData: EmployeePayload = {
+      ...data,
+      salario: parseFloat(data.salario.toString().replace(",", ".")),
+    };
+
+    createEmployee.mutate(sanitizedData, {
       onSuccess: () => {
         addNotification("Funcionário cadastrado com sucesso!", "success");
         router.push("/employees");
       },
       onError: (error: any) => {
         addNotification(`Erro ao cadastrar funcionário: ${error.message}`, "error");
-      }
+      },
     });
   };
 
@@ -49,7 +69,7 @@ export default function CreateEmployeePage() {
         <title>{`Criar Funcionário - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth='md'>
+      <DashboardContent maxWidth="md">
         <Grid container justifyContent="center">
           <Grid item xs={12}>
             <Box sx={formStyle}>
@@ -87,7 +107,14 @@ export default function CreateEmployeePage() {
                     fullWidth
                     label="RG"
                     placeholder="RG do Funcionário"
-                    {...register("rg", { required: "O RG é obrigatório." })}
+                    {...register("rg", {
+                      required: "O RG é obrigatório.",
+                      maxLength: { value: 15, message: "RG deve ter no máximo 15 caracteres." },
+                      pattern: {
+                        value: /^[0-9.-]+$/, // Correção: remove o escape do hífen
+                        message: "RG inválido. Use apenas números, pontos e traços.",
+                      },
+                    })}
                     error={!!errors.rg}
                     helperText={errors.rg?.message}
                   />
@@ -98,7 +125,14 @@ export default function CreateEmployeePage() {
                     fullWidth
                     label="CPF"
                     placeholder="CPF do Funcionário"
-                    {...register("cpf", { required: "O CPF é obrigatório." })}
+                    {...register("cpf", {
+                      required: "O CPF é obrigatório.",
+                      maxLength: { value: 14, message: "CPF deve ter no máximo 14 caracteres." },
+                      pattern: {
+                        value: /^[0-9.-]+$/, // Correção: remove o escape do hífen
+                        message: "CPF inválido. Use apenas números, pontos e traços.",
+                      },
+                    })}
                     error={!!errors.cpf}
                     helperText={errors.cpf?.message}
                   />
@@ -144,9 +178,13 @@ export default function CreateEmployeePage() {
                     placeholder="Salário do Funcionário"
                     type="number"
                     inputProps={{ min: 0, step: "0.01" }}
-                    {...register("salario", { 
+                    {...register("salario", {
                       required: "O salário é obrigatório.",
-                      min: { value: 0, message: "O salário não pode ser negativo." }
+                      validate: (value) => {
+                        // Converte o valor para string antes de aplicar o replace
+                        const sanitizedValue = String(value).replace(",", ".");
+                        return !Number.isNaN(parseFloat(sanitizedValue)) || "Insira um valor válido.";
+                      },
                     })}
                     error={!!errors.salario}
                     helperText={errors.salario?.message}
@@ -154,21 +192,10 @@ export default function CreateEmployeePage() {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Data de Admissão"
-                    type="date"
-                    InputLabelProps={{ shrink: true }}
-                    {...register("dataAdmissao", { required: "A data de admissão é obrigatória." })}
-                    error={!!errors.dataAdmissao}
-                    helperText={errors.dataAdmissao?.message}
-                  />
-                </Grid>
-
-                <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <InputLabel>Status</InputLabel>
+                  <FormControl fullWidth error={!!errors.status}>
+                    <InputLabel id="status-label">Status</InputLabel>
                     <Select
+                      labelId="status-label"
                       defaultValue=""
                       {...register("status", { required: "Selecione um status." })}
                     >
@@ -176,8 +203,14 @@ export default function CreateEmployeePage() {
                       <MenuItem value="Demitido">Demitido</MenuItem>
                       <MenuItem value="Férias">Férias</MenuItem>
                     </Select>
+                    {errors.status && (
+                      <Typography variant="body2" color="error">
+                        {errors.status.message}
+                      </Typography>
+                    )}
                   </FormControl>
                 </Grid>
+
 
                 <Grid item xs={12}>
                   <Button

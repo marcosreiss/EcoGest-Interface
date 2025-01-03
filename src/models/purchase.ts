@@ -7,9 +7,9 @@ export enum PurchaseStatus {
     canceled = "canceled"
 }
 export const purchaseStatusMapping: Record<string, string> = {
-    processing: "pendente",
-    approved: "aprovado",
-    canceled: "cancelado",
+    processing: "Processando",
+    approved: "Aprovado",
+    canceled: "Cancelado",
 };
 
 

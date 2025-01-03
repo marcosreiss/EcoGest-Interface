@@ -13,6 +13,7 @@ import {
     TextField,
     Typography,
     CircularProgress,
+    MenuItem
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
@@ -48,7 +49,6 @@ export default function EditSalePage() {
     const router = useRouter();
     const { addNotification } = useNotification();
 
-    const navigate = useRouter();
     useEffect(() => {
         if (sale) {
             setValue("customerId", sale.customerId);
@@ -58,11 +58,7 @@ export default function EditSalePage() {
             setValue("saleStatus", sale.saleStatus);
             setValue("date_time", sale.date_time);
         }
-        if (sale?.saleStatus !== "processing") {
-            navigate.push("/sales");
-            addNotification("Não é possível editar uma venda aprovada ou cancelada", "warning");
-        }
-    }, [addNotification, navigate, sale, setValue]);
+    }, [sale, setValue]);
 
     const onSubmit = (data: CreateSalePayload) => {
         updateSale.mutate(
@@ -142,8 +138,8 @@ export default function EditSalePage() {
                                         fullWidth
                                         label="Quantidade (Toneladas)"
                                         type="number"
-                                        {...register("quantity", { 
-                                            required: "Digite a quantidade.", 
+                                        {...register("quantity", {
+                                            required: "Digite a quantidade.",
                                             min: {
                                                 value: 0.1,
                                                 message: "A quantidade mínima é 0.1 tonelada."
@@ -172,16 +168,18 @@ export default function EditSalePage() {
                                         select
                                         label="Status"
                                         fullWidth
+                                        disabled={sale?.saleStatus !== "processing"}
                                         defaultValue={sale?.saleStatus || ""}
                                         {...register("saleStatus", { required: "Selecione um status." })}
                                         error={!!errors.saleStatus}
                                         helperText={errors.saleStatus?.message}
                                     >
-                                        <option value="processing">Pendente</option>
-                                        <option value="approved">Concluído</option>
-                                        <option value="canceled">Cancelado</option>
+                                        <MenuItem value="processing">Pendente</MenuItem>
+                                        <MenuItem value="approved">Concluído</MenuItem>
+                                        <MenuItem value="canceled">Cancelado</MenuItem>
                                     </TextField>
                                 </Grid>
+
 
                                 {/* Data da Venda */}
                                 <Grid item xs={12}>

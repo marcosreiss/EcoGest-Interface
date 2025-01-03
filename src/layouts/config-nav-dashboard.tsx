@@ -14,16 +14,6 @@ export const navData = [
     icon: icon('ic-home'),
   },
   {
-    title: 'Vendas',
-    path: '/sales',
-    icon: icon('ic-sales'),
-  },
-  {
-    title: 'Compras',
-    path: '/purchases',
-    icon: icon('ic-cart')
-  },
-  {
     title: 'Clientes',
     path: '/customers',
     icon: icon('ic-people')
@@ -44,6 +34,21 @@ export const navData = [
     icon: icon('ic-truck')
   },
   {
+    title: 'Funcionarios',
+    path: '/employees',
+    icon: icon('ic-employees'),
+  },
+  {
+    title: 'Vendas',
+    path: '/sales',
+    icon: icon('ic-sales'),
+  },
+  {
+    title: 'Compras',
+    path: '/purchases',
+    icon: icon('ic-cart')
+  },
+  {
     title: 'Despesas',
     path: '/expenses',
     icon: icon('ic-coins')
@@ -53,11 +58,6 @@ export const navData = [
   //   path: '/receipts',
   //   icon: icon('ic-bill')
   // },
-  {
-    title: 'Funcionarios',
-    path: '/employees',
-    icon: icon('ic-employees'),
-  },
   {
     title: 'Balanço',
     path: '/admin',
