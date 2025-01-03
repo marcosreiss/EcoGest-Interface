@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import {
   Menu,
   Table,
+  Select,
   TableRow,
   Checkbox,
   MenuItem,
@@ -13,11 +14,15 @@ import {
   TableBody,
   IconButton,
   LinearProgress,
+  MenuItem as MuiMenuItem,
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
-import { useDeleteSale } from "src/hooks/useSales";
+
+import { useDeleteSale, useUpdateSaleStatus } from "src/hooks/useSales";
+
 import { useNotification } from "src/context/NotificationContext";
+
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
 
 interface TableComponentProps {
@@ -40,6 +45,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
 
   const navigate = useRouter();
   const deleteSale = useDeleteSale();
+  const updateSaleStatus = useUpdateSaleStatus();
   const notification = useNotification();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>, saleId: number) => {
@@ -107,6 +113,17 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
     }
   };
 
+  const handleStatusChange = (saleId: number, newStatus: 'processing' | 'approved' | 'canceled') => {
+    updateSaleStatus.mutate({ id: saleId, saleStatus: newStatus }, {
+      onSuccess: () => {
+        notification.addNotification("Status da venda atualizado com sucesso", "success");
+      },
+      onError: () => {
+        notification.addNotification("Erro ao atualizar o status da venda", "error");
+      },
+    });
+  };
+
   const sortedSales = React.useMemo(() => {
     if (!sales) return [];
     return [...sales].sort((a, b) => {
@@ -162,11 +179,20 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                   {new Date(sale.date_time).toLocaleDateString() || "N/A"}
                 </TableCell>
                 <TableCell>
-                  {sale.saleStatus === "processing"
-                    ? "Processando"
-                    : sale.saleStatus === "approved"
-                    ? "Aprovada"
-                    : "Cancelada"}
+                  {sale.saleStatus === "processing" ? (
+                    <Select
+                      value={sale.saleStatus}
+                      onChange={(e) => handleStatusChange(sale.saleId, e.target.value as 'processing' | 'approved' | 'canceled')}
+                    >
+                      <MuiMenuItem value="processing">Processando</MuiMenuItem>
+                      <MuiMenuItem value="approved">Aprovada</MuiMenuItem>
+                      <MuiMenuItem value="canceled">Cancelada</MuiMenuItem>
+                    </Select>
+                  ) : (
+                    sale.saleStatus === "approved"
+                      ? "Aprovada"
+                      : "Cancelada"
+                  )}
                 </TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, sale.saleId)}>

@@ -1,6 +1,7 @@
 import type { AxiosError } from "axios";
 import type {
     Purchase,
+    PurchaseStatus,
     PurchaseResponse,
     PurchaseListResponse,
     CreatePurchasePayload,
@@ -16,6 +17,7 @@ import {
     updatePurchaseService,
     deletePurchaseService,
     getPurchaseByIdService,
+    updatePurchaseStatusService,
     getPurchasesPaginatedService,
     getPurchasesByProductService,
     getPurchasesBySupplierService,
@@ -108,3 +110,19 @@ export const useGetPurchasesByProduct = (productId: number) =>
         queryFn: () => getPurchasesByProductService(productId),
         enabled: !!productId, // Evita chamadas desnecessárias se productId for inválido
     });
+
+export const useUpdatePurchaseStatus = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation<number, AxiosError, { id: number; purchaseStatus: PurchaseStatus }>({
+        mutationFn: ({ id, purchaseStatus }) => updatePurchaseStatusService(id, purchaseStatus),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["purchases-list"]
+            });
+        },
+        onError: (error) => {
+            console.error("Erro ao atualizar o status da compra:", error);
+        },
+    });
+};

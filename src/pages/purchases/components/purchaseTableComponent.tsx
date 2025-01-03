@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import {
   Menu,
   Table,
+  Select,
   TableRow,
   Checkbox,
   MenuItem,
@@ -11,14 +12,15 @@ import {
   TableBody,
   IconButton,
   LinearProgress,
+  MenuItem as MuiMenuItem,
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
 
-import { useDeletePurchase } from "src/hooks/usePurchase";
+import { useDeletePurchase, useUpdatePurchaseStatus } from "src/hooks/usePurchase";
 
 import { useNotification } from "src/context/NotificationContext";
-import { type Purchase, purchaseStatusMapping } from "src/models/purchase";
+import { type Purchase, PurchaseStatus, purchaseStatusMapping } from "src/models/purchase";
 
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
 
@@ -40,6 +42,7 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
 
   const navigate = useRouter();
   const deletePurchase = useDeletePurchase();
+  const updatePurchaseStatus = useUpdatePurchaseStatus();
   const notification = useNotification();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>, purchaseId: number) => {
@@ -109,6 +112,20 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
     }
   };
 
+  const handleStatusChange = (purchaseId: number, newStatus: PurchaseStatus) => {
+    updatePurchaseStatus.mutate(
+      { id: purchaseId, purchaseStatus: newStatus },
+      {
+        onSuccess: () => {
+          notification.addNotification("Status da compra atualizado com sucesso", "success");
+        },
+        onError: () => {
+          notification.addNotification("Erro ao atualizar o status da compra", "error");
+        },
+      }
+    );
+  };
+
   return (
     <>
       <Table stickyHeader aria-label="purchases table">
@@ -148,9 +165,24 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                 <TableCell>{purchase.supplier?.name || "-"}</TableCell>
                 <TableCell>{purchase.product?.name || "-"}</TableCell>
                 <TableCell>{new Date(purchase.date_time).toLocaleDateString()}</TableCell>
-                <TableCell>{purchaseStatusMapping[purchase.purchaseStatus]}</TableCell>
-
-
+                <TableCell>
+                  {purchase.purchaseStatus === PurchaseStatus.processing ? (
+                    <Select
+                      value={purchase.purchaseStatus}
+                      onChange={(e) =>
+                        handleStatusChange(purchase.purchaseId, e.target.value as PurchaseStatus)
+                      }
+                    >
+                      {Object.entries(purchaseStatusMapping).map(([value, label]) => (
+                        <MuiMenuItem key={value} value={value}>
+                          {label}
+                        </MuiMenuItem>
+                      ))}
+                    </Select>
+                  ) : (
+                    purchaseStatusMapping[purchase.purchaseStatus]
+                  )}
+                </TableCell>
                 <TableCell>{`R$${purchase.price}`}</TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, purchase.purchaseId)}>︙</IconButton>

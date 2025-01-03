@@ -1,5 +1,6 @@
 import type {
     Purchase,
+    PurchaseStatus,
     PurchaseResponse,
     PurchaseListResponse,
     CreatePurchasePayload,
@@ -94,4 +95,9 @@ export const getPurchasesBySupplierService = async (supplierId: number): Promise
 export const getPurchasesByProductService = async (productId: number): Promise<PurchaseListResponse> => {
     const response = await api.get<PurchaseListResponse>(`/purchases/product?productId=${productId}`);
     return response.data;
+};
+
+export const updatePurchaseStatusService = async (purchaseId: number, purchaseStatus: PurchaseStatus): Promise<number> => {
+    const response = await api.put(`/purchases/status?id=${purchaseId}`, { saleStatus: purchaseStatus });
+    return response.status;
 };

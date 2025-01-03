@@ -10,10 +10,11 @@ import {
     getSaleByIdService,
     getSalesPagedService,
     getSaleReceiptService,
+    updateSaleStatusService,
     getSalesByProductService,
     getSalesByCustomerService,
     searchSalesByPeriodService,
-} from "src/services/salesService";
+} from "src/services/saleService";
 
 // Hook para obter vendas paginadas
 export const useGetSalesPaged = (skip: number, take: number, debouncedSearchString?: string) =>
@@ -104,3 +105,17 @@ export const useSearchSalesByPeriod = (payload: SearchByPeriodRequest) =>
         queryFn: () => searchSalesByPeriodService(payload.startDate!, payload.endDate!),
         enabled: !!payload?.startDate && !!payload?.endDate,
     });
+
+export const useUpdateSaleStatus = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation<number, AxiosError, { id: number; saleStatus: 'processing' | 'approved' | 'canceled' }>({
+        mutationFn: ({ id, saleStatus }) => updateSaleStatusService(id, saleStatus),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['sales-list'] });
+        },
+        onError: (error) => {
+            console.error("Erro ao atualizar o status da venda:", error);
+        },
+    });
+};
