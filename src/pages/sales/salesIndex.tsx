@@ -83,7 +83,11 @@ export default function SalesIndex() {
 
                         <TableContainer component={Paper} sx={{ height: '65vh', display: 'flex', flexDirection: 'column' }}>
                             <Box component="div" sx={{ flex: 1, overflow: 'auto' }}>
-                                <TableComponent setSelectedSales={setSelectedSales} sales={sales} isLoading={isLoading} />
+                                <TableComponent
+                                    setSelectedSales={setSelectedSales}
+                                    sales={sales} 
+                                    isLoading={isLoading}
+                                />
                             </Box>
 
                             <TableFooterComponent

@@ -50,7 +50,7 @@ const KpiFilter: React.FC<KpiFilterProps> = ({ setSalesKpiParams, salesKpiParams
                                 variant={selectedFilter === "specificPeriod" ? "contained" : "outlined"}
                                 onClick={() => setSelectedFilter("specificPeriod")}
                             >
-                                Período Específico
+                                Data Específica
                             </Button>
                             <Button
                                 variant={selectedFilter === "timePeriod" ? "contained" : "outlined"}
