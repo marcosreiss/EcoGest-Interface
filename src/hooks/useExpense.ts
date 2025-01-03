@@ -13,6 +13,7 @@ import {
     updateExpenseService,
     deleteExpenseService,
     getExpenseByIdService,
+    getExpenseReceiptService,
     getExpensesPaginatedService,
 } from "src/services/expenseService";
 
@@ -70,4 +71,12 @@ export const useGetExpenseById = (id: number) =>
     useQuery<Expense, AxiosError>({
         queryKey: ["expense", id],
         queryFn: () => getExpenseByIdService(id),
+    });
+
+// Hook para obter recibo de despesa
+export const useGetExpenseReceipt = (expenseId: number) =>
+    useQuery<Blob, AxiosError>({
+        queryKey: ['expense-receipt', expenseId],
+        queryFn: () => getExpenseReceiptService(expenseId),
+        enabled: !!expenseId,
     });

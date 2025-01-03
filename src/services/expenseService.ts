@@ -35,3 +35,12 @@ export const getExpenseByIdService = async (id: number): Promise<Expense> => {
     const response = await api.get<Expense>(`/expenses/search/by-id?id=${id}`);
     return response.data;
 };
+
+// Obter recibo de Despesa
+export const getExpenseReceiptService = async (expenseId: number): Promise<Blob> => {
+    const response = await api.get(`/expenses/receipt`, {
+        params: { id: expenseId },
+        responseType: "blob", // Necessário para lidar com arquivos binários
+    });
+    return response.data;
+};

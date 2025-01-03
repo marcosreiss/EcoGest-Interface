@@ -48,7 +48,7 @@ export const getSalesByProductService = async (productId: number): Promise<SaleL
 
 // Obter recibo da venda
 export const getSaleReceiptService = async (saleId: number): Promise<Blob> => {
-    const response = await api.get(`/expenses/receipt`, {
+    const response = await api.get(`/sales/receipt`, {
         params: { id: saleId },
         responseType: "blob", // Necessário para lidar com arquivos binários
     });

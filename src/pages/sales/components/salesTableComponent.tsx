@@ -19,7 +19,7 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
-import { useDeleteSale, useUpdateSaleStatus } from "src/hooks/useSales";
+import { useDeleteSale, useGetSaleReceipt, useUpdateSaleStatus } from "src/hooks/useSales";
 
 import { useNotification } from "src/context/NotificationContext";
 
@@ -42,6 +42,8 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedSaleIds, setSelectedSaleIds] = useState<number[]>([]);
+
+  const { data: receipt, refetch: fetchReceipt } = useGetSaleReceipt(selectedItem || 0);
 
   const navigate = useRouter();
   const deleteSale = useDeleteSale();
@@ -82,6 +84,25 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
         );
       },
     });
+  };
+
+  const handleGenerateReceipt = async (saleId: number) => {
+    try {
+      await fetchReceipt(); // Requisição para obter o recibo
+      if (receipt) {
+        const url = window.URL.createObjectURL(receipt);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `receipt-${saleId}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        notification.addNotification("Recibo gerado com sucesso", "success");
+      }
+    } catch (error) {
+      notification.addNotification("Erro ao gerar o recibo", "error");
+    } finally {
+      handleClose();
+    }
   };
 
   const handleDeleteClick = (saleId: number) => {
@@ -219,6 +240,9 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                         Editar
                       </MenuItem>
                     )}
+                    <MenuItem onClick={() => handleGenerateReceipt(sale.saleId)}>
+                      Gerar Recibo
+                    </MenuItem>
                     <MenuItem onClick={() => handleDeleteClick(sale.saleId)}>
                       Deletar
                     </MenuItem>

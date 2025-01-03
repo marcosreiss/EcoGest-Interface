@@ -9,11 +9,11 @@ import {
     deleteSaleService,
     getSaleByIdService,
     getSalesPagedService,
-    getSaleReceiptService,
     updateSaleStatusService,
     getSalesByProductService,
     getSalesByCustomerService,
     searchSalesByPeriodService,
+    getSaleReceiptService,
 } from "src/services/saleService";
 
 // Hook para obter vendas paginadas
@@ -96,8 +96,9 @@ export const useGetSaleReceipt = (saleId: number) =>
     useQuery<Blob, AxiosError>({
         queryKey: ['sale-receipt', saleId],
         queryFn: () => getSaleReceiptService(saleId),
-        enabled: !!saleId, // Só executa a consulta se o `saleId` estiver definido
+        enabled: !!saleId,
     });
+
 
 export const useSearchSalesByPeriod = (payload: SearchByPeriodRequest) =>
     useQuery<SaleListResponse, AxiosError>({

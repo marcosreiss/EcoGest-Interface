@@ -15,8 +15,7 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
-import { useGetSaleReceipt } from "src/hooks/useSales";
-import { useDeleteExpense } from "src/hooks/useExpense";
+import { useDeleteExpense, useGetExpenseReceipt } from "src/hooks/useExpense";
 
 import { type Expense } from "src/models/expense";
 import { useNotification } from "src/context/NotificationContext";
@@ -39,7 +38,7 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const { data: receipt, refetch: fetchReceipt } = useGetSaleReceipt(selectedItem || 0);
+  const { data: receipt, refetch: fetchReceipt } = useGetExpenseReceipt(selectedItem || 0);
 
   const navigate = useRouter();
   const deleteExpense = useDeleteExpense();
@@ -60,10 +59,10 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
     handleCloseMenu();
   };
 
-  const handleEditClick = (expenseId: number) => {
-    navigate.push(`edit/${expenseId}`);
-    handleCloseMenu();
-  };
+  // const handleEditClick = (expenseId: number) => {
+  //   navigate.push(`edit/${expenseId}`);
+  //   handleCloseMenu();
+  // };
 
   const handleDeleteClick = (expenseId: number) => {
     setDeleteModalOpen(true);
