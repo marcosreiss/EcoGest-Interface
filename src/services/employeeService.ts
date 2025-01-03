@@ -41,3 +41,8 @@ export const getEmployeeByNameService = async (name: string): Promise<Employee[]
     const response = await api.get<Employee[]>(`/employees/search/by-name?name=${name}`);
     return response.data;
 };
+
+export const advancePaymentService = async (id: number): Promise<number> => {
+    const response = await api.post(`employees/advance?id=${id}`);
+    return response.status;
+};

@@ -7,6 +7,7 @@ import {
     createEmployeeService,
     updateEmployeeService,
     deleteEmployeeService,
+    advancePaymentService,
     getEmployeeByIdService,
     getEmployeesPagedService,
     getEmployeeByNameService,
@@ -72,4 +73,25 @@ export const useGetEmployeeByName = (name: string) =>
         queryFn: () => getEmployeeByNameService(name),
         enabled: name.length >= 3
     });
+
+export const useAdvancePayment = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation<number, AxiosError, number>({
+        mutationFn: (id) => advancePaymentService(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["expenses-list"]
+            });
+        },
+        onMutate: (id) => {
+            console.log("Iniciando adiantamento de pagamento para o funcionário com ID:", id);
+        },
+        onError: (error) => {
+            console.error("Erro ao realizar o adiantamento de pagamento:", error);
+        },
+    });
+};
+
+
 
