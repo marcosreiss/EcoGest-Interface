@@ -1,7 +1,6 @@
 import type { SubmitHandler } from "react-hook-form";
 import type { EmployeePayload } from "src/models/employee";
 
-import React from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 
@@ -9,12 +8,8 @@ import {
   Box,
   Grid,
   Button,
-  Select,
-  MenuItem,
   TextField,
   Typography,
-  InputLabel,
-  FormControl,
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
@@ -38,7 +33,6 @@ export default function CreateEmployeePage() {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
   } = useForm<EmployeePayload>();
 
   const createEmployee = useCreateEmployee();
@@ -191,7 +185,7 @@ export default function CreateEmployeePage() {
                   />
                 </Grid>
 
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   <FormControl fullWidth error={!!errors.status}>
                     <InputLabel id="status-label">Status</InputLabel>
                     <Select
@@ -209,7 +203,7 @@ export default function CreateEmployeePage() {
                       </Typography>
                     )}
                   </FormControl>
-                </Grid>
+                </Grid> */}
 
 
                 <Grid item xs={12}>
