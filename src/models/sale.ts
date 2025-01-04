@@ -36,3 +36,9 @@ export interface SearchByPeriodRequest {
     startDate: string | null; 
     endDate: string | null;   
 }
+
+export interface CustomSaleReceipt{
+    recebemosDe: string;
+    valor: number;
+    descricao: string;
+}

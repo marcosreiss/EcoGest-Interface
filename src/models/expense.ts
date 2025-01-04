@@ -21,3 +21,9 @@ export interface ExpensePayload{
     description?: string | null;
     price: number;
 }
+
+export interface CustomExpenseReceipt{
+    pagoA: string;
+    valor: number;
+    descricao: string;
+}
