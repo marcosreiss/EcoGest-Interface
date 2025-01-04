@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Sale, SaleResponse, SaleListResponse, CreateSalePayload, SearchByPeriodRequest } from "src/models/sale";
+import type { Sale, SaleResponse, SaleListResponse, CreateSalePayload, SearchByPeriodRequest, CustomSaleReceiptInfo } from "src/models/sale";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -9,11 +9,12 @@ import {
     deleteSaleService,
     getSaleByIdService,
     getSalesPagedService,
+    getSaleReceiptService,
     updateSaleStatusService,
     getSalesByProductService,
     getSalesByCustomerService,
     searchSalesByPeriodService,
-    getSaleReceiptService,
+    getCustomSaleReceiptService,
 } from "src/services/saleService";
 
 // Hook para obter vendas paginadas
@@ -97,6 +98,14 @@ export const useGetSaleReceipt = (saleId: number) =>
         queryKey: ['sale-receipt', saleId],
         queryFn: () => getSaleReceiptService(saleId),
         enabled: !!saleId,
+    });
+
+// Hook para obter recibo de venda customizado
+export const useGetCustomSaleReceipt = (info: CustomSaleReceiptInfo) =>
+    useQuery<Blob, AxiosError>({
+        queryKey: ['custom-sale-receipt', info],
+        queryFn: () => getCustomSaleReceiptService(info),
+        enabled: !!info,
     });
 
 

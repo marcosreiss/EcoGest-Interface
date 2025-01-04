@@ -4,6 +4,7 @@ import type {
     ExpensePayload,
     ExpenseResponse,
     ExpenseListResponse,
+    CustomExpenseReceiptInfo,
 } from "src/models/expense";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -15,6 +16,7 @@ import {
     getExpenseByIdService,
     getExpenseReceiptService,
     getExpensesPaginatedService,
+    getCustomExpenseReceiptService,
 } from "src/services/expenseService";
 
 // Hook para listar despesas paginadas
@@ -79,4 +81,11 @@ export const useGetExpenseReceipt = (expenseId: number) =>
         queryKey: ['expense-receipt', expenseId],
         queryFn: () => getExpenseReceiptService(expenseId),
         enabled: !!expenseId,
+    });
+
+export const useGetCustomExpenseReceipt = (info: CustomExpenseReceiptInfo) =>
+    useQuery<Blob, AxiosError>({
+        queryKey: ['custom-expense-receipt', info],
+        queryFn: () => getCustomExpenseReceiptService(info),
+        enabled: !!info, // Só executa a consulta se 'info' estiver definido
     });
