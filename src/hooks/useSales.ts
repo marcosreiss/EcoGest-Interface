@@ -101,13 +101,10 @@ export const useGetSaleReceipt = (saleId: number) =>
     });
 
 // Hook para obter recibo de venda customizado
-export const useGetCustomSaleReceipt = (info: CustomSaleReceiptInfo) =>
-    useQuery<Blob, AxiosError>({
-        queryKey: ['custom-sale-receipt', info],
-        queryFn: () => getCustomSaleReceiptService(info),
-        enabled: !!info,
+export const useGenerateCustomSaleReceipt = () =>
+    useMutation<Blob, AxiosError, CustomSaleReceiptInfo>({
+      mutationFn: (info) => getCustomSaleReceiptService(info),
     });
-
 
 export const useSearchSalesByPeriod = (payload: SearchByPeriodRequest) =>
     useQuery<SaleListResponse, AxiosError>({

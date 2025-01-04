@@ -1,7 +1,7 @@
 import type { Sale, SearchByPeriodRequest } from 'src/models/sale';
 
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 import Paper from '@mui/material/Paper';
@@ -14,9 +14,9 @@ import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useNotification } from 'src/context/NotificationContext';
 
-import TableComponent from './components/salesTableComponent';
-import SalesTableSearch from './components/salesTableSearch'; // Importando a nova table
-import TableHeaderComponent from '../../layouts/components/tableHeaderComponent';
+import SalesTableSearch from './components/salesTableSearch';
+import TableComponent from './components/salesTableComponent'; // Importando a nova table
+import SaleTableHeaderComponent from './components/salesTableHeaderComponent';
 import TableFooterComponent from '../../layouts/components/tableFooterComponent';
 
 // ----------------------------------------------------------------------
@@ -71,7 +71,7 @@ export default function SalesIndex() {
 
             <DashboardContent maxWidth="md">
                 <Grid container>
-                    <TableHeaderComponent title="Vendas" addButtonName="Cadastrar Venda" addButtonPath="/sales/create" />
+                    <SaleTableHeaderComponent title="Vendas" addButtonName="Cadastrar Venda" addButtonPath="/sales/create" />
                     <Grid item xs={12}>
                         <SalesTableSearch
                             handleDelete={handleDeleteSale}
