@@ -3,6 +3,7 @@ import type {
     ExpensePayload,
     ExpenseResponse,
     ExpenseListResponse,
+    CustomExpenseReceiptInfo,
 } from "src/models/expense";
 
 import api from "./api";
@@ -40,7 +41,15 @@ export const getExpenseByIdService = async (id: number): Promise<Expense> => {
 export const getExpenseReceiptService = async (expenseId: number): Promise<Blob> => {
     const response = await api.get(`/expenses/receipt`, {
         params: { id: expenseId },
-        responseType: "blob", // Necessário para lidar com arquivos binários
+        responseType: "blob",
+    });
+    return response.data;
+};
+
+// Obter recibo de venda Customizado
+export const getCustomSaleReceiptService = async (info: CustomExpenseReceiptInfo): Promise<Blob> => {
+    const response = await api.post(`/expenses/receipt/custom`, info, {
+        responseType: "blob", 
     });
     return response.data;
 };

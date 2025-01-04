@@ -1,4 +1,4 @@
-import type { Sale, SaleResponse, SaleListResponse, CreateSalePayload } from "src/models/sale";
+import type { Sale, SaleResponse, SaleListResponse, CreateSalePayload, CustomSaleReceiptInfo } from "src/models/sale";
 
 import api from "./api";
 
@@ -50,11 +50,20 @@ export const getSalesByProductService = async (productId: number): Promise<SaleL
 export const getSaleReceiptService = async (saleId: number): Promise<Blob> => {
     const response = await api.get(`/sales/receipt`, {
         params: { id: saleId },
-        responseType: "blob", // Necessário para lidar com arquivos binários
+        responseType: "blob",
     });
     return response.data;
 };
 
+// Obter recibo de venda Customizado
+export const getCustomSaleReceiptService = async (info: CustomSaleReceiptInfo): Promise<Blob> => {
+    const response = await api.post(`/sales/receipt/custom`, info, {
+        responseType: "blob", 
+    });
+    return response.data;
+};
+
+// buscar todas as vendas por período
 export const searchSalesByPeriodService = async (startDate: string, endDate: string): Promise<SaleListResponse> => {
     try {
         const response = await api.get<SaleListResponse>(`/sales/period?startDate=${startDate}&endDate=${endDate}`);
@@ -65,6 +74,7 @@ export const searchSalesByPeriodService = async (startDate: string, endDate: str
     }
 };
 
+// atualizar status de uma venda (aprovada ou cancelada)
 export const updateSaleStatusService = async (saleId: number, saleStatus: 'processing' | 'approved' | 'canceled'): Promise<number> => {
     const response = await api.put(`/sales/status?id=${saleId}`, { saleStatus });
     return response.status;

@@ -22,7 +22,7 @@ export interface ExpensePayload{
     price: number;
 }
 
-export interface CustomExpenseReceipt{
+export interface CustomExpenseReceiptInfo{
     pagoA: string;
     valor: number;
     descricao: string;
