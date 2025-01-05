@@ -15,9 +15,9 @@ import { DashboardContent } from "src/layouts/dashboard";
 import TableSearch from "src/layouts/components/tableSearch";
 import { useNotification } from "src/context/NotificationContext";
 import TableFooterComponent from "src/layouts/components/tableFooterComponent";
-import TableHeaderComponent from "src/layouts/components/tableHeaderComponent";
 
 import ExpenseTableComponent from "./components/expenseTableComponent";
+import ExpensesTableHeaderComponent from "./components/expensesTableHeaderComponent";
 
 // ----------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ export default function ExpensePage() {
 
       <DashboardContent maxWidth="md">
         <Grid container>
-          <TableHeaderComponent
+          <ExpensesTableHeaderComponent
             title="Despesas"
             addButtonName="Cadastrar Despesa"
             addButtonPath="/expenses/create"

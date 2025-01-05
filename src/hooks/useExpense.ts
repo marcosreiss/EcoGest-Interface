@@ -83,9 +83,7 @@ export const useGetExpenseReceipt = (expenseId: number) =>
         enabled: !!expenseId,
     });
 
-export const useGetCustomExpenseReceipt = (info: CustomExpenseReceiptInfo) =>
-    useQuery<Blob, AxiosError>({
-        queryKey: ['custom-expense-receipt', info],
-        queryFn: () => getCustomExpenseReceiptService(info),
-        enabled: !!info, // Só executa a consulta se 'info' estiver definido
-    });
+    export const useGenerateCustomExpenseReceipt = () =>
+        useMutation<Blob, AxiosError, CustomExpenseReceiptInfo>({
+          mutationFn: (info) => getCustomExpenseReceiptService(info),
+        });
