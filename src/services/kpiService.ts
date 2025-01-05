@@ -14,3 +14,12 @@ export const getExpensesKpiService = async (expensesParams?: KpiParams): Promise
     const response = await api.get<ExpensesKpiResponse>("/kpi/expenses", { params: expensesParams });
     return response.data;
 };
+
+export const getDownloadPdf = async (date: string): Promise<Blob> => {
+    const response = await api.get('/kpi/downloadPDF', {
+      params: { date }, // Corrige para passar 'date' como parâmetro
+      responseType: 'blob', // Indica que a resposta é um arquivo binário
+    });
+    return response.data;
+  };
+  

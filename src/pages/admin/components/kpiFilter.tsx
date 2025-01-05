@@ -7,10 +7,9 @@ import {
     Card,
     Grid,
     Button,
+    MenuItem,
     TextField,
-    Autocomplete,
-    Typography,
-    MenuItem
+    Autocomplete
 } from "@mui/material";
 
 import { useGetProductsBasicInfo } from "src/hooks/useProduct";
