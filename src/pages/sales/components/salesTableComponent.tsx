@@ -6,6 +6,8 @@ import {
   Menu,
   Table,
   Select,
+  Dialog,
+  Button,
   TableRow,
   Checkbox,
   MenuItem,
@@ -13,8 +15,10 @@ import {
   TableCell,
   TableBody,
   IconButton,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   LinearProgress,
-  MenuItem as MuiMenuItem,
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
@@ -41,6 +45,8 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [newStatus, setNewStatus] = useState<'processing' | 'approved' | 'canceled'>("processing");
   const [selectedSaleIds, setSelectedSaleIds] = useState<number[]>([]);
 
   const { data: receipt, refetch: fetchReceipt } = useGetSaleReceipt(selectedItem || 0);
@@ -60,6 +66,33 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
     setSelectedItem(null);
   };
 
+  const handleOpenStatusModal = () => {
+    setStatusModalOpen(true);
+    setAnchorEl(null);
+  };
+
+  const handleCloseStatusModal = () => {
+    setStatusModalOpen(false);
+    setSelectedItem(null);
+  };
+
+  const handleConfirmStatusChange = () => {
+    if (selectedItem !== null) {
+      updateSaleStatus.mutate(
+        { id: selectedItem, saleStatus: newStatus },
+        {
+          onSuccess: () => {
+            notification.addNotification("Status da venda atualizado com sucesso", "success");
+            setStatusModalOpen(false);
+          },
+          onError: () => {
+            notification.addNotification("Erro ao atualizar o status da venda", "error");
+          },
+        }
+      );
+    }
+  };
+
   const handleDetailsClick = (saleId: number) => {
     navigate.push(`details/${saleId}`);
     handleClose();
@@ -68,22 +101,6 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
   const handleEditClick = (saleId: number) => {
     navigate.push(`edit/${saleId}`);
     handleClose();
-  };
-
-  const handleDeleteSale = (saleId: number) => {
-    handleClose();
-    deleteSale.mutate(saleId, {
-      onSuccess: () => {
-        notification.addNotification("Venda deletada com sucesso", "success");
-        setDeleteModalOpen(false);
-      },
-      onError: () => {
-        notification.addNotification(
-          "Erro ao deletar venda, tente novamente mais tarde",
-          "error"
-        );
-      },
-    });
   };
 
   const handleGenerateReceipt = async (saleId: number) => {
@@ -110,6 +127,22 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
     setSelectedItem(saleId);
   };
 
+  const handleDeleteSale = (saleId: number) => {
+    handleClose();
+    deleteSale.mutate(saleId, {
+      onSuccess: () => {
+        notification.addNotification("Venda deletada com sucesso", "success");
+        setDeleteModalOpen(false);
+      },
+      onError: () => {
+        notification.addNotification(
+          "Erro ao deletar venda, tente novamente mais tarde",
+          "error"
+        );
+      },
+    });
+  };
+
   const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const allIds = sales.map((s) => s.saleId);
@@ -132,17 +165,6 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
       setSelectedSaleIds((prev) => prev.filter((id) => id !== sale.saleId));
       setSelectedSales((prev) => prev.filter((s) => s.saleId !== sale.saleId));
     }
-  };
-
-  const handleStatusChange = (saleId: number, newStatus: 'processing' | 'approved' | 'canceled') => {
-    updateSaleStatus.mutate({ id: saleId, saleStatus: newStatus }, {
-      onSuccess: () => {
-        notification.addNotification("Status da venda atualizado com sucesso", "success");
-      },
-      onError: () => {
-        notification.addNotification("Erro ao atualizar o status da venda", "error");
-      },
-    });
   };
 
   const sortedSales = React.useMemo(() => {
@@ -199,22 +221,13 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                 <TableCell>
                   {new Date(sale.date_time).toLocaleDateString() || "N/A"}
                 </TableCell>
-                <TableCell>
-                  {sale.saleStatus === "processing" ? (
-                    <Select
-                      value={sale.saleStatus}
-                      onChange={(e) => handleStatusChange(sale.saleId, e.target.value as 'processing' | 'approved' | 'canceled')}
-                    >
-                      <MuiMenuItem value="processing">Processando</MuiMenuItem>
-                      <MuiMenuItem value="approved">Aprovada</MuiMenuItem>
-                      <MuiMenuItem value="canceled">Cancelada</MuiMenuItem>
-                    </Select>
-                  ) : (
-                    sale.saleStatus === "approved"
-                      ? "Aprovada"
-                      : "Cancelada"
-                  )}
-                </TableCell>
+                <TableCell>{
+                  sale.saleStatus === "approved"
+                    ? "Aprovada"
+                    : sale.saleStatus === "canceled"
+                    ? "Cancelada"
+                    : "Processando"
+                }</TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, sale.saleId)}>
                     ︙
@@ -243,6 +256,9 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                     <MenuItem onClick={() => handleGenerateReceipt(sale.saleId)}>
                       Gerar Recibo
                     </MenuItem>
+                    <MenuItem onClick={() => handleOpenStatusModal()}>
+                      Atualizar Status
+                    </MenuItem>
                     <MenuItem onClick={() => handleDeleteClick(sale.saleId)}>
                       Deletar
                     </MenuItem>
@@ -257,6 +273,27 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
           )}
         </TableBody>
       </Table>
+
+      <Dialog open={statusModalOpen} onClose={handleCloseStatusModal}>
+        <DialogTitle>Atualizar Status</DialogTitle>
+        <DialogContent>
+          <Select
+            fullWidth
+            value={newStatus}
+            onChange={(e) => setNewStatus(e.target.value as 'processing' | 'approved' | 'canceled')}
+          >
+            <MenuItem value="processing">Processando</MenuItem>
+            <MenuItem value="approved">Aprovada</MenuItem>
+            <MenuItem value="canceled">Cancelada</MenuItem>
+          </Select>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseStatusModal}>Cancelar</Button>
+          <Button onClick={handleConfirmStatusChange} variant="contained">
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <ConfirmationDialog
         open={deleteModalOpen}
