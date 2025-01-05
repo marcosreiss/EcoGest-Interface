@@ -4,6 +4,8 @@ import {
   Menu,
   Table,
   Select,
+  Dialog,
+  Button,
   TableRow,
   Checkbox,
   MenuItem,
@@ -11,8 +13,10 @@ import {
   TableCell,
   TableBody,
   IconButton,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   LinearProgress,
-  MenuItem as MuiMenuItem,
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
@@ -39,6 +43,8 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [newStatus, setNewStatus] = useState<PurchaseStatus>(PurchaseStatus.processing);
 
   const navigate = useRouter();
   const deletePurchase = useDeletePurchase();
@@ -53,6 +59,33 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
   const handleCloseMenu = () => {
     setAnchorEl(null);
     setSelectedItem(null);
+  };
+
+  const handleOpenStatusModal = () => {
+    setStatusModalOpen(true);
+    setAnchorEl(null);
+  };
+
+  const handleCloseStatusModal = () => {
+    setStatusModalOpen(false);
+    setSelectedItem(null);
+  };
+
+  const handleConfirmStatusChange = () => {
+    if (selectedItem !== null) {
+      updatePurchaseStatus.mutate(
+        { id: selectedItem, purchaseStatus: newStatus },
+        {
+          onSuccess: () => {
+            notification.addNotification("Status da compra atualizado com sucesso", "success");
+            setStatusModalOpen(false);
+          },
+          onError: () => {
+            notification.addNotification("Erro ao atualizar o status da compra", "error");
+          },
+        }
+      );
+    }
   };
 
   const handleDetailsClick = (purchaseId: number) => {
@@ -112,20 +145,6 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
     }
   };
 
-  const handleStatusChange = (purchaseId: number, newStatus: PurchaseStatus) => {
-    updatePurchaseStatus.mutate(
-      { id: purchaseId, purchaseStatus: newStatus },
-      {
-        onSuccess: () => {
-          notification.addNotification("Status da compra atualizado com sucesso", "success");
-        },
-        onError: () => {
-          notification.addNotification("Erro ao atualizar o status da compra", "error");
-        },
-      }
-    );
-  };
-
   return (
     <>
       <Table stickyHeader aria-label="purchases table">
@@ -165,24 +184,7 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                 <TableCell>{purchase.supplier?.name || "-"}</TableCell>
                 <TableCell>{purchase.product?.name || "-"}</TableCell>
                 <TableCell>{new Date(purchase.date_time).toLocaleDateString()}</TableCell>
-                <TableCell>
-                  {purchase.purchaseStatus === PurchaseStatus.processing ? (
-                    <Select
-                      value={purchase.purchaseStatus}
-                      onChange={(e) =>
-                        handleStatusChange(purchase.purchaseId, e.target.value as PurchaseStatus)
-                      }
-                    >
-                      {Object.entries(purchaseStatusMapping).map(([value, label]) => (
-                        <MuiMenuItem key={value} value={value}>
-                          {label}
-                        </MuiMenuItem>
-                      ))}
-                    </Select>
-                  ) : (
-                    purchaseStatusMapping[purchase.purchaseStatus]
-                  )}
-                </TableCell>
+                <TableCell>{purchaseStatusMapping[purchase.purchaseStatus]}</TableCell>
                 <TableCell>{`R$${purchase.price}`}</TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, purchase.purchaseId)}>︙</IconButton>
@@ -199,17 +201,52 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                       </MenuItem>
                     )}
                     <MenuItem onClick={() => handleDeleteClick(purchase.purchaseId)}>Deletar</MenuItem>
+                    {purchase.purchaseStatus === PurchaseStatus.processing && (
+                      <MenuItem onClick={handleOpenStatusModal}>Atualizar Status</MenuItem>
+                    )}
                   </Menu>
                 </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={7}>Nenhum dado disponível</TableCell>
+              <TableCell colSpan={6} align="center">
+                <div style={{ textAlign: "center", padding: "20px" }}>
+                  <img
+                    src="public\assets\icons\ic-content.svg"
+                    alt="Sem dados"
+                    style={{ maxWidth: "150px", marginBottom: "10px" }}
+                  />
+                  <p>Sem Compras cadastrados</p>
+                </div>
+              </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
+
+      <Dialog open={statusModalOpen} onClose={handleCloseStatusModal}>
+        <DialogTitle>Atualizar Status</DialogTitle>
+        <DialogContent>
+          <Select
+            fullWidth
+            value={newStatus}
+            onChange={(e) => setNewStatus(e.target.value as PurchaseStatus)}
+          >
+            {Object.entries(purchaseStatusMapping).map(([value, label]) => (
+              <MenuItem key={value} value={value}>
+                {label}
+              </MenuItem>
+            ))}
+          </Select>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseStatusModal}>Cancelar</Button>
+          <Button onClick={handleConfirmStatusChange} variant="contained">
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <ConfirmationDialog
         open={deleteModalOpen}

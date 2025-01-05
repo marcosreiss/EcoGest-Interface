@@ -184,7 +184,16 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={5}>No data available</TableCell>
+              <TableCell colSpan={6} align="center">
+                <div style={{ textAlign: "center", padding: "20px" }}>
+                  <img
+                    src="public\assets\icons\ic-content.svg"
+                    alt="Sem dados"
+                    style={{ maxWidth: "150px", marginBottom: "10px" }}
+                  />
+                  <p>Sem Produtos cadastrados</p>
+                </div>
+              </TableCell>
             </TableRow>
           )}
         </TableBody>
