@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://ecogest-api.onrender.com/",
+  baseURL: "http://ecogestapp.sytes.net/",
   headers: {
     "Content-Type": "application/json",
   },
