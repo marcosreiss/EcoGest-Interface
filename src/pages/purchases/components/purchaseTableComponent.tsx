@@ -210,7 +210,16 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={7}>Nenhum dado disponível</TableCell>
+              <TableCell colSpan={6} align="center">
+                <div style={{ textAlign: "center", padding: "20px" }}>
+                  <img
+                    src="public\assets\icons\ic-content.svg"
+                    alt="Sem dados"
+                    style={{ maxWidth: "150px", marginBottom: "10px" }}
+                  />
+                  <p>Sem Compras cadastrados</p>
+                </div>
+              </TableCell>
             </TableRow>
           )}
         </TableBody>

@@ -225,8 +225,8 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                   sale.saleStatus === "approved"
                     ? "Aprovada"
                     : sale.saleStatus === "canceled"
-                    ? "Cancelada"
-                    : "Processando"
+                      ? "Cancelada"
+                      : "Processando"
                 }</TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, sale.saleId)}>
@@ -268,7 +268,16 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6}>Nenhuma venda encontrada.</TableCell>
+              <TableCell colSpan={6} align="center">
+                <div style={{ textAlign: "center", padding: "20px" }}>
+                  <img
+                    src="public\assets\icons\ic-content.svg"
+                    alt="Sem dados"
+                    style={{ maxWidth: "150px", marginBottom: "10px" }}
+                  />
+                  <p>Sem Vendas cadastrados</p>
+                </div>
+              </TableCell>
             </TableRow>
           )}
         </TableBody>
