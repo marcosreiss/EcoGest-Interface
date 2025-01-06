@@ -242,7 +242,7 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                     alt="Sem dados"
                     style={{ maxWidth: "150px", marginBottom: "10px" }}
                   />
-                  <p>Sem Compras cadastradas</p>
+                  <p>Nenhuma Compra Cadastrada</p>
                 </div>
               </TableCell>
             </TableRow>

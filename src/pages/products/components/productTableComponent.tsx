@@ -187,7 +187,7 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
               <TableCell colSpan={6} align="center">
                 <div style={{ textAlign: "center", padding: "20px" }}>
                   <img
-                    src="public\assets\icons\ic-content.svg"
+                    src="/assets/icons/ic-content.svg"
                     alt="Sem dados"
                     style={{ maxWidth: "150px", marginBottom: "10px" }}
                   />
