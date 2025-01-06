@@ -1,7 +1,11 @@
 import axios from "axios";
+import dotenv from "dotenv";
+
+// Carregar variáveis de ambiente do arquivo .env
+dotenv.config();
 
 const api = axios.create({
-  baseURL: "http://ecogestapp.sytes.net:4000/api",
+  baseURL: process.env.API_URL, // Use process.env para acessar variáveis de ambiente
   headers: {
     "Content-Type": "application/json",
   },
