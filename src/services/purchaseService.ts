@@ -98,6 +98,6 @@ export const getPurchasesByProductService = async (productId: number): Promise<P
 };
 
 export const updatePurchaseStatusService = async (purchaseId: number, purchaseStatus: PurchaseStatus): Promise<number> => {
-    const response = await api.put(`/purchases/status?id=${purchaseId}`, { saleStatus: purchaseStatus });
+    const response = await api.put(`/purchases/status?id=${purchaseId}`, { purchaseStatus });
     return response.status;
 };
