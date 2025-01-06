@@ -1,11 +1,7 @@
 import axios from "axios";
-import dotenv from "dotenv";
-
-// Carregar variáveis de ambiente do arquivo .env
-dotenv.config();
 
 const api = axios.create({
-  baseURL: process.env.API_URL, // Use process.env para acessar variáveis de ambiente
+  baseURL: import.meta.env.API_URL, // Utilize o sistema de variáveis de ambiente do seu build tool
   headers: {
     "Content-Type": "application/json",
   },
