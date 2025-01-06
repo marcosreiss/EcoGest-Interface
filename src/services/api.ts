@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http:/ecogestapp.sytes.net:5000/api/dev/", // Utilize o sistema de variáveis de ambiente do seu build tool
+  baseURL: "http://ecogestapp.sytes.net:5000/api/dev/", // Utilize o sistema de variáveis de ambiente do seu build tool
   headers: {
     "Content-Type": "application/json",
   },
