@@ -303,7 +303,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                     alt="Sem dados"
                     style={{ maxWidth: "150px", marginBottom: "10px" }}
                   />
-                  <p>Sem Vendas cadastradas</p>
+                  <p>Nenhuma Venda Cadastrada</p>
                 </div>
               </TableCell>
             </TableRow>
