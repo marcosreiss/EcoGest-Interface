@@ -161,8 +161,14 @@ const EmployeeTableComponent: React.FC<EmployeeTableComponentProps> = ({
                 <TableCell>{employee.nome || "-"}</TableCell>
                 <TableCell>{employee.funcao || "-"}</TableCell>
                 <TableCell>
-                  {employee.salario ? `R$ ${Number(employee.salario).toFixed(2)}` : "Não disponível"}
+                  {employee.salario
+                    ? new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    }).format(Number(employee.salario))
+                    : "Não disponível"}
                 </TableCell>
+
                 <TableCell>{employee.status || "-"}</TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, employee.employeeId)}>︙</IconButton>
