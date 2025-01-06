@@ -36,11 +36,21 @@ export default function ExpenseDetailsPage() {
     navigate.replace(`/expenses/edit/${id}`);
   };
 
+  // Função para formatar valores numéricos em R$ (Real)
+  const formatPrice = (value?: number) => {
+    if (value === undefined) return "-";
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
+
   return (
     <>
       <Helmet>
         <title>{`Detalhes da Despesa - ${CONFIG.appName}`}</title>
       </Helmet>
+
       <DashboardContent maxWidth="md">
         {isLoading ? (
           <LinearProgress />
@@ -51,16 +61,19 @@ export default function ExpenseDetailsPage() {
                 Detalhes da Despesa
               </Typography>
             </Grid>
+
             <Grid container>
               <Grid item xs={12}>
                 <Box sx={formStyle}>
                   <Grid container spacing={2}>
+
                     {/* Tipo da Despesa */}
                     <Grid item xs={6}>
                       <Typography variant="h6" gutterBottom>
                         Tipo: {expense?.type || "-"}
                       </Typography>
                     </Grid>
+
                     {/* Botão de Editar */}
                     <Grid item xs={6}>
                       <IconButton onClick={handleEditClick}>
@@ -75,10 +88,13 @@ export default function ExpenseDetailsPage() {
                       </Typography>
                     </Grid>
 
-                    {/* Preço */}
+                    {/* Preço formatado */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Preço: {expense?.price !== undefined ? `R$${expense.price}` : "-"}
+                        Preço:{" "}
+                        {expense?.price !== undefined
+                          ? formatPrice(expense.price)
+                          : "-"}
                       </Typography>
                     </Grid>
 
@@ -99,6 +115,17 @@ export default function ExpenseDetailsPage() {
                         </Typography>
                       </Grid>
                     )}
+
+                    {/* Data de Criação (createdAt) */}
+                    {expense?.createdAt && (
+                      <Grid item xs={12}>
+                        <Typography variant="body1" gutterBottom>
+                          Data:{" "}
+                          {new Date(expense.createdAt).toLocaleDateString("pt-BR")}
+                        </Typography>
+                      </Grid>
+                    )}
+
                   </Grid>
                 </Box>
               </Grid>

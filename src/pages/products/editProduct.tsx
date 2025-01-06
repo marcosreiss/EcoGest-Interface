@@ -23,8 +23,6 @@ import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
 
-// ----------------------------------------------------------------------
-
 export default function EditProductPage() {
   const { id } = useParams<{ id: string }>();
   const productId = Number(id);
@@ -37,24 +35,54 @@ export default function EditProductPage() {
     bgcolor: "background.paper",
   };
 
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<Product>();
+  // Troque a interface para 'Product' somente se você realmente tiver
+  // esse tipo com as mesmas props do back-end.
+  // Se for a mesma do Create, pode usar 'CreateProductPayload' (adaptado).
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<Product>();
+
   const updateProduct = useUpdateProduct();
   const router = useRouter();
   const { addNotification } = useNotification();
 
-  const { data: product, isLoading, isError, error } = useGetProductById(productId);
+  const {
+    data: product,
+    isLoading,
+    isError,
+    error,
+  } = useGetProductById(productId);
 
   useEffect(() => {
     if (product) {
       setValue("name", product.name);
-      setValue("weightAmount", product.weightAmount);
-      setValue("price", product.price);
+
+      // Opcional: exibir vírgula ao carregar (ex: 1.5 -> "1,5")
+      const weightAmountStr = product.weightAmount
+        ? product.weightAmount.toString().replace(".", ",")
+        : "";
+      const priceStr = product.price
+        ? product.price.toString().replace(".", ",")
+        : "";
+
+      setValue("weightAmount" as any, weightAmountStr);
+      setValue("price" as any, priceStr);
     }
   }, [product, setValue]);
 
+  // Ajustamos o onSubmit para converter vírgula -> ponto e parseFloat
   const onSubmit: SubmitHandler<Product> = (data) => {
+    const weightAmountStr = (data.weightAmount || "").toString().replace(",", ".");
+    const priceStr = (data.price || "").toString().replace(",", ".");
+
+    // Monta o payload com números
     const updatedData: Product = {
       ...data,
+      weightAmount: parseFloat(weightAmountStr),
+      price: parseFloat(priceStr),
     };
 
     updateProduct.mutate(
@@ -110,6 +138,7 @@ export default function EditProductPage() {
                   </Typography>
                 </Grid>
 
+                {/* Nome */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -121,38 +150,37 @@ export default function EditProductPage() {
                   />
                 </Grid>
 
+                {/* Quantidade (Toneladas) */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Quantidade (Toneladas)"
-                    placeholder="Ex: 1.5"
-                    type="number"
-                    inputProps={{ min: 0, step: "any" }}
-                    {...register("weightAmount", { 
+                    placeholder="Ex: 1,5"
+                    type="text"
+                    {...register("weightAmount" as any, {
                       required: "A quantidade é obrigatória.",
-                      min: { value: 0, message: "A quantidade não pode ser negativa." }
                     })}
                     error={!!errors.weightAmount}
                     helperText={errors.weightAmount?.message}
                   />
                 </Grid>
 
+                {/* Preço (R$) */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Preço (R$)"
-                    placeholder="Ex: 150.00"
-                    type="number"
-                    inputProps={{ min: 0, step: "0.01" }}
-                    {...register("price", { 
+                    placeholder="Ex: 150,00"
+                    type="text"
+                    {...register("price" as any, {
                       required: "O preço é obrigatório.",
-                      min: { value: 0, message: "O preço não pode ser negativo." }
                     })}
                     error={!!errors.price}
                     helperText={errors.price?.message}
                   />
                 </Grid>
 
+                {/* Botão Atualizar */}
                 <Grid item xs={12}>
                   <Button
                     type="submit"

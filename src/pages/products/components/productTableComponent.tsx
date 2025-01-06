@@ -191,7 +191,7 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
                     alt="Sem dados"
                     style={{ maxWidth: "150px", marginBottom: "10px" }}
                   />
-                  <p>Sem Produtos cadastrados</p>
+                  <p>Nenhum Produto Cadastrado</p>
                 </div>
               </TableCell>
             </TableRow>

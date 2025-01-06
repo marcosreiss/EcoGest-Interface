@@ -3,20 +3,20 @@ import React, { useState } from "react";
 import {
   Menu,
   Table,
-  Select,
-  Dialog,
-  Button,
-  TableRow,
   Checkbox,
   MenuItem,
   TableHead,
   TableCell,
   TableBody,
   IconButton,
+  LinearProgress,
+  Button,
+  Select,
+  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  LinearProgress,
+  TableRow,
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
@@ -50,6 +50,22 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
   const deletePurchase = useDeletePurchase();
   const updatePurchaseStatus = useUpdatePurchaseStatus();
   const notification = useNotification();
+
+  // Função para formatar o valor em R$ (Real)
+  const formatPrice = (value?: number) => {
+    if (value === undefined) return "-";
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
+
+  // Função para formatar a data no formato pt-BR
+  const formatDate = (dateStr?: string | Date) => {
+    if (!dateStr) return "-";
+    const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
+    return dateObj.toLocaleDateString("pt-BR");
+  };
 
   const handleClick = (event: React.MouseEvent<HTMLElement>, purchaseId: number) => {
     setAnchorEl(event.currentTarget);
@@ -173,8 +189,8 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
               </TableCell>
             </TableRow>
           ) : purchases.length > 0 ? (
-            purchases.map((purchase, index) => (
-              <TableRow key={index}>
+            purchases.map((purchase) => (
+              <TableRow key={purchase.purchaseId}>
                 <TableCell>
                   <Checkbox
                     checked={selectedPurchaseIds.includes(purchase.purchaseId)}
@@ -183,9 +199,17 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                 </TableCell>
                 <TableCell>{purchase.supplier?.name || "-"}</TableCell>
                 <TableCell>{purchase.product?.name || "-"}</TableCell>
-                <TableCell>{new Date(purchase.date_time).toLocaleDateString()}</TableCell>
+                {/* Data formatada */}
+                <TableCell>
+                  {purchase.date_time
+                    ? formatDate(purchase.date_time)
+                    : "-"}
+                </TableCell>
                 <TableCell>{purchaseStatusMapping[purchase.purchaseStatus]}</TableCell>
-                <TableCell>{`R$${purchase.price}`}</TableCell>
+                {/* Preço formatado em R$ */}
+                <TableCell>
+                  {purchase.price !== undefined ? formatPrice(purchase.price) : "-"}
+                </TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, purchase.purchaseId)}>︙</IconButton>
                   <Menu
@@ -210,14 +234,15 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6} align="center">
+              {/* Ajuste colSpan para 7 colunas */}
+              <TableCell colSpan={7} align="center">
                 <div style={{ textAlign: "center", padding: "20px" }}>
                   <img
-                    src="public\assets\icons\ic-content.svg"
+                    src="/assets/icons/ic-content.svg" // Ajustado para usar forward slashes
                     alt="Sem dados"
                     style={{ maxWidth: "150px", marginBottom: "10px" }}
                   />
-                  <p>Sem Compras cadastrados</p>
+                  <p>Sem Compras cadastradas</p>
                 </div>
               </TableCell>
             </TableRow>
@@ -225,6 +250,7 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
         </TableBody>
       </Table>
 
+      {/* Dialog para Atualizar Status */}
       <Dialog open={statusModalOpen} onClose={handleCloseStatusModal}>
         <DialogTitle>Atualizar Status</DialogTitle>
         <DialogContent>
@@ -248,6 +274,7 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
         </DialogActions>
       </Dialog>
 
+      {/* Dialog de Confirmação para Deletar */}
       <ConfirmationDialog
         open={deleteModalOpen}
         confirmButtonText="Deletar"

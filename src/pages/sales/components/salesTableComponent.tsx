@@ -56,6 +56,22 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
   const updateSaleStatus = useUpdateSaleStatus();
   const notification = useNotification();
 
+  // Função para formatar o valor em R$ (Real)
+  const formatPrice = (value?: number) => {
+    if (value === undefined) return "-";
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
+
+  // Função para formatar a data no formato pt-BR
+  const formatDate = (dateStr?: string | Date) => {
+    if (!dateStr) return "-";
+    const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
+    return dateObj.toLocaleDateString("pt-BR");
+  };
+
   const handleClick = (event: React.MouseEvent<HTMLElement>, saleId: number) => {
     setAnchorEl(event.currentTarget);
     setSelectedItem(saleId);
@@ -193,17 +209,18 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
-            <TableCell sx={{ width: "30%", minWidth: "150px" }}>Produto</TableCell>
-            <TableCell sx={{ width: "30%", minWidth: "150px" }}>Cliente</TableCell>
-            <TableCell sx={{ width: "20%", minWidth: "100px" }}>Data</TableCell>
+            <TableCell sx={{ width: "25%", minWidth: "150px" }}>Produto</TableCell>
+            <TableCell sx={{ width: "25%", minWidth: "150px" }}>Cliente</TableCell>
+            <TableCell sx={{ width: "15%", minWidth: "100px" }}>Data</TableCell>
             <TableCell sx={{ width: "15%", minWidth: "100px" }}>Status</TableCell>
-            <TableCell sx={{ width: "5%" }}> </TableCell>
+            <TableCell sx={{ width: "15%", minWidth: "100px" }}>Preço</TableCell>
+            <TableCell sx={{ width: "5%" }}>Ações</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={6} sx={{ padding: 0 }}>
+              <TableCell colSpan={7} sx={{ padding: 0 }}>
                 <LinearProgress sx={{ width: "100%" }} />
               </TableCell>
             </TableRow>
@@ -218,16 +235,23 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                 </TableCell>
                 <TableCell>{sale.product?.name || "N/A"}</TableCell>
                 <TableCell>{sale.customer?.name || "N/A"}</TableCell>
+                {/* Data formatada */}
                 <TableCell>
-                  {new Date(sale.date_time).toLocaleDateString() || "N/A"}
+                  {sale.date_time
+                    ? formatDate(sale.date_time)
+                    : "N/A"}
                 </TableCell>
-                <TableCell>{
-                  sale.saleStatus === "approved"
+                <TableCell>
+                  {sale.saleStatus === "approved"
                     ? "Aprovada"
                     : sale.saleStatus === "canceled"
                       ? "Cancelada"
-                      : "Processando"
-                }</TableCell>
+                      : "Processando"}
+                </TableCell>
+                {/* Preço formatado em R$ */}
+                <TableCell>
+                  {sale.totalPrice !== undefined ? formatPrice(sale.totalPrice) : "N/A"}
+                </TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, sale.saleId)}>
                     ︙
@@ -256,26 +280,30 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                     <MenuItem onClick={() => handleGenerateReceipt(sale.saleId)}>
                       Gerar Recibo
                     </MenuItem>
-                    <MenuItem onClick={() => handleOpenStatusModal()}>
-                      Atualizar Status
-                    </MenuItem>
+                    {sale.saleStatus === "processing" && (
+                      <MenuItem onClick={handleOpenStatusModal}>
+                        Atualizar Status
+                      </MenuItem>
+                    )}
                     <MenuItem onClick={() => handleDeleteClick(sale.saleId)}>
                       Deletar
                     </MenuItem>
                   </Menu>
                 </TableCell>
+                
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6} align="center">
+              {/* Ajuste colSpan para 7 colunas */}
+              <TableCell colSpan={7} align="center">
                 <div style={{ textAlign: "center", padding: "20px" }}>
                   <img
-                    src="public\assets\icons\ic-content.svg"
+                    src="/assets/icons/ic-content.svg" // Ajustado para usar forward slashes
                     alt="Sem dados"
                     style={{ maxWidth: "150px", marginBottom: "10px" }}
                   />
-                  <p>Sem Vendas cadastrados</p>
+                  <p>Sem Vendas cadastradas</p>
                 </div>
               </TableCell>
             </TableRow>
@@ -283,6 +311,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
         </TableBody>
       </Table>
 
+      {/* Dialog para Atualizar Status */}
       <Dialog open={statusModalOpen} onClose={handleCloseStatusModal}>
         <DialogTitle>Atualizar Status</DialogTitle>
         <DialogContent>
@@ -304,6 +333,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
         </DialogActions>
       </Dialog>
 
+      {/* Dialog de Confirmação para Deletar */}
       <ConfirmationDialog
         open={deleteModalOpen}
         confirmButtonText="Deletar"

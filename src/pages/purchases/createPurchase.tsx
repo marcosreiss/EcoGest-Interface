@@ -1,21 +1,16 @@
+import type { ProductBasicInfo } from 'src/models/product';
+import type { SupplierBasicInfo } from 'src/models/supplier';
 import type { CreatePurchasePayload } from "src/models/purchase";
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 
-import type { SupplierBasicInfo } from 'src/models/supplier';
-
-import type { ProductBasicInfo } from 'src/models/product';
-
-
-
 import Autocomplete from "@mui/material/Autocomplete";
 import {
     Box,
     Grid,
     Button,
-    MenuItem,
     TextField,
     Typography,
     CircularProgress,
@@ -28,7 +23,6 @@ import { useGetProductsBasicInfo } from "src/hooks/useProduct";
 import { useGetSuppliersBasicInfo } from "src/hooks/useSupplier";
 
 import { CONFIG } from "src/config-global";
-import { PurchaseStatus } from 'src/models/purchase';
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
 
@@ -45,7 +39,13 @@ export default function CreatePurchasePage() {
 
     const [file, setFile] = useState<Blob | null>(null);
 
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm<CreatePurchasePayload>();
+    const {
+      register,
+      handleSubmit,
+      setValue,
+      formState: { errors },
+    } = useForm<CreatePurchasePayload>();
+
     const createPurchase = useCreatePurchase();
     const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
     const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
@@ -62,11 +62,22 @@ export default function CreatePurchasePage() {
     };
 
     const onSubmit = (data: CreatePurchasePayload) => {
+        // Converte vírgula para ponto em weightAmount
+        if (data.weightAmount) {
+            const strWeight = String(data.weightAmount).replace(",", ".");
+            data.weightAmount = parseFloat(strWeight);
+        }
+
+        // Converte vírgula para ponto em price
+        if (data.price) {
+            const strPrice = String(data.price).replace(",", ".");
+            data.price = parseFloat(strPrice);
+        }
+
         const payload: CreatePurchasePayload = {
             ...data,
             paymentSlip: file,
         };
-        console.log(payload);
 
         createPurchase.mutate(payload, {
             onSuccess: () => {
@@ -158,59 +169,40 @@ export default function CreatePurchasePage() {
                                     />
                                 </Grid>
 
-
+                                {/* Quantidade (aceitando vírgula) */}
                                 <Grid item xs={12}>
                                     <TextField
                                         fullWidth
                                         label="Quantidade (Toneladas)"
                                         placeholder="Digite a quantidade em toneladas"
-                                        type="number"
+                                        type="text" // aceita vírgula
                                         {...register("weightAmount", {
                                             required: "A quantidade é obrigatória.",
                                             min: {
                                                 value: 0.1,
-                                                message: "A quantidade mínima é 0.1 tonelada."
-                                            }
+                                                message: "A quantidade mínima é 0.1 tonelada.",
+                                            },
                                         })}
                                         error={!!errors.weightAmount}
                                         helperText={errors.weightAmount?.message}
                                     />
                                 </Grid>
 
+                                {/* Preço (aceitando vírgula) */}
                                 <Grid item xs={12}>
                                     <TextField
                                         fullWidth
                                         label="Preço (R$)"
                                         placeholder="Digite o preço"
-                                        type="number"
-                                        {...register("price", { required: "O preço é obrigatório.", min: 0 })}
+                                        type="text" // aceita vírgula
+                                        {...register("price", {
+                                            required: "O preço é obrigatório.",
+                                            min: 0,
+                                        })}
                                         error={!!errors.price}
                                         helperText={errors.price?.message}
                                     />
                                 </Grid>
-
-                                {/* Status
-                                <Grid item xs={12}>
-                                    <TextField
-                                        select
-                                        label="Status"
-                                        fullWidth
-                                        defaultValue=""
-                                        {...register("status", { required: "Selecione um status." })}
-                                        error={!!errors.status}
-                                        helperText={errors.status?.message}
-                                    >
-                                        <MenuItem value={PurchaseStatus.processing}>
-                                            Pendente
-                                        </MenuItem>
-                                        <MenuItem value={PurchaseStatus.approved}>
-                                            Aprovado
-                                        </MenuItem>
-                                        <MenuItem value={PurchaseStatus.canceled}>
-                                            Cancelado
-                                        </MenuItem>
-                                    </TextField>
-                                </Grid> */}
 
                                 {/* Descrição */}
                                 <Grid item xs={12}>
@@ -251,7 +243,6 @@ export default function CreatePurchasePage() {
                                     {file && file instanceof File && (
                                         <Typography variant="body2">Arquivo: {file.name}</Typography>
                                     )}
-
                                 </Grid>
 
                                 {/* Botão de Enviar */}

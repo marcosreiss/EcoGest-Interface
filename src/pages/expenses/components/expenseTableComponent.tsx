@@ -44,6 +44,22 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
   const deleteExpense = useDeleteExpense();
   const notification = useNotification();
 
+  // Função para formatar o valor em R$ (Real)
+  const formatPrice = (value?: number) => {
+    if (value === undefined) return "-";
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
+
+  // Formata a data (createdAt) em pt-BR
+  const formatDate = (dateStr?: Date) => {
+    if (!dateStr) return "-";
+    const dateObj = new Date(dateStr);
+    return dateObj.toLocaleDateString("pt-BR");
+  };
+
   const handleClick = (event: React.MouseEvent<HTMLElement>, expenseId: number) => {
     setAnchorEl(event.currentTarget);
     setSelectedItem(expenseId);
@@ -136,6 +152,7 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
             </TableCell>
             <TableCell>Descrição</TableCell>
             <TableCell>Tipo</TableCell>
+            <TableCell>Data</TableCell>
             <TableCell>Valor</TableCell>
             <TableCell>Ações</TableCell>
           </TableRow>
@@ -148,8 +165,8 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
               </TableCell>
             </TableRow>
           ) : expenses.length > 0 ? (
-            expenses.map((expense, index) => (
-              <TableRow key={index}>
+            expenses.map((expense) => (
+              <TableRow key={expense.expenseId}>
                 <TableCell>
                   <Checkbox
                     checked={selectedExpenseIds.includes(expense.expenseId)}
@@ -157,8 +174,15 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
                   />
                 </TableCell>
                 <TableCell>{expense.description || "-"}</TableCell>
-                <TableCell>{expense.type}</TableCell>
-                <TableCell>{`R$${Number(expense.price).toFixed(2)}`}</TableCell>
+                <TableCell>{expense.type || "-"}</TableCell>
+                {/* Data formatada (createdAt) */}
+                <TableCell>
+                  {expense.createdAt ? formatDate(expense.createdAt) : "-"}
+                </TableCell>
+                {/* Valor formatado em R$ */}
+                <TableCell>
+                  {expense.price !== undefined ? formatPrice(expense.price) : "-"}
+                </TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, expense.expenseId)}>︙</IconButton>
                   <Menu
@@ -176,14 +200,15 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
             ))
           ) : (
             <TableRow>
+              {/* Ajuste colSpan para 6 colunas agora */}
               <TableCell colSpan={6} align="center">
                 <div style={{ textAlign: "center", padding: "20px" }}>
                   <img
-                    src="public\assets\icons\ic-content.svg"
+                    src="public/assets/icons/ic-content.svg"
                     alt="Sem dados"
                     style={{ maxWidth: "150px", marginBottom: "10px" }}
                   />
-                  <p>Sem Despesas cadastrados</p>
+                  <p>Nenhuma Despesa Cadastrada</p>
                 </div>
               </TableCell>
             </TableRow>

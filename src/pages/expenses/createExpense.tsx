@@ -45,9 +45,14 @@ export default function CreateExpensePage() {
   const { addNotification } = useNotification();
 
   const onSubmit = (data: ExpensePayload) => {
+    // 1. Converte vírgula para ponto
+    const priceStr = String(data.price).replace(",", ".");
+    // 2. Converte o campo em número (double)
+    const formattedPrice = parseFloat(priceStr);
+
     const formattedData = {
       ...data,
-      weightAmount: Number(data.price), // Converte para número
+      price: formattedPrice,
     };
 
     createExpense.mutate(formattedData, {
@@ -93,7 +98,9 @@ export default function CreateExpensePage() {
                         value={field.value || ""}
                         onChange={(_, newValue) => field.onChange(newValue)}
                         inputValue={field.value || ""}
-                        onInputChange={(_, newInputValue) => field.onChange(newInputValue)}
+                        onInputChange={(_, newInputValue) =>
+                          field.onChange(newInputValue)
+                        }
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -120,13 +127,13 @@ export default function CreateExpensePage() {
                   />
                 </Grid>
 
-                {/* Campo Valor */}
+                {/* Campo Valor (permitindo vírgula) */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Valor (R$)"
-                    placeholder="Ex: 150.00"
-                    type="number"
+                    placeholder="Ex: 150,00"
+                    type="text" // <-- texto para aceitar vírgula
                     inputProps={{ min: 0, step: "0.01" }}
                     {...register("price", {
                       required: "O valor é obrigatório.",
