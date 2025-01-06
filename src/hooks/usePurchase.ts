@@ -90,9 +90,10 @@ export const useGetTotalPurchasesInPeriod = () =>
 export const useSearchPurchasesByPeriod = (payload: SearchByPeriodRequest) =>
     useQuery<PurchaseListResponse, AxiosError>({
         queryKey: ['purchasesByPeriod', payload],
-        queryFn: () => searchPurchasesByPeriodService(payload!),
-        enabled: payload?.startDate !== null && payload?.endDate !== null
+        queryFn: () => searchPurchasesByPeriodService(payload.startDate!, payload.endDate!),
+        enabled: !!payload?.startDate && !!payload?.endDate,
     });
+
 
 
 // Hook para buscar compras por fornecedor
