@@ -1,7 +1,8 @@
 import type { SubmitHandler } from "react-hook-form";
 import type { EmployeePayload } from "src/models/employee";
 
-import { useForm } from "react-hook-form";
+import React from "react";
+import { useForm, Controller } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 
 import {
@@ -12,8 +13,9 @@ import {
   Typography,
 } from "@mui/material";
 
-import { useRouter } from "src/routes/hooks";
+import InputMask from "react-input-mask";
 
+import { useRouter } from "src/routes/hooks";
 import { useCreateEmployee } from "src/hooks/useEmployee";
 
 import { CONFIG } from "src/config-global";
@@ -33,6 +35,7 @@ export default function CreateEmployeePage() {
     register,
     handleSubmit,
     formState: { errors },
+    control, // Importante para máscaras
   } = useForm<EmployeePayload>();
 
   const createEmployee = useCreateEmployee();
@@ -40,10 +43,11 @@ export default function CreateEmployeePage() {
   const { addNotification } = useNotification();
 
   const onSubmit: SubmitHandler<EmployeePayload> = (data) => {
-    // Converte vírgulas para pontos no salário
+    // Converte vírgula para ponto no salário
+    const salarioStr = String(data.salario).replace(",", ".");
     const sanitizedData: EmployeePayload = {
       ...data,
-      salario: parseFloat(data.salario.toString().replace(",", ".")),
+      salario: parseFloat(salarioStr),
     };
 
     createEmployee.mutate(sanitizedData, {
@@ -52,7 +56,10 @@ export default function CreateEmployeePage() {
         router.push("/employees");
       },
       onError: (error: any) => {
-        addNotification(`Erro ao cadastrar funcionário: ${error.message}`, "error");
+        addNotification(
+          `Erro ao cadastrar funcionário: ${error.message}`,
+          "error"
+        );
       },
     });
   };
@@ -68,144 +75,176 @@ export default function CreateEmployeePage() {
           <Grid item xs={12}>
             <Box sx={formStyle}>
               <Grid container spacing={2}>
+                
                 <Grid item xs={12}>
                   <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
                     Criar Funcionário
                   </Typography>
                 </Grid>
 
+                {/* Nome */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Nome"
                     placeholder="Nome do Funcionário"
-                    {...register("nome", { required: "O nome do funcionário é obrigatório." })}
+                    {...register("nome", {
+                      required: "O nome do funcionário é obrigatório.",
+                    })}
                     error={!!errors.nome}
                     helperText={errors.nome?.message}
                   />
                 </Grid>
 
+                {/* Registro */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Registro"
                     placeholder="Número de Registro"
-                    {...register("registroNumero", { required: "O número de registro é obrigatório." })}
+                    {...register("registroNumero", {
+                      required: "O número de registro é obrigatório.",
+                    })}
                     error={!!errors.registroNumero}
                     helperText={errors.registroNumero?.message}
                   />
                 </Grid>
 
+                {/* RG (com máscara) */}
                 <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="RG"
-                    placeholder="RG do Funcionário"
-                    {...register("rg", {
+                  <Controller
+                    name="rg"
+                    control={control}
+                    rules={{
                       required: "O RG é obrigatório.",
-                      maxLength: { value: 15, message: "RG deve ter no máximo 15 caracteres." },
-                      pattern: {
-                        value: /^[0-9.-]+$/, // Correção: remove o escape do hífen
-                        message: "RG inválido. Use apenas números, pontos e traços.",
-                      },
-                    })}
-                    error={!!errors.rg}
-                    helperText={errors.rg?.message}
+                    }}
+                    render={({ field }) => (
+                      <InputMask
+                        mask="99.999.999-9" // Exemplo de máscara para RG
+                        maskChar=""
+                        placeholder="RG do Funcionário"
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      >
+                        {(inputProps) => (
+                          <TextField
+                            {...inputProps}
+                            fullWidth
+                            label="RG"
+                            error={!!errors.rg}
+                            helperText={errors.rg?.message}
+                          />
+                        )}
+                      </InputMask>
+                    )}
                   />
                 </Grid>
 
+                {/* CPF (com máscara) */}
                 <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="CPF"
-                    placeholder="CPF do Funcionário"
-                    {...register("cpf", {
+                  <Controller
+                    name="cpf"
+                    control={control}
+                    rules={{
                       required: "O CPF é obrigatório.",
-                      maxLength: { value: 14, message: "CPF deve ter no máximo 14 caracteres." },
-                      pattern: {
-                        value: /^[0-9.-]+$/, // Correção: remove o escape do hífen
-                        message: "CPF inválido. Use apenas números, pontos e traços.",
-                      },
-                    })}
-                    error={!!errors.cpf}
-                    helperText={errors.cpf?.message}
+                    }}
+                    render={({ field }) => (
+                      <InputMask
+                        mask="999.999.999-99"
+                        maskChar=""
+                        placeholder="CPF do Funcionário"
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      >
+                        {(inputProps) => (
+                          <TextField
+                            {...inputProps}
+                            fullWidth
+                            label="CPF"
+                            error={!!errors.cpf}
+                            helperText={errors.cpf?.message}
+                          />
+                        )}
+                      </InputMask>
+                    )}
                   />
                 </Grid>
 
+                {/* Endereço */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Endereço"
                     placeholder="Endereço do Funcionário"
-                    {...register("endereco", { required: "O endereço é obrigatório." })}
+                    {...register("endereco", {
+                      required: "O endereço é obrigatório.",
+                    })}
                     error={!!errors.endereco}
                     helperText={errors.endereco?.message}
                   />
                 </Grid>
 
+                {/* Contato (com máscara de telefone, se desejar) */}
                 <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Contato"
-                    placeholder="Telefone ou Email"
-                    {...register("contato", { required: "O contato é obrigatório." })}
-                    error={!!errors.contato}
-                    helperText={errors.contato?.message}
+                  <Controller
+                    name="contato"
+                    control={control}
+                    rules={{ required: "O contato é obrigatório." }}
+                    render={({ field }) => (
+                      <InputMask
+                        mask="(99)99999-9999"
+                        maskChar=""
+                        placeholder="(98)98923-4455"
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      >
+                        {(inputProps) => (
+                          <TextField
+                            {...inputProps}
+                            fullWidth
+                            label="Contato"
+                            error={!!errors.contato}
+                            helperText={errors.contato?.message}
+                          />
+                        )}
+                      </InputMask>
+                    )}
                   />
                 </Grid>
 
+                {/* Função */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Função"
                     placeholder="Função do Funcionário"
-                    {...register("funcao", { required: "A função é obrigatória." })}
+                    {...register("funcao", {
+                      required: "A função é obrigatória.",
+                    })}
                     error={!!errors.funcao}
                     helperText={errors.funcao?.message}
                   />
                 </Grid>
 
+                {/* Salário (texto, conversão no onSubmit) */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Salário (R$)"
-                    placeholder="Salário do Funcionário"
-                    type="number"
-                    inputProps={{ min: 0, step: "0.01" }}
+                    placeholder="Ex: 1500,00"
+                    type="text" // para aceitar vírgulas
                     {...register("salario", {
                       required: "O salário é obrigatório.",
-                      validate: (value) => {
-                        // Converte o valor para string antes de aplicar o replace
-                        const sanitizedValue = String(value).replace(",", ".");
-                        return !Number.isNaN(parseFloat(sanitizedValue)) || "Insira um valor válido.";
-                      },
                     })}
                     error={!!errors.salario}
                     helperText={errors.salario?.message}
                   />
                 </Grid>
 
-                {/* <Grid item xs={12}>
-                  <FormControl fullWidth error={!!errors.status}>
-                    <InputLabel id="status-label">Status</InputLabel>
-                    <Select
-                      labelId="status-label"
-                      defaultValue=""
-                      {...register("status", { required: "Selecione um status." })}
-                    >
-                      <MenuItem value="Empregado">Empregado</MenuItem>
-                      <MenuItem value="Demitido">Demitido</MenuItem>
-                      <MenuItem value="Férias">Férias</MenuItem>
-                    </Select>
-                    {errors.status && (
-                      <Typography variant="body2" color="error">
-                        {errors.status.message}
-                      </Typography>
-                    )}
-                  </FormControl>
-                </Grid> */}
-
-
+                {/* Botão Enviar */}
                 <Grid item xs={12}>
                   <Button
                     type="submit"

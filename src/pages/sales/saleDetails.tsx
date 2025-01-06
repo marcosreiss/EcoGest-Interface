@@ -35,7 +35,39 @@ export default function SaleDetailsPage() {
   const handleEditClick = () => {
     navigate.replace(`/sales/edit/${id}`);
   };
-  
+
+  // Função para formatar preço no padrão Real (ex.: R$ 1.000,00)
+  const formatPrice = (value?: number) => {
+    if (value === undefined) return "-";
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
+
+  // Função para formatar quantidade com duas casas decimais (ex.: 1,50)
+  const formatQuantity = (value?: number) => {
+    if (value === undefined) return "-";
+    return new Intl.NumberFormat("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  };
+
+  // Função para traduzir status
+  const translateStatus = (status?: string) => {
+    switch (status) {
+      case "processing":
+        return "Processando";
+      case "approved":
+        return "Aprovada";
+      case "canceled":
+        return "Cancelada";
+      default:
+        return status || "-";
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -51,6 +83,7 @@ export default function SaleDetailsPage() {
                 Detalhes da Venda
               </Typography>
             </Grid>
+
             <Grid container>
               <Grid item xs={12}>
                 <Box sx={formStyle}>
@@ -61,6 +94,7 @@ export default function SaleDetailsPage() {
                         Cliente: {sale?.customer?.name || "-"}
                       </Typography>
                     </Grid>
+
                     {/* Botão de Editar */}
                     <Grid item xs={6}>
                       <IconButton onClick={handleEditClick}>
@@ -75,38 +109,40 @@ export default function SaleDetailsPage() {
                       </Typography>
                     </Grid>
 
-                    {/* Quantidade */}
+                    {/* Quantidade formatada */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Quantidade: {sale?.quantity} Toneladas
+                        Quantidade:{" "}
+                        {sale?.quantity !== undefined
+                          ? `${formatQuantity(sale.quantity)} Toneladas`
+                          : "-"}
                       </Typography>
                     </Grid>
 
-                    {/* Preço Total */}
+                    {/* Preço Total formatado */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Preço Total: {" "}
-                        {sale?.totalPrice !== undefined ? `R$${sale.totalPrice}` : "-"}
+                        Preço Total:{" "}
+                        {sale?.totalPrice !== undefined
+                          ? formatPrice(sale.totalPrice)
+                          : "-"}
                       </Typography>
                     </Grid>
 
-                    {/* Status */}
+                    {/* Status traduzido */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Status: {" "}
-                        {sale?.saleStatus === "processing"
-                          ? "Processando"
-                          : sale?.saleStatus === "approved"
-                          ? "Aprovada"
-                          : "Cancelado"}
+                        Status: {translateStatus(sale?.saleStatus)}
                       </Typography>
                     </Grid>
 
                     {/* Data da Venda */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Data da Venda: {" "}
-                        {new Date(sale?.date_time || "").toLocaleDateString("pt-BR")}
+                        Data da Venda:{" "}
+                        {sale?.date_time
+                          ? new Date(sale.date_time).toLocaleDateString("pt-BR")
+                          : "-"}
                       </Typography>
                     </Grid>
                   </Grid>

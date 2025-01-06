@@ -47,6 +47,38 @@ export default function PurchaseDetailsPage() {
     }
   };
 
+  // Função para traduzir status
+  const translateStatus = (status?: string) => {
+    switch (status) {
+      case "processing":
+        return "Processando";
+      case "approved":
+        return "Aprovado";
+      case "canceled":
+        return "Cancelado";
+      default:
+        return status || "-";
+    }
+  };
+
+  // Formata o valor em R$ (Real)
+  const formatPrice = (value?: number) => {
+    if (value === undefined) return "-";
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
+
+  // Formata a quantidade (por exemplo, duas casas decimais)
+  const formatQuantity = (value?: number) => {
+    if (value === undefined) return "-";
+    return new Intl.NumberFormat("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  };
+
   return (
     <>
       <Helmet>
@@ -72,6 +104,7 @@ export default function PurchaseDetailsPage() {
                         Fornecedor: {purchase?.supplier?.name || "-"}
                       </Typography>
                     </Grid>
+
                     {/* Botão de Editar */}
                     <Grid item xs={6}>
                       <IconButton onClick={handleEditClick}>
@@ -86,31 +119,37 @@ export default function PurchaseDetailsPage() {
                       </Typography>
                     </Grid>
 
-                    {/* Quantidade */}
+                    {/* Quantidade formatada */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Quantidade: {purchase?.weightAmount} Toneladas
+                        Quantidade:{" "}
+                        {purchase?.weightAmount !== undefined
+                          ? `${formatQuantity(purchase.weightAmount)} Toneladas`
+                          : "-"}
                       </Typography>
                     </Grid>
 
-                    {/* Preço */}
+                    {/* Preço formatado */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Preço: {purchase?.price !== undefined ? `R$${purchase.price}` : "-"}
+                        Preço:{" "}
+                        {purchase?.price !== undefined
+                          ? formatPrice(purchase.price)
+                          : "-"}
                       </Typography>
                     </Grid>
 
-                    {/* Status */}
+                    {/* Status traduzido */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Status: {purchase?.purchaseStatus}
+                        Status: {translateStatus(purchase?.purchaseStatus)}
                       </Typography>
                     </Grid>
 
                     {/* Data da Compra */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Data da Compra: {" "}
+                        Data da Compra:{" "}
                         {new Date(purchase?.date_time || "").toLocaleDateString("pt-BR")}
                       </Typography>
                     </Grid>

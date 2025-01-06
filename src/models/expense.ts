@@ -5,6 +5,7 @@ export interface Expense {
     type: string;
     description?: string | null;
     price?: number;
+    createdAt: Date;
 }
 
 export interface ExpenseListResponse {

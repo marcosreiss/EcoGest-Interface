@@ -74,6 +74,11 @@ const SaleTableHeaderComponent: React.FC<HeaderComponentProps> = ({
         </Grid>
         <Grid item xs={6} container justifyContent="flex-end" spacing={2}>
           
+        <Grid item>
+            <Button variant="contained" color="primary" onClick={handleOpen}>
+              Gerar Recibo Personalizado
+            </Button>
+          </Grid>
           <Grid item>
             <Button
               variant="contained"
@@ -83,11 +88,7 @@ const SaleTableHeaderComponent: React.FC<HeaderComponentProps> = ({
               {addButtonName}
             </Button>
           </Grid>
-          <Grid item>
-            <Button variant="contained" color="primary" onClick={handleOpen}>
-              Gerar Recibo Personalizado
-            </Button>
-          </Grid>
+  
         </Grid>
       </Grid>
 

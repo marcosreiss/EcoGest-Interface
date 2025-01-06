@@ -1,6 +1,6 @@
 import type { Supplier } from "src/models/supplier";
 
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form"; // Importar Controller
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
@@ -16,8 +16,9 @@ import {
   CircularProgress,
 } from "@mui/material";
 
-import { useRouter } from "src/routes/hooks";
+import InputMask from "react-input-mask"; // Importar react-input-mask
 
+import { useRouter } from "src/routes/hooks";
 import { useUpdateSupplier, useGetSupplierById } from "src/hooks/useSupplier";
 
 import { CONFIG } from "src/config-global";
@@ -29,22 +30,32 @@ export default function EditSupplierPage() {
   const supplierId = Number(id);
 
   const formStyle = {
-    mx: 'auto',
+    mx: "auto",
     p: 3,
     boxShadow: 3,
     borderRadius: 2,
-    bgcolor: 'background.paper',
+    bgcolor: "background.paper",
   };
 
-  const pessoaFisica = 'Pessoa Física';
-  const pessoaJuridica = 'Pessoa Jurídica';
+  const pessoaFisica = "Pessoa Física";
+  const pessoaJuridica = "Pessoa Jurídica";
   const [personType, setPersonType] = useState(pessoaFisica);
 
   const togglePersonType = () => {
-    setPersonType(prev => prev === pessoaFisica ? pessoaJuridica : pessoaFisica);
+    setPersonType((prev) =>
+      prev === pessoaFisica ? pessoaJuridica : pessoaFisica
+    );
   };
 
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<Supplier>();
+  // useForm com Supplier
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+    control, // Para usar o Controller
+  } = useForm<Supplier>();
+
   const updateSupplier = useUpdateSupplier();
   const router = useRouter();
   const { addNotification } = useNotification();
@@ -56,6 +67,7 @@ export default function EditSupplierPage() {
       setValue("name", supplier.name);
       setValue("address", supplier.address || "");
       setValue("contact", supplier.contact || "");
+      
       if (supplier.cpf) {
         setPersonType(pessoaFisica);
         setValue("cpf", supplier.cpf);
@@ -71,6 +83,7 @@ export default function EditSupplierPage() {
   const onSubmit = (data: Supplier) => {
     const updatedData: Supplier = {
       ...data,
+      // Se for pessoa física, cnpj fica null; se for jurídica, cpf fica null
       cpf: personType === pessoaFisica ? data.cpf : null,
       cnpj: personType === pessoaJuridica ? data.cnpj : null,
     };
@@ -117,7 +130,7 @@ export default function EditSupplierPage() {
         <title>{`Editar Fornecedor - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth='md'>
+      <DashboardContent maxWidth="md">
         <Grid container>
           <Grid item xs={12}>
             <Box sx={formStyle}>
@@ -128,55 +141,103 @@ export default function EditSupplierPage() {
                   </Typography>
                 </Grid>
 
+                {/* Nome */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Nome"
                     placeholder="Nome do Fornecedor"
-                    {...register("name", { required: "Preencha o nome do fornecedor." })}
+                    {...register("name", {
+                      required: "Preencha o nome do fornecedor.",
+                    })}
                     error={!!errors.name}
                     helperText={errors.name?.message}
                   />
                 </Grid>
 
+                {/* Switch Pessoa Física / Jurídica */}
                 <Grid item xs={12}>
-                  <Typography component='span' fontSize={13.6} marginRight={2}>
+                  <Typography component="span" fontSize={13.6} marginRight={2}>
                     {pessoaFisica}
                   </Typography>
                   <FormControlLabel
-                    control={<Switch onClick={togglePersonType} checked={personType === pessoaJuridica} />}
+                    control={
+                      <Switch
+                        onClick={togglePersonType}
+                        checked={personType === pessoaJuridica}
+                      />
+                    }
                     label={pessoaJuridica}
                   />
                 </Grid>
 
+                {/* CPF com máscara */}
                 {personType === pessoaFisica && (
                   <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="CPF"
-                      placeholder="xxx.xxx.xxx-xx"
-                      type="text"
-                      {...register("cpf", { required: "Preencha o CPF do fornecedor." })}
-                      error={!!errors.cpf}
-                      helperText={errors.cpf?.message}
+                    <Controller
+                      name="cpf"
+                      control={control}
+                      rules={{
+                        required: "Preencha o CPF do fornecedor.",
+                      }}
+                      render={({ field }) => (
+                        <InputMask
+                          mask="999.999.999-99"
+                          maskChar=""
+                          placeholder="xxx.xxx.xxx-xx"
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        >
+                          {(inputProps) => (
+                            <TextField
+                              {...inputProps}
+                              fullWidth
+                              label="CPF"
+                              error={!!errors.cpf}
+                              helperText={errors.cpf?.message}
+                            />
+                          )}
+                        </InputMask>
+                      )}
                     />
                   </Grid>
                 )}
 
+                {/* CNPJ com máscara */}
                 {personType === pessoaJuridica && (
                   <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="CNPJ"
-                      placeholder="xx.xxx.xxx/xxxx-xx"
-                      type="text"
-                      {...register("cnpj", { required: "Preencha o CNPJ do fornecedor." })}
-                      error={!!errors.cnpj}
-                      helperText={errors.cnpj?.message}
+                    <Controller
+                      name="cnpj"
+                      control={control}
+                      rules={{
+                        required: "Preencha o CNPJ do fornecedor.",
+                      }}
+                      render={({ field }) => (
+                        <InputMask
+                          mask="99.999.999/9999-99"
+                          maskChar=""
+                          placeholder="xx.xxx.xxx/xxxx-xx"
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        >
+                          {(inputProps) => (
+                            <TextField
+                              {...inputProps}
+                              fullWidth
+                              label="CNPJ"
+                              error={!!errors.cnpj}
+                              helperText={errors.cnpj?.message}
+                            />
+                          )}
+                        </InputMask>
+                      )}
                     />
                   </Grid>
                 )}
 
+                {/* Endereço */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -186,16 +247,33 @@ export default function EditSupplierPage() {
                   />
                 </Grid>
 
+                {/* Contato (telefone) com máscara */}
                 <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Contato"
-                    placeholder="(98)98923-4455"
-                    type="text"
-                    {...register("contact")}
+                  <Controller
+                    name="contact"
+                    control={control}
+                    render={({ field }) => (
+                      <InputMask
+                        mask="(99)99999-9999"
+                        maskChar=""
+                        placeholder="(98)98923-4455"
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      >
+                        {(inputProps) => (
+                          <TextField
+                            {...inputProps}
+                            fullWidth
+                            label="Contato"
+                          />
+                        )}
+                      </InputMask>
+                    )}
                   />
                 </Grid>
 
+                {/* Botão de atualizar */}
                 <Grid item xs={12}>
                   <Button
                     type="submit"

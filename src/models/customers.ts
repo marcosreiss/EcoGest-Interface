@@ -12,6 +12,7 @@ export interface Customer {
     address?: string | null;
     contact?: string | null;
     personType: PersonType; 
+    createdAt: Date;
 }
 
 

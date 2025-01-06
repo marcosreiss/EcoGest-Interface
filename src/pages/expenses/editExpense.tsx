@@ -51,7 +51,12 @@ export default function EditExpensePage() {
   const router = useRouter();
   const { addNotification } = useNotification();
 
-  const { data: expense, isLoading, isError, error } = useGetExpenseById(expenseId);
+  const {
+    data: expense,
+    isLoading,
+    isError,
+    error,
+  } = useGetExpenseById(expenseId);
 
   useEffect(() => {
     if (expense) {
@@ -61,10 +66,14 @@ export default function EditExpensePage() {
     }
   }, [expense, setValue]);
 
-  const onSubmit: SubmitHandler<ExpensePayload> = (data) => {
-    const updatedData = {
-      ...data,
-      weightAmount: Number(data.price), // Certifica que o valor é numérico
+  const onSubmit: SubmitHandler<ExpensePayload> = (formData) => {
+    // Converte vírgula para ponto no campo price
+    const priceStr = String(formData.price).replace(",", ".");
+    const formattedPrice = parseFloat(priceStr);
+
+    const updatedData: ExpensePayload = {
+      ...formData,
+      price: formattedPrice, // envia como número
     };
 
     updateExpense.mutate(
@@ -84,7 +93,12 @@ export default function EditExpensePage() {
   if (isLoading) {
     return (
       <DashboardContent>
-        <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
           <CircularProgress />
         </Box>
       </DashboardContent>
@@ -115,7 +129,10 @@ export default function EditExpensePage() {
             <Box sx={formStyle}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-                  <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
+                  <Typography
+                    variant="h4"
+                    sx={{ mb: { xs: 3, md: 5 } }}
+                  >
                     Editar Despesa
                   </Typography>
                 </Grid>
@@ -135,7 +152,9 @@ export default function EditExpensePage() {
                         value={field.value || ""}
                         onChange={(_, newValue) => field.onChange(newValue)}
                         inputValue={field.value || ""}
-                        onInputChange={(_, newInputValue) => field.onChange(newInputValue)}
+                        onInputChange={(_, newInputValue) =>
+                          field.onChange(newInputValue)
+                        }
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -162,13 +181,13 @@ export default function EditExpensePage() {
                   />
                 </Grid>
 
-                {/* Campo Valor */}
+                {/* Campo Valor (permitindo vírgula) */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Valor (R$)"
-                    placeholder="Ex: 150.00"
-                    type="number"
+                    placeholder="Ex: 150,00"
+                    type="text" // texto para aceitar vírgula
                     inputProps={{ min: 0, step: "0.01" }}
                     {...register("price", {
                       required: "O valor é obrigatório.",
@@ -191,7 +210,10 @@ export default function EditExpensePage() {
                   >
                     Atualizar
                     {updateExpense.isPending && (
-                      <CircularProgress size={20} sx={{ marginLeft: "20px" }} />
+                      <CircularProgress
+                        size={20}
+                        sx={{ marginLeft: "20px" }}
+                      />
                     )}
                   </Button>
                 </Grid>
