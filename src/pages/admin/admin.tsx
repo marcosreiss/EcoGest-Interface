@@ -37,8 +37,6 @@ export default function Page() {
 
 
     const totalBalanceData = totalSalesAmount - totalExpensesAmount;
-    console.log(expensesData);
-
 
     return (
         <DashboardContent maxWidth="xl">

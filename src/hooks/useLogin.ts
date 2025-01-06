@@ -10,13 +10,13 @@ import { loginService } from "src/services/loginService";
 export const useLogin = () =>
   useMutation<LoginResponse, AxiosError, LoginPayload>({
     mutationFn: loginService, 
-    onMutate: (variables) => {
-      console.log("Iniciando a requisição com os dados:", variables);
-    },
-    onSuccess: (data) => {
-      console.log("Resposta da API:", data);
-    },
-    onError: (error) => {
-      console.error("Erro durante a requisição:", error);
-    },
+    // onMutate: (variables) => {
+    //   console.log("Iniciando a requisição com os dados:", variables);
+    // },
+    // onSuccess: (data) => {
+    //   console.log("Resposta da API:", data);
+    // },
+    // onError: (error) => {
+    //   console.error("Erro durante a requisição:", error);
+    // },
   });
