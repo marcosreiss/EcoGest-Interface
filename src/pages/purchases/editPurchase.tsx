@@ -1,6 +1,6 @@
 import type { CreatePurchasePayload } from "src/models/purchase";
 
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
@@ -41,6 +41,7 @@ export default function EditPurchasePage() {
   const [file, setFile] = useState<Blob | null>(null);
 
   const {
+    control,
     register,
     handleSubmit,
     setValue,
@@ -196,39 +197,68 @@ export default function EditPurchasePage() {
 
                 {/* Quantidade (aceitando vírgula) */}
                 <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Quantidade (Toneladas)"
-                    type="text" // aceita vírgula
-                    {...register("weightAmount", {
+                  <Controller
+                    name="weightAmount"
+                    control={control}
+                    defaultValue={purchase?.weightAmount || undefined}
+                    rules={{
                       required: "Digite a quantidade.",
                       min: {
                         value: 0.1,
-                        message: "A quantidade mínima é 0.1 tonelada.",
+                        message: "A quantidade mínima é 0,1 tonelada.",
                       },
-                    })}
-                    error={!!errors.weightAmount}
-                    helperText={errors.weightAmount?.message}
+                    }}
+                    render={({ field: { onChange, value }, fieldState: { error } }) => (
+                      <TextField
+                        fullWidth
+                        label="Quantidade (Toneladas)"
+                        type="text"
+                        value={value ? String(value).replace(".", ",") : ""}
+                        onChange={(e) => {
+                          const inputValue = e.target.value.replace(",", ".");
+                          onChange(inputValue ? parseFloat(inputValue) : "");
+                        }}
+                        error={!!error}
+                        helperText={error?.message}
+                      />
+                    )}
                   />
                 </Grid>
+
 
                 {/* Preço (aceitando vírgula) */}
                 <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Preço (R$)"
-                    type="text" // aceita vírgula
-                    {...register("price", {
+                  <Controller
+                    name="price"
+                    control={control}
+                    defaultValue={purchase?.price || undefined}
+                    rules={{
                       required: "Digite o preço.",
-                      min: 0,
-                    })}
-                    error={!!errors.price}
-                    helperText={errors.price?.message}
+                      min: {
+                        value: 0,
+                        message: "O preço deve ser maior ou igual a zero.",
+                      },
+                    }}
+                    render={({ field: { onChange, value }, fieldState: { error } }) => (
+                      <TextField
+                        fullWidth
+                        label="Preço (R$)"
+                        type="text"
+                        value={value ? String(value).replace(".", ",") : ""}
+                        onChange={(e) => {
+                          const inputValue = e.target.value.replace(",", ".");
+                          onChange(inputValue ? parseFloat(inputValue) : "");
+                        }}
+                        error={!!error}
+                        helperText={error?.message}
+                      />
+                    )}
                   />
                 </Grid>
 
+
                 {/* Status */}
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   <TextField
                     select
                     label="Status"
@@ -242,7 +272,7 @@ export default function EditPurchasePage() {
                     <option value={PurchaseStatus.approved}>Aprovado</option>
                     <option value={PurchaseStatus.canceled}>Cancelado</option>
                   </TextField>
-                </Grid>
+                </Grid> */}
 
                 {/* Descrição */}
                 <Grid item xs={12}>
