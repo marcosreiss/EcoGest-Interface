@@ -88,7 +88,7 @@ export const useGetTotalPurchasesInPeriod = () =>
     });
 
 export const useSearchPurchasesByPeriod = (payload: SearchByPeriodRequest) =>
-    useQuery<PurchaseListResponse, AxiosError>({
+    useQuery<Purchase[], AxiosError>({
         queryKey: ['purchasesByPeriod', payload],
         queryFn: () => searchPurchasesByPeriodService(payload.startDate!, payload.endDate!),
         enabled: !!payload?.startDate && !!payload?.endDate,

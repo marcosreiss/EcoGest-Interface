@@ -74,9 +74,9 @@ export const getTotalPurchasesInPeriodService = async (
 
 
 // Buscar todas as compras por período
-export const searchPurchasesByPeriodService = async (startDate: string, endDate: string): Promise<PurchaseListResponse> => {
+export const searchPurchasesByPeriodService = async (startDate: string, endDate: string): Promise<Purchase[]> => {
     try {
-        const response = await api.get<PurchaseListResponse>(`/purchases/search/by-period?startDate=${startDate}&endDate=${endDate}`);
+        const response = await api.get<Purchase[]>(`/purchases/search/by-period?startDate=${startDate}&endDate=${endDate}`);
         return response.data;
     } catch (error) {
         console.error('[searchPurchasesByPeriodService] Error:', error);
