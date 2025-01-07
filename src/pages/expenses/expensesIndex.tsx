@@ -1,4 +1,5 @@
 import type { Expense } from "src/models/expense";
+import type { SearchByPeriodRequest } from "src/models/sale";
 
 import * as React from "react";
 import { useState } from "react";
@@ -8,14 +9,14 @@ import Paper from "@mui/material/Paper";
 import { Box, Grid } from "@mui/material";
 import TableContainer from "@mui/material/TableContainer";
 
-import { useDeleteExpense, useGetExpensesPaginated } from "src/hooks/useExpense";
+import { useDeleteExpense, useGetExpensesPaginated, useSearchExpensesByPeriod } from "src/hooks/useExpense";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
-import TableSearch from "src/layouts/components/tableSearch";
 import { useNotification } from "src/context/NotificationContext";
 import TableFooterComponent from "src/layouts/components/tableFooterComponent";
 
+import SalesTableSearch from "../sales/components/salesTableSearch";
 import ExpenseTableComponent from "./components/expenseTableComponent";
 import ExpensesTableHeaderComponent from "./components/expensesTableHeaderComponent";
 
@@ -23,13 +24,26 @@ import ExpensesTableHeaderComponent from "./components/expensesTableHeaderCompon
 
 export default function ExpensePage() {
   const [selectedExpenses, setSelectedExpenses] = useState<Expense[]>([]);
-
   const rowsPerPage = 5;
   const [page, setPage] = useState(0);
 
-  const { data, isLoading } = useGetExpensesPaginated(page * rowsPerPage, rowsPerPage);
+  // Estados para filtro por período
+  const [searchByPeriodRequest, setSearchByPeriod] = useState<SearchByPeriodRequest>({
+    startDate: null,
+    endDate: null,
+  });
 
-  const expenses = data?.data || [];
+  // Dados paginados e filtrados
+  const { data: pagedData, isLoading: isPagedLoading } = useGetExpensesPaginated(page * rowsPerPage, rowsPerPage);
+  const { data: filteredData, isLoading: isFilteredLoading } = useSearchExpensesByPeriod(searchByPeriodRequest);
+
+  // Determina os dados a exibir (gerais ou filtrados)
+  const expenses = searchByPeriodRequest.startDate && searchByPeriodRequest.endDate
+    ? filteredData ?? []
+    : pagedData?.data ?? [];
+
+  // Define o estado de carregamento
+  const isLoading = isFilteredLoading || isPagedLoading;
 
   const deleteExpense = useDeleteExpense();
   const notification = useNotification();
@@ -39,7 +53,7 @@ export default function ExpensePage() {
       deleteExpense.mutate(expense.expenseId, {
         onSuccess: () => {
           notification.addNotification("Despesa deletada com sucesso", "success");
-          setSelectedExpenses([]); // Limpa a seleção após a exclusão
+          setSelectedExpenses([]);
         },
         onError: () => {
           notification.addNotification("Erro ao deletar despesa, tente novamente mais tarde", "error");
@@ -47,6 +61,8 @@ export default function ExpensePage() {
       });
     });
   };
+
+  console.log(filteredData);
 
   return (
     <>
@@ -62,12 +78,14 @@ export default function ExpensePage() {
             addButtonPath="/expenses/create"
           />
           <Grid item xs={12}>
-            <TableSearch
+            <SalesTableSearch
               handleDelete={handleDeleteExpense}
-              handleSearchChange={() => null} // Pesquisa desativada
-              isSearchDisabled
               selectedRows={selectedExpenses}
+              setSearchByPeriod={setSearchByPeriod}
+              isSearchDisabled={false}
+              handleSearchChange={() => null} // Não utilizado no novo componente
             />
+
             <TableContainer component={Paper} sx={{ height: "65vh", display: "flex", flexDirection: "column" }}>
               <Box component="div" sx={{ flex: 1, overflow: "auto" }}>
                 <ExpenseTableComponent
@@ -77,12 +95,14 @@ export default function ExpensePage() {
                 />
               </Box>
 
-              <TableFooterComponent
-                setPage={setPage}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                totalItems={data?.meta.totalItems}
-              />
+              {filteredData === undefined && (
+                <TableFooterComponent
+                  setPage={setPage}
+                  page={page}
+                  rowsPerPage={rowsPerPage}
+                  totalItems={pagedData?.meta?.totalItems || 0}
+                />
+              )}
             </TableContainer>
           </Grid>
         </Grid>

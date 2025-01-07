@@ -54,3 +54,14 @@ export const getCustomExpenseReceiptService = async (info: CustomExpenseReceiptI
     return response.data;
 };
 
+// Buscar todas as despesas por período
+export const searchExpensesByPeriodService = async (startDate: string, endDate: string): Promise<Expense[]> => {
+    try {
+        const response = await api.get<Expense[]>(`/expenses/search/by-period?startDate=${startDate}&endDate=${endDate}`);
+        return response.data;
+    } catch (error) {
+        console.error('[searchExpensesByPeriodService] Error:', error);
+        throw new Error('Error fetching expenses by period.');
+    }
+};
+
