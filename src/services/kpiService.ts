@@ -6,7 +6,12 @@ import api from './api'
 
 
 export const getSalesKpiService = async (salesParams?: KpiParams): Promise<SalesKpiResponse> =>{
+    console.log(salesParams);
+    
     const response = await api.get<SalesKpiResponse>("/kpi/sales", {params: salesParams})
+
+    console.log(response);
+
     return response.data
 }
 

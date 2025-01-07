@@ -6,11 +6,11 @@ export interface KpiParams{
     period?: TimeGranularity,
     stackBy?: StackBy
 }
+
 export enum TimeGranularity {
-    Day = "Dia",
-    // Week = "Semana",
-    Month = "Mês",
-    Year = "Ano"
+    Day = "day",
+    Month = "month",
+    Year = "year"
 }
 
 export enum StackBy {

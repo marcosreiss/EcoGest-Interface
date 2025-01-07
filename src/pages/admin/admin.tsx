@@ -10,6 +10,7 @@ import { useGetSalesKpi, useGetExpensesKpi } from 'src/hooks/useKpi';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import KpiFilter from './components/kpiFilter';
+import GenerateDailyReport from './components/generateDailyReport';
 import FinancialOverviewCard from '../../sections/overview/analytics-banking';
 // import { AnalyticsCurrentVisits } from '../../sections/overview/analytics-current-visits';
 // import { AnalyticsWebsiteVisits } from '../../sections/overview/analytics-website-visits';
@@ -81,6 +82,12 @@ export default function Page() {
                         icon={<img alt="icon" src="/assets/icons/glass/ic-glass-message.svg" />}
                     />
                 </Grid> */}
+
+                <Grid container justifyContent="end" sx={{margin: 1}}>
+                    <Grid item>
+                        <GenerateDailyReport />
+                    </Grid>
+                </Grid>
 
                 <Grid item xs={12} md={12} lg={12} paddingBottom={5}>
                     <FinancialOverviewCard

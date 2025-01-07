@@ -20,7 +20,6 @@ import {
 } from '@mui/material';
 
 import { TimeGranularity } from 'src/models/kpiParamsModel';
-import GenerateDailyReport from 'src/pages/admin/components/generateDailyReport';
 
 interface FinancialOverviewCardProps {
   totalBalance: number;
@@ -93,23 +92,9 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
 
   return (
     <Card variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
+      
       <CardContent>
-        <Grid container justifyContent="space-around" alignItems="center" sx={{ mb: 2 }}>
-          
-          <Grid item>
-            <Box display="flex" alignItems="center">
-              <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600, mr: 0.5 }}>
-                Lucro Total
-              </Typography>
-              <Tooltip title="Seu saldo total">
-                <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
-              </Tooltip>
-            </Box>
-            <Typography variant="h3" sx={{ fontWeight: 'bold', mt: 0.5 }}>
-              R$ {totalBalance ? totalBalance.toLocaleString('pt-BR') : '0'}
-            </Typography>
-          </Grid>
-
+        <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
           <Grid item>
             <Stack direction="row" spacing={1} alignItems="center">
               <Stack direction="row" spacing={1}>
@@ -146,7 +131,17 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
           </Grid>
 
           <Grid item>
-            <GenerateDailyReport />
+            <Box display="flex" alignItems="center">
+              <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600, mr: 0.5 }}>
+                Lucro Total
+              </Typography>
+              <Tooltip title="Seu saldo total">
+                <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
+              </Tooltip>
+            </Box>
+            <Typography variant="h3" sx={{ fontWeight: 'bold', mt: 0.5 }}>
+              R$ {totalBalance ? totalBalance.toLocaleString('pt-BR') : '0'}
+            </Typography>
           </Grid>
         </Grid>
 
