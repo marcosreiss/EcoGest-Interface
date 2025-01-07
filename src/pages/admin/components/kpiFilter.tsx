@@ -22,7 +22,7 @@ interface KpiFilterProps {
     salesKpiParams: KpiParams;
 }
 
-type FilterOption = "specificPeriod" | "timePeriod" | "client" | "supplier";
+type FilterOption = "specificPeriod" | "timePeriod" | "product" | "supplier";
 
 const KpiFilter: React.FC<KpiFilterProps> = ({ setSalesKpiParams, salesKpiParams }) => {
     const [selectedFilter, setSelectedFilter] = useState<FilterOption | "">("");
@@ -58,10 +58,10 @@ const KpiFilter: React.FC<KpiFilterProps> = ({ setSalesKpiParams, salesKpiParams
                                 Período
                             </Button>
                             <Button
-                                variant={selectedFilter === "client" ? "contained" : "outlined"}
-                                onClick={() => setSelectedFilter("client")}
+                                variant={selectedFilter === "product" ? "contained" : "outlined"}
+                                onClick={() => setSelectedFilter("product")}
                             >
-                                Cliente
+                                Produto
                             </Button>
                             <Button
                                 variant={selectedFilter === "supplier" ? "contained" : "outlined"}
@@ -145,7 +145,7 @@ const KpiFilter: React.FC<KpiFilterProps> = ({ setSalesKpiParams, salesKpiParams
                         </Grid>
                     )}
 
-                    {selectedFilter === "client" && (
+                    {selectedFilter === "product" && (
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <Autocomplete
@@ -167,7 +167,7 @@ const KpiFilter: React.FC<KpiFilterProps> = ({ setSalesKpiParams, salesKpiParams
                                         }))
                                     }
                                     renderInput={(params) => (
-                                        <TextField {...params} label="Cliente" fullWidth />
+                                        <TextField {...params} label="Produto" fullWidth />
                                     )}
                                 />
                             </Grid>
