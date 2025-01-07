@@ -70,9 +70,10 @@ export default function ExpenseDetailsPage() {
                     {/* Tipo da Despesa */}
                     <Grid item xs={6}>
                       <Typography variant="h6" gutterBottom>
-                        Tipo: {expense?.type || "-"}
+                        Tipo: {expense?.type === "Purchase" ? "Compra" : expense?.type || "-"}
                       </Typography>
                     </Grid>
+
 
                     {/* Botão de Editar */}
                     <Grid item xs={6}>

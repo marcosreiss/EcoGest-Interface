@@ -190,11 +190,15 @@ const KpiFilter: React.FC<KpiFilterProps> = ({ setSalesKpiParams, salesKpiParams
                                         ) || null
                                     }
                                     onChange={(_, newValue) =>
-                                        setSalesKpiParams((prev) => ({
-                                            ...prev,
-                                            supplierId: newValue?.supplierId || undefined,
-                                        }))
-                                    }
+                                        setSalesKpiParams((prev) => {
+                                            const updatedParams = { ...prev };
+                                            if (newValue) {
+                                                updatedParams.supplierId = newValue.supplierId;
+                                            } else {
+                                                delete updatedParams.supplierId;
+                                            }
+                                            return updatedParams;
+                                        })}
                                     renderInput={(params) => (
                                         <TextField {...params} label="Fornecedor" fullWidth />
                                     )}
@@ -207,5 +211,6 @@ const KpiFilter: React.FC<KpiFilterProps> = ({ setSalesKpiParams, salesKpiParams
         </Grid>
     );
 };
+
 
 export default KpiFilter;
