@@ -337,7 +337,6 @@ export default function EditEmployeePage() {
                   />
                 </Grid>
 
-                {/* Data de Pagamento */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -345,21 +344,40 @@ export default function EditEmployeePage() {
                     type="date"
                     InputLabelProps={{ shrink: true }}
                     {...register("dataDePagamento")}
+                    error={!!errors.dataDePagamento}
+                    helperText={errors.dataDePagamento?.message}
+                    value={
+                      employee?.dataDePagamento
+                        ? new Date(employee.dataDePagamento).toISOString().split("T")[0]
+                        : ""
+                    }
                   />
                 </Grid>
+
 
                 {/* Status */}
                 <Grid item xs={12}>
                   <FormControl fullWidth error={!!errors.status}>
-                    <InputLabel>Status</InputLabel>
-                    <Select
-                      defaultValue={employee?.status}
-                      {...register("status", { required: "Selecione um status." })}
-                    >
-                      <MenuItem value="Empregado">Empregado</MenuItem>
-                      <MenuItem value="Demitido">Demitido</MenuItem>
-                      <MenuItem value="Férias">Férias</MenuItem>
-                    </Select>
+                    <InputLabel id="status-label">Status</InputLabel>
+                    <Controller
+                      name="status"
+                      control={control}
+                      defaultValue={employee?.status || "Empregado"} // Valor inicial padrão
+                      rules={{ required: "Selecione um status." }}
+                      render={({ field }) => (
+                        <Select
+                          {...field}
+                          labelId="status-label"
+                          id="status-select"
+                          label="Status"
+                          fullWidth
+                        >
+                          <MenuItem value="Empregado">Empregado</MenuItem>
+                          <MenuItem value="Demitido">Demitido</MenuItem>
+                          <MenuItem value="Férias">Férias</MenuItem>
+                        </Select>
+                      )}
+                    />
                     {errors.status && (
                       <Typography variant="body2" color="error">
                         {errors.status.message}
@@ -367,6 +385,7 @@ export default function EditEmployeePage() {
                     )}
                   </FormControl>
                 </Grid>
+
 
                 {/* Botão de Atualizar */}
                 <Grid item xs={12}>
