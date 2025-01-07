@@ -174,7 +174,7 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
                   />
                 </TableCell>
                 <TableCell>{expense.description || "-"}</TableCell>
-                <TableCell>{expense.type || "-"}</TableCell>
+                <TableCell>{expense.type === "Purchase" ? "Compra" : expense.type || "-"}</TableCell>
                 {/* Data formatada (createdAt) */}
                 <TableCell>
                   {expense.createdAt ? formatDate(expense.createdAt) : "-"}

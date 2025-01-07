@@ -218,7 +218,9 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                     onClose={handleCloseMenu}
                   >
                     <MenuItem onClick={() => handleDetailsClick(purchase.purchaseId)}>Detalhes</MenuItem>
-                    <MenuItem onClick={() => handleEditClick(purchase.purchaseId)}>Editar</MenuItem>
+                    {purchase.purchaseStatus === PurchaseStatus.processing && (
+                      <MenuItem onClick={() => handleEditClick(purchase.purchaseId)}>Editar</MenuItem>
+                    )}
                     {purchase.paymentSlip !== null && (
                       <MenuItem onClick={() => handleViewDocumentClick(purchase.paymentSlip)}>
                         Visualizar Documento
