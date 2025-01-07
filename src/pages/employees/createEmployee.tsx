@@ -229,6 +229,37 @@ export default function CreateEmployeePage() {
                   />
                 </Grid>
 
+
+                {/* Data de Admissão */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Data de Admissão"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    {...register("dataAdmissao", {
+                      required: "A data de admissão é obrigatória.",
+                    })}
+                    error={!!errors.dataAdmissao}
+                    helperText={errors.dataAdmissao?.message}
+                  />
+                </Grid>
+
+                {/* Data de Pagamento */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Data de Pagamento"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    {...register("dataDePagamento", {
+                      required: "A data de pagamento é obrigatória.",
+                    })}
+                    error={!!errors.dataDePagamento}
+                    helperText={errors.dataDePagamento?.message}
+                  />
+                </Grid>
+
                 {/* Salário (texto, conversão no onSubmit) */}
                 <Grid item xs={12}>
                   <TextField

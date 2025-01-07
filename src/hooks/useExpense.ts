@@ -1,4 +1,5 @@
 import type { AxiosError } from "axios";
+import type { SearchByPeriodRequest } from "src/models/purchase";
 import type {
     Expense,
     ExpensePayload,
@@ -16,6 +17,7 @@ import {
     getExpenseByIdService,
     getExpenseReceiptService,
     getExpensesPaginatedService,
+    searchExpensesByPeriodService,
     getCustomExpenseReceiptService,
 } from "src/services/expenseService";
 
@@ -83,7 +85,14 @@ export const useGetExpenseReceipt = (expenseId: number) =>
         enabled: !!expenseId,
     });
 
-    export const useGenerateCustomExpenseReceipt = () =>
-        useMutation<Blob, AxiosError, CustomExpenseReceiptInfo>({
-          mutationFn: (info) => getCustomExpenseReceiptService(info),
-        });
+export const useGenerateCustomExpenseReceipt = () =>
+    useMutation<Blob, AxiosError, CustomExpenseReceiptInfo>({
+        mutationFn: (info) => getCustomExpenseReceiptService(info),
+    });
+
+export const useSearchExpensesByPeriod = (payload: SearchByPeriodRequest) =>
+    useQuery<Expense[], AxiosError>({
+        queryKey: ['expensesByPeriod', payload],
+        queryFn: () => searchExpensesByPeriodService(payload.startDate!, payload.endDate!),
+        enabled: !!payload?.startDate && !!payload?.endDate,
+    });

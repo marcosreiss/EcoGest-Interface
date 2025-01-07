@@ -49,7 +49,6 @@ export default function PurchasePage() {
   const [searchByPeriodRequest, setSearchByPeriod] = useState<SearchByPeriodRequest>();
   const [payload, setPayload] = useState<SearchByPeriodRequest>({startDate: null, endDate: null});
   const searchByPeriod = useSearchPurchasesByPeriod(payload);
-  console.log(payload);
   
   
   useEffect(() => {
@@ -58,7 +57,9 @@ export default function PurchasePage() {
     }
   }, [searchByPeriodRequest]);
   
-  const purchases = searchByPeriod.data?.data ?? data?.data ?? [];
+  const purchases = searchByPeriod.data ?? data?.data ?? [];
+
+  console.log(searchByPeriod.data);
   
 
   return (

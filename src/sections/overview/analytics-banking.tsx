@@ -20,7 +20,6 @@ import {
 } from '@mui/material';
 
 import { TimeGranularity } from 'src/models/kpiParamsModel';
-import GenerateDailyReport from 'src/pages/admin/components/generateDailyReport';
 
 interface FinancialOverviewCardProps {
   totalBalance: number;
@@ -93,9 +92,9 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
 
   return (
     <Card variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
+
       <CardContent>
-        <Grid container justifyContent="space-around" alignItems="center" sx={{ mb: 2 }}>
-          
+        <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
           <Grid item>
             <Box display="flex" alignItems="center">
               <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600, mr: 0.5 }}>
@@ -143,10 +142,6 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
                 </Button>
               </Stack>
             </Stack>
-          </Grid>
-
-          <Grid item>
-            <GenerateDailyReport />
           </Grid>
         </Grid>
 
