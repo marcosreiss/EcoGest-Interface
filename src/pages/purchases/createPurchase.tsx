@@ -1,8 +1,8 @@
 import type { ProductBasicInfo } from 'src/models/product';
 import type { SupplierBasicInfo } from 'src/models/supplier';
-import type { CreatePurchasePayload } from "src/models/purchase";
+import { CreatePurchasePayload, PurchaseStatus } from "src/models/purchase";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 
@@ -28,6 +28,29 @@ import { useNotification } from "src/context/NotificationContext";
 
 // ----------------------------------------------------------------------
 
+// Função auxiliar para converter string com vírgula para número
+const parseNumber = (value: string): number => {
+    if (typeof value !== 'string') return 0;
+    // Remove qualquer caractere que não seja dígito, ponto ou vírgula
+    const cleanedValue = value.replace(/[^\d,.-]/g, '').replace(',', '.');
+    const parsed = parseFloat(cleanedValue);
+    return Number.isNaN(parsed) ? 0 : parsed;
+};
+
+// Função auxiliar para formatar número para moeda brasileira
+const formatCurrency = (value: number): string => 
+    new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+    }).format(value);
+
+// Defina um tipo separado para os dados do formulário
+type CreatePurchaseFormData = Omit<CreatePurchasePayload, 'weightAmount' | 'price' | 'status'> & {
+    weightAmount: string;
+    price: string;
+    date_time: string; // Manter como string no formulário
+};
+
 export default function CreatePurchasePage() {
     const formStyle = {
         mx: "auto",
@@ -40,11 +63,21 @@ export default function CreatePurchasePage() {
     const [file, setFile] = useState<Blob | null>(null);
 
     const {
-      register,
-      handleSubmit,
-      setValue,
-      formState: { errors },
-    } = useForm<CreatePurchasePayload>();
+        register,
+        watch,
+        handleSubmit,
+        setValue,
+        formState: { errors },
+    } = useForm<CreatePurchaseFormData>({
+        defaultValues: {
+            weightAmount: '',
+            price: '',
+            supplierId: -1,
+            productId: -1,
+            description: '',
+            date_time: undefined,
+        }
+    });
 
     const createPurchase = useCreatePurchase();
     const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
@@ -54,29 +87,25 @@ export default function CreatePurchasePage() {
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const uploadedFile = e.target.files?.[0];
-        if (uploadedFile && uploadedFile.size <= 5 * 1024 * 1024) {
+        if (uploadedFile && uploadedFile.size <= 5 * 1024 * 1024) { // Limite de 5MB
             setFile(uploadedFile);
         } else {
             addNotification("Arquivo excede o limite de 5MB", "error");
         }
     };
 
-    const onSubmit = (data: CreatePurchasePayload) => {
-        // Converte vírgula para ponto em weightAmount
-        if (data.weightAmount) {
-            const strWeight = String(data.weightAmount).replace(",", ".");
-            data.weightAmount = parseFloat(strWeight);
-        }
-
-        // Converte vírgula para ponto em price
-        if (data.price) {
-            const strPrice = String(data.price).replace(",", ".");
-            data.price = parseFloat(strPrice);
-        }
+    const onSubmit = (data: CreatePurchaseFormData) => {
+        // Converte vírgula para ponto em weightAmount e price
+        const parsedWeightAmount = parseNumber(data.weightAmount);
+        const parsedPrice = parseNumber(data.price);
 
         const payload: CreatePurchasePayload = {
             ...data,
+            weightAmount: parsedWeightAmount,
+            price: parsedPrice,
+            status: PurchaseStatus.processing, // Define um status padrão
             paymentSlip: file,
+            date_time: new Date(data.date_time), // Converte string para Date
         };
 
         createPurchase.mutate(payload, {
@@ -84,11 +113,23 @@ export default function CreatePurchasePage() {
                 addNotification("Compra criada com sucesso!", "success");
                 router.push("/purchases");
             },
-            onError: (error) => {
+            onError: (error: any) => { // Ajuste o tipo de erro conforme sua implementação
                 addNotification(`Erro ao criar compra: ${error.message}`, "error");
             },
         });
     };
+
+    // Monitora os campos 'weightAmount' e 'price'
+    const weightAmountValue = watch('weightAmount');
+    const priceValue = watch('price');
+
+    // Calcula o totalPrice usando useMemo para otimizar a performance
+    const totalPrice = useMemo(() => {
+        const weight = parseNumber(weightAmountValue || '0');
+        const price = parseNumber(priceValue || '0');
+        const total = weight * price;
+        return Number.isNaN(total) || total <= 0 ? '' : formatCurrency(total);
+    }, [weightAmountValue, priceValue]);
 
     return (
         <>
@@ -108,13 +149,13 @@ export default function CreatePurchasePage() {
                                 </Grid>
 
                                 {/* Fornecedor */}
-                                <Grid item xs={12} sm={6} md={12}>
+                                <Grid item xs={12}>
                                     <Autocomplete
                                         options={suppliers?.data || []}
                                         loading={loadingSuppliers}
-                                        getOptionLabel={(option) => option.name}
+                                        getOptionLabel={(option: SupplierBasicInfo) => option.name}
                                         isOptionEqualToValue={(option, value) =>
-                                            option.supplierId === (value as SupplierBasicInfo)?.supplierId
+                                            option.supplierId === value.supplierId
                                         }
                                         onChange={(_, newValue) =>
                                             setValue("supplierId", newValue ? newValue.supplierId : -1, {
@@ -130,7 +171,7 @@ export default function CreatePurchasePage() {
                                                 helperText={errors.supplierId?.message}
                                             />
                                         )}
-                                        renderOption={(props, option) => (
+                                        renderOption={(props, option: SupplierBasicInfo) => (
                                             <li {...props} key={option.supplierId}>
                                                 {option.name}
                                             </li>
@@ -139,13 +180,13 @@ export default function CreatePurchasePage() {
                                 </Grid>
 
                                 {/* Produto */}
-                                <Grid item xs={12} sm={6} md={12}>
+                                <Grid item xs={12}>
                                     <Autocomplete
                                         options={products?.data || []}
                                         loading={loadingProducts}
-                                        getOptionLabel={(option) => option.name}
+                                        getOptionLabel={(option: ProductBasicInfo) => option.name}
                                         isOptionEqualToValue={(option, value) =>
-                                            option.productId === (value as ProductBasicInfo)?.productId
+                                            option.productId === value.productId
                                         }
                                         onChange={(_, newValue) =>
                                             setValue("productId", newValue ? newValue.productId : -1, {
@@ -161,7 +202,7 @@ export default function CreatePurchasePage() {
                                                 helperText={errors.productId?.message}
                                             />
                                         )}
-                                        renderOption={(props, option) => (
+                                        renderOption={(props, option: ProductBasicInfo) => (
                                             <li {...props} key={option.productId}>
                                                 {option.name}
                                             </li>
@@ -173,14 +214,14 @@ export default function CreatePurchasePage() {
                                 <Grid item xs={12}>
                                     <TextField
                                         fullWidth
-                                        label="Quantidade (Toneladas)"
-                                        placeholder="Digite a quantidade em toneladas"
+                                        label="Quantidade (Kilogramas)"
+                                        placeholder="Digite a quantidade em kilogramas"
                                         type="text" // aceita vírgula
                                         {...register("weightAmount", {
                                             required: "A quantidade é obrigatória.",
-                                            min: {
-                                                value: 0.1,
-                                                message: "A quantidade mínima é 0.1 tonelada.",
+                                            validate: {
+                                                isPositive: (value) =>
+                                                    parseNumber(value) >= 0.1 || "A quantidade mínima é 0,1 kilogramas.",
                                             },
                                         })}
                                         error={!!errors.weightAmount}
@@ -197,10 +238,26 @@ export default function CreatePurchasePage() {
                                         type="text" // aceita vírgula
                                         {...register("price", {
                                             required: "O preço é obrigatório.",
-                                            min: 0,
+                                            validate: {
+                                                isNonNegative: (value) =>
+                                                    parseNumber(value) >= 0 || "O preço não pode ser negativo.",
+                                            },
                                         })}
                                         error={!!errors.price}
                                         helperText={errors.price?.message}
+                                    />
+                                </Grid>
+
+                                {/* Preço Total */}
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        label="Preço Total (R$)"
+                                        value={totalPrice}
+                                        InputProps={{
+                                            readOnly: true,
+                                        }}
+                                        helperText="Preço total calculado automaticamente."
                                     />
                                 </Grid>
 
