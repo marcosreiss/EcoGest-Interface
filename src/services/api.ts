@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://ecogestapp.sytes.net/api/dev", 
+  baseURL: import.meta.env.VITE_BASE_URL, 
 
   headers: {
     "Content-Type": "application/json",
@@ -14,6 +14,7 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  console.log(import.meta.env.VITE_BASE_URL);
 
   // console.log("Request Body:", config.data);
   // console.log("Request Params:", config.params);
