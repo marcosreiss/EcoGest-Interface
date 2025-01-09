@@ -11,7 +11,7 @@ export interface Employee {
     dataAdmissao: Date | null;
     dataDemissao?: Date | null;
     periodoFerias?: string;
-    dataDePagamento?: Date | null;
+    dataDePagamento?: number;
     status: 'Empregado' | 'Demitido' | 'Férias';
     isDeleted: boolean;
 }
@@ -37,7 +37,7 @@ export interface EmployeePayload{
     dataAdmissao: Date | null;
     dataDemissao?: Date;
     periodoFerias?: string;
-    dataDePagamento?: Date;
+    dataDePagamento?: number;
     status: 'Empregado' | 'Demitido' | 'Férias';
     isDeleted: boolean;
 }

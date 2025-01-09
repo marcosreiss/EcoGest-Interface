@@ -45,6 +45,7 @@ export default function Page() {
                 Balanço
             </Typography>
 
+
             <KpiFilter salesKpiParams={params} setSalesKpiParams={setParams} />
 
             <Grid container spacing={3}>
@@ -83,11 +84,12 @@ export default function Page() {
                     />
                 </Grid> */}
 
-                <Grid container justifyContent="end" sx={{margin: 1}}>
+                <Grid container justifyContent="end" sx={{ margin: 1, paddingRight: 8, scale: 1.1 }}>
                     <Grid item>
                         <GenerateDailyReport />
                     </Grid>
                 </Grid>
+
 
                 <Grid item xs={12} md={12} lg={12} paddingBottom={5}>
                     <FinancialOverviewCard

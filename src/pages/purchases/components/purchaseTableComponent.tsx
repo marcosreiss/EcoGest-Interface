@@ -64,6 +64,7 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
   const formatDate = (dateStr?: string | Date) => {
     if (!dateStr) return "-";
     const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
+    dateObj.setDate(dateObj.getDate() + 1);
     return dateObj.toLocaleDateString("pt-BR");
   };
 
@@ -208,7 +209,7 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                 <TableCell>{purchaseStatusMapping[purchase.purchaseStatus]}</TableCell>
                 {/* Preço formatado em R$ */}
                 <TableCell>
-                  {purchase.price !== undefined ? formatPrice(purchase.price) : "-"}
+                  {purchase.totalPrice !== undefined ? formatPrice(purchase.totalPrice) : "-"}
                 </TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, purchase.purchaseId)}>︙</IconButton>

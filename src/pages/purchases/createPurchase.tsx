@@ -38,7 +38,7 @@ const parseNumber = (value: string): number => {
 };
 
 // Função auxiliar para formatar número para moeda brasileira
-const formatCurrency = (value: number): string => 
+const formatCurrency = (value: number): string =>
     new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL',
@@ -233,8 +233,8 @@ export default function CreatePurchasePage() {
                                 <Grid item xs={12}>
                                     <TextField
                                         fullWidth
-                                        label="Preço (R$)"
-                                        placeholder="Digite o preço"
+                                        label="Preço unitário (R$)"
+                                        placeholder="Digite o preço unitário"
                                         type="text" // aceita vírgula
                                         {...register("price", {
                                             required: "O preço é obrigatório.",
@@ -252,7 +252,7 @@ export default function CreatePurchasePage() {
                                 <Grid item xs={12}>
                                     <TextField
                                         fullWidth
-                                        label="Preço Total (R$)"
+                                        label="Preço total (R$)"
                                         value={totalPrice}
                                         InputProps={{
                                             readOnly: true,
@@ -269,9 +269,15 @@ export default function CreatePurchasePage() {
                                         placeholder="Descrição da compra"
                                         multiline
                                         rows={4}
-                                        {...register("description")}
+                                        {...register("description", {
+                                            required: "A Descrição é obrigatória.",
+                                        })}
+                                        error={!!errors.description}
+                                     helperText={errors.description?.message}
                                     />
+                
                                 </Grid>
+
 
                                 {/* Data da Compra */}
                                 <Grid item xs={12}>

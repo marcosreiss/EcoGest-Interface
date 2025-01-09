@@ -298,7 +298,7 @@ export default function EditPurchasePage() {
                     render={({ field: { onChange, value }, fieldState: { error } }) => (
                       <TextField
                         fullWidth
-                        label="Preço (R$)"
+                        label="Preço unitário (R$)"
                         type="text" // aceita vírgula
                         value={value ? String(value).replace(".", ",") : ""}
                         onChange={(e) => {

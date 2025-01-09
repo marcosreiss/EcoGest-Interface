@@ -54,7 +54,7 @@ const ExpensesTableHeaderComponent: React.FC<HeaderComponentProps> = ({
         const url = window.URL.createObjectURL(receipt);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `recibo-despesa-personalizado.pdf`;
+        link.download = `RECIBO-DE-CAIXA-CUSTOMIZADO.pdf`;
         link.click();
         window.URL.revokeObjectURL(url);
 

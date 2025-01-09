@@ -70,7 +70,7 @@ export default function EditEmployeePage() {
       setValue("dataAdmissao", employee.dataAdmissao);
       setValue("dataDemissao", employee.dataDemissao ? new Date(employee.dataDemissao) : undefined);
       setValue("periodoFerias", employee.periodoFerias || undefined);
-      setValue("dataDePagamento", employee.dataDePagamento ? new Date(employee.dataDePagamento) : undefined);
+      setValue("dataDePagamento", employee.dataDePagamento || 0);
       setValue("status", employee.status);
     }
   }, [employee, setValue]);
@@ -337,22 +337,28 @@ export default function EditEmployeePage() {
                   />
                 </Grid>
 
+                {/* Dia do Pagamento */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
-                    label="Data de Pagamento"
-                    type="date"
-                    InputLabelProps={{ shrink: true }}
-                    {...register("dataDePagamento")}
+                    label="Dia do Pagamento"
+                    type="number"
+                    placeholder="Dia do pagamento (1-31)"
+                    InputProps={{ inputProps: { min: 1, max: 31 } }}
+                    {...register("dataDePagamento", {
+                      required: "O dia de pagamento é obrigatório.",
+                      min: { value: 1, message: "O dia deve ser pelo menos 1." },
+                      max: { value: 31, message: "O dia não pode exceder 31." },
+                      validate: {
+                        isInteger: (value) =>
+                            value !== undefined && Number.isInteger(value) || "O dia deve ser um número inteiro.",
+                    },                    
+                    })}
                     error={!!errors.dataDePagamento}
                     helperText={errors.dataDePagamento?.message}
-                    value={
-                      employee?.dataDePagamento
-                        ? new Date(employee.dataDePagamento).toISOString().split("T")[0]
-                        : ""
-                    }
                   />
                 </Grid>
+
 
 
                 {/* Status */}
