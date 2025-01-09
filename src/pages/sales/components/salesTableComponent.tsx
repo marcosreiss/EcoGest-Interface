@@ -33,14 +33,12 @@ interface TableComponentProps {
   sales: Sale[];
   isLoading: boolean;
   setSelectedSales: React.Dispatch<React.SetStateAction<Sale[]>>;
-  sortOrder?: "asc" | "desc";
 }
 
 const SaleTableComponent: React.FC<TableComponentProps> = ({
   sales,
   isLoading,
   setSelectedSales,
-  sortOrder = "asc",
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
@@ -69,6 +67,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
   const formatDate = (dateStr?: string | Date) => {
     if (!dateStr) return "-";
     const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
+    dateObj.setDate(dateObj.getDate() + 1);
     return dateObj.toLocaleDateString("pt-BR");
   };
 
@@ -126,7 +125,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
         const url = window.URL.createObjectURL(receipt);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `receipt-${saleId}.pdf`;
+        link.download = `RECIBO-DE-VENDA-${saleId}.pdf`;
         link.click();
         window.URL.revokeObjectURL(url);
         notification.addNotification("Recibo gerado com sucesso", "success");
@@ -183,15 +182,6 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
     }
   };
 
-  const sortedSales = React.useMemo(() => {
-    if (!sales) return [];
-    return [...sales].sort((a, b) => {
-      const dateA = new Date(a.date_time).getTime();
-      const dateB = new Date(b.date_time).getTime();
-      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
-    });
-  }, [sales, sortOrder]);
-
   return (
     <>
       <Table stickyHeader aria-label="sales table">
@@ -224,8 +214,8 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                 <LinearProgress sx={{ width: "100%" }} />
               </TableCell>
             </TableRow>
-          ) : sortedSales.length > 0 ? (
-            sortedSales.map((sale) => (
+          ) : sales.length > 0 ?(
+            sales.map((sale) => (
               <TableRow key={sale.saleId}>
                 <TableCell>
                   <Checkbox

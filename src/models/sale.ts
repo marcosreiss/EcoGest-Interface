@@ -29,7 +29,6 @@ export interface CreateSalePayload {
     saleStatus: 'processing' | 'approved' | 'canceled';
     quantity: number;
     totalPrice: number;
-
 }
 
 export interface SearchByPeriodRequest {

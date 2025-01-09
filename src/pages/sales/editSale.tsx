@@ -150,13 +150,13 @@ export default function EditSalePage() {
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
-                    label="Quantidade (Toneladas)"
+                    label="Quantidade (Kilogramas)"
                     type="text" // texto para aceitar vírgula
                     {...register("quantity", {
                       required: "Digite a quantidade.",
                       min: {
                         value: 0.1,
-                        message: "A quantidade mínima é 0.1 tonelada.",
+                        message: "A quantidade mínima é 0,1 kilograma.",
                       },
                     })}
                     error={!!errors.quantity}
@@ -165,7 +165,7 @@ export default function EditSalePage() {
                 </Grid>
 
                 {/* Preço Total (aceita vírgula) */}
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Preço Total (R$)"
@@ -177,10 +177,10 @@ export default function EditSalePage() {
                     error={!!errors.totalPrice}
                     helperText={errors.totalPrice?.message}
                   />
-                </Grid>
+                </Grid> */}
 
                 {/* Status */}
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   <TextField
                     select
                     label="Status"
@@ -197,7 +197,7 @@ export default function EditSalePage() {
                     <MenuItem value="approved">Concluído</MenuItem>
                     <MenuItem value="canceled">Cancelado</MenuItem>
                   </TextField>
-                </Grid>
+                </Grid> */}
 
                 {/* Data da Venda */}
                 <Grid item xs={12}>

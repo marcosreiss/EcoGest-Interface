@@ -25,6 +25,7 @@ export interface Purchase {
     purchaseStatus: PurchaseStatus;
     weightAmount: number; // Novo atributo
     price: number; // Novo atributo
+    totalPrice: number;
 }
 
 export interface CreatePurchasePayload {

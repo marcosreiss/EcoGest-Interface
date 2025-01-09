@@ -142,10 +142,10 @@ export default function EmployeeDetailsPage() {
                                         </Typography>
                                     </Grid>
 
-                                    {/* Data de Pagamento */}
+                                    {/* Dia do Pagamento */}
                                     <Grid item xs={12}>
                                         <Typography variant="body1" gutterBottom>
-                                            Data de Pagamento: {formatDate(employee?.dataDePagamento)}
+                                            Dia do Pagamento: employee?.dataDePagamento 
                                         </Typography>
                                     </Grid>
 

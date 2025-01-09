@@ -124,7 +124,7 @@ export default function PurchaseDetailsPage() {
                       <Typography variant="body1" gutterBottom>
                         Quantidade:{" "}
                         {purchase?.weightAmount !== undefined
-                          ? `${formatQuantity(purchase.weightAmount)} Toneladas`
+                          ? `${formatQuantity(purchase.weightAmount)} Kilogramas`
                           : "-"}
                       </Typography>
                     </Grid>
@@ -132,9 +132,19 @@ export default function PurchaseDetailsPage() {
                     {/* Preço formatado */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Preço:{" "}
+                        Preço unitário:{" "}
                         {purchase?.price !== undefined
                           ? formatPrice(purchase.price)
+                          : "-"}
+                      </Typography>
+                    </Grid>
+
+                    {/* Preço formatado */}
+                    <Grid item xs={12}>
+                      <Typography variant="body1" gutterBottom>
+                        Preço total:{" "}
+                        {purchase?.totalPrice !== undefined
+                          ? formatPrice(purchase.totalPrice)
                           : "-"}
                       </Typography>
                     </Grid>

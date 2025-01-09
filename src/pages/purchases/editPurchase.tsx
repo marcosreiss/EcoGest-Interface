@@ -1,9 +1,11 @@
-import type { CreatePurchasePayload } from "src/models/purchase";
+import type { ProductBasicInfo } from 'src/models/product';
+import type { SupplierBasicInfo } from 'src/models/supplier';
+import { PurchaseStatus, type CreatePurchasePayload } from "src/models/purchase";
 
+import React, { useState, useMemo, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
-import React, { useState, useEffect } from "react";
 
 import Autocomplete from "@mui/material/Autocomplete";
 import {
@@ -22,9 +24,34 @@ import { useGetSuppliersBasicInfo } from "src/hooks/useSupplier";
 import { useUpdatePurchase, useGetPurchaseById } from "src/hooks/usePurchase";
 
 import { CONFIG } from "src/config-global";
-import { PurchaseStatus } from "src/models/purchase";
+// Removido: import { PurchaseStatus } from "src/models/purchase"; // Não mais necessário
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
+
+// ----------------------------------------------------------------------
+
+// Função auxiliar para converter string com vírgula para número
+const parseNumber = (value: string): number => {
+  if (typeof value !== 'string') return 0;
+  // Remove qualquer caractere que não seja dígito, ponto ou vírgula
+  const cleanedValue = value.replace(/[^\d,.-]/g, '').replace(',', '.');
+  const parsed = parseFloat(cleanedValue);
+  return Number.isNaN(parsed) ? 0 : parsed;
+};
+
+// Função auxiliar para formatar número para moeda brasileira
+const formatCurrency = (value: number): string =>
+  new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value);
+
+// Defina um tipo separado para os dados do formulário
+type EditPurchaseFormData = Omit<CreatePurchasePayload, 'weightAmount' | 'price' | 'status' | 'date_time'> & {
+  weightAmount: string;
+  price: string;
+  date_time: string; // Manter como string no formulário
+};
 
 export default function EditPurchasePage() {
   const { id } = useParams<{ id: string }>();
@@ -45,8 +72,18 @@ export default function EditPurchasePage() {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
-  } = useForm<CreatePurchasePayload>();
+  } = useForm<EditPurchaseFormData>({
+    defaultValues: {
+      weightAmount: '',
+      price: '',
+      supplierId: -1,
+      productId: -1,
+      description: '',
+      date_time: '',
+    }
+  });
 
   const { data: purchase, isLoading: loadingPurchase } = useGetPurchaseById(purchaseId);
   const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
@@ -58,7 +95,7 @@ export default function EditPurchasePage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = e.target.files?.[0];
-    if (uploadedFile && uploadedFile.size <= 5 * 1024 * 1024) {
+    if (uploadedFile && uploadedFile.size <= 5 * 1024 * 1024) { // Limite de 5MB
       setFile(uploadedFile);
     } else {
       addNotification("Arquivo excede o limite de 5MB", "error");
@@ -69,30 +106,40 @@ export default function EditPurchasePage() {
     if (purchase) {
       setValue("supplierId", purchase.supplierId);
       setValue("productId", purchase.productId);
-      setValue("weightAmount", purchase.weightAmount || 0);
-      setValue("price", purchase.price || 0);
-      setValue("status", purchase.purchaseStatus);
+      setValue("weightAmount", purchase.weightAmount.toString());
+      setValue("price", purchase.price.toString());
+      // Removido: setValue("status", purchase.purchaseStatus);
       setValue("description", purchase.description || "");
-      setValue("date_time", purchase.date_time);
+      // Corrigido: Converter para Date antes de formatar
+      // Verifica se purchase.date_time é uma string válida antes de converter
+      const date = new Date(purchase.date_time);
+      if (!Number.isNaN(date.getTime())) {
+        setValue("date_time", date.toISOString().split("T")[0]); // Formato YYYY-MM-DD
+      } else {
+        setValue("date_time", ""); // Define vazio se a data for inválida
+      }
     }
   }, [purchase, setValue]);
 
-  const onSubmit = (data: CreatePurchasePayload) => {
-    // Converte vírgula para ponto em weightAmount
-    if (data.weightAmount !== undefined) {
-      const weightStr = String(data.weightAmount).replace(",", ".");
-      data.weightAmount = parseFloat(weightStr);
-    }
-    // Converte vírgula para ponto em price
-    if (data.price !== undefined) {
-      const priceStr = String(data.price).replace(",", ".");
-      data.price = parseFloat(priceStr);
-    }
+  const onSubmit = (data: EditPurchaseFormData) => {
+    // Converte vírgula para ponto em weightAmount e price
+    const parsedWeightAmount = parseNumber(data.weightAmount);
+    const parsedPrice = parseNumber(data.price);
 
     const payload: CreatePurchasePayload = {
       ...data,
+      weightAmount: parsedWeightAmount,
+      price: parsedPrice,
+      // Removido: status: PurchaseStatus.processing, // Não mais necessário
       paymentSlip: file,
+      date_time: new Date(data.date_time),
+      status: PurchaseStatus.processing
     };
+
+    // Adiciona o status existente da purchase no payload, se necessário
+    // Isso depende do backend aceitar a omissão do status ou requerer envio
+    // Se precisar enviar, descomente a linha abaixo
+    // payload.status = purchase?.purchaseStatus || PurchaseStatus.processing;
 
     updatePurchase.mutate(
       { id: purchaseId, data: payload },
@@ -101,12 +148,24 @@ export default function EditPurchasePage() {
           addNotification("Compra atualizada com sucesso!", "success");
           router.push("/purchases");
         },
-        onError: (error) => {
+        onError: (error: any) => {
           addNotification(`Erro ao atualizar compra: ${error.message}`, "error");
         },
       }
     );
   };
+
+  // Monitora os campos 'weightAmount' e 'price'
+  const weightAmountValue = watch('weightAmount');
+  const priceValue = watch('price');
+
+  // Calcula o totalPrice usando useMemo para otimizar a performance
+  const totalPrice = useMemo(() => {
+    const weight = parseNumber(weightAmountValue || '0');
+    const price = parseNumber(priceValue || '0');
+    const total = weight * price;
+    return Number.isNaN(total) || total <= 0 ? '' : formatCurrency(total);
+  }, [weightAmountValue, priceValue]);
 
   if (loadingPurchase) {
     return (
@@ -140,13 +199,13 @@ export default function EditPurchasePage() {
                   <Autocomplete
                     options={suppliers?.data || []}
                     loading={loadingSuppliers}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option: SupplierBasicInfo) => option.name}
                     isOptionEqualToValue={(option, value) =>
                       option.supplierId === value.supplierId
                     }
                     defaultValue={suppliers?.data?.find(
                       (supplier) => supplier.supplierId === purchase?.supplierId
-                    )}
+                    ) || null}
                     onChange={(_, newValue) =>
                       setValue("supplierId", newValue?.supplierId || -1, {
                         shouldValidate: true,
@@ -170,13 +229,13 @@ export default function EditPurchasePage() {
                   <Autocomplete
                     options={products?.data || []}
                     loading={loadingProducts}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option: ProductBasicInfo) => option.name}
                     isOptionEqualToValue={(option, value) =>
                       option.productId === value.productId
                     }
                     defaultValue={products?.data?.find(
                       (product) => product.productId === purchase?.productId
-                    )}
+                    ) || null}
                     onChange={(_, newValue) =>
                       setValue("productId", newValue?.productId || -1, {
                         shouldValidate: true,
@@ -200,23 +259,22 @@ export default function EditPurchasePage() {
                   <Controller
                     name="weightAmount"
                     control={control}
-                    defaultValue={purchase?.weightAmount || undefined}
                     rules={{
                       required: "Digite a quantidade.",
-                      min: {
-                        value: 0.1,
-                        message: "A quantidade mínima é 0,1 tonelada.",
+                      validate: {
+                        isPositive: (value) =>
+                          parseNumber(value) >= 0.1 || "A quantidade mínima é 0,1 tonelada.",
                       },
                     }}
                     render={({ field: { onChange, value }, fieldState: { error } }) => (
                       <TextField
                         fullWidth
                         label="Quantidade (Toneladas)"
-                        type="text"
+                        type="text" // aceita vírgula
                         value={value ? String(value).replace(".", ",") : ""}
                         onChange={(e) => {
                           const inputValue = e.target.value.replace(",", ".");
-                          onChange(inputValue ? parseFloat(inputValue) : "");
+                          onChange(inputValue || "");
                         }}
                         error={!!error}
                         helperText={error?.message}
@@ -224,30 +282,28 @@ export default function EditPurchasePage() {
                     )}
                   />
                 </Grid>
-
 
                 {/* Preço (aceitando vírgula) */}
                 <Grid item xs={12}>
                   <Controller
                     name="price"
                     control={control}
-                    defaultValue={purchase?.price || undefined}
                     rules={{
                       required: "Digite o preço.",
-                      min: {
-                        value: 0,
-                        message: "O preço deve ser maior ou igual a zero.",
+                      validate: {
+                        isNonNegative: (value) =>
+                          parseNumber(value) >= 0 || "O preço não pode ser negativo.",
                       },
                     }}
                     render={({ field: { onChange, value }, fieldState: { error } }) => (
                       <TextField
                         fullWidth
-                        label="Preço (R$)"
-                        type="text"
+                        label="Preço unitário (R$)"
+                        type="text" // aceita vírgula
                         value={value ? String(value).replace(".", ",") : ""}
                         onChange={(e) => {
                           const inputValue = e.target.value.replace(",", ".");
-                          onChange(inputValue ? parseFloat(inputValue) : "");
+                          onChange(inputValue || "");
                         }}
                         error={!!error}
                         helperText={error?.message}
@@ -256,29 +312,25 @@ export default function EditPurchasePage() {
                   />
                 </Grid>
 
-
-                {/* Status */}
-                {/* <Grid item xs={12}>
+                {/* Preço Total */}
+                <Grid item xs={12}>
                   <TextField
-                    select
-                    label="Status"
                     fullWidth
-                    defaultValue={purchase?.purchaseStatus || ""}
-                    {...register("status", { required: "Selecione um status." })}
-                    error={!!errors.status}
-                    helperText={errors.status?.message}
-                  >
-                    <option value={PurchaseStatus.processing}>Pendente</option>
-                    <option value={PurchaseStatus.approved}>Aprovado</option>
-                    <option value={PurchaseStatus.canceled}>Cancelado</option>
-                  </TextField>
-                </Grid> */}
+                    label="Preço Total (R$)"
+                    value={totalPrice}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    helperText="Preço total calculado automaticamente."
+                  />
+                </Grid>
 
                 {/* Descrição */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Descrição"
+                    placeholder="Descrição da compra"
                     multiline
                     rows={4}
                     {...register("description")}
@@ -291,11 +343,6 @@ export default function EditPurchasePage() {
                     fullWidth
                     label="Data da Compra"
                     type="date"
-                    value={
-                      purchase?.date_time
-                        ? new Date(purchase.date_time).toISOString().split("T")[0]
-                        : ""
-                    }
                     InputLabelProps={{ shrink: true }}
                     {...register("date_time", { required: "Selecione uma data." })}
                     error={!!errors.date_time}
@@ -341,5 +388,5 @@ export default function EditPurchasePage() {
         </Grid>
       </DashboardContent>
     </>
-  );
+  )
 }

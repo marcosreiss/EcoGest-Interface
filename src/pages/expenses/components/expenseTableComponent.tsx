@@ -105,7 +105,7 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
         const url = window.URL.createObjectURL(receipt);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `receipt-${expenseId}.pdf`;
+        link.download = `RECIBO-DE-CAIXA-${expenseId}.pdf`;
         link.click();
         window.URL.revokeObjectURL(url);
         notification.addNotification("Recibo gerado com sucesso", "success");
