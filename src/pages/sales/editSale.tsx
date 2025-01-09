@@ -1,7 +1,7 @@
 import type { CreateSalePayload } from "src/models/sale";
 
 import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 
@@ -10,7 +10,6 @@ import {
   Box,
   Grid,
   Button,
-  MenuItem,
   TextField,
   Typography,
   CircularProgress,
@@ -41,8 +40,13 @@ export default function EditSalePage() {
     register,
     handleSubmit,
     setValue,
+    control, // Para uso do Controller
     formState: { errors },
-  } = useForm<CreateSalePayload>();
+  } = useForm<CreateSalePayload>({
+    defaultValues: {
+      productId: undefined, // Inicialmente nulo
+    },
+  });
 
   const { data: sale, isLoading: loadingSale } = useGetSaleById(saleId);
   const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
@@ -58,11 +62,12 @@ export default function EditSalePage() {
       setValue("quantity", sale.quantity);
       setValue("totalPrice", sale.totalPrice);
       setValue("saleStatus", sale.saleStatus);
-      setValue("date_time", sale.date_time);
+      setValue("date_time", sale.date_time ? sale.date_time.split("T")[0] : "");
     }
   }, [sale, setValue]);
 
   const onSubmit = (formData: CreateSalePayload) => {
+    console.log("Dados do formulário antes da submissão:", formData);
     // Converte vírgulas para ponto
     if (formData.quantity) {
       const quantityStr = String(formData.quantity).replace(",", ".");
@@ -71,6 +76,14 @@ export default function EditSalePage() {
     if (formData.totalPrice) {
       const priceStr = String(formData.totalPrice).replace(",", ".");
       formData.totalPrice = parseFloat(priceStr);
+    }
+
+    console.log("Dados do formulário após conversão:", formData);
+
+    // Certifique-se de que o productId está presente
+    if (!formData.productId) {
+      addNotification("Selecione um produto válido.", "error");
+      return;
     }
 
     updateSale.mutate(
@@ -87,7 +100,7 @@ export default function EditSalePage() {
     );
   };
 
-  if (loadingSale) {
+  if (loadingSale || loadingProducts) {
     return (
       <DashboardContent>
         <Box display="flex" justifyContent="center" alignItems="center" height="100%">
@@ -107,129 +120,100 @@ export default function EditSalePage() {
         <Grid container>
           <Grid item xs={12}>
             <Box sx={formStyle}>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
-                    Editar Venda
-                  </Typography>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
+                      Editar Venda
+                    </Typography>
+                  </Grid>
+
+                  {/* Produto com Controller */}
+                  <Grid item xs={12}>
+                    <Controller
+                      name="productId"
+                      control={control}
+                      rules={{ required: "Selecione um produto." }}
+                      render={({ field: { onChange, value }, fieldState: { error } }) => (
+                        <Autocomplete
+                          options={products?.data || []}
+                          loading={loadingProducts}
+                          getOptionLabel={(option) => option.name}
+                          isOptionEqualToValue={(option, selectedValue) =>
+                            option.productId === selectedValue.productId
+                          }
+                          value={
+                            products?.data.find((product) => product.productId === value) || null
+                          }
+                          onChange={(_, newValue) => {
+                            onChange(newValue ? newValue.productId : null);
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Produto"
+                              variant="outlined"
+                              error={!!error}
+                              helperText={error ? error.message : null}
+                            />
+                          )}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  {/* Quantidade (aceita vírgula) */}
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Quantidade (Kilogramas)"
+                      type="text" // texto para aceitar vírgula
+                      {...register("quantity", {
+                        required: "Digite a quantidade.",
+                        min: {
+                          value: 0.1,
+                          message: "A quantidade mínima é 0,1 kilograma.",
+                        },
+                        validate: (value) => {
+                          const parsed = parseFloat(value.toString().replace(",", "."));
+                          return !Number.isNaN(parsed) || "Quantidade inválida.";
+                        },
+                      })}
+                      error={!!errors.quantity}
+                      helperText={errors.quantity?.message}
+                    />
+                  </Grid>
+
+                  {/* Data da Venda */}
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Data da Venda"
+                      type="date"
+                      {...register("date_time", { required: "Selecione uma data." })}
+                      defaultValue={sale?.date_time ? sale.date_time.split("T")[0] : ""}
+                      InputLabelProps={{ shrink: true }}
+                      error={!!errors.date_time}
+                      helperText={errors.date_time?.message}
+                    />
+                  </Grid>
+
+                  {/* Botão de Enviar */}
+                  <Grid item xs={12}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      disabled={updateSale.isPending}
+                    >
+                      Atualizar
+                      {updateSale.isPending && (
+                        <CircularProgress size={20} sx={{ marginLeft: "20px" }} />
+                      )}
+                    </Button>
+                  </Grid>
                 </Grid>
-
-                {/* Produto */}
-                <Grid item xs={12}>
-                  <Autocomplete
-                    options={products?.data || []}
-                    loading={loadingProducts}
-                    getOptionLabel={(option) => option.name}
-                    isOptionEqualToValue={(option, value) =>
-                      option.productId === value.productId
-                    }
-                    defaultValue={products?.data.find(
-                      (product) => product.productId === sale?.productId
-                    )}
-                    onChange={(_, newValue) =>
-                      setValue("productId", newValue?.productId || -1, {
-                        shouldValidate: true,
-                      })
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Produto"
-                        variant="outlined"
-                        error={!!errors.productId}
-                        helperText={errors.productId?.message}
-                        {...register("productId", {
-                          required: "Selecione um produto.",
-                        })}
-                      />
-                    )}
-                  />
-                </Grid>
-
-                {/* Quantidade (aceita vírgula) */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Quantidade (Kilogramas)"
-                    type="text" // texto para aceitar vírgula
-                    {...register("quantity", {
-                      required: "Digite a quantidade.",
-                      min: {
-                        value: 0.1,
-                        message: "A quantidade mínima é 0,1 kilograma.",
-                      },
-                    })}
-                    error={!!errors.quantity}
-                    helperText={errors.quantity?.message}
-                  />
-                </Grid>
-
-                {/* Preço Total (aceita vírgula) */}
-                {/* <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Preço Total (R$)"
-                    type="text" // texto para aceitar vírgula
-                    {...register("totalPrice", {
-                      required: "Digite o preço total.",
-                      min: 0,
-                    })}
-                    error={!!errors.totalPrice}
-                    helperText={errors.totalPrice?.message}
-                  />
-                </Grid> */}
-
-                {/* Status */}
-                {/* <Grid item xs={12}>
-                  <TextField
-                    select
-                    label="Status"
-                    fullWidth
-                    disabled={sale?.saleStatus !== "processing"}
-                    defaultValue={sale?.saleStatus || ""}
-                    {...register("saleStatus", {
-                      required: "Selecione um status.",
-                    })}
-                    error={!!errors.saleStatus}
-                    helperText={errors.saleStatus?.message}
-                  >
-                    <MenuItem value="processing">Pendente</MenuItem>
-                    <MenuItem value="approved">Concluído</MenuItem>
-                    <MenuItem value="canceled">Cancelado</MenuItem>
-                  </TextField>
-                </Grid> */}
-
-                {/* Data da Venda */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Data da Venda"
-                    type="date"
-                    value={sale?.date_time ? sale.date_time.split("T")[0] : ""}
-                    InputLabelProps={{ shrink: true }}
-                    {...register("date_time", { required: "Selecione uma data." })}
-                    error={!!errors.date_time}
-                    helperText={errors.date_time?.message}
-                  />
-                </Grid>
-
-                {/* Botão de Enviar */}
-                <Grid item xs={12}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    onClick={handleSubmit(onSubmit)}
-                    disabled={updateSale.isPending}
-                  >
-                    Atualizar
-                    {updateSale.isPending && (
-                      <CircularProgress size={20} sx={{ marginLeft: "20px" }} />
-                    )}
-                  </Button>
-                </Grid>
-              </Grid>
+              </form>
             </Box>
           </Grid>
         </Grid>
