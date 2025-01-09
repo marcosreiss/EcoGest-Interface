@@ -60,6 +60,13 @@ export default function PurchaseDetailsPage() {
         return status || "-";
     }
   };
+    // Função para formatar a data no formato pt-BR
+    const formatDate = (dateStr?: string | Date) => {
+      if (!dateStr) return "-";
+      const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
+      dateObj.setDate(dateObj.getDate() + 1);
+      return dateObj.toLocaleDateString("pt-BR");
+    };
 
   // Formata o valor em R$ (Real)
   const formatPrice = (value?: number) => {
@@ -160,7 +167,7 @@ export default function PurchaseDetailsPage() {
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
                         Data da Compra:{" "}
-                        {new Date(purchase?.date_time || "").toLocaleDateString("pt-BR")}
+                        {formatDate(purchase?.date_time) || "" }
                       </Typography>
                     </Grid>
 

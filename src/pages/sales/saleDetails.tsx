@@ -54,6 +54,14 @@ export default function SaleDetailsPage() {
     }).format(value);
   };
 
+    // Função para formatar a data no formato pt-BR
+    const formatDate = (dateStr?: string | Date) => {
+      if (!dateStr) return "-";
+      const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
+      dateObj.setDate(dateObj.getDate() + 1);
+      return dateObj.toLocaleDateString("pt-BR");
+    };
+
   // Função para traduzir status
   const translateStatus = (status?: string) => {
     switch (status) {
@@ -141,7 +149,7 @@ export default function SaleDetailsPage() {
                       <Typography variant="body1" gutterBottom>
                         Data da Venda:{" "}
                         {sale?.date_time
-                          ? new Date(sale.date_time).toLocaleDateString("pt-BR")
+                          ? formatDate(sale?.date_time)
                           : "-"}
                       </Typography>
                     </Grid>
