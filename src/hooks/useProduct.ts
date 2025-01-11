@@ -67,7 +67,7 @@ export const useGetProductById = (id: number) =>
   });
 
   export const useGetProductByName = (name: string) =>
-    useQuery<Product[], AxiosError>({
+    useQuery<ProductListResponse, AxiosError>({
       queryKey: ['products-by-name', name],
       queryFn: () => getProductByNameService(name),
       enabled: name.length >= 3,

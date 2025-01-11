@@ -70,7 +70,7 @@ export default function ProductPage() {
     });
   };
 
-  const products = debouncedSearchString.length >= 3 ? searchResults : data?.data;
+  const products = debouncedSearchString.length >= 3 ? searchResults?.data : data?.data;
 
   return (
     <>

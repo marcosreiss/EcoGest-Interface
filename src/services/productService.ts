@@ -35,8 +35,8 @@ export const getProductByIdService = async (id: number): Promise<Product> => {
 };
 
 // Buscar produto por nome
-export const getProductByNameService = async (name: string): Promise<Product[]> => {
-  const response = await api.get<Product[]>(`/products/search/by-name?name=${name}`);
+export const getProductByNameService = async (name: string): Promise<ProductListResponse> => {
+  const response = await api.get<ProductListResponse>(`/products/search/by-name?name=${name}`);
   return response.data;
 };
 
