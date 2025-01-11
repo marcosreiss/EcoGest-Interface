@@ -47,7 +47,7 @@ export const updatePersonService = async (payload: Person, id: number): Promise<
  * @param id ID da pessoa a ser deletada.
  */
 export const deletePersonService = async (id: number): Promise<void> => {
-    await api.delete(`/persons?id=${id}`);
+    await api.delete(`/person?id=${id}`);
 };
 
 /**
