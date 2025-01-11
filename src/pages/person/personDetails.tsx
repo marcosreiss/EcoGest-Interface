@@ -37,14 +37,14 @@ export default function PersonDetails() {
             <Helmet>
                 <title>{`Detalhes da Pessoa - ${CONFIG.appName}`}</title>
             </Helmet>
-            <DashboardContent maxWidth="md">
+            <DashboardContent maxWidth="lg">
                 {isLoading ? (
                     <LinearProgress />
                 ) : (
                     <>
                         <Grid item xs={6}>
                             <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>
-                                Detalhes da Pessoa
+                                Detalhes do {person?.type === PersonType.cliente ? "Cliente" : "Fornecedor"}
                             </Typography>
                         </Grid>
                         <Grid container>

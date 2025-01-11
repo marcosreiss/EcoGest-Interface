@@ -75,7 +75,7 @@ export default function PersonsIndex() {
         <title>{`Pessoas - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth="md">
+      <DashboardContent maxWidth="lg">
         <Grid container>
           {/* Cabeçalho com título e botão de adicionar */}
           <TableHeaderComponent
