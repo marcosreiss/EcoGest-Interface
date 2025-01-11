@@ -10,8 +10,7 @@ export const purchaseStatusMapping: Record<string, string> = {
     processing: "Processando",
     approved: "Aprovado",
     canceled: "Cancelado",
-};
-
+}
 
 export interface Purchase {
     purchaseId: number;
@@ -29,17 +28,19 @@ export interface Purchase {
 }
 
 export interface CreatePurchasePayload {
-    supplierId: number;
-    productId: number;
+    personId: number;
+    product: PurchaseProduct[];
     description?: string | null;
     date_time: Date;
-    status: PurchaseStatus;
     paymentSlip: Blob | null;
-    weightAmount: number; // Novo atributo
-    price: number; // Novo atributo
+    discount: number;
 }
 
-
+export interface PurchaseProduct {
+    productId: number;
+    quantity: number;
+    price: number;
+}
 
 export interface PurchaseListResponse {
     data: Purchase[];

@@ -80,3 +80,21 @@ export const getPersonsBasicInfoService = async (): Promise<PersonBasicInfoList>
     const response = await api.get<PersonBasicInfoList>("/person/basic-info");
     return response.data;
 };
+
+/**
+ * Obter informações básicas de todas os fornecedores.
+ * @returns Lista de informações básicas das pessoas.
+ */
+export const getSuppliersBasicInfoService = async (): Promise<PersonBasicInfoList> => {
+    const response = await api.get<PersonBasicInfoList>("/suppliers/basic-info");
+    return response.data;
+};
+
+/**
+ * Obter informações básicas de todas os clientes.
+ * @returns Lista de informações básicas das pessoas.
+ */
+export const getCustomersBasicInfoService = async (): Promise<PersonBasicInfoList> => {
+    const response = await api.get<PersonBasicInfoList>("/clients/basic-info");
+    return response.data;
+};
