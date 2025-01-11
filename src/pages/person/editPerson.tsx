@@ -1,31 +1,35 @@
-import type { PersonPayload } from "src/models/person";
+import type { Person } from "src/models/person";
 
-import { useState } from "react";
 import InputMask from "react-input-mask";
+import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
+import { useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 
 import {
   Box,
   Grid,
-  Button,
   Switch,
-  MenuItem,
+  Button,
   TextField,
   Typography,
   FormControlLabel,
+  CircularProgress,
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
 
-import { useCreatePerson } from "src/hooks/usePerson";
+import { useUpdatePerson, useGetPersonById } from "src/hooks/usePerson";
 
 import { CONFIG } from "src/config-global";
 import { PersonType } from "src/models/person";
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
 
-export default function CreatePerson() {
+export default function EditPerson() {
+  const { id } = useParams<{ id: string }>();
+  const personId = Number(id);
+
   const formStyle = {
     mx: "auto",
     p: 3,
@@ -41,32 +45,96 @@ export default function CreatePerson() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
     control,
-  } = useForm<PersonPayload>();
+  } = useForm<Person>();
 
-  const createPerson = useCreatePerson();
+  const updatePerson = useUpdatePerson();
   const router = useRouter();
   const { addNotification } = useNotification();
 
-  const onSubmit = (data: PersonPayload) => {
-    console.log(data);
-    
-    createPerson.mutate(data, {
-      onSuccess: () => {
-        addNotification("Pessoa cadastrada com sucesso!", "success");
-        router.push("/person");
-      },
-      onError: (error) => {
-        addNotification(`Erro ao cadastrar pessoa: ${error.message}`, "error");
-      },
-    });
+  const {
+    data: person,
+    isLoading,
+    isError,
+    error,
+  } = useGetPersonById(personId);
+
+  useEffect(() => {
+    if (person) {
+      setValue("name", person.name);
+      setValue("type", person.type);
+      setValue("cpfCnpj", person.cpfCnpj);
+      setValue("contact", person.contact);
+      setValue("email", person.email);
+      setValue("obs", person.obs);
+
+      if (person.address) {
+        setValue("address.cep", person.address.cep);
+        setValue("address.cidade", person.address.cidade);
+        setValue("address.uf", person.address.uf);
+        setValue("address.bairro", person.address.bairro);
+        setValue("address.endereco", person.address.endereco);
+        setValue("address.numero", person.address.numero);
+        setValue("address.complemento", person.address.complemento);
+      }
+
+      setIsCnpj(person.cpfCnpj.length > 14); // Determina a máscara com base no comprimento do CPF/CNPJ
+    }
+  }, [person, setValue]);
+
+  const onSubmit = (data: Person) => {
+    const updatedData: Person = {
+      ...data,
+      cpfCnpj: isCnpj ? data.cpfCnpj : data.cpfCnpj,
+    };
+
+    updatePerson.mutate(
+      { id: personId, data: updatedData },
+      {
+        onSuccess: () => {
+          addNotification("Pessoa atualizada com sucesso!", "success");
+          router.push("/person");
+        },
+        onError: (err) => {
+          addNotification(`Erro ao atualizar pessoa: ${err.message}`, "error");
+        },
+      }
+    );
   };
+
+  if (isLoading) {
+    return (
+      <DashboardContent>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
+          <CircularProgress />
+        </Box>
+      </DashboardContent>
+    );
+  }
+
+  if (isError) {
+    return (
+      <DashboardContent>
+        <Box sx={formStyle}>
+          <Typography variant="h6" color="error">
+            Erro ao carregar a pessoa: {error?.message}
+          </Typography>
+        </Box>
+      </DashboardContent>
+    );
+  }
 
   return (
     <>
       <Helmet>
-        <title>{`Criar Pessoa - ${CONFIG.appName}`}</title>
+        <title>{`Editar Pessoa - ${CONFIG.appName}`}</title>
       </Helmet>
 
       <DashboardContent maxWidth="md">
@@ -76,7 +144,7 @@ export default function CreatePerson() {
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
-                    Criar Pessoa
+                    Editar Pessoa
                   </Typography>
                 </Grid>
 
@@ -98,13 +166,12 @@ export default function CreatePerson() {
                     fullWidth
                     select
                     label="Tipo"
-                    defaultValue=""
                     {...register("type", { required: "Selecione o tipo da pessoa" })}
                     error={!!errors.type}
                     helperText={errors.type?.message}
                   >
-                    <MenuItem value={PersonType.cliente}>Cliente</MenuItem>
-                    <MenuItem value={PersonType.fornecedor}>Fornecedor</MenuItem>
+                    <option value={PersonType.cliente}>Cliente</option>
+                    <option value={PersonType.fornecedor}>Fornecedor</option>
                   </TextField>
                 </Grid>
 
@@ -177,7 +244,6 @@ export default function CreatePerson() {
                             {...inputProps}
                             fullWidth
                             label="Contato"
-                            placeholder="(99) 99999-9999"
                           />
                         )}
                       </InputMask>
@@ -190,7 +256,6 @@ export default function CreatePerson() {
                   <TextField
                     fullWidth
                     label="Email"
-                    type="email"
                     placeholder="email@exemplo.com"
                     {...register("email")}
                   />
@@ -216,60 +281,53 @@ export default function CreatePerson() {
                   <TextField
                     fullWidth
                     label="CEP"
-                    placeholder="00000-000"
-                    {...register("cep")}
+                    {...register("address.cep")}
                   />
                 </Grid>
                 <Grid item xs={6}>
                   <TextField
                     fullWidth
                     label="Cidade"
-                    placeholder="São Paulo"
-                    {...register("cidade")}
+                    {...register("address.cidade")}
                   />
                 </Grid>
                 <Grid item xs={6}>
                   <TextField
                     fullWidth
                     label="Bairro"
-                    placeholder="Centro"
-                    {...register("bairro")}
+                    {...register("address.bairro")}
                   />
                 </Grid>
                 <Grid item xs={6}>
                   <TextField
                     fullWidth
                     label="UF"
-                    placeholder="SP"
-                    {...register("uf")}
+                    {...register("address.uf")}
                   />
                 </Grid>
                 <Grid item xs={6}>
                   <TextField
                     fullWidth
                     label="Endereço"
-                    placeholder="Rua dos Anzois"
-                    {...register("endereco")}
+                    {...register("address.endereco")}
                   />
                 </Grid>
                 <Grid item xs={3}>
                   <TextField
                     fullWidth
                     label="Número"
-                    placeholder="123"
-                    {...register("numero")}
+                    {...register("address.numero")}
                   />
                 </Grid>
                 <Grid item xs={3}>
                   <TextField
                     fullWidth
                     label="Complemento"
-                    placeholder="Apto 1"
-                    {...register("complemento")}
+                    {...register("address.complemento")}
                   />
                 </Grid>
 
-                {/* Botão de Envio */}
+                {/* Botão de Atualizar */}
                 <Grid item xs={12}>
                   <Button
                     type="submit"
@@ -278,7 +336,7 @@ export default function CreatePerson() {
                     fullWidth
                     onClick={handleSubmit(onSubmit)}
                   >
-                    Enviar
+                    Atualizar
                   </Button>
                 </Grid>
               </Grid>

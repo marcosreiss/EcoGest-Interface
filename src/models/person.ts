@@ -11,6 +11,11 @@ export interface Person {
     contact: string;
     email: string;
     obs: string;
+    address: Address;
+}
+
+export interface Address{
+    addressId:  number;
     cep: string;
     cidade: string;
     uf: string;

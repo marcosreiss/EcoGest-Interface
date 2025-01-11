@@ -38,7 +38,7 @@ export const createPersonService = async (payload: PersonPayload): Promise<Perso
  * @returns Dados da pessoa atualizada.
  */
 export const updatePersonService = async (payload: Person, id: number): Promise<PersonResponse> => {
-    const response = await api.put<PersonResponse>(`/person/${id}`, payload);
+    const response = await api.put<PersonResponse>(`/person?id=${id}`, payload);
     return response.data;
 };
 
@@ -47,7 +47,7 @@ export const updatePersonService = async (payload: Person, id: number): Promise<
  * @param id ID da pessoa a ser deletada.
  */
 export const deletePersonService = async (id: number): Promise<void> => {
-    await api.delete(`/persons/${id}`);
+    await api.delete(`/persons?id=${id}`);
 };
 
 /**
@@ -56,7 +56,9 @@ export const deletePersonService = async (id: number): Promise<void> => {
  * @returns Dados da pessoa.
  */
 export const getPersonByIdService = async (id: number): Promise<Person> => {
-    const response = await api.get<Person>(`/person/${id}`);
+    console.log(id);
+    
+    const response = await api.get<Person>(`/person/search/by-id?id=${id}`);
     return response.data;
 };
 
