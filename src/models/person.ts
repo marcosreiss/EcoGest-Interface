@@ -4,7 +4,7 @@ export enum PersonType{
 }
 
 export interface Person {
-    customerId: number;
+    personId: number;
     name: string;
     type: PersonType;
     cpfCnpj: string;

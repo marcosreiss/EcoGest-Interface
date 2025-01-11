@@ -55,12 +55,14 @@ export const EditEmployee = lazy(() => import('src/pages/employees/editEmployee'
 export const EmployeeDetails = lazy(() => import('src/pages/employees/employeeDetails'));
 
 
-// ---------- Expenses Components
 // ---------- Expense Components
 export const ExpensesPage = lazy(() => import('src/pages/expenses/expensesIndex'));
 export const CreateExpense = lazy(() => import('src/pages/expenses/createExpense'));
 export const EditExpense = lazy(() => import('src/pages/expenses/editExpense'));
 export const ExpenseDetails = lazy(() => import('src/pages/expenses/expenseDetails'));
+
+// ---------- Person Components
+export const PersonPage = lazy(() => import('src/pages/person/personIndex'));
 
 
 
@@ -134,6 +136,7 @@ export function PrivateRouter() {
         { path: 'expenses/edit/:id', element: <EditExpense /> },
         { path: 'expenses/details/:id', element: <ExpenseDetails /> },
 
+        {path: 'person', element: <PersonPage />}
 
       ],
     },
@@ -188,6 +191,8 @@ export function PublicRouter() {
     { path: 'expenses/create', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'expenses/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'expenses/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+
+    { path: 'person', element: <AuthLayout><SignInPage /></AuthLayout> },
 
 
     { path: '404', element: <Page404 />, },
