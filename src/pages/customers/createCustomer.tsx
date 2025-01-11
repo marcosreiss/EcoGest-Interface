@@ -1,8 +1,9 @@
 import type { CustomerPayload } from "src/models/customers";
 
 import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import InputMask from "react-input-mask";
 import { Helmet } from "react-helmet-async";
+import { useForm, Controller } from "react-hook-form";
 
 import {
   Box,
@@ -13,7 +14,6 @@ import {
   Typography,
   FormControlLabel,
 } from "@mui/material";
-import InputMask from "react-input-mask";
 
 import { useRouter } from "src/routes/hooks";
 

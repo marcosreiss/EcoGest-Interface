@@ -63,6 +63,7 @@ export const ExpenseDetails = lazy(() => import('src/pages/expenses/expenseDetai
 
 // ---------- Person Components
 export const PersonPage = lazy(() => import('src/pages/person/personIndex'));
+export const CreatePerson = lazy(() => import('src/pages/person/createPerson'));
 
 
 
@@ -136,7 +137,8 @@ export function PrivateRouter() {
         { path: 'expenses/edit/:id', element: <EditExpense /> },
         { path: 'expenses/details/:id', element: <ExpenseDetails /> },
 
-        {path: 'person', element: <PersonPage />}
+        {path: 'person', element: <PersonPage />},
+        {path: 'person/create', element: <CreatePerson />},
 
       ],
     },
@@ -193,6 +195,7 @@ export function PublicRouter() {
     { path: 'expenses/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
 
     { path: 'person', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'person/create', element: <AuthLayout><SignInPage /></AuthLayout> },
 
 
     { path: '404', element: <Page404 />, },

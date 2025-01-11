@@ -81,7 +81,7 @@ export default function PersonsIndex() {
           <TableHeaderComponent
             title="Pessoas"
             addButtonName="Cadastrar Pessoa"
-            addButtonPath="/persons/create"
+            addButtonPath="/person/create"
           />
 
           <Grid item xs={12}>
