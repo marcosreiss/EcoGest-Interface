@@ -39,7 +39,9 @@ export const createPurchaseService = async (payload: CreatePurchasePayload): Pro
 // Atualizar uma compra
 export const updatePurchaseService = async (id: number, payload: CreatePurchasePayload): Promise<PurchaseResponse> => {
     console.log(payload);
-    
+    payload.products.forEach((product, index)=>{
+        product.product = null;
+    });
 
     const formData = new FormData();
 
