@@ -1,19 +1,32 @@
-import type { ProductBasicInfo } from 'src/models/product';
-import type { SupplierBasicInfo } from 'src/models/supplier';
-import { PurchaseStatus, type CreatePurchasePayload } from "src/models/purchase";
+import type { ProductBasicInfo } from "src/models/product";
+import type { SupplierBasicInfo } from "src/models/supplier";
+import type { PurchaseProduct, CreatePurchasePayload } from "src/models/purchase";
 
-import React, { useState, useMemo, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 
-import Autocomplete from "@mui/material/Autocomplete";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Box,
   Grid,
+  Table,
   Button,
+  Dialog,
+  TableRow,
   TextField,
+  TableBody,
+  TableCell,
+  TableHead,
   Typography,
+  IconButton,
+  DialogTitle,
+  Autocomplete,
+  DialogActions,
+  DialogContent,
+  InputAdornment,
   CircularProgress,
 } from "@mui/material";
 
@@ -23,40 +36,10 @@ import { useGetProductsBasicInfo } from "src/hooks/useProduct";
 import { useGetSuppliersBasicInfo } from "src/hooks/useSupplier";
 import { useUpdatePurchase, useGetPurchaseById } from "src/hooks/usePurchase";
 
-import { CONFIG } from "src/config-global";
-// Removido: import { PurchaseStatus } from "src/models/purchase"; // Não mais necessário
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
 
-// ----------------------------------------------------------------------
-
-// Função auxiliar para converter string com vírgula para número
-const parseNumber = (value: string): number => {
-  if (typeof value !== 'string') return 0;
-  // Remove qualquer caractere que não seja dígito, ponto ou vírgula
-  const cleanedValue = value.replace(/[^\d,.-]/g, '').replace(',', '.');
-  const parsed = parseFloat(cleanedValue);
-  return Number.isNaN(parsed) ? 0 : parsed;
-};
-
-// Função auxiliar para formatar número para moeda brasileira
-const formatCurrency = (value: number): string =>
-  new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(value);
-
-// Defina um tipo separado para os dados do formulário
-type EditPurchaseFormData = Omit<CreatePurchasePayload, 'weightAmount' | 'price' | 'status' | 'date_time'> & {
-  weightAmount: string;
-  price: string;
-  date_time: string; // Manter como string no formulário
-};
-
 export default function EditPurchasePage() {
-  const { id } = useParams<{ id: string }>();
-  const purchaseId = Number(id);
-
   const formStyle = {
     mx: "auto",
     p: 3,
@@ -64,85 +47,80 @@ export default function EditPurchasePage() {
     borderRadius: 2,
     bgcolor: "background.paper",
   };
-
-  const [file, setFile] = useState<Blob | null>(null);
+  const router = useRouter();
+  const { id } = useParams<{ id: string }>();
 
   const {
-    control,
     register,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
-  } = useForm<EditPurchaseFormData>({
-    defaultValues: {
-      weightAmount: '',
-      price: '',
-      supplierId: -1,
-      productId: -1,
-      description: '',
-      date_time: '',
-    }
-  });
+  } = useForm<CreatePurchasePayload>();
 
-  const { data: purchase, isLoading: loadingPurchase } = useGetPurchaseById(purchaseId);
   const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
   const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
+  const { data: purchase, isLoading: loadingPurchase } = useGetPurchaseById(Number(id));
+
+  const [file, setFile] = useState<Blob | null>(null);
+  const [productsList, setProductsList] = useState<PurchaseProduct[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
+
+  const [modalProduct, setModalProduct] = useState<PurchaseProduct>({
+    productId: 0,
+    quantity: 0,
+    price: 0,
+    product: null,
+  });
 
   const updatePurchase = useUpdatePurchase();
-  const router = useRouter();
   const { addNotification } = useNotification();
+
+  useEffect(() => {
+    if (purchase) {
+      setValue("personId", purchase.supplier.personId);
+      setValue("description", purchase.description);
+      setValue("date_time", purchase.date_time ? purchase.date_time.split("T")[0] : "");
+      setValue("discount", purchase.discount);
+      setProductsList(purchase.products);
+    }
+  }, [purchase, setValue]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = e.target.files?.[0];
-    if (uploadedFile && uploadedFile.size <= 5 * 1024 * 1024) { // Limite de 5MB
+    if (uploadedFile && uploadedFile.size <= 5 * 1024 * 1024) {
+      // Limite de 5MB
       setFile(uploadedFile);
     } else {
       addNotification("Arquivo excede o limite de 5MB", "error");
     }
   };
 
-  useEffect(() => {
-    if (purchase) {
-      setValue("supplierId", purchase.supplierId);
-      setValue("productId", purchase.productId);
-      setValue("weightAmount", purchase.weightAmount.toString());
-      setValue("price", purchase.price.toString());
-      // Removido: setValue("status", purchase.purchaseStatus);
-      setValue("description", purchase.description || "");
-      // Corrigido: Converter para Date antes de formatar
-      // Verifica se purchase.date_time é uma string válida antes de converter
-      const date = new Date(purchase.date_time);
-      if (!Number.isNaN(date.getTime())) {
-        setValue("date_time", date.toISOString().split("T")[0]); // Formato YYYY-MM-DD
-      } else {
-        setValue("date_time", ""); // Define vazio se a data for inválida
-      }
+  const handleAddProduct = () => {
+    setProductsList([...productsList, modalProduct]);
+    setModalProduct({ productId: 0, quantity: 0, price: 0, product: null });
+    setModalOpen(false);
+  };
+
+  const handleRemoveProduct = () => {
+    if (selectedProductIndex !== null) {
+      setProductsList(productsList.filter((_, index) => index !== selectedProductIndex));
+      setSelectedProductIndex(null);
+      setConfirmDialogOpen(false);
     }
-  }, [purchase, setValue]);
+  };
 
-  const onSubmit = (data: EditPurchaseFormData) => {
-    // Converte vírgula para ponto em weightAmount e price
-    const parsedWeightAmount = parseNumber(data.weightAmount);
-    const parsedPrice = parseNumber(data.price);
-
+  const onSubmit = (data: CreatePurchasePayload) => {
     const payload: CreatePurchasePayload = {
       ...data,
-      weightAmount: parsedWeightAmount,
-      price: parsedPrice,
-      // Removido: status: PurchaseStatus.processing, // Não mais necessário
+      products: productsList,
       paymentSlip: file,
-      date_time: new Date(data.date_time),
-      status: PurchaseStatus.processing
+      date_time: data.date_time,
     };
 
-    // Adiciona o status existente da purchase no payload, se necessário
-    // Isso depende do backend aceitar a omissão do status ou requerer envio
-    // Se precisar enviar, descomente a linha abaixo
-    // payload.status = purchase?.purchaseStatus || PurchaseStatus.processing;
-
     updatePurchase.mutate(
-      { id: purchaseId, data: payload },
+      { id: Number(id), data: payload },
       {
         onSuccess: () => {
           addNotification("Compra atualizada com sucesso!", "success");
@@ -155,41 +133,22 @@ export default function EditPurchasePage() {
     );
   };
 
-  // Monitora os campos 'weightAmount' e 'price'
-  const weightAmountValue = watch('weightAmount');
-  const priceValue = watch('price');
-
-  // Calcula o totalPrice usando useMemo para otimizar a performance
-  const totalPrice = useMemo(() => {
-    const weight = parseNumber(weightAmountValue || '0');
-    const price = parseNumber(priceValue || '0');
-    const total = weight * price;
-    return Number.isNaN(total) || total <= 0 ? '' : formatCurrency(total);
-  }, [weightAmountValue, priceValue]);
-
   if (loadingPurchase) {
-    return (
-      <DashboardContent>
-        <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-          <CircularProgress />
-        </Box>
-      </DashboardContent>
-    );
+    return <CircularProgress />;
   }
 
   return (
     <>
       <Helmet>
-        <title>{`Editar Compra - ${CONFIG.appName}`}</title>
+        <title>Editar Compra</title>
       </Helmet>
-
       <DashboardContent maxWidth="md">
         <Grid container>
           <Grid item xs={12}>
             <Box sx={formStyle}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-                  <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
+                  <Typography variant="h4" gutterBottom>
                     Editar Compra
                   </Typography>
                 </Grid>
@@ -201,13 +160,13 @@ export default function EditPurchasePage() {
                     loading={loadingSuppliers}
                     getOptionLabel={(option: SupplierBasicInfo) => option.name}
                     isOptionEqualToValue={(option, value) =>
-                      option.supplierId === value.supplierId
+                      option.personId === value.personId
                     }
                     defaultValue={suppliers?.data?.find(
-                      (supplier) => supplier.supplierId === purchase?.supplierId
-                    ) || null}
+                      (supplier) => supplier.personId === purchase?.supplier.personId
+                    )}
                     onChange={(_, newValue) =>
-                      setValue("supplierId", newValue?.supplierId || -1, {
+                      setValue("personId", newValue ? newValue.personId : -1, {
                         shouldValidate: true,
                       })
                     }
@@ -216,112 +175,10 @@ export default function EditPurchasePage() {
                         {...params}
                         label="Fornecedor"
                         variant="outlined"
-                        error={!!errors.supplierId}
-                        helperText={errors.supplierId?.message}
-                        {...register("supplierId", { required: "Selecione um fornecedor." })}
+                        error={!!errors.personId}
+                        helperText={errors.personId?.message}
                       />
                     )}
-                  />
-                </Grid>
-
-                {/* Produto */}
-                <Grid item xs={12}>
-                  <Autocomplete
-                    options={products?.data || []}
-                    loading={loadingProducts}
-                    getOptionLabel={(option: ProductBasicInfo) => option.name}
-                    isOptionEqualToValue={(option, value) =>
-                      option.productId === value.productId
-                    }
-                    defaultValue={products?.data?.find(
-                      (product) => product.productId === purchase?.productId
-                    ) || null}
-                    onChange={(_, newValue) =>
-                      setValue("productId", newValue?.productId || -1, {
-                        shouldValidate: true,
-                      })
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Produto"
-                        variant="outlined"
-                        error={!!errors.productId}
-                        helperText={errors.productId?.message}
-                        {...register("productId", { required: "Selecione um produto." })}
-                      />
-                    )}
-                  />
-                </Grid>
-
-                {/* Quantidade (aceitando vírgula) */}
-                <Grid item xs={12}>
-                  <Controller
-                    name="weightAmount"
-                    control={control}
-                    rules={{
-                      required: "Digite a quantidade.",
-                      validate: {
-                        isPositive: (value) =>
-                          parseNumber(value) >= 0.1 || "A quantidade mínima é 0,1 tonelada.",
-                      },
-                    }}
-                    render={({ field: { onChange, value }, fieldState: { error } }) => (
-                      <TextField
-                        fullWidth
-                        label="Quantidade (Toneladas)"
-                        type="text" // aceita vírgula
-                        value={value ? String(value).replace(".", ",") : ""}
-                        onChange={(e) => {
-                          const inputValue = e.target.value.replace(",", ".");
-                          onChange(inputValue || "");
-                        }}
-                        error={!!error}
-                        helperText={error?.message}
-                      />
-                    )}
-                  />
-                </Grid>
-
-                {/* Preço (aceitando vírgula) */}
-                <Grid item xs={12}>
-                  <Controller
-                    name="price"
-                    control={control}
-                    rules={{
-                      required: "Digite o preço.",
-                      validate: {
-                        isNonNegative: (value) =>
-                          parseNumber(value) >= 0 || "O preço não pode ser negativo.",
-                      },
-                    }}
-                    render={({ field: { onChange, value }, fieldState: { error } }) => (
-                      <TextField
-                        fullWidth
-                        label="Preço unitário (R$)"
-                        type="text" // aceita vírgula
-                        value={value ? String(value).replace(".", ",") : ""}
-                        onChange={(e) => {
-                          const inputValue = e.target.value.replace(",", ".");
-                          onChange(inputValue || "");
-                        }}
-                        error={!!error}
-                        helperText={error?.message}
-                      />
-                    )}
-                  />
-                </Grid>
-
-                {/* Preço Total */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Preço Total (R$)"
-                    value={totalPrice}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    helperText="Preço total calculado automaticamente."
                   />
                 </Grid>
 
@@ -332,7 +189,7 @@ export default function EditPurchasePage() {
                     label="Descrição"
                     placeholder="Descrição da compra"
                     multiline
-                    rows={4}
+                    rows={3}
                     {...register("description")}
                   />
                 </Grid>
@@ -344,10 +201,76 @@ export default function EditPurchasePage() {
                     label="Data da Compra"
                     type="date"
                     InputLabelProps={{ shrink: true }}
-                    {...register("date_time", { required: "Selecione uma data." })}
+                    {...register("date_time", { required: "Data é obrigatória." })}
                     error={!!errors.date_time}
                     helperText={errors.date_time?.message}
                   />
+                </Grid>
+
+                {/* Desconto */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Desconto (%)"
+                    type="number"
+                    InputProps={{
+                      endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                    }}
+                    {...register("discount")}
+                  />
+                </Grid>
+
+                {/* Produtos Adicionados */}
+                <Grid item xs={12}>
+                  <Button
+                    startIcon={<AddIcon />}
+                    variant="contained"
+                    onClick={() => setModalOpen(true)}
+                  >
+                    Adicionar Produto
+                  </Button>
+                  {productsList.length > 0 && (
+                    <Table size="small" sx={{ marginTop: 3, marginBottom: 3 }}>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Produto</TableCell>
+                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Qtd</TableCell>
+                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Preço</TableCell>
+                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Ações</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {productsList.map((product, index) => {
+                          const productPrice = parseFloat(product.price as any) || 0; // Força o valor a ser numérico
+                          return (
+                            <TableRow key={index}>
+                              <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                                {product.product?.name || "Produto não encontrado"}
+                              </TableCell>
+                              <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                                {product.quantity}
+                              </TableCell>
+                              <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                                R$ {productPrice.toFixed(2)}
+                              </TableCell>
+                              <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                                <IconButton
+                                  color="error"
+                                  onClick={() => {
+                                    setSelectedProductIndex(index);
+                                    setConfirmDialogOpen(true);
+                                  }}
+                                  size="small"
+                                >
+                                  <DeleteIcon fontSize="small" />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  )}
                 </Grid>
 
                 {/* Upload do arquivo */}
@@ -374,11 +297,10 @@ export default function EditPurchasePage() {
                     color="primary"
                     fullWidth
                     onClick={handleSubmit(onSubmit)}
-                    disabled={updatePurchase.isPending}
                   >
-                    Atualizar
+                    Atualizar Compra
                     {updatePurchase.isPending && (
-                      <CircularProgress size={20} sx={{ marginLeft: "20px" }} />
+                      <CircularProgress size={20} sx={{ marginLeft: 2 }} />
                     )}
                   </Button>
                 </Grid>
@@ -387,6 +309,71 @@ export default function EditPurchasePage() {
           </Grid>
         </Grid>
       </DashboardContent>
+
+      {/* Modal para adicionar produto */}
+      <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
+        <DialogTitle>Adicionar Produto</DialogTitle>
+        <DialogContent>
+          <Autocomplete
+            options={products?.data || []}
+            loading={loadingProducts}
+            getOptionLabel={(option: ProductBasicInfo) => option.name}
+            isOptionEqualToValue={(option, value) => option.productId === value.productId}
+            onChange={(_, newValue) =>
+              setModalProduct((prev) => ({
+                ...prev,
+                productId: newValue ? newValue.productId : 0,
+              }))
+            }
+            renderInput={(params) => <TextField {...params} label="Produto" />}
+          />
+          <TextField
+            fullWidth
+            label="Quantidade"
+            type="number"
+            value={modalProduct.quantity}
+            onChange={(e) =>
+              setModalProduct({ ...modalProduct, quantity: +e.target.value })
+            }
+          />
+          <TextField
+            fullWidth
+            label="Preço"
+            type="number"
+            value={modalProduct.price}
+            onChange={(e) =>
+              setModalProduct({ ...modalProduct, price: +e.target.value })
+            }
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setModalOpen(false)}>Cancelar</Button>
+          <Button onClick={handleAddProduct} variant="contained">
+            Adicionar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog de confirmação para remover produto */}
+      <Dialog
+        open={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+      >
+        <DialogTitle>Remover Produto</DialogTitle>
+        <DialogContent>
+          Tem certeza de que deseja remover este produto da compra?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDialogOpen(false)}>Cancelar</Button>
+          <Button
+            onClick={handleRemoveProduct}
+            variant="contained"
+            color="error"
+          >
+            Remover
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
-  )
+  );
 }

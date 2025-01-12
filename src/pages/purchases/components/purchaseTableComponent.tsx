@@ -175,10 +175,7 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
               />
             </TableCell>
             <TableCell>Fornecedor</TableCell>
-            <TableCell>Produto</TableCell>
             <TableCell>Data</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Preço</TableCell>
             <TableCell>Ações</TableCell>
           </TableRow>
         </TableHead>
@@ -199,17 +196,11 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                   />
                 </TableCell>
                 <TableCell>{purchase.supplier?.name || "-"}</TableCell>
-                <TableCell>{purchase.product?.name || "-"}</TableCell>
                 {/* Data formatada */}
                 <TableCell>
                   {purchase.date_time
                     ? formatDate(purchase.date_time)
                     : "-"}
-                </TableCell>
-                <TableCell>{purchaseStatusMapping[purchase.purchaseStatus]}</TableCell>
-                {/* Preço formatado em R$ */}
-                <TableCell>
-                  {purchase.totalPrice !== undefined ? formatPrice(purchase.totalPrice) : "-"}
                 </TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, purchase.purchaseId)}>︙</IconButton>
@@ -218,19 +209,14 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                     open={Boolean(anchorEl && selectedItem === purchase.purchaseId)}
                     onClose={handleCloseMenu}
                   >
+                    <MenuItem onClick={() => handleEditClick(purchase.purchaseId)}>Editar</MenuItem>
                     <MenuItem onClick={() => handleDetailsClick(purchase.purchaseId)}>Detalhes</MenuItem>
-                    {purchase.purchaseStatus === PurchaseStatus.processing && (
-                      <MenuItem onClick={() => handleEditClick(purchase.purchaseId)}>Editar</MenuItem>
-                    )}
-                    {purchase.paymentSlip !== null && (
+                    {/* {purchase.paymentSlip !== null && (
                       <MenuItem onClick={() => handleViewDocumentClick(purchase.paymentSlip)}>
                         Visualizar Documento
                       </MenuItem>
-                    )}
+                    )} */}
                     <MenuItem onClick={() => handleDeleteClick(purchase.purchaseId)}>Deletar</MenuItem>
-                    {purchase.purchaseStatus === PurchaseStatus.processing && (
-                      <MenuItem onClick={handleOpenStatusModal}>Atualizar Status</MenuItem>
-                    )}
                   </Menu>
                 </TableCell>
               </TableRow>

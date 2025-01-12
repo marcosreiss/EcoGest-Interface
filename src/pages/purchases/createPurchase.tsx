@@ -68,6 +68,7 @@ export default function CreatePurchasePage() {
     productId: 0,
     quantity: 0,
     price: 0,
+    product: null,
   });
 
   const createPurchase = useCreatePurchase();
@@ -85,7 +86,7 @@ export default function CreatePurchasePage() {
 
   const handleAddProduct = () => {
     setProductsList([...productsList, modalProduct]);
-    setModalProduct({ productId: 0, quantity: 0, price: 0 });
+    setModalProduct({ productId: 0, quantity: 0, price: 0, product: null });
     setModalOpen(false);
   };
 
@@ -102,7 +103,7 @@ export default function CreatePurchasePage() {
       ...data,
       products: productsList,
       paymentSlip: file,
-      date_time: new Date(data.date_time),
+      date_time: data.date_time,
     };
 
     createPurchase.mutate(payload, {
