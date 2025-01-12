@@ -1,5 +1,5 @@
 import type { Person } from "./person";
-import { Product } from "./product";
+import type { Product } from "./product";
 
 export enum PurchaseStatus {
     processing = "processing",
@@ -18,7 +18,7 @@ export interface Purchase {
     products: PurchaseProduct[];
     description?: string | null;
     date_time: string;
-    paymentSlip: Blob | null;
+    paymentSlip: { data: number[] } | null;
     discount: number;
 }
 

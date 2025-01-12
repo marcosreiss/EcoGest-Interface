@@ -211,11 +211,11 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                   >
                     <MenuItem onClick={() => handleEditClick(purchase.purchaseId)}>Editar</MenuItem>
                     <MenuItem onClick={() => handleDetailsClick(purchase.purchaseId)}>Detalhes</MenuItem>
-                    {/* {purchase.paymentSlip !== null && (
+                    {purchase.paymentSlip !== null && (
                       <MenuItem onClick={() => handleViewDocumentClick(purchase.paymentSlip)}>
                         Visualizar Documento
                       </MenuItem>
-                    )} */}
+                    )}
                     <MenuItem onClick={() => handleDeleteClick(purchase.purchaseId)}>Deletar</MenuItem>
                   </Menu>
                 </TableCell>
