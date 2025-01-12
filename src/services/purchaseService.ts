@@ -23,7 +23,8 @@ export const createPurchaseService = async (payload: CreatePurchasePayload): Pro
     if (payload.paymentSlip) {
         formData.append("paymentSlip", payload.paymentSlip);
     }
-
+    console.log(payload);
+    
     
     const response = await api.post<PurchaseResponse>("/purchases", payload, {
         headers: {

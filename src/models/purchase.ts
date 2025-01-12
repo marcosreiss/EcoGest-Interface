@@ -29,7 +29,7 @@ export interface Purchase {
 
 export interface CreatePurchasePayload {
     personId: number;
-    product: PurchaseProduct[];
+    products: PurchaseProduct[];
     description?: string | null;
     date_time: Date;
     paymentSlip: Blob | null;

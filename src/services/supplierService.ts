@@ -45,6 +45,6 @@ export const getSupplierByNameService = async (name: string): Promise<Supplier[]
 //--------------------------
 
 export const getSuppliersBasicInfoService = async (): Promise<SuppliersBasicInfoList> => {
-    const response = await api.get<SuppliersBasicInfoList>("/suppliers/basic-info");
+    const response = await api.get<SuppliersBasicInfoList>("/person/suppliers/basic-info");
     return response.data;
 };
