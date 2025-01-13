@@ -4,9 +4,13 @@ import { useParams } from "react-router-dom";
 import {
   Box,
   Grid,
+  Table,
   Button,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableBody,
   Typography,
-  IconButton,
   LinearProgress,
 } from "@mui/material";
 
@@ -47,42 +51,17 @@ export default function PurchaseDetailsPage() {
     }
   };
 
-  // Função para traduzir status
-  const translateStatus = (status?: string) => {
-    switch (status) {
-      case "processing":
-        return "Processando";
-      case "approved":
-        return "Aprovado";
-      case "canceled":
-        return "Cancelado";
-      default:
-        return status || "-";
-    }
+  const formatDate = (dateStr?: string | Date) => {
+    if (!dateStr) return "-";
+    const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
+    return dateObj.toLocaleDateString("pt-BR");
   };
-    // Função para formatar a data no formato pt-BR
-    const formatDate = (dateStr?: string | Date) => {
-      if (!dateStr) return "-";
-      const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
-      dateObj.setDate(dateObj.getDate() + 1);
-      return dateObj.toLocaleDateString("pt-BR");
-    };
 
-  // Formata o valor em R$ (Real)
   const formatPrice = (value?: number) => {
     if (value === undefined) return "-";
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
-    }).format(value);
-  };
-
-  // Formata a quantidade (por exemplo, duas casas decimais)
-  const formatQuantity = (value?: number) => {
-    if (value === undefined) return "-";
-    return new Intl.NumberFormat("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
     }).format(value);
   };
 
@@ -96,105 +75,87 @@ export default function PurchaseDetailsPage() {
           <LinearProgress />
         ) : (
           <>
-            <Grid item xs={6}>
-              <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>
-                Detalhes da Compra
-              </Typography>
-            </Grid>
-            <Grid container>
-              <Grid item xs={12}>
-                <Box sx={formStyle}>
-                  <Grid container spacing={2}>
-                    {/* Nome do Fornecedor */}
-                    <Grid item xs={6}>
-                      <Typography variant="h6" gutterBottom>
-                        Fornecedor: {purchase?.supplier?.name || "-"}
-                      </Typography>
-                    </Grid>
+            <Typography variant="h4" sx={{ mb: 3 }}>
+              Detalhes da Compra
+            </Typography>
+            <Box sx={formStyle}>
+              <Grid container spacing={2}>
+                {/* Nome do Fornecedor */}
+                <Grid item xs={12}>
+                  <Typography variant="h6">Fornecedor</Typography>
+                  <Typography>Nome: {purchase?.supplier.name || "-"}</Typography>
+                </Grid>
 
-                    {/* Botão de Editar */}
-                    <Grid item xs={6}>
-                      <IconButton onClick={handleEditClick}>
-                        <img alt="icon" src="/assets/icons/ic-edit.svg" />
-                      </IconButton>
-                    </Grid>
+                {/* Descrição */}
+                <Grid item xs={12}>
+                  <Typography variant="body1">
+                    Descrição: {purchase?.description || "-"}
+                  </Typography>
+                </Grid>
 
-                    {/* Nome do Produto */}
-                    <Grid item xs={12}>
-                      <Typography variant="body1" gutterBottom>
-                        Produto: {purchase?.product?.name || "-"}
-                      </Typography>
-                    </Grid>
+                {/* Data da Compra */}
+                <Grid item xs={12}>
+                  <Typography variant="body1">
+                    Data da Compra: {formatDate(purchase?.date_time)}
+                  </Typography>
+                </Grid>
 
-                    {/* Quantidade formatada */}
-                    <Grid item xs={12}>
-                      <Typography variant="body1" gutterBottom>
-                        Quantidade:{" "}
-                        {purchase?.weightAmount !== undefined
-                          ? `${formatQuantity(purchase.weightAmount)} Kilogramas`
-                          : "-"}
-                      </Typography>
-                    </Grid>
+                {/* Desconto */}
+                <Grid item xs={12}>
+                  <Typography variant="body1">
+                    Desconto: {formatPrice(purchase?.discount)}
+                  </Typography>
+                </Grid>
 
-                    {/* Preço formatado */}
-                    <Grid item xs={12}>
-                      <Typography variant="body1" gutterBottom>
-                        Preço unitário:{" "}
-                        {purchase?.price !== undefined
-                          ? formatPrice(purchase.price)
-                          : "-"}
-                      </Typography>
-                    </Grid>
+                {/* Lista de Produtos */}
+                <Grid item xs={12}>
+                  <Typography variant="h6" gutterBottom>
+                    Produtos
+                  </Typography>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Produto</TableCell>
+                        <TableCell>Quantidade</TableCell>
+                        <TableCell>Preço Unitário</TableCell>
+                        <TableCell>Total</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {purchase?.products.map((product) => (
+                        <TableRow key={product.productId}>
+                          <TableCell>{product.product.name}</TableCell>
+                          <TableCell>{product.quantity}</TableCell>
+                          <TableCell>{formatPrice(product.price)}</TableCell>
+                          <TableCell>{formatPrice(product.quantity * product.price)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Grid>
 
-                    {/* Preço formatado */}
-                    <Grid item xs={12}>
-                      <Typography variant="body1" gutterBottom>
-                        Preço total:{" "}
-                        {purchase?.totalPrice !== undefined
-                          ? formatPrice(purchase.totalPrice)
-                          : "-"}
-                      </Typography>
-                    </Grid>
+                {/* Botão para Editar */}
+                <Grid item xs={12}>
+                  <Button variant="contained" color="primary" onClick={handleEditClick}>
+                    Editar Compra
+                  </Button>
+                </Grid>
 
-                    {/* Status traduzido */}
-                    <Grid item xs={12}>
-                      <Typography variant="body1" gutterBottom>
-                        Status: {translateStatus(purchase?.purchaseStatus)}
-                      </Typography>
-                    </Grid>
-
-                    {/* Data da Compra */}
-                    <Grid item xs={12}>
-                      <Typography variant="body1" gutterBottom>
-                        Data da Compra:{" "}
-                        {formatDate(purchase?.date_time) || "" }
-                      </Typography>
-                    </Grid>
-
-                    {/* Descrição */}
-                    <Grid item xs={12}>
-                      <Typography variant="body1" gutterBottom>
-                        Descrição: {purchase?.description || "-"}
-                      </Typography>
-                    </Grid>
-
-                    {/* Visualizar Arquivo */}
-                    {purchase?.paymentSlip?.data && (
-                      <Grid item xs={12}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={handleViewFile}
-                          fullWidth
-                        >
-                          Visualizar Nota Fiscal
-                        </Button>
-                      </Grid>
-                    )}
+                {/* Nota Fiscal */}
+                {purchase?.paymentSlip?.data && (
+                  <Grid item xs={12}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleViewFile}
+                      fullWidth
+                    >
+                      Visualizar Nota Fiscal
+                    </Button>
                   </Grid>
-                </Box>
+                )}
               </Grid>
-            </Grid>
+            </Box>
           </>
         )}
       </DashboardContent>
