@@ -1,4 +1,4 @@
-import type { Expense } from "src/models/expense";
+import type { Entry } from "src/models/expense";
 import type { SearchByPeriodRequest } from "src/models/sale";
 
 import * as React from "react";
@@ -23,7 +23,7 @@ import ExpensesTableHeaderComponent from "./components/expensesTableHeaderCompon
 // ----------------------------------------------------------------------
 
 export default function ExpensePage() {
-  const [selectedExpenses, setSelectedExpenses] = useState<Expense[]>([]);
+  const [selectedExpenses, setSelectedExpenses] = useState<Entry[]>([]);
   const rowsPerPage = 5;
   const [page, setPage] = useState(0);
 
@@ -50,7 +50,7 @@ export default function ExpensePage() {
 
   const handleDeleteExpense = () => {
     selectedExpenses.forEach((expense) => {
-      deleteExpense.mutate(expense.expenseId, {
+      deleteExpense.mutate(expense.entryId, {
         onSuccess: () => {
           notification.addNotification("Despesa deletada com sucesso", "success");
           setSelectedExpenses([]);

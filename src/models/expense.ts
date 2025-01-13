@@ -1,26 +1,32 @@
-export interface Expense {
-    expenseId: number;
-    purchasesId?: number;
-    employeeId?: number;
-    type: string;
+export interface Entry {
+    entryId: number;
+    type: EntryType;
+    subtype: string;
     description?: string | null;
-    price?: number;
+    value?: number;
+    date_time: Date;
     createdAt: Date;
 }
+export enum EntryType {
+    ganho = "ganho",
+    perda = "perda"
+}
 
-export interface ExpenseListResponse {
-    data: Expense[];
+export interface EntryListResponse {
+    data: Entry[];
     meta: any;
 }
 
-export interface ExpenseResponse {
-    data: Expense;
+export interface EntryResponse {
+    data: Entry;
 }
 
-export interface ExpensePayload{
-    type: string;
+export interface EntryPayload{
+    type: EntryType;
+    subtype: string;
     description?: string | null;
-    price: number;
+    value?: number;
+    date_time: Date;
 }
 
 export interface CustomExpenseReceiptInfo{

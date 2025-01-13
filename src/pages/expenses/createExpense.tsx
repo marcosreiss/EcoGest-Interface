@@ -1,5 +1,3 @@
-import type { ExpensePayload } from "src/models/expense";
-
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useForm, Controller } from "react-hook-form";
@@ -19,10 +17,23 @@ import { useCreateExpense } from "src/hooks/useExpense";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
+import { EntryType, type EntryPayload } from "src/models/expense";
 import { useNotification } from "src/context/NotificationContext";
 
-// Opções predefinidas para o tipo de despesa
-const predefinedTypes = ["Transporte", "Material", "Serviço", "Outro"];
+// Opções predefinidas para o tipo e subtipo de despesa
+const predefinedTypes = ["Entrada", "Saída"];
+const predefinedSubtypes = [
+  "Peças e Serviços",
+  "Folha de pagamento",
+  "Diárias",
+  "MERCEDES 710 - HPP1C70",
+  "MERCEDES 709 - JKW6I19",
+  "MERCEDES 708 - LVR7727",
+  "IMPOSTO ICMS FRETE",
+  "PAG FRETE",
+  "VALE TRANSPORTE",
+  "IMPOSTOS FEDERAIS",
+];
 
 export default function CreateExpensePage() {
   const formStyle = {
@@ -37,22 +48,28 @@ export default function CreateExpensePage() {
     control,
     handleSubmit,
     register,
+    setValue,
     formState: { errors },
-  } = useForm<ExpensePayload>();
+  } = useForm<EntryPayload>();
 
   const createExpense = useCreateExpense();
   const router = useRouter();
   const { addNotification } = useNotification();
 
-  const onSubmit = (data: ExpensePayload) => {
-    // 1. Converte vírgula para ponto
-    const priceStr = String(data.price).replace(",", ".");
-    // 2. Converte o campo em número (double)
-    const formattedPrice = parseFloat(priceStr);
+  const setEntryType = (frontendType: string) => {
+    const entryType = frontendType === "Entrada" ? EntryType.ganho : EntryType.perda;
+    setValue("type", entryType);
+  };
 
-    const formattedData = {
+  const onSubmit = (data: EntryPayload) => {
+    // 1. Converte vírgula para ponto
+    const valueStr = String(data.value).replace(",", ".");
+    // 2. Converte o campo em número (double)
+    const formattedValue = parseFloat(valueStr);
+
+    const formattedData: EntryPayload = {
       ...data,
-      price: formattedPrice,
+      value: formattedValue,
     };
 
     createExpense.mutate(formattedData, {
@@ -89,11 +106,40 @@ export default function CreateExpensePage() {
                     name="type"
                     control={control}
                     rules={{ required: "O tipo é obrigatório." }}
-                    defaultValue=""
+                    defaultValue={undefined}
                     render={({ field }) => (
                       <Autocomplete
                         {...field}
                         options={predefinedTypes}
+                        onChange={(_, newValue) => {
+                          field.onChange(newValue);
+                          setEntryType(newValue || "");
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Tipo"
+                            placeholder="Selecione ou digite o tipo"
+                            error={!!errors.type}
+                            helperText={errors.type?.message}
+                          />
+                        )}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                {/* Campo Subtipo com Autocomplete */}
+                <Grid item xs={12}>
+                  <Controller
+                    name="subtype"
+                    control={control}
+                    rules={{ required: "O subtipo é obrigatório." }}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <Autocomplete
+                        {...field}
+                        options={predefinedSubtypes}
                         freeSolo
                         value={field.value || ""}
                         onChange={(_, newValue) => field.onChange(newValue)}
@@ -104,10 +150,10 @@ export default function CreateExpensePage() {
                         renderInput={(params) => (
                           <TextField
                             {...params}
-                            label="Tipo"
-                            placeholder="Selecione ou digite o tipo"
-                            error={!!errors.type}
-                            helperText={errors.type?.message}
+                            label="Subtipo"
+                            placeholder="Selecione ou digite o subtipo"
+                            error={!!errors.subtype}
+                            helperText={errors.subtype?.message}
                           />
                         )}
                       />
@@ -135,12 +181,27 @@ export default function CreateExpensePage() {
                     placeholder="Ex: 150,00"
                     type="text" // <-- texto para aceitar vírgula
                     inputProps={{ min: 0, step: "0.01" }}
-                    {...register("price", {
+                    {...register("value", {
                       required: "O valor é obrigatório.",
                       min: { value: 0, message: "O valor não pode ser negativo." },
                     })}
-                    error={!!errors.price}
-                    helperText={errors.price?.message}
+                    error={!!errors.value}
+                    helperText={errors.value?.message}
+                  />
+                </Grid>
+
+                {/* Campo Data e Hora */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Data e Hora"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    {...register("date_time", {
+                      required: "A data e hora são obrigatórias.",
+                    })}
+                    error={!!errors.date_time}
+                    helperText={errors.date_time?.message}
                   />
                 </Grid>
 

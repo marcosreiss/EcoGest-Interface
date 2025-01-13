@@ -1,10 +1,10 @@
 import type { AxiosError } from "axios";
 import type { SearchByPeriodRequest } from "src/models/purchase";
 import type {
-    Expense,
-    ExpensePayload,
-    ExpenseResponse,
-    ExpenseListResponse,
+    Entry,
+    EntryPayload,
+    EntryResponse,
+    EntryListResponse,
     CustomExpenseReceiptInfo,
 } from "src/models/expense";
 
@@ -23,7 +23,7 @@ import {
 
 // Hook para listar despesas paginadas
 export const useGetExpensesPaginated = (skip: number, take: number) =>
-    useQuery<ExpenseListResponse, AxiosError>({
+    useQuery<EntryListResponse, AxiosError>({
         queryKey: ["expenses-list", { skip, take }],
         queryFn: () => getExpensesPaginatedService(skip, take),
     });
@@ -32,7 +32,7 @@ export const useGetExpensesPaginated = (skip: number, take: number) =>
 export const useCreateExpense = () => {
     const queryClient = useQueryClient();
 
-    return useMutation<ExpenseResponse, AxiosError, ExpensePayload>({
+    return useMutation<EntryResponse, AxiosError, EntryPayload>({
         mutationFn: (payload) => createExpenseService(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -46,7 +46,7 @@ export const useCreateExpense = () => {
 export const useUpdateExpense = () => {
     const queryClient = useQueryClient();
 
-    return useMutation<ExpenseResponse, AxiosError, { id: number; data: ExpensePayload }>({
+    return useMutation<EntryResponse, AxiosError, { id: number; data: EntryPayload }>({
         mutationFn: ({ id, data }) => updateExpenseService(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -72,7 +72,7 @@ export const useDeleteExpense = () => {
 
 // Hook para buscar uma despesa por ID
 export const useGetExpenseById = (id: number) =>
-    useQuery<Expense, AxiosError>({
+    useQuery<Entry, AxiosError>({
         queryKey: ["expense", id],
         queryFn: () => getExpenseByIdService(id),
     });
@@ -91,7 +91,7 @@ export const useGenerateCustomExpenseReceipt = () =>
     });
 
 export const useSearchExpensesByPeriod = (payload: SearchByPeriodRequest) =>
-    useQuery<Expense[], AxiosError>({
+    useQuery<Entry[], AxiosError>({
         queryKey: ['expensesByPeriod', payload],
         queryFn: () => searchExpensesByPeriodService(payload.startDate!, payload.endDate!),
         enabled: !!payload?.startDate && !!payload?.endDate,

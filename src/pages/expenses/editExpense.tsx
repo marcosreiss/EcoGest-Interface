@@ -1,6 +1,3 @@
-import type { SubmitHandler } from "react-hook-form";
-import type { ExpensePayload } from "src/models/expense";
-
 import React, { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
@@ -22,10 +19,23 @@ import { useUpdateExpense, useGetExpenseById } from "src/hooks/useExpense";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
+import { EntryType, type EntryPayload } from "src/models/expense";
 import { useNotification } from "src/context/NotificationContext";
 
-// Opções predefinidas para o tipo de despesa
-const predefinedTypes = ["Transporte", "Material", "Serviço", "Outro"];
+// Opções predefinidas para o tipo e subtipo de despesa
+const predefinedTypes = ["Entrada", "Saída"];
+const predefinedSubtypes = [
+  "Peças e Serviços",
+  "Folha de pagamento",
+  "Diárias",
+  "MERCEDES 710 - HPP1C70",
+  "MERCEDES 709 - JKW6I19",
+  "MERCEDES 708 - LVR7727",
+  "IMPOSTO ICMS FRETE",
+  "PAG FRETE",
+  "VALE TRANSPORTE",
+  "IMPOSTOS FEDERAIS",
+];
 
 export default function EditExpensePage() {
   const { id } = useParams<{ id: string }>();
@@ -45,7 +55,7 @@ export default function EditExpensePage() {
     register,
     setValue,
     formState: { errors },
-  } = useForm<ExpensePayload>();
+  } = useForm<EntryPayload>();
 
   const updateExpense = useUpdateExpense();
   const router = useRouter();
@@ -61,19 +71,27 @@ export default function EditExpensePage() {
   useEffect(() => {
     if (expense) {
       setValue("type", expense.type);
+      setValue("subtype", expense.subtype || "");
       setValue("description", expense.description || "");
-      setValue("price", expense.price || 0);
+      setValue("value", expense.value || 0);
+      setValue("date_time", expense.date_time);
     }
   }, [expense, setValue]);
 
-  const onSubmit: SubmitHandler<ExpensePayload> = (formData) => {
-    // Converte vírgula para ponto no campo price
-    const priceStr = String(formData.price).replace(",", ".");
-    const formattedPrice = parseFloat(priceStr);
+  const setEntryType = (frontendType: string) => {
+    const entryType = frontendType === "Entrada" ? EntryType.ganho : EntryType.perda;
+    setValue("type", entryType);
+  };
 
-    const updatedData: ExpensePayload = {
+  const onSubmit = (formData: EntryPayload) => {
+    // Converte vírgula para ponto no campo value
+    const valueStr = String(formData.value).replace(",", ".");
+    const formattedValue = parseFloat(valueStr);
+
+    const updatedData: EntryPayload = {
       ...formData,
-      price: formattedPrice, // envia como número
+      value: formattedValue, // envia como número
+      type: formData.type,
     };
 
     updateExpense.mutate(
@@ -129,10 +147,7 @@ export default function EditExpensePage() {
             <Box sx={formStyle}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-                  <Typography
-                    variant="h4"
-                    sx={{ mb: { xs: 3, md: 5 } }}
-                  >
+                  <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
                     Editar Despesa
                   </Typography>
                 </Grid>
@@ -143,18 +158,16 @@ export default function EditExpensePage() {
                     name="type"
                     control={control}
                     rules={{ required: "O tipo é obrigatório." }}
-                    defaultValue=""
+                    defaultValue={undefined}
                     render={({ field }) => (
                       <Autocomplete
                         {...field}
                         options={predefinedTypes}
-                        freeSolo
                         value={field.value || ""}
-                        onChange={(_, newValue) => field.onChange(newValue)}
-                        inputValue={field.value || ""}
-                        onInputChange={(_, newInputValue) =>
-                          field.onChange(newInputValue)
-                        }
+                        onChange={(_, newValue) => {
+                          field.onChange(newValue);
+                          setEntryType(newValue || "");
+                        }}
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -162,6 +175,34 @@ export default function EditExpensePage() {
                             placeholder="Selecione ou digite o tipo"
                             error={!!errors.type}
                             helperText={errors.type?.message}
+                          />
+                        )}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                {/* Campo Subtipo com Autocomplete */}
+                <Grid item xs={12}>
+                  <Controller
+                    name="subtype"
+                    control={control}
+                    rules={{ required: "O subtipo é obrigatório." }}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <Autocomplete
+                        {...field}
+                        options={predefinedSubtypes}
+                        freeSolo
+                        value={field.value || ""}
+                        onChange={(_, newValue) => field.onChange(newValue)}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Subtipo"
+                            placeholder="Selecione ou digite o subtipo"
+                            error={!!errors.subtype}
+                            helperText={errors.subtype?.message}
                           />
                         )}
                       />
@@ -187,14 +228,29 @@ export default function EditExpensePage() {
                     fullWidth
                     label="Valor (R$)"
                     placeholder="Ex: 150,00"
-                    type="text" // texto para aceitar vírgula
+                    type="text"
                     inputProps={{ min: 0, step: "0.01" }}
-                    {...register("price", {
+                    {...register("value", {
                       required: "O valor é obrigatório.",
                       min: { value: 0, message: "O valor não pode ser negativo." },
                     })}
-                    error={!!errors.price}
-                    helperText={errors.price?.message}
+                    error={!!errors.value}
+                    helperText={errors.value?.message}
+                  />
+                </Grid>
+
+                {/* Campo Data e Hora */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Data e Hora"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    {...register("date_time", {
+                      required: "A data e hora são obrigatórias.",
+                    })}
+                    error={!!errors.date_time}
+                    helperText={errors.date_time?.message}
                   />
                 </Grid>
 

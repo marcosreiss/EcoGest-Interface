@@ -17,15 +17,15 @@ import { useRouter } from "src/routes/hooks";
 
 import { useDeleteExpense, useGetExpenseReceipt } from "src/hooks/useExpense";
 
-import { type Expense } from "src/models/expense";
+import { type Entry } from "src/models/expense";
 import { useNotification } from "src/context/NotificationContext";
 
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
 
 interface ExpenseTableComponentProps {
-  expenses: Expense[];
+  expenses: Entry[];
   isLoading: boolean;
-  setSelectedExpenses: React.Dispatch<React.SetStateAction<Expense[]>>;
+  setSelectedExpenses: React.Dispatch<React.SetStateAction<Entry[]>>;
 }
 
 const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
@@ -75,10 +75,10 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
     handleCloseMenu();
   };
 
-  // const handleEditClick = (expenseId: number) => {
-  //   navigate.push(`edit/${expenseId}`);
-  //   handleCloseMenu();
-  // };
+  const handleEditClick = (expenseId: number) => {
+    navigate.push(`edit/${expenseId}`);
+    handleCloseMenu();
+  };
 
   const handleDeleteClick = (expenseId: number) => {
     setDeleteModalOpen(true);
@@ -119,7 +119,7 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
 
   const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const allIds = expenses.map((e) => e.expenseId);
+      const allIds = expenses.map((e) => e.entryId);
       setSelectedExpenseIds(allIds);
       setSelectedExpenses(expenses);
     } else {
@@ -128,16 +128,16 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
     }
   };
 
-  const handleSelectExpense = (event: React.ChangeEvent<HTMLInputElement>, expense: Expense) => {
+  const handleSelectExpense = (event: React.ChangeEvent<HTMLInputElement>, expense: Entry) => {
     if (event.target.checked) {
-      setSelectedExpenseIds((prev) => [...prev, expense.expenseId]);
+      setSelectedExpenseIds((prev) => [...prev, expense.entryId]);
       setSelectedExpenses((prev) => [...prev, expense]);
     } else {
-      setSelectedExpenseIds((prev) => prev.filter((id) => id !== expense.expenseId));
-      setSelectedExpenses((prev) => prev.filter((e) => e.expenseId !== expense.expenseId));
+      setSelectedExpenseIds((prev) => prev.filter((id) => id !== expense.entryId));
+      setSelectedExpenses((prev) => prev.filter((e) => e.entryId !== expense.entryId));
     }
   };
-
+  
   return (
     <>
       <Table stickyHeader aria-label="expenses table">
@@ -150,8 +150,9 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
-            <TableCell>Descrição</TableCell>
+            <TableCell>ID</TableCell>
             <TableCell>Tipo</TableCell>
+            <TableCell>Subtipo</TableCell>
             <TableCell>Data</TableCell>
             <TableCell>Valor</TableCell>
             <TableCell>Ações</TableCell>
@@ -166,34 +167,38 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
             </TableRow>
           ) : expenses.length > 0 ? (
             expenses.map((expense) => (
-              <TableRow key={expense.expenseId}>
+              <TableRow key={expense.entryId}>
                 <TableCell>
                   <Checkbox
-                    checked={selectedExpenseIds.includes(expense.expenseId)}
+                    checked={selectedExpenseIds.includes(expense.entryId)}
                     onChange={(e) => handleSelectExpense(e, expense)}
                   />
                 </TableCell>
-                <TableCell>{expense.description || "-"}</TableCell>
-                <TableCell>{expense.type === "Purchase" ? "Compra" : expense.type || "-"}</TableCell>
+                <TableCell>{expense.entryId || "-"}</TableCell>
+                <TableCell>{expense.type}</TableCell>
+                {/* <TableCell>{expense.type === EntryType.ganho ? 'Entrada' : 'Saida'}</TableCell> */}
+                {/* <TableCell>{expense.type === EntryType.ganho ? "Entrada" : (expense.type === EntryType.perda ? "Saída" : "-")}</TableCell> */}
+
+                <TableCell>{expense.subtype || "-" }</TableCell>
                 {/* Data formatada (createdAt) */}
                 <TableCell>
                   {expense.createdAt ? formatDate(expense.createdAt) : "-"}
                 </TableCell>
                 {/* Valor formatado em R$ */}
                 <TableCell>
-                  {expense.price !== undefined ? formatPrice(expense.price) : "-"}
+                  {expense.value !== undefined ? formatPrice(expense.value) : "-"}
                 </TableCell>
                 <TableCell>
-                  <IconButton onClick={(event) => handleClick(event, expense.expenseId)}>︙</IconButton>
+                  <IconButton onClick={(event) => handleClick(event, expense.entryId)}>︙</IconButton>
                   <Menu
                     anchorEl={anchorEl}
-                    open={Boolean(anchorEl && selectedItem === expense.expenseId)}
+                    open={Boolean(anchorEl && selectedItem === expense.entryId)}
                     onClose={handleCloseMenu}
                   >
-                    <MenuItem onClick={() => handleDetailsClick(expense.expenseId)}>Detalhes</MenuItem>
-                    {/* <MenuItem onClick={() => handleEditClick(expense.expenseId)}>Editar</MenuItem> */}
-                    <MenuItem onClick={() => handleGenerateReceipt(expense.expenseId)}>Gerar Recibo</MenuItem>
-                    <MenuItem onClick={() => handleDeleteClick(expense.expenseId)}>Deletar</MenuItem>
+                    <MenuItem onClick={() => handleDetailsClick(expense.entryId)}>Detalhes</MenuItem>
+                    <MenuItem onClick={() => handleEditClick(expense.entryId)}>Editar</MenuItem>
+                    <MenuItem onClick={() => handleGenerateReceipt(expense.entryId)}>Gerar Recibo</MenuItem>
+                    <MenuItem onClick={() => handleDeleteClick(expense.entryId)}>Deletar</MenuItem>
                   </Menu>
                 </TableCell>
               </TableRow>
