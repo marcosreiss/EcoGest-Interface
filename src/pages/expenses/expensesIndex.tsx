@@ -9,7 +9,7 @@ import Paper from "@mui/material/Paper";
 import { Box, Grid } from "@mui/material";
 import TableContainer from "@mui/material/TableContainer";
 
-import { useDeleteExpense, useGetExpensesPaginated, useSearchExpensesByPeriod } from "src/hooks/useExpense";
+import { useDeleteEntry, useGetEntriesPaginated, useSearchExpensesByPeriod } from "src/hooks/useExpense";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
@@ -34,7 +34,7 @@ export default function ExpensePage() {
   });
 
   // Dados paginados e filtrados
-  const { data: pagedData, isLoading: isPagedLoading } = useGetExpensesPaginated(page * rowsPerPage, rowsPerPage);
+  const { data: pagedData, isLoading: isPagedLoading } = useGetEntriesPaginated(page * rowsPerPage, rowsPerPage);
   const { data: filteredData, isLoading: isFilteredLoading } = useSearchExpensesByPeriod(searchByPeriodRequest);
 
   // Determina os dados a exibir (gerais ou filtrados)
@@ -45,7 +45,7 @@ export default function ExpensePage() {
   // Define o estado de carregamento
   const isLoading = isFilteredLoading || isPagedLoading;
 
-  const deleteExpense = useDeleteExpense();
+  const deleteExpense = useDeleteEntry();
   const notification = useNotification();
 
   const handleDeleteExpense = () => {

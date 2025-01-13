@@ -11,7 +11,7 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
-import { useGetExpenseById } from "src/hooks/useExpense";
+import { useGetEntryById } from "src/hooks/useExpense";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
@@ -20,7 +20,7 @@ export default function EntryDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const entryId = parseInt(id!, 10);
 
-  const { data: entry, isLoading } = useGetExpenseById(entryId); // Reutilizando o hook para buscar entradas
+  const { data: entry, isLoading } = useGetEntryById(entryId); // Reutilizando o hook para buscar entradas
 
   const formStyle = {
     mx: "auto",

@@ -15,7 +15,7 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
-import { useDeleteExpense, useGetExpenseReceipt } from "src/hooks/useExpense";
+import { useDeleteEntry, useGetExpenseReceipt } from "src/hooks/useExpense";
 
 import { type Entry } from "src/models/entry";
 import { useNotification } from "src/context/NotificationContext";
@@ -41,7 +41,7 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
   const { data: receipt, refetch: fetchReceipt } = useGetExpenseReceipt(selectedItem || 0);
 
   const navigate = useRouter();
-  const deleteExpense = useDeleteExpense();
+  const deleteExpense = useDeleteEntry();
   const notification = useNotification();
 
   // Função para formatar o valor em R$ (Real)

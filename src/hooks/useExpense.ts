@@ -11,29 +11,29 @@ import type {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
-    createExpenseService,
-    updateExpenseService,
-    deleteExpenseService,
-    getExpenseByIdService,
+    createEntryService,
+    updateEntryService,
+    deleteEntryService,
+    getEntryByIdService,
     getExpenseReceiptService,
-    getExpensesPaginatedService,
+    getEntryPaginatedService,
     searchExpensesByPeriodService,
     getCustomExpenseReceiptService,
-} from "src/services/expenseService";
+} from "src/services/entryService";
 
 // Hook para listar despesas paginadas
-export const useGetExpensesPaginated = (skip: number, take: number) =>
+export const useGetEntriesPaginated = (skip: number, take: number) =>
     useQuery<EntryListResponse, AxiosError>({
         queryKey: ["expenses-list", { skip, take }],
-        queryFn: () => getExpensesPaginatedService(skip, take),
+        queryFn: () => getEntryPaginatedService(skip, take),
     });
 
 // Hook para criar uma nova despesa
-export const useCreateExpense = () => {
+export const useCreateEntry = () => {
     const queryClient = useQueryClient();
 
     return useMutation<EntryResponse, AxiosError, EntryPayload>({
-        mutationFn: (payload) => createExpenseService(payload),
+        mutationFn: (payload) => createEntryService(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["expenses-list"]
@@ -43,11 +43,11 @@ export const useCreateExpense = () => {
 };
 
 // Hook para atualizar uma despesa
-export const useUpdateExpense = () => {
+export const useUpdateEntry = () => {
     const queryClient = useQueryClient();
 
     return useMutation<EntryResponse, AxiosError, { id: number; data: EntryPayload }>({
-        mutationFn: ({ id, data }) => updateExpenseService(id, data),
+        mutationFn: ({ id, data }) => updateEntryService(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["expenses-list"]
@@ -57,11 +57,11 @@ export const useUpdateExpense = () => {
 };
 
 // Hook para deletar uma despesa
-export const useDeleteExpense = () => {
+export const useDeleteEntry = () => {
     const queryClient = useQueryClient();
 
     return useMutation<void, AxiosError, number>({
-        mutationFn: (id) => deleteExpenseService(id),
+        mutationFn: (id) => deleteEntryService(id),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["expenses-list"]
@@ -71,10 +71,10 @@ export const useDeleteExpense = () => {
 };
 
 // Hook para buscar uma despesa por ID
-export const useGetExpenseById = (id: number) =>
+export const useGetEntryById = (id: number) =>
     useQuery<Entry, AxiosError>({
         queryKey: ["expense", id],
-        queryFn: () => getExpenseByIdService(id),
+        queryFn: () => getEntryByIdService(id),
     });
 
 // Hook para obter recibo de despesa

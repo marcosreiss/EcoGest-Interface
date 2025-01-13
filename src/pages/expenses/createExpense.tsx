@@ -13,7 +13,7 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
-import { useCreateExpense } from "src/hooks/useExpense";
+import { useCreateEntry } from "src/hooks/useExpense";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
@@ -52,7 +52,7 @@ export default function CreateExpensePage() {
     formState: { errors },
   } = useForm<EntryPayload>();
 
-  const createExpense = useCreateExpense();
+  const createExpense = useCreateEntry();
   const router = useRouter();
   const { addNotification } = useNotification();
 

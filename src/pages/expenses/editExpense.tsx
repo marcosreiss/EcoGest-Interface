@@ -15,7 +15,7 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
-import { useUpdateExpense, useGetExpenseById } from "src/hooks/useExpense";
+import { useUpdateEntry, useGetEntryById } from "src/hooks/useExpense";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
@@ -57,7 +57,7 @@ export default function EditExpensePage() {
     formState: { errors },
   } = useForm<EntryPayload>();
 
-  const updateExpense = useUpdateExpense();
+  const updateExpense = useUpdateEntry();
   const router = useRouter();
   const { addNotification } = useNotification();
 
@@ -66,7 +66,7 @@ export default function EditExpensePage() {
     isLoading,
     isError,
     error,
-  } = useGetExpenseById(expenseId);
+  } = useGetEntryById(expenseId);
 
   useEffect(() => {
     if (expense) {
