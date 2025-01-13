@@ -4,7 +4,7 @@ import type {
     PurchaseStatus,
     PurchaseResponse,
     PurchaseListResponse,
-    CreatePurchasePayload,
+    PurchasePayload,
     SearchByPeriodRequest,
     TotalPushchasesInPeriodRequest,
     TotalPushchasesInPeriodResponse,
@@ -36,7 +36,7 @@ export const useGetPurchasesPaginated = (skip: number, take: number) =>
 export const useCreatePurchase = () => {
     const queryClient = useQueryClient();
 
-    return useMutation<PurchaseResponse, AxiosError, CreatePurchasePayload>({
+    return useMutation<PurchaseResponse, AxiosError, PurchasePayload>({
         mutationFn: (payload) => createPurchaseService(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -50,7 +50,7 @@ export const useCreatePurchase = () => {
 export const useUpdatePurchase = () => {
     const queryClient = useQueryClient();
 
-    return useMutation<PurchaseResponse, AxiosError, { id: number; data: CreatePurchasePayload }>({
+    return useMutation<PurchaseResponse, AxiosError, { id: number; data: PurchasePayload }>({
         mutationFn: ({ id, data }) => updatePurchaseService(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({

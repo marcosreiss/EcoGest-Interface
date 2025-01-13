@@ -1,6 +1,6 @@
 import type { ProductBasicInfo } from "src/models/product";
 import type { SupplierBasicInfo } from "src/models/supplier";
-import type { PurchaseProduct, CreatePurchasePayload } from "src/models/purchase";
+import type { PurchasePayload, PurchasePayloadProduct } from "src/models/purchase";
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -53,22 +53,21 @@ export default function CreatePurchasePage() {
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<CreatePurchasePayload>();
+  } = useForm<PurchasePayload>();
 
   const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
   const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
 
   const [file, setFile] = useState<Blob | null>(null);
-  const [productsList, setProductsList] = useState<PurchaseProduct[]>([]);
+  const [productsList, setProductsList] = useState<PurchasePayloadProduct[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
 
-  const [modalProduct, setModalProduct] = useState<PurchaseProduct>({
+  const [modalProduct, setModalProduct] = useState<PurchasePayloadProduct>({
     productId: 0,
     quantity: 0,
     price: 0,
-    product: null,
   });
 
   const createPurchase = useCreatePurchase();
@@ -86,7 +85,7 @@ export default function CreatePurchasePage() {
 
   const handleAddProduct = () => {
     setProductsList([...productsList, modalProduct]);
-    setModalProduct({ productId: 0, quantity: 0, price: 0, product: null });
+    setModalProduct({ productId: 0, quantity: 0, price: 0 });
     setModalOpen(false);
   };
 
@@ -98,8 +97,8 @@ export default function CreatePurchasePage() {
     }
   };
 
-  const onSubmit = (data: CreatePurchasePayload) => {
-    const payload: CreatePurchasePayload = {
+  const onSubmit = (data: PurchasePayload) => {
+    const payload: PurchasePayload = {
       ...data,
       products: productsList,
       paymentSlip: file,

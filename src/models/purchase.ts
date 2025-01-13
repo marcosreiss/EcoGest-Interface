@@ -22,9 +22,9 @@ export interface Purchase {
     discount: number;
 }
 
-export interface CreatePurchasePayload {
+export interface PurchasePayload {
     personId: number;
-    products: PurchaseProduct[];
+    products: PurchasePayloadProduct[];
     description?: string | null;
     date_time: string;
     paymentSlip: Blob | null;
@@ -35,7 +35,13 @@ export interface PurchaseProduct {
     productId: number;
     quantity: number;
     price: number;
-    product: Product | null;
+    product: Product;
+}
+
+export interface PurchasePayloadProduct {
+    productId: number;
+    quantity: number;
+    price: number;
 }
 
 export interface PurchaseListResponse {

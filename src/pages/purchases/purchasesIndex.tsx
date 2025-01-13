@@ -59,9 +59,6 @@ export default function PurchasePage() {
   
   const purchases = searchByPeriod.data ?? data?.data ?? [];
 
-  console.log(searchByPeriod.data);
-  
-
   return (
     <>
       <Helmet>

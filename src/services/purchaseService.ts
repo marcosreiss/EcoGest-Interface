@@ -1,9 +1,9 @@
 import type {
     Purchase,
     PurchaseStatus,
+    PurchasePayload,
     PurchaseResponse,
     PurchaseListResponse,
-    CreatePurchasePayload,
     TotalPushchasesInPeriodRequest,
     TotalPushchasesInPeriodResponse,
 } from "src/models/purchase";
@@ -17,7 +17,7 @@ export const getPurchasesPaginatedService = async (skip: number, take: number): 
 };
 
 // Criar uma nova compra
-export const createPurchaseService = async (payload: CreatePurchasePayload): Promise<PurchaseResponse> => {
+export const createPurchaseService = async (payload: PurchasePayload): Promise<PurchaseResponse> => {
     const formData = new FormData();
 
     if (payload.paymentSlip) {
@@ -37,12 +37,7 @@ export const createPurchaseService = async (payload: CreatePurchasePayload): Pro
 };
 
 // Atualizar uma compra
-export const updatePurchaseService = async (id: number, payload: CreatePurchasePayload): Promise<PurchaseResponse> => {
-    console.log(payload);
-    payload.products.forEach((product, index)=>{
-        product.product = null;
-    });
-
+export const updatePurchaseService = async (id: number, payload: PurchasePayload): Promise<PurchaseResponse> => {
     const formData = new FormData();
 
     if (payload.paymentSlip) {

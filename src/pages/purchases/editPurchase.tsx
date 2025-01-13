@@ -1,6 +1,6 @@
 import type { ProductBasicInfo } from "src/models/product";
 import type { SupplierBasicInfo } from "src/models/supplier";
-import type { PurchaseProduct, CreatePurchasePayload } from "src/models/purchase";
+import type { PurchasePayload, PurchasePayloadProduct } from "src/models/purchase";
 
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
@@ -55,23 +55,22 @@ export default function EditPurchasePage() {
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<CreatePurchasePayload>();
+  } = useForm<PurchasePayload>();
 
   const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
   const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
   const { data: purchase, isLoading: loadingPurchase } = useGetPurchaseById(Number(id));
 
   const [file, setFile] = useState<Blob | null>(null);
-  const [productsList, setProductsList] = useState<PurchaseProduct[]>([]);
+  const [productsList, setProductsList] = useState<PurchasePayloadProduct[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
 
-  const [modalProduct, setModalProduct] = useState<PurchaseProduct>({
+  const [modalProduct, setModalProduct] = useState<PurchasePayloadProduct>({
     productId: 0,
     quantity: 0,
     price: 0,
-    product: null,
   });
 
   const updatePurchase = useUpdatePurchase();
@@ -79,13 +78,23 @@ export default function EditPurchasePage() {
 
   useEffect(() => {
     if (purchase) {
+      // Configura os valores do formulário
       setValue("personId", purchase.supplier.personId);
       setValue("description", purchase.description);
       setValue("date_time", purchase.date_time ? purchase.date_time.split("T")[0] : "");
       setValue("discount", purchase.discount);
-      setProductsList(purchase.products);
+  
+      // Cria a lista de produtos no formato esperado
+      const list: PurchasePayloadProduct[] = purchase.products.map((product) => ({
+        price: product.price,
+        productId: product.product.productId,
+        quantity: product.quantity,
+      }));
+  
+      setProductsList(list); // Atualiza a lista de produtos com a lista criada
     }
   }, [purchase, setValue]);
+  
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = e.target.files?.[0];
@@ -99,7 +108,7 @@ export default function EditPurchasePage() {
 
   const handleAddProduct = () => {
     setProductsList([...productsList, modalProduct]);
-    setModalProduct({ productId: 0, quantity: 0, price: 0, product: null });
+    setModalProduct({ productId: 0, quantity: 0, price: 0 });
     setModalOpen(false);
   };
 
@@ -111,8 +120,8 @@ export default function EditPurchasePage() {
     }
   };
 
-  const onSubmit = (data: CreatePurchasePayload) => {
-    const payload: CreatePurchasePayload = {
+  const onSubmit = (data: PurchasePayload) => {
+    const payload: PurchasePayload = {
       ...data,
       products: productsList,
       paymentSlip: file,
@@ -136,7 +145,7 @@ export default function EditPurchasePage() {
   if (loadingPurchase) {
     return <CircularProgress />;
   }
-
+  
   return (
     <>
       <Helmet>
@@ -245,7 +254,8 @@ export default function EditPurchasePage() {
                           return (
                             <TableRow key={index}>
                               <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
-                                {product.product?.name || "Produto não encontrado"}
+                                {products?.data.find((p) => p.productId === product.productId)?.name ||
+                                  "Produto não encontrado"}
                               </TableCell>
                               <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
                                 {product.quantity}
