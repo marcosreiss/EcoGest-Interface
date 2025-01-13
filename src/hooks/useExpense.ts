@@ -6,7 +6,7 @@ import type {
     EntryResponse,
     EntryListResponse,
     CustomExpenseReceiptInfo,
-} from "src/models/expense";
+} from "src/models/entry";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 

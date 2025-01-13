@@ -17,7 +17,7 @@ import { useRouter } from "src/routes/hooks";
 
 import { useDeleteExpense, useGetExpenseReceipt } from "src/hooks/useExpense";
 
-import { type Entry } from "src/models/expense";
+import { type Entry } from "src/models/entry";
 import { useNotification } from "src/context/NotificationContext";
 
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";

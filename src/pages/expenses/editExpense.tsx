@@ -19,7 +19,7 @@ import { useUpdateExpense, useGetExpenseById } from "src/hooks/useExpense";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
-import { EntryType, type EntryPayload } from "src/models/expense";
+import { EntryType, type EntryPayload } from "src/models/entry";
 import { useNotification } from "src/context/NotificationContext";
 
 // Opções predefinidas para o tipo e subtipo de despesa

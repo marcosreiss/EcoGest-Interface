@@ -16,11 +16,11 @@ import { useGetExpenseById } from "src/hooks/useExpense";
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
 
-export default function ExpenseDetailsPage() {
+export default function EntryDetailsPage() {
   const { id } = useParams<{ id: string }>();
-  const expenseId = parseInt(id!, 10);
+  const entryId = parseInt(id!, 10);
 
-  const { data: expense, isLoading } = useGetExpenseById(expenseId);
+  const { data: entry, isLoading } = useGetExpenseById(entryId); // Reutilizando o hook para buscar entradas
 
   const formStyle = {
     mx: "auto",
@@ -33,7 +33,7 @@ export default function ExpenseDetailsPage() {
   const navigate = useRouter();
 
   const handleEditClick = () => {
-    navigate.replace(`/expenses/edit/${id}`);
+    navigate.replace(`/entries/edit/${id}`);
   };
 
   // Função para formatar valores numéricos em R$ (Real)
@@ -48,7 +48,7 @@ export default function ExpenseDetailsPage() {
   return (
     <>
       <Helmet>
-        <title>{`Detalhes da Despesa - ${CONFIG.appName}`}</title>
+        <title>{`Detalhes da Entrada - ${CONFIG.appName}`}</title>
       </Helmet>
 
       <DashboardContent maxWidth="md">
@@ -58,7 +58,7 @@ export default function ExpenseDetailsPage() {
           <>
             <Grid item xs={6}>
               <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>
-                Detalhes da Despesa
+                Detalhes da Entrada
               </Typography>
             </Grid>
 
@@ -67,13 +67,12 @@ export default function ExpenseDetailsPage() {
                 <Box sx={formStyle}>
                   <Grid container spacing={2}>
 
-                    {/* Tipo da Despesa */}
+                    {/* Tipo da Entrada */}
                     <Grid item xs={6}>
                       <Typography variant="h6" gutterBottom>
-                        Tipo: {expense?.type === "Purchase" ? "Compra" : expense?.type || "-"}
+                        Tipo: {entry?.type}
                       </Typography>
                     </Grid>
-
 
                     {/* Botão de Editar */}
                     <Grid item xs={6}>
@@ -82,47 +81,41 @@ export default function ExpenseDetailsPage() {
                       </IconButton>
                     </Grid>
 
+                    {/* Subtipo */}
+                    <Grid item xs={12}>
+                      <Typography variant="body1" gutterBottom>
+                        Subtipo: {entry?.subtype || "-"}
+                      </Typography>
+                    </Grid>
+
                     {/* Descrição */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Descrição: {expense?.description || "-"}
+                        Descrição: {entry?.description || "-"}
                       </Typography>
                     </Grid>
 
-                    {/* Preço formatado */}
+                    {/* Valor formatado */}
                     <Grid item xs={12}>
                       <Typography variant="body1" gutterBottom>
-                        Preço:{" "}
-                        {expense?.price !== undefined
-                          ? formatPrice(expense.price)
-                          : "-"}
+                        Valor: {entry?.value !== undefined ? formatPrice(entry.value) : "-"}
                       </Typography>
                     </Grid>
 
-                    {/* Funcionário */}
-                    {expense?.employeeId && (
+                    {/* Data e Hora */}
+                    {entry?.date_time && (
                       <Grid item xs={12}>
                         <Typography variant="body1" gutterBottom>
-                          ID do Funcionário: {expense.employeeId}
-                        </Typography>
-                      </Grid>
-                    )}
-
-                    {/* ID da Compra */}
-                    {expense?.purchasesId && (
-                      <Grid item xs={12}>
-                        <Typography variant="body1" gutterBottom>
-                          ID da Compra: {expense.purchasesId}
+                          Data e Hora: {new Date(entry.date_time).toLocaleString("pt-BR")}
                         </Typography>
                       </Grid>
                     )}
 
                     {/* Data de Criação (createdAt) */}
-                    {expense?.createdAt && (
+                    {entry?.createdAt && (
                       <Grid item xs={12}>
                         <Typography variant="body1" gutterBottom>
-                          Data:{" "}
-                          {new Date(expense.createdAt).toLocaleDateString("pt-BR")}
+                          Data de Criação: {new Date(entry.createdAt).toLocaleDateString("pt-BR")}
                         </Typography>
                       </Grid>
                     )}

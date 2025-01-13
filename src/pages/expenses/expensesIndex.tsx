@@ -1,4 +1,4 @@
-import type { Entry } from "src/models/expense";
+import type { Entry } from "src/models/entry";
 import type { SearchByPeriodRequest } from "src/models/sale";
 
 import * as React from "react";

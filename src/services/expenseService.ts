@@ -4,7 +4,7 @@ import type {
     EntryResponse,
     EntryListResponse,
     CustomExpenseReceiptInfo,
-} from "src/models/expense";
+} from "src/models/entry";
 
 import api from "./api";
 
