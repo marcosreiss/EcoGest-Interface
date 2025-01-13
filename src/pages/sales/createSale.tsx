@@ -1,16 +1,29 @@
-import type { CreateSalePayload } from "src/models/sale";
+import type { PersonBasicInfo } from "src/models/person";
+import type { SalePayload, SaleProductPayload } from "src/models/sale";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Autocomplete from "@mui/material/Autocomplete";
 import {
   Box,
   Grid,
+  Table,
   Button,
+  Dialog,
+  TableRow,
   TextField,
+  TableHead,
+  TableCell,
+  TableBody,
   Typography,
+  IconButton,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   CircularProgress,
 } from "@mui/material";
 
@@ -36,22 +49,47 @@ export default function CreateSalePage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = useForm<CreateSalePayload>();
+  } = useForm<SalePayload>();
 
   const createSale = useCreateSale();
   const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
   const { data: customers, isLoading: loadingCustomers } = useGetCustomersBasicInfo();
 
+  const [productsList, setProductsList] = useState<SaleProductPayload[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalProduct, setModalProduct] = useState<SaleProductPayload>({
+    productId: 0,
+    quantity: 0,
+  });
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
+
   const router = useRouter();
   const { addNotification } = useNotification();
 
-  const onSubmit = (data: CreateSalePayload) => {
-    // Se quiser converter vírgulas em "quantity" antes de enviar:
-    const quantityStr = String(data.quantity).replace(",", ".");
-    data.quantity = parseFloat(quantityStr);
+  const handleAddProduct = () => {
+    setProductsList([...productsList, modalProduct]);
+    setModalProduct({ productId: 0, quantity: 0 });
+    setModalOpen(false);
+  };
 
-    createSale.mutate(data, {
+  const handleRemoveProduct = () => {
+    if (selectedProductIndex !== null) {
+      setProductsList(productsList.filter((_, index) => index !== selectedProductIndex));
+      setSelectedProductIndex(null);
+      setConfirmDialogOpen(false);
+    }
+  };
+
+  const onSubmit = (data: SalePayload) => {
+    const payload: SalePayload = {
+      ...data,
+      products: productsList,
+    };
+
+    createSale.mutate(payload, {
       onSuccess: () => {
         addNotification("Venda criada com sucesso!", "success");
         router.push("/sales");
@@ -74,23 +112,23 @@ export default function CreateSalePage() {
             <Box sx={formStyle}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-                  <Typography variant="h4" sx={{ mb: { xs: 3, md: 1 } }}>
+                  <Typography variant="h4" gutterBottom>
                     Criar Venda
                   </Typography>
                 </Grid>
 
-                {/* Campo de Cliente */}
-                <Grid item xs={12} sm={6} md={12}>
+                {/* Cliente */}
+                <Grid item xs={12}>
                   <Autocomplete
                     options={customers?.data || []}
                     loading={loadingCustomers}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option: PersonBasicInfo) => option.name || ""}
                     isOptionEqualToValue={(option, value) =>
-                      option.customerId === value.customerId
+                      option.personId === value.personId
                     }
                     onChange={(_, newValue) =>
-                      register("customerId", {
-                        value: newValue?.customerId || undefined,
+                      setValue("personId", newValue ? newValue.personId : 0, {
+                        shouldValidate: true,
                       })
                     }
                     renderInput={(params) => (
@@ -98,65 +136,10 @@ export default function CreateSalePage() {
                         {...params}
                         label="Cliente"
                         variant="outlined"
-                        error={!!errors.customerId}
-                        helperText={errors.customerId?.message}
+                        error={!!errors.personId}
+                        helperText={errors.personId?.message}
                       />
                     )}
-                    renderOption={(props, option) => (
-                      <li {...props} key={option.customerId}>
-                        {option.name}
-                      </li>
-                    )}
-                  />
-                </Grid>
-
-                {/* Campo de Produto */}
-                <Grid item xs={12} sm={6} md={12}>
-                  <Autocomplete
-                    options={products?.data || []}
-                    loading={loadingProducts}
-                    getOptionLabel={(option) => option.name}
-                    isOptionEqualToValue={(option, value) =>
-                      option.productId === value.productId
-                    }
-                    onChange={(_, newValue) =>
-                      register("productId", {
-                        value: newValue?.productId || undefined,
-                      })
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Produto"
-                        variant="outlined"
-                        error={!!errors.productId}
-                        helperText={errors.productId?.message}
-                      />
-                    )}
-                    renderOption={(props, option) => (
-                      <li {...props} key={option.productId}>
-                        {option.name}
-                      </li>
-                    )}
-                  />
-                </Grid>
-
-                {/* Quantidade em Toneladas (com vírgulas) */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Quantidade (Kilogramas)"
-                    placeholder="Digite a quantidade em kilogramas"
-                    type="text"
-                    {...register("quantity", {
-                      required: "A quantidade é obrigatória.",
-                      min: {
-                        value: 0.1,
-                        message: "A quantidade mínima é 0,1 kilogramas.",
-                      },
-                    })}
-                    error={!!errors.quantity}
-                    helperText={errors.quantity?.message}
                   />
                 </Grid>
 
@@ -175,6 +158,66 @@ export default function CreateSalePage() {
                   />
                 </Grid>
 
+                {/* Descrição */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Descrição"
+                    placeholder="Descrição da venda"
+                    multiline
+                    rows={3}
+                    {...register("description")}
+                  />
+                </Grid>
+
+                {/* Produtos Adicionados */}
+                <Grid item xs={12}>
+                  <Button
+                    startIcon={<AddIcon />}
+                    variant="contained"
+                    onClick={() => setModalOpen(true)}
+                  >
+                    Adicionar Produto
+                  </Button>
+                  {productsList.length > 0 && (
+                    <Table size="small" sx={{ marginTop: 3, marginBottom: 3 }}>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Produto</TableCell>
+                          <TableCell>Quantidade</TableCell>
+                          <TableCell>Ações</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {productsList.map((product, index) => (
+                          <TableRow key={index}>
+                            <TableCell>
+                              {
+                                products?.data.find(
+                                  (p) => p.productId === product.productId
+                                )?.name || "Produto não encontrado"
+                              }
+                            </TableCell>
+                            <TableCell>{product.quantity}</TableCell>
+                            <TableCell>
+                              <IconButton
+                                color="error"
+                                onClick={() => {
+                                  setSelectedProductIndex(index);
+                                  setConfirmDialogOpen(true);
+                                }}
+                                size="small"
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </Grid>
+
                 {/* Botão Enviar */}
                 <Grid item xs={12}>
                   <Button
@@ -183,11 +226,10 @@ export default function CreateSalePage() {
                     color="primary"
                     fullWidth
                     onClick={handleSubmit(onSubmit)}
-                    disabled={createSale.isPending}
                   >
-                    Enviar
+                    Criar Venda
                     {createSale.isPending && (
-                      <CircularProgress size={20} sx={{ marginLeft: "20px" }} />
+                      <CircularProgress size={20} sx={{ marginLeft: 2 }} />
                     )}
                   </Button>
                 </Grid>
@@ -195,6 +237,65 @@ export default function CreateSalePage() {
             </Box>
           </Grid>
         </Grid>
+
+        {/* Modal para adicionar produto */}
+        <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
+          <DialogTitle>Adicionar Produto</DialogTitle>
+          <DialogContent>
+            <Autocomplete
+              options={products?.data || []}
+              loading={loadingProducts}
+              getOptionLabel={(option) => option.name || ""}
+              isOptionEqualToValue={(option, value) =>
+                option.productId === value.productId
+              }
+              onChange={(_, newValue) =>
+                setModalProduct((prev) => ({
+                  ...prev,
+                  productId: newValue ? newValue.productId : 0,
+                }))
+              }
+              renderInput={(params) => (
+                <TextField {...params} label="Produto" />
+              )}
+            />
+            <TextField
+              fullWidth
+              label="Quantidade"
+              type="number"
+              value={modalProduct.quantity}
+              onChange={(e) =>
+                setModalProduct({
+                  ...modalProduct,
+                  quantity: +e.target.value,
+                })
+              }
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setModalOpen(false)}>Cancelar</Button>
+            <Button onClick={handleAddProduct} variant="contained">
+              Adicionar
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Confirm Dialog para Deletar Produto */}
+        <Dialog
+          open={confirmDialogOpen}
+          onClose={() => setConfirmDialogOpen(false)}
+        >
+          <DialogTitle>Remover Produto</DialogTitle>
+          <DialogContent>
+            Tem certeza de que deseja remover este produto da venda?
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setConfirmDialogOpen(false)}>Cancelar</Button>
+            <Button onClick={handleRemoveProduct} variant="contained" color="error">
+              Remover
+            </Button>
+          </DialogActions>
+        </Dialog>
       </DashboardContent>
     </>
   );

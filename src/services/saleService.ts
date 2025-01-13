@@ -1,4 +1,4 @@
-import type { Sale, SaleResponse, SaleListResponse, CreateSalePayload, CustomSaleReceiptInfo } from "src/models/sale";
+import type { Sale, SalePayload, SaleResponse, SaleListResponse, CustomSaleReceiptInfo } from "src/models/sale";
 
 import api from "./api";
 
@@ -9,16 +9,15 @@ export const getSalesPagedService = async (skip: number, take: number): Promise<
 };
 
 // Criar uma nova venda
-export const createSaleService = async (payload: CreateSalePayload): Promise<SaleResponse> => {
+export const createSaleService = async (payload: SalePayload): Promise<SaleResponse> => {
     console.log(payload);
-
+    
     const response = await api.post<SaleResponse>("/sales", payload);
-    console.log(response);
     return response.data;
 };
 
 // Atualizar uma venda
-export const updateSaleService = async (payload: Partial<CreateSalePayload>, saleId: number): Promise<SaleResponse> => {
+export const updateSaleService = async (payload: Partial<SalePayload>, saleId: number): Promise<SaleResponse> => {
     const response = await api.put<SaleResponse>(`/sales?id=${saleId}`, payload);
     return response.data;
 };

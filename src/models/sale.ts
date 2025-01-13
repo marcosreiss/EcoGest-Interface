@@ -1,14 +1,16 @@
 import type { Product } from "./product";
-import type { Customer } from "./customers";
 
 export interface Sale {
     saleId: number;
-    productId: number;
-    product: Product;
-    customerId: number;
-    customer: Customer;
+    personId:number;
     date_time: string;
-    saleStatus: 'processing' | 'approved' | 'canceled';
+    description: string;
+    discount: number;
+    totalPrice: number;
+    products: SaleProduct[];
+}
+export interface SaleProduct {
+    product: Product;
     quantity: number;
     totalPrice: number;
 }
@@ -22,13 +24,17 @@ export interface SaleResponse {
     data: Sale;
 }
 
-export interface CreateSalePayload {
-    productId: number;
-    customerId: number;
+export interface SalePayload {
+    personId: number;
     date_time: string;
-    saleStatus: 'processing' | 'approved' | 'canceled';
+    description: string;
+    products: SaleProductPayload[];
+    discount: number;
+}
+
+export interface SaleProductPayload{
+    productId: number;
     quantity: number;
-    totalPrice: number;
 }
 
 export interface SearchByPeriodRequest {

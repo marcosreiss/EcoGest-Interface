@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Sale, SaleResponse, SaleListResponse, CreateSalePayload, SearchByPeriodRequest, CustomSaleReceiptInfo } from "src/models/sale";
+import type { Sale, SaleResponse, SaleListResponse, SalePayload, SearchByPeriodRequest, CustomSaleReceiptInfo } from "src/models/sale";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -28,7 +28,7 @@ export const useGetSalesPaged = (skip: number, take: number, debouncedSearchStri
 export const useCreateSale = () => {
     const queryClient = useQueryClient();
 
-    return useMutation<SaleResponse, AxiosError, CreateSalePayload>({
+    return useMutation<SaleResponse, AxiosError, SalePayload>({
         mutationFn: (payload) => createSaleService(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -41,7 +41,7 @@ export const useCreateSale = () => {
 // Hook para atualizar uma venda
 export const useUpdateSale = () => {
     const queryClient = useQueryClient();
-    return useMutation<SaleResponse, AxiosError, { id: number; data: Partial<CreateSalePayload> }>({
+    return useMutation<SaleResponse, AxiosError, { id: number; data: Partial<SalePayload> }>({
         mutationFn: ({ id, data }) => updateSaleService(data, id),
         onMutate: (variables) => {
             console.log("Atualizando venda com os dados:", variables);

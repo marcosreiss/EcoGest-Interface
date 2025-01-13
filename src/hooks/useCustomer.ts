@@ -1,5 +1,6 @@
 import type { AxiosError } from "axios";
-import type { Customer, CustomerPayload, CustomerResponse, CustomerListResponse, CustomerBasicInfoList } from "src/models/customers";
+import type { PersonBasicInfoList } from "src/models/person";
+import type { Customer, CustomerPayload, CustomerResponse, CustomerListResponse } from "src/models/customers";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -72,7 +73,7 @@ export const useGetCustomerByName = (name: string) =>
   });
 
 export const useGetCustomersBasicInfo = () => 
-  useQuery<CustomerBasicInfoList, AxiosError>({
+  useQuery<PersonBasicInfoList, AxiosError>({
     queryKey: ['customers-basic-info'],
     queryFn: () => getCustomersBasicInfoService(),
   })

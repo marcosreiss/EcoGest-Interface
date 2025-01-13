@@ -43,7 +43,7 @@ export interface PersonPayload {
 
 export interface PersonBasicInfo {
     personId: number;
-    name: number;
+    name: string;
 }
 
 export interface PersonListResponse {

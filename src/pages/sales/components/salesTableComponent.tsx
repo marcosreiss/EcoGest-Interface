@@ -202,7 +202,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
             <TableCell sx={{ width: "25%", minWidth: "150px" }}>Produto</TableCell>
             <TableCell sx={{ width: "25%", minWidth: "150px" }}>Cliente</TableCell>
             <TableCell sx={{ width: "15%", minWidth: "100px" }}>Data</TableCell>
-            <TableCell sx={{ width: "15%", minWidth: "100px" }}>Status</TableCell>
+            {/* <TableCell sx={{ width: "15%", minWidth: "100px" }}>Status</TableCell> */}
             <TableCell sx={{ width: "15%", minWidth: "100px" }}>Preço</TableCell>
             <TableCell sx={{ width: "5%" }}>Ações</TableCell>
           </TableRow>
@@ -214,7 +214,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                 <LinearProgress sx={{ width: "100%" }} />
               </TableCell>
             </TableRow>
-          ) : sales.length > 0 ?(
+          ) : sales.length > 0 ? (
             sales.map((sale) => (
               <TableRow key={sale.saleId}>
                 <TableCell>
@@ -230,13 +230,6 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                   {sale.date_time
                     ? formatDate(sale.date_time)
                     : "N/A"}
-                </TableCell>
-                <TableCell>
-                  {sale.saleStatus === "approved"
-                    ? "Aprovada"
-                    : sale.saleStatus === "canceled"
-                      ? "Cancelada"
-                      : "Processando"}
                 </TableCell>
                 {/* Preço formatado em R$ */}
                 <TableCell>
@@ -262,11 +255,9 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                     <MenuItem onClick={() => handleDetailsClick(sale.saleId)}>
                       Detalhes
                     </MenuItem>
-                    {sale.saleStatus === "processing" && (
-                      <MenuItem onClick={() => handleEditClick(sale.saleId)}>
-                        Editar
-                      </MenuItem>
-                    )}
+                    <MenuItem onClick={() => handleEditClick(sale.saleId)}>
+                      Editar
+                    </MenuItem>
                     <MenuItem onClick={() => handleGenerateReceipt(sale.saleId)}>
                       Gerar Recibo
                     </MenuItem>
@@ -280,7 +271,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                     </MenuItem>
                   </Menu>
                 </TableCell>
-                
+
               </TableRow>
             ))
           ) : (

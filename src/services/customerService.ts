@@ -1,11 +1,11 @@
 
+import type { PersonBasicInfoList } from "src/models/person";
 import type
 {
     Customer,
     CustomerPayload,
     CustomerResponse,
     CustomerListResponse,
-    CustomerBasicInfoList
 }
 from "src/models/customers";
 
@@ -47,8 +47,9 @@ export const getCustomerByNameService = async (name: string): Promise<Customer[]
     return response.data;
 };
 
-export const getCustomersBasicInfoService = async (): Promise<CustomerBasicInfoList> =>{
-    const response = await api.get<CustomerBasicInfoList>("/customers/basic-info");
+export const getCustomersBasicInfoService = async (): Promise<PersonBasicInfoList> =>{
+    const response = await api.get<PersonBasicInfoList>("/person/customers/basic-info");
+    console.log(response);
     return response.data;
 }
 
