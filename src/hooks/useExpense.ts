@@ -5,7 +5,7 @@ import type {
     EntryPayload,
     EntryResponse,
     EntryListResponse,
-    CustomExpenseReceiptInfo,
+    CustomEntryReceiptInfo,
 } from "src/models/entry";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -86,7 +86,7 @@ export const useGetExpenseReceipt = (expenseId: number) =>
     });
 
 export const useGenerateCustomExpenseReceipt = () =>
-    useMutation<Blob, AxiosError, CustomExpenseReceiptInfo>({
+    useMutation<Blob, AxiosError, CustomEntryReceiptInfo>({
         mutationFn: (info) => getCustomExpenseReceiptService(info),
     });
 

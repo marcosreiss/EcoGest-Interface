@@ -3,7 +3,7 @@ import type {
     EntryPayload,
     EntryResponse,
     EntryListResponse,
-    CustomExpenseReceiptInfo,
+    CustomEntryReceiptInfo,
 } from "src/models/entry";
 
 import api from "./api";
@@ -49,8 +49,10 @@ export const getExpenseReceiptService = async (expenseId: number): Promise<Blob>
 };
 
 // Obter recibo de despesa Customizado
-export const getCustomExpenseReceiptService = async (info: CustomExpenseReceiptInfo): Promise<Blob> => {
-    const response = await api.post(`/expenses/receipt/custom`, info, {
+export const getCustomExpenseReceiptService = async (info: CustomEntryReceiptInfo): Promise<Blob> => {
+    info.tipo = "perda"
+    
+    const response = await api.post(`/entry/receipt/custom`, info, {
         responseType: "blob", 
     });
     return response.data;

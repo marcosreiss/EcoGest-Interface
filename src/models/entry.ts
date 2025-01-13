@@ -29,8 +29,9 @@ export interface EntryPayload{
     date_time: Date;
 }
 
-export interface CustomExpenseReceiptInfo{
-    pagoA: string;
+export interface CustomEntryReceiptInfo{
+    destinatario: string;
     valor: number;
     descricao: string;
-}
+    tipo: string;
+};
