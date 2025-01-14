@@ -1,30 +1,88 @@
-import type { KpiParams } from 'src/models/kpiModel'
-import type { SalesKpiResponse } from 'src/models/salesKpiResponse'
-import type { ExpensesKpiResponse } from 'src/models/ExpensesKpiRespnse'
+import type { KpiParams, GetVendas, GetDespesas, SaldoProjetado, FluxoCaixaDiario, FluxoCaixaMensal, PaybleRecibleAmount } from 'src/models/kpiModel'
 
 import api from './api'
 
 
-export const getSalesKpiService = async (salesParams?: KpiParams): Promise<SalesKpiResponse> =>{
-    console.log(salesParams);
-    
-    const response = await api.get<SalesKpiResponse>("/kpi/sales", {params: salesParams})
 
-    console.log(response);
-
-    return response.data
-}
-
-export const getExpensesKpiService = async (expensesParams?: KpiParams): Promise<ExpensesKpiResponse> => {
-    const response = await api.get<ExpensesKpiResponse>("/kpi/expenses", { params: expensesParams });
-    return response.data;
+export const getFluxoCaixaMensalService = async (year?: number): Promise<FluxoCaixaMensal> => {
+  const response = await api.get<FluxoCaixaMensal>("/kpi/monthly-cashflow", {
+    params: year ? { year } : undefined,
+  });
+  return response.data;
 };
 
-export const getDownloadPdf = async (date: string): Promise<Blob> => {
-    const response = await api.get('/kpi/downloadPDF', {
-      params: { date }, // Corrige para passar 'date' como parâmetro
-      responseType: 'blob', // Indica que a resposta é um arquivo binário
-    });
-    return response.data;
-  };
-  
+export const getFluxoCaixaDiarioService = async (
+  year: number, 
+  month: number, 
+  personId?: number, 
+  productId?: number
+): Promise<FluxoCaixaDiario> => {
+  const response = await api.get<FluxoCaixaDiario>("/kpi/daily-cashflow", { 
+    params: { 
+      year, 
+      month, 
+      ...(personId && { personId }), 
+      ...(productId && { productId }) 
+    } 
+  });
+  return response.data;
+};
+
+export const getPaybleRecibleAmountService = async (): Promise<PaybleRecibleAmount> => {
+  const response = await api.get<PaybleRecibleAmount>("/kpi/counts");
+  return response.data;
+};
+
+export const getSaldoProjetadoService = async (
+  params?: KpiParams
+): Promise<SaldoProjetado> => {
+  const response = await api.get<SaldoProjetado>("/kpi/profit", {
+    params: {
+      ...(params?.personId && { personId: params.personId }),
+      ...(params?.productId && { productId: params.productId }),
+      ...(params?.startDate && { startDate: params.startDate }),
+      ...(params?.endDate && { endDate: params.endDate }),
+      ...(params?.period && { period: params.period }),
+    },
+  });
+  return response.data;
+};
+
+export const getDespesasService = async (
+  params?: KpiParams
+): Promise<GetDespesas> => {
+  const response = await api.get<GetDespesas>("/kpi/expenses", {
+    params: {
+      ...(params?.personId && { personId: params.personId }),
+      ...(params?.productId && { productId: params.productId }),
+      ...(params?.startDate && { startDate: params.startDate }),
+      ...(params?.endDate && { endDate: params.endDate }),
+      ...(params?.period && { period: params.period }),
+    },
+  });
+  return response.data;
+};
+
+export const getVendasService = async (
+  params?: KpiParams
+): Promise<GetVendas> => {
+  const response = await api.get<GetVendas>("/kpi/sales", {
+    params: {
+      ...(params?.personId && { personId: params.personId }),
+      ...(params?.productId && { productId: params.productId }),
+      ...(params?.startDate && { startDate: params.startDate }),
+      ...(params?.endDate && { endDate: params.endDate }),
+      ...(params?.period && { period: params.period }),
+    },
+  });
+  return response.data;
+};
+
+
+export const getDownloadPdf = async (date: string, personId: number): Promise<Blob> => {
+  const response = await api.get('/kpi/relatory?', {
+    params: { date, personId }, // Corrige para passar 'date' como parâmetro
+    responseType: 'blob', // Indica que a resposta é um arquivo binário
+  });
+  return response.data;
+};
