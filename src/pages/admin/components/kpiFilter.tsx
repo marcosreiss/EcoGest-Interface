@@ -1,4 +1,4 @@
-import type { KpiParams } from "src/models/kpiParamsModel";
+import type { KpiParams } from "src/models/kpiModel";
 
 import React, { useState } from "react";
 
@@ -15,7 +15,7 @@ import {
 import { useGetProductsBasicInfo } from "src/hooks/useProduct";
 import { useGetSuppliersBasicInfo } from "src/hooks/useSupplier";
 
-import { TimeGranularity } from "src/models/kpiParamsModel";
+import { TimeGranularity } from "src/models/kpiModel";
 
 interface KpiFilterProps {
     setSalesKpiParams: React.Dispatch<React.SetStateAction<KpiParams>>;

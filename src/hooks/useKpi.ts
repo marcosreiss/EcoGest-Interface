@@ -1,5 +1,5 @@
 import type { AxiosError } from 'axios';
-import type { KpiParams } from 'src/models/kpiParamsModel';
+import type { KpiParams } from 'src/models/kpiModel';
 import type { ExpensesKpiResponse } from 'src/models/ExpensesKpiRespnse';
 
 import { useQuery, useMutation } from '@tanstack/react-query';

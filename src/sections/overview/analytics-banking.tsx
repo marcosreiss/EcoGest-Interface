@@ -1,4 +1,4 @@
-import type { KpiParams } from 'src/models/kpiParamsModel';
+import type { KpiParams } from 'src/models/kpiModel';
 import type { TotalExpensesData } from 'src/models/ExpensesKpiRespnse';
 import type { TotalSalesApprovedData } from 'src/models/salesKpiResponse';
 
@@ -19,7 +19,7 @@ import {
   CardContent,
 } from '@mui/material';
 
-import { TimeGranularity } from 'src/models/kpiParamsModel';
+import { TimeGranularity } from 'src/models/kpiModel';
 
 interface FinancialOverviewCardProps {
   totalBalance: number;

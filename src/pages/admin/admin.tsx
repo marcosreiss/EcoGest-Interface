@@ -1,4 +1,4 @@
-import type { KpiParams } from 'src/models/kpiParamsModel';
+import type { KpiParams } from 'src/models/kpiModel';
 
 import { useState } from 'react';
 

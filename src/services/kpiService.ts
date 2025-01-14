@@ -1,4 +1,4 @@
-import type { KpiParams } from 'src/models/kpiParamsModel'
+import type { KpiParams } from 'src/models/kpiModel'
 import type { SalesKpiResponse } from 'src/models/salesKpiResponse'
 import type { ExpensesKpiResponse } from 'src/models/ExpensesKpiRespnse'
 
