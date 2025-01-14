@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
-import { useGetSalesKpi, useGetExpensesKpi } from 'src/hooks/useKpi';
+import { } from 'src/hooks/useKpi';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
@@ -17,27 +17,9 @@ import FinancialOverviewCard from '../../sections/overview/analytics-banking';
 // import { AnalyticsWidgetSummary } from '../../sections/overview/analytics-widget-summary';
 
 export default function Page() {
-    const [params, setParams] = useState<KpiParams>({})
-
-    const { data: salesData } = useGetSalesKpi(params);
-    const { data: expensesData } = useGetExpensesKpi(params);
-
-    const totalSalesAmount = salesData?.data?.totalSalesApprovedData?.length
-        ? salesData.data.totalSalesApprovedData.reduce(
-            (acc, data) => acc + parseFloat(data.totalSalesApproved),
-            0
-        )
-        : 0;
-
-    const totalExpensesAmount = expensesData?.data?.totalExpensesData?.length
-        ? expensesData.data.totalExpensesData.reduce(
-            (acc, data) => acc + parseFloat(data.totalExpenses),
-            0
-        )
-        : 0;
 
 
-    const totalBalanceData = totalSalesAmount - totalExpensesAmount;
+    const [params, setParams] = useState<KpiParams>()
 
     return (
         <DashboardContent maxWidth="xl">

@@ -96,7 +96,7 @@ export default function CreateExpensePage() {
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
-                    Criar Despesa
+                    Criar Entry
                   </Typography>
                 </Grid>
 

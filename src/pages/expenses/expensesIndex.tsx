@@ -71,8 +71,8 @@ export default function ExpensePage() {
       <DashboardContent maxWidth="md">
         <Grid container>
           <ExpensesTableHeaderComponent
-            title="Despesas"
-            addButtonName="Cadastrar Despesa"
+            title="Entries"
+            addButtonName="Cadastrar Entry"
             addButtonPath="/expenses/create"
           />
           <Grid item xs={12}>

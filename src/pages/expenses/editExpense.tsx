@@ -148,7 +148,7 @@ export default function EditExpensePage() {
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
-                    Editar Despesa
+                    Editar Entry
                   </Typography>
                 </Grid>
 
