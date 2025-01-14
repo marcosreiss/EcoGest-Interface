@@ -1,4 +1,4 @@
-import type { Recive } from "src/models/recive";
+import type { Receive } from "src/models/recive";
 
 import React, { useState } from "react";
 
@@ -24,10 +24,10 @@ import { useNotification } from "src/context/NotificationContext";
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
 
 interface TableComponentProps {
-  recives: Recive[];
+  recives: Receive[];
   isLoading: boolean;
   isSearching: boolean;
-  setSelectedRecives: React.Dispatch<React.SetStateAction<Recive[]>>;
+  setSelectedRecives: React.Dispatch<React.SetStateAction<Receive[]>>;
 }
 
 const ReciveTableComponent: React.FC<TableComponentProps> = ({
@@ -103,7 +103,7 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
 
   const handleSelectRecive = (
     event: React.ChangeEvent<HTMLInputElement>,
-    recive: Recive
+    recive: Receive
   ) => {
     if (event.target.checked) {
       setSelectedReciveIds((prev) => [...prev, recive.receiveId]);

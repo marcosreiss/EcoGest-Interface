@@ -1,7 +1,7 @@
 import type { Sale } from "./sale";
 import type { Entry } from "./entry";
 
-export interface Recive {
+export interface Receive {
     receiveId: number;
     saleId: number | null;
     entryId: number | null;
@@ -14,7 +14,7 @@ export interface Recive {
     entry: Entry;
 }
 
-export interface ReciveList {
-    data: Recive[];
+export interface ReceiveList {
+    data: Receive[];
     meta: any;
 }

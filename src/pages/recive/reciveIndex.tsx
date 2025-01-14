@@ -1,4 +1,4 @@
-import type { Recive } from "src/models/recive";
+import type { Receive } from "src/models/recive";
 
 import * as React from "react";
 import { useState } from "react";
@@ -21,7 +21,7 @@ import ReciveTableComponent from "./components/reciveTableComponent";
 // ----------------------------------------------------------------------
 
 export default function RecivePage() {
-  const [selectedRecives, setSelectedRecives] = useState<Recive[]>([]);
+  const [selectedRecives, setSelectedRecives] = useState<Receive[]>([]);
   const rowsPerPage = 5;
   const [page, setPage] = useState(0);
 
@@ -30,7 +30,6 @@ export default function RecivePage() {
     page * rowsPerPage,
     rowsPerPage
   );
-
   const recives = pagedData?.data ?? [];
 
   // Define o estado de carregamento

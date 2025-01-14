@@ -1,4 +1,4 @@
-import type { Recive, ReciveList } from "src/models/recive";
+import type { Receive, ReceiveList } from "src/models/recive";
 
 import api from "./api";
 
@@ -9,8 +9,8 @@ import api from "./api";
  * @param take Número de registros a obter.
  * @returns Lista paginada de recebíveis.
  */
-export const getRecivesPagedService = async (skip: number, take: number): Promise<ReciveList> => {
-  const response = await api.get<ReciveList>("/recive", { params: { skip, take } });
+export const getRecivesPagedService = async (skip: number, take: number): Promise<ReceiveList> => {
+  const response = await api.get<ReceiveList>("/receives", { params: { skip, take } });
   return response.data;
 };
 
@@ -19,8 +19,8 @@ export const getRecivesPagedService = async (skip: number, take: number): Promis
  * @param id ID do recebível.
  * @returns Dados do recebível.
  */
-export const getReciveByIdService = async (id: number): Promise<Recive> => {
-  const response = await api.get<Recive>(`/recive/${id}`);
+export const getReciveByIdService = async (id: number): Promise<Receive> => {
+  const response = await api.get<Receive>(`/receives/${id}`);
   return response.data;
 };
 
@@ -29,5 +29,5 @@ export const getReciveByIdService = async (id: number): Promise<Recive> => {
  * @param id ID do recebível a ser deletado.
  */
 export const deleteReciveService = async (id: number): Promise<void> => {
-  await api.delete(`/recive/${id}`);
+  await api.delete(`/receives/${id}`);
 };

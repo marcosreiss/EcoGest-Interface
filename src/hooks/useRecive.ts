@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Recive, ReciveList } from "src/models/recive";
+import type { Receive, ReceiveList } from "src/models/recive";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -13,7 +13,7 @@ import {
  * Hook para obter uma lista paginada de recebíveis.
  */
 export const useGetRecivesPaged = (skip: number, take: number) =>
-  useQuery<ReciveList, AxiosError>({
+  useQuery<ReceiveList, AxiosError>({
     queryKey: ["recives-list", { skip, take }],
     queryFn: () => getRecivesPagedService(skip, take),
   });
@@ -22,7 +22,7 @@ export const useGetRecivesPaged = (skip: number, take: number) =>
  * Hook para obter os detalhes de um recebível pelo ID.
  */
 export const useGetReciveById = (id: number) =>
-  useQuery<Recive, AxiosError>({
+  useQuery<Receive, AxiosError>({
     queryKey: ["recive", id],
     queryFn: () => getReciveByIdService(id),
   });
