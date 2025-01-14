@@ -1,4 +1,3 @@
-import type { Sale } from "./sale";
 import type { Entry } from "./entry";
 import type { Purchase } from "./purchase";
 
@@ -12,11 +11,16 @@ export interface Payble {
     dataEmissao: string;
     payedValue: number;
     totalValue: number;
-    sale: Sale | null;
     entry: Entry | null;
     purchase: Purchase | null;
 }
 
 export interface PaybleList {
     data: Payble[];
+    meta: any;
+}
+
+export interface SearchByPeriodRequest {
+    startDate: string | null;
+    endDate: string | null;
 }

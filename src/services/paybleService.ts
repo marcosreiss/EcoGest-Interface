@@ -9,7 +9,8 @@ import api from "./api";
  * @returns Lista paginada de pagáveis.
  */
 export const getPayblesPagedService = async (skip: number, take: number): Promise<PaybleList> => {
-  const response = await api.get<PaybleList>("/payble", { params: { skip, take } });
+  
+  const response = await api.get<PaybleList>("/payable", { params: { skip, take } });
   return response.data;
 };
 
@@ -19,7 +20,7 @@ export const getPayblesPagedService = async (skip: number, take: number): Promis
  * @returns Dados do pagável.
  */
 export const getPaybleByIdService = async (id: number): Promise<Payble> => {
-  const response = await api.get<Payble>(`/payble/${id}`);
+  const response = await api.get<Payble>(`/payable/${id}`);
   return response.data;
 };
 
@@ -33,7 +34,7 @@ export const updatePaybleStatusService = async (
   paybleId: number,
   paybleStatus: 'approved' | 'canceled'
 ): Promise<number> => {
-  const response = await api.put(`/payble/status?id=${paybleId}`, { paybleStatus });
+  const response = await api.put(`/payable/status?id=${paybleId}`, { paybleStatus });
   return response.status;
 };
 
@@ -42,7 +43,7 @@ export const updatePaybleStatusService = async (
  * @param id ID do pagável a ser deletado.
  */
 export const deletePaybleService = async (id: number): Promise<void> => {
-  await api.delete(`/payble/${id}`);
+  await api.delete(`/payable/${id}`);
 };
 
 /**
@@ -53,7 +54,7 @@ export const deletePaybleService = async (id: number): Promise<void> => {
  */
 export const searchPayblesByPeriodService = async (startDate: string, endDate: string): Promise<PaybleList> => {
   try {
-    const response = await api.get<PaybleList>(`/payble/period?startDate=${startDate}&endDate=${endDate}`);
+    const response = await api.get<PaybleList>(`/payable/period?startDate=${startDate}&endDate=${endDate}`);
     return response.data;
   } catch (error) {
     console.error('[searchPayblesByPeriodService] Error:', error);

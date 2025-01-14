@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Payble, PaybleList } from "src/models/payble";
+import type { Payble, PaybleList, SearchByPeriodRequest } from "src/models/payble";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -67,9 +67,9 @@ export const useDeletePayble = () => {
  * @param payload Objeto contendo as datas inicial e final do período.
  * @returns Dados dos pagáveis no período especificado.
  */
-export const useSearchPayblesByPeriod = (payload: { startDate: string; endDate: string }) =>
+export const useSearchPayblesByPeriod = (payload: SearchByPeriodRequest) =>
   useQuery<PaybleList, AxiosError>({
     queryKey: ['payblesByPeriod', payload],
-    queryFn: () => searchPayblesByPeriodService(payload.startDate, payload.endDate),
+    queryFn: () => searchPayblesByPeriodService(payload.startDate!, payload.endDate!),
     enabled: !!payload?.startDate && !!payload?.endDate,
   });

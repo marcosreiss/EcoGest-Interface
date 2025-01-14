@@ -53,6 +53,11 @@ export const navData = [
     path: '/recive',
     // icon: icon('ic-coins')
   },
+  {
+    title: 'Payable',
+    path: '/payable',
+    // icon: icon('ic-coins')
+  },
   // {
   //   title: 'Recibos',
   //   path: '/receipts',
