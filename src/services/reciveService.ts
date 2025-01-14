@@ -1,4 +1,4 @@
-import type { Recive, ReciveList } from "src/models/receive";
+import type { Recive, ReciveList } from "src/models/recive";
 
 import api from "./api";
 

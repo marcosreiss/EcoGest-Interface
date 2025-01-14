@@ -29,11 +29,6 @@ export const navData = [
     // ),
   },
   {
-    title: 'Fornecedores',
-    path: '/suppliers',
-    icon: icon('ic-truck')
-  },
-  {
     title: 'Funcionarios',
     path: '/employees',
     icon: icon('ic-employees'),
@@ -52,6 +47,11 @@ export const navData = [
     title: 'Despesas',
     path: '/expenses',
     icon: icon('ic-coins')
+  },
+  {
+    title: 'Entradas',
+    path: '/recive',
+    // icon: icon('ic-coins')
   },
   // {
   //   title: 'Recibos',

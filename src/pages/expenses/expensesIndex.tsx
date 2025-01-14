@@ -62,8 +62,6 @@ export default function ExpensePage() {
     });
   };
 
-  console.log(filteredData);
-
   return (
     <>
       <Helmet>

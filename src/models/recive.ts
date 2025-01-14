@@ -16,4 +16,5 @@ export interface Recive {
 
 export interface ReciveList {
     data: Recive[];
+    meta: any;
 }
