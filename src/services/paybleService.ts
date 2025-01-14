@@ -24,9 +24,40 @@ export const getPaybleByIdService = async (id: number): Promise<Payble> => {
 };
 
 /**
+ * Atualizar o status de um pagável.
+ * @param paybleId ID do pagável.
+ * @param paybleStatus Novo status do pagável (aprovado ou cancelado).
+ * @returns Status da resposta.
+ */
+export const updatePaybleStatusService = async (
+  paybleId: number,
+  paybleStatus: 'approved' | 'canceled'
+): Promise<number> => {
+  const response = await api.put(`/payble/status?id=${paybleId}`, { paybleStatus });
+  return response.status;
+};
+
+/**
  * Deletar um pagável.
  * @param id ID do pagável a ser deletado.
  */
 export const deletePaybleService = async (id: number): Promise<void> => {
   await api.delete(`/payble/${id}`);
 };
+
+/**
+ * Buscar pagáveis por período.
+ * @param startDate Data inicial do período.
+ * @param endDate Data final do período.
+ * @returns Lista de pagáveis no período especificado.
+ */
+export const searchPayblesByPeriodService = async (startDate: string, endDate: string): Promise<PaybleList> => {
+  try {
+    const response = await api.get<PaybleList>(`/payble/period?startDate=${startDate}&endDate=${endDate}`);
+    return response.data;
+  } catch (error) {
+    console.error('[searchPayblesByPeriodService] Error:', error);
+    throw new Error('Error fetching paybles by period.');
+  }
+};
+

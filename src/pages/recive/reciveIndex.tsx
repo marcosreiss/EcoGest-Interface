@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 
 import Paper from "@mui/material/Paper";
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import TableContainer from "@mui/material/TableContainer";
 
 import { useDeleteRecive, useGetRecivesPaged } from "src/hooks/useRecive";
@@ -14,7 +14,6 @@ import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
 import TableFooterComponent from "src/layouts/components/tableFooterComponent";
-import TableHeaderComponent from "src/layouts/components/tableHeaderComponent";
 
 import SalesTableSearch from "../sales/components/salesTableSearch";
 import ReciveTableComponent from "./components/reciveTableComponent";
@@ -65,11 +64,11 @@ export default function RecivePage() {
 
       <DashboardContent maxWidth="md">
         <Grid container>
-          <TableHeaderComponent
-            title="Recebíveis"
-            addButtonName="Cadastrar Recebível"
-            addButtonPath="/recives/create"
-          />
+          <Grid item xs={6}>
+            <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>
+              Recive
+            </Typography>
+          </Grid>
           <Grid item xs={12}>
             <SalesTableSearch
               handleDelete={handleDeleteRecive}

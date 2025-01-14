@@ -7,6 +7,8 @@ import {
   deletePaybleService,
   getPaybleByIdService,
   getPayblesPagedService,
+  updatePaybleStatusService,
+  searchPayblesByPeriodService,
 } from "src/services/paybleService";
 
 /**
@@ -27,6 +29,20 @@ export const useGetPaybleById = (id: number) =>
     queryFn: () => getPaybleByIdService(id),
   });
 
+export const useUpdatePaybleStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<number, AxiosError, { id: number; paybleStatus: 'approved' | 'canceled' }>({
+    mutationFn: ({ id, paybleStatus }) => updatePaybleStatusService(id, paybleStatus),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['paybles-list'] });
+    },
+    onError: (error) => {
+      console.error("Erro ao atualizar o status do pagável:", error);
+    },
+  });
+};
+
 /**
  * Hook para deletar um pagável.
  */
@@ -45,3 +61,15 @@ export const useDeletePayble = () => {
     },
   });
 };
+
+/**
+ * Hook para buscar pagáveis por período.
+ * @param payload Objeto contendo as datas inicial e final do período.
+ * @returns Dados dos pagáveis no período especificado.
+ */
+export const useSearchPayblesByPeriod = (payload: { startDate: string; endDate: string }) =>
+  useQuery<PaybleList, AxiosError>({
+    queryKey: ['payblesByPeriod', payload],
+    queryFn: () => searchPayblesByPeriodService(payload.startDate, payload.endDate),
+    enabled: !!payload?.startDate && !!payload?.endDate,
+  });

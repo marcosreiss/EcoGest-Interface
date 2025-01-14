@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Sale, SaleResponse, SaleListResponse, SalePayload, SearchByPeriodRequest, CustomSaleReceiptInfo } from "src/models/sale";
+import type { Sale, SalePayload, SaleResponse, SaleListResponse, SearchByPeriodRequest, CustomSaleReceiptInfo } from "src/models/sale";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 

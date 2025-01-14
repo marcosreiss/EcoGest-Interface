@@ -49,7 +49,7 @@ export const navData = [
     icon: icon('ic-coins')
   },
   {
-    title: 'Entradas',
+    title: 'Recive',
     path: '/recive',
     // icon: icon('ic-coins')
   },

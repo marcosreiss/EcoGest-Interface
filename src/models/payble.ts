@@ -1,7 +1,9 @@
 import type { Sale } from "./sale";
 import type { Entry } from "./entry";
+import type { Purchase } from "./purchase";
 
 export interface Payble {
+    paybleId: number;
     receiveId: number;
     purchaseId: number | null;
     entryId: number | null;
@@ -10,8 +12,9 @@ export interface Payble {
     dataEmissao: string;
     payedValue: number;
     totalValue: number;
-    sale: Sale;
-    entry: Entry;
+    sale: Sale | null;
+    entry: Entry | null;
+    purchase: Purchase | null;
 }
 
 export interface PaybleList {
