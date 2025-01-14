@@ -2,7 +2,7 @@ import type { Entry } from "./entry";
 import type { Purchase } from "./purchase";
 
 export interface Payble {
-    paybleId: number;
+    payableId: number;
     receiveId: number;
     purchaseId: number | null;
     entryId: number | null;

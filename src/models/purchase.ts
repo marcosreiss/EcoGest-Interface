@@ -20,6 +20,7 @@ export interface Purchase {
     date_time: string;
     paymentSlip: { data: number[] } | null;
     discount: number;
+    totalPrice: number;
 }
 
 export interface PurchasePayload {

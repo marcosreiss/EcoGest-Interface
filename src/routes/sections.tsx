@@ -72,7 +72,7 @@ export const RecivePage = lazy(() => import('src/pages/recive/reciveIndex'));
 
 // ---------- Payable Components
 export const PayablePage = lazy(() => import('src/pages/payble/payableIndex'));
-
+export const PayableDetails = lazy(() => import('src/pages/payble/payableDetais'));
 
 
 // ----------------------------------------------------------------------
@@ -153,6 +153,7 @@ export function PrivateRouter() {
         {path: 'recive', element: <RecivePage />},
 
         {path: 'payable', element: <PayablePage />},
+        {path: 'payable/details/:id', element: <PayableDetails />},
 
       ],
     },
@@ -216,6 +217,8 @@ export function PublicRouter() {
     {path: 'recive', element: <AuthLayout><SignInPage /></AuthLayout>},
 
     {path: 'payable', element: <AuthLayout><SignInPage /></AuthLayout>},
+    {path: 'payable/details/:id', element: <AuthLayout><SignInPage /></AuthLayout>},
+
 
     { path: '404', element: <Page404 />, },
     { path: '*', element: <Navigate to="/404" replace />, },

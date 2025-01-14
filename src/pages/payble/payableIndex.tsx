@@ -55,7 +55,7 @@ export default function PayableIndex() {
 
   const handleDeletePayble = () => {
     selectedPaybles.forEach((payble) => {
-      deletePayble.mutate(payble.paybleId, {
+      deletePayble.mutate(payble.payableId, {
         onSuccess: () => {
           notification.addNotification('Pagável deletado com sucesso', 'success');
           setSelectedPaybles([]);
