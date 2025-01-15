@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 import Paper from '@mui/material/Paper';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 
 import { useDeletePayble, useGetPayblesPaged, useSearchPayblesByPeriod } from 'src/hooks/usePayble';
@@ -13,7 +13,6 @@ import { useDeletePayble, useGetPayblesPaged, useSearchPayblesByPeriod } from 's
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useNotification } from 'src/context/NotificationContext';
-import TableHeaderComponent from 'src/layouts/components/tableHeaderComponent';
 
 import PaybleTableSearch from './components/payableTableSearch';
 import PaybleTableComponent from './components/payableTableComponent';
@@ -70,16 +69,16 @@ export default function PayableIndex() {
   return (
     <>
       <Helmet>
-        <title>{`Pagáveis - ${CONFIG.appName}`}</title>
+        <title>{`Contas a pagar - ${CONFIG.appName}`}</title>
       </Helmet>
 
       <DashboardContent maxWidth="md">
         <Grid container>
-          <TableHeaderComponent
-            title="Pagáveis"
-            addButtonName="Cadastrar Pagável"
-            addButtonPath="/paybles/create"
-          />
+          <Grid item xs={6}>
+            <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>
+              Contas a Pagar
+            </Typography>
+          </Grid>
           <Grid item xs={12}>
             <PaybleTableSearch
               handleDelete={handleDeletePayble}

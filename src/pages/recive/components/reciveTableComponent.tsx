@@ -207,7 +207,7 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                     alt="Sem dados"
                     style={{ maxWidth: "150px", marginBottom: "10px" }}
                   />
-                  <p>Nenhum Recebível Cadastrado</p>
+                  <p>Nenhuma conta a pagar registrada</p>
                 </div>
               </TableCell>
             </TableRow>

@@ -65,7 +65,7 @@ export default function RecivePage() {
         <Grid container>
           <Grid item xs={6}>
             <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>
-              Recive
+              Contas a Receber
             </Typography>
           </Grid>
           <Grid item xs={12}>
