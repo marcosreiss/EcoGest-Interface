@@ -68,7 +68,8 @@ export const EditPerson = lazy(() => import('src/pages/person/editPerson'));
 export const PersonDetails = lazy(() => import('src/pages/person/personDetails'));
 
 // ---------- Recive Components
-export const RecivePage = lazy(() => import('src/pages/recive/reciveIndex'));
+export const ReceivePage = lazy(() => import('src/pages/recive/receiveIndex'));
+export const ReceiveDetails = lazy(() => import('src/pages/recive/receiveDetails'));
 
 // ---------- Payable Components
 export const PayablePage = lazy(() => import('src/pages/payble/payableIndex'));
@@ -150,7 +151,8 @@ export function PrivateRouter() {
         {path: 'person/edit/:id', element: <EditPerson />},
         {path: 'person/details/:id', element: <PersonDetails />},
 
-        {path: 'recive', element: <RecivePage />},
+        {path: 'recive', element: <ReceivePage />},
+        {path: 'recive/details/:id', element: <ReceiveDetails />},
 
         {path: 'payable', element: <PayablePage />},
         {path: 'payable/details/:id', element: <PayableDetails />},
@@ -215,6 +217,7 @@ export function PublicRouter() {
     { path: 'person/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
 
     {path: 'recive', element: <AuthLayout><SignInPage /></AuthLayout>},
+    {path: 'recive/details/:id', element: <AuthLayout><SignInPage /></AuthLayout>},
 
     {path: 'payable', element: <AuthLayout><SignInPage /></AuthLayout>},
     {path: 'payable/details/:id', element: <AuthLayout><SignInPage /></AuthLayout>},

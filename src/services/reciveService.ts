@@ -1,4 +1,4 @@
-import type { Receive, ReceiveList } from "src/models/recive";
+import type { Receive } from "src/models/recive";
 
 import api from "./api";
 
@@ -20,7 +20,7 @@ export const getRecivesPagedService = async (skip: number, take: number): Promis
  * @returns Dados do recebível.
  */
 export const getReciveByIdService = async (id: number): Promise<Receive> => {
-  const response = await api.get<Receive>(`/receives/${id}`);
+  const response = await api.get<Receive>(`/receives/search/by-id?id=${id}`);
   return response.data;
 };
 

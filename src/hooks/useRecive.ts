@@ -21,7 +21,7 @@ export const useGetRecivesPaged = (skip: number, take: number) =>
 /**
  * Hook para obter os detalhes de um recebível pelo ID.
  */
-export const useGetReciveById = (id: number) =>
+export const useGetReceiveById = (id: number) =>
   useQuery<Receive, AxiosError>({
     queryKey: ["recive", id],
     queryFn: () => getReciveByIdService(id),
