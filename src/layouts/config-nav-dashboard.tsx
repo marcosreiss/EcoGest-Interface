@@ -44,19 +44,19 @@ export const navData = [
     icon: icon('ic-cart')
   },
   {
-    title: 'Entry',
+    title: 'Lançamentos',
     path: '/expenses',
+    icon: icon('ic-analytics')
+  },
+  {
+    title: 'Contas a Receber',
+    path: '/recive',
     icon: icon('ic-coins')
   },
   {
-    title: 'Recive',
-    path: '/recive',
-    // icon: icon('ic-coins')
-  },
-  {
-    title: 'Payable',
+    title: 'Contas a Pagar',
     path: '/payable',
-    // icon: icon('ic-coins')
+    icon: icon('ic-bill')
   },
   // {
   //   title: 'Recibos',
