@@ -136,10 +136,9 @@ const PersonTableComponent: React.FC<TableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
-            <TableCell sx={{ width: "40%", minWidth: "150px" }}>Nome</TableCell>
-            <TableCell sx={{ width: "40%", minWidth: "150px" }}>
-              CPF/CNPJ
-            </TableCell>
+            <TableCell sx={{ width: "25%", minWidth: "150px" }}>Nome</TableCell>
+            <TableCell sx={{ width: "25%", minWidth: "150px" }}>Tipo</TableCell>
+            <TableCell sx={{ width: "30%", minWidth: "150px" }}>CPF/CNPJ</TableCell>
             <TableCell sx={{ width: "15%", minWidth: "150px" }}>Contato</TableCell>
             <TableCell sx={{ width: "5%" }} />
           </TableRow>
@@ -161,6 +160,7 @@ const PersonTableComponent: React.FC<TableComponentProps> = ({
                   />
                 </TableCell>
                 <TableCell>{person.name || "-"}</TableCell>
+                <TableCell>{person.type || "-"}</TableCell>
                 <TableCell>{person.cpfCnpj || "-"}</TableCell>
                 <TableCell>{person.contact || "-"}</TableCell>
                 <TableCell>

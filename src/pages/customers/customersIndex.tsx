@@ -106,7 +106,7 @@ export default function CustomersIndex() {
                 <TableComponet
                   setSelectedCustomers={setSelectedCustomers}
                   isSearching={isSearching}
-                  customers={customers}
+                  customers={[]}
                   isLoading={isLoading}
                 />
               </Box>

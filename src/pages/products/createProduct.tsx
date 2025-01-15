@@ -85,7 +85,7 @@ export default function CreateProductPage() {
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
-                    label="Quantidade (Toneladas)"
+                    label="Quantidade (Quilos)"
                     placeholder="Ex: 1,5"
                     type="text"
                     inputProps={{ min: 0, step: "any" }}

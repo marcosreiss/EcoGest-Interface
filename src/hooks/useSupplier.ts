@@ -1,8 +1,8 @@
 import type { AxiosError } from "axios";
+import type { PersonListResponse } from "src/models/person";
 import type {
     Supplier,
     SupplierResponse,
-    SupplierListResponse,
     CreateSupplierPayload,
     SuppliersBasicInfoList
 } from "src/models/supplier";
@@ -20,7 +20,7 @@ import {
 } from "src/services/supplierService";
 
 export const useGetSuppliersPaginated = (skip: number, take: number) =>
-    useQuery<SupplierListResponse, AxiosError>({
+    useQuery<PersonListResponse, AxiosError>({
         queryKey: ['suppliers-list', { skip, take }],
         queryFn: () => getSuppliersPaginatedService(skip, take),
     });
