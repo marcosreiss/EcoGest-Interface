@@ -1,7 +1,3 @@
-import type { KpiParams } from 'src/models/kpiModel';
-
-import { useState } from 'react';
-
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
@@ -9,17 +5,13 @@ import { } from 'src/hooks/useKpi';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
-import KpiFilter from './components/kpiFilter';
 import GenerateDailyReport from './components/generateDailyReport';
-import FinancialOverviewCard from '../../sections/overview/analytics-banking';
 // import { AnalyticsCurrentVisits } from '../../sections/overview/analytics-current-visits';
 // import { AnalyticsWebsiteVisits } from '../../sections/overview/analytics-website-visits';
 // import { AnalyticsWidgetSummary } from '../../sections/overview/analytics-widget-summary';
 
 export default function Page() {
-
-
-    const [params, setParams] = useState<KpiParams>()
+    // const [params, setParams] = useState<KpiParams>()
 
     return (
         <DashboardContent maxWidth="xl">

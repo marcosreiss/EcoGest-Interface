@@ -1,13 +1,14 @@
 // Paremetros
 
 export interface KpiParams{
-    year: number | null;
-    month: number | null;
+    // year: number | null;
+    // month: number | null;
     personId: number | null;
     productId: number | null;
-    startDate: string | null;
-    endDate: string | null;
-    period: "day" | "month" | "year"
+    // startDate: string | null;
+    // endDate: string | null;
+    date: string | null;
+    period: "day" | "month" | "year" | null;
 }
 
 // Responses
