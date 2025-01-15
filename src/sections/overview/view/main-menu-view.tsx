@@ -27,13 +27,14 @@ const icon = (name: string, color: string) => (
 
 // Dados do menu com cores personalizadas apenas para os ícones
 const menuItems = [
-  { title: 'Clientes', icon: icon('ic-people', '#FFC107'), path: '/customers' }, // Amarelo Alaranjado
-  { title: 'Fornecedores', icon: icon('ic-truck', '#2F91D1'), path: '/suppliers' }, // Azul
+  { title: 'Pessoas', icon: icon('ic-people', '#FFC107'), path: '/person' }, // Amarelo Alaranjado
+  { title: 'Produtos', icon: icon('ic-soda', '#1E6A3A'), path: '/products' }, // Verde Escuro
   { title: 'Vendas', icon: icon('ic-sales', '#34B864'), path: '/sales' }, // Verde
   { title: 'Compras', icon: icon('ic-cart', '#FF9D1E'), path: '/purchases' }, // Laranja
-  { title: 'Produtos', icon: icon('ic-soda', '#1E6A3A'), path: '/products' }, // Verde Escuro
+  { title: 'A Receber', icon: icon('ic-coins', '#007FFF'), path: '/recive' },
+  { title: 'A Pagar', icon: icon('ic-bill', '#FF6347'), path: '/payable' },
+  { title: 'Lançamentos', icon: icon('ic-analytics', '#F45752'), path: '/entry' },
   { title: 'Funcionários', icon: icon('ic-employees', '#546161'), path: '/employees', adminOnly: true }, // Cinza
-  { title: 'Despesas', icon: icon('ic-coins', '#F45752'), path: '/expenses', adminOnly: true }, // Vermelho
   { title: 'Balanço', icon: icon('ic-adm', '#38A95A'), path: '/admin', adminOnly: true }, // Verde
 ];
 
