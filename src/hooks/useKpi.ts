@@ -64,6 +64,6 @@ export const useGetPaybleRecibleAmount = () =>
 
 // Hook para fazer download de PDF
 export const useGetDownloadPdf = () =>
-  useMutation<Blob, AxiosError, { date: string; personId: number }>({
+  useMutation<Blob, AxiosError, { date: string; personId?: number }>({
     mutationFn: ({ date, personId }) => getDownloadPdf(date, personId),
   });

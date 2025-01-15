@@ -49,7 +49,7 @@ export default function ReceiveDetailsPage() {
     return (
         <>
             <Helmet>
-                <title>{`Detalhes do Recebimento - ${CONFIG.appName}`}</title>
+                <title>{`Detalhes de a Receber - ${CONFIG.appName}`}</title>
             </Helmet>
             <DashboardContent maxWidth="lg">
                 {isLoading ? (
@@ -58,7 +58,7 @@ export default function ReceiveDetailsPage() {
                     <>
                         <Grid item xs={6}>
                             <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>
-                                Detalhes do Recebimento
+                                Detalhes da Conta a Receber
                             </Typography>
                         </Grid>
                         <Grid container>

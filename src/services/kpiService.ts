@@ -1,4 +1,4 @@
-import type { FluxoCaixaDiario, FluxoCaixaMensal, PaybleRecibleAmount } from 'src/models/kpiModel'
+import type { FluxoCaixaDiario, FluxoCaixaMensal, GetDespesas, GetVendas, KpiParams, PaybleRecibleAmount, SaldoProjetado } from 'src/models/kpiModel'
 
 import api from './api'
 
@@ -79,7 +79,7 @@ export const getPaybleRecibleAmountService = async (): Promise<PaybleRecibleAmou
 // };
 
 
-export const getDownloadPdf = async (date: string, personId: number): Promise<Blob> => {
+export const getDownloadPdf = async (date: string, personId?: number): Promise<Blob> => {
   const response = await api.get('/kpi/relatory?', {
     params: { date, personId }, // Corrige para passar 'date' como parâmetro
     responseType: 'blob', // Indica que a resposta é um arquivo binário

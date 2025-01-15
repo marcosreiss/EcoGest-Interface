@@ -50,7 +50,7 @@ export default function PayableDetailsPage() {
     return (
         <>
             <Helmet>
-                <title>{`Detalhes do Pagável - ${CONFIG.appName}`}</title>
+                <title>{`Detalhes de a Pagar - ${CONFIG.appName}`}</title>
             </Helmet>
             <DashboardContent maxWidth="lg">
                 {isLoading ? (
@@ -59,7 +59,7 @@ export default function PayableDetailsPage() {
                     <>
                         <Grid item xs={6}>
                             <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>
-                                Detalhes do Pagável
+                                Detalhes da Conta a Pagar
                             </Typography>
                         </Grid>
                         <Grid container>

@@ -4,16 +4,20 @@ export interface Employee {
     nome: string;
     rg: string;
     cpf: string;
-    endereco: string;
     contato: string;
     funcao: string;
     salario: number;
-    dataAdmissao: Date | null;
+    dataAdmissao: Date;
     dataDemissao?: Date | null;
     periodoFerias?: string;
-    dataDePagamento?: number;
-    status: 'Empregado' | 'Demitido' | 'Férias';
-    isDeleted: boolean;
+
+    cep: string;
+    cidade: string;
+    uf: string;
+    bairro: string;
+    endereco: string;
+    numero: number;
+    complemento: string;
 }
 
 export interface EmployeeListResponse {
@@ -30,14 +34,18 @@ export interface EmployeePayload{
     nome: string;
     rg: string;
     cpf: string;
-    endereco: string;
     contato: string;
     funcao: string;
     salario: number;
-    dataAdmissao: Date | null;
-    dataDemissao?: Date;
+    dataAdmissao: Date;
+    dataDemissao?: Date | null;
     periodoFerias?: string;
-    dataDePagamento?: number;
-    status: 'Empregado' | 'Demitido' | 'Férias';
-    isDeleted: boolean;
+
+    cep: string;
+    cidade: string;
+    uf: string;
+    bairro: string;
+    endereco: string;
+    numero: number;
+    complemento: string;
 }
