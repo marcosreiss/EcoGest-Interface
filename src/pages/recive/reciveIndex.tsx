@@ -30,7 +30,7 @@ export default function RecivePage() {
     page * rowsPerPage,
     rowsPerPage
   );
-  const recives = pagedData?.data ?? [];
+  const recives = pagedData ?? [];
 
   // Define o estado de carregamento
   const isLoading = isPagedLoading;
@@ -91,7 +91,7 @@ export default function RecivePage() {
                 setPage={setPage}
                 page={page}
                 rowsPerPage={rowsPerPage}
-                totalItems={pagedData?.meta?.totalItems || 0}
+                totalItems={pagedData?.length || 0}
               />
             </TableContainer>
           </Grid>

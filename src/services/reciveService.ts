@@ -9,8 +9,8 @@ import api from "./api";
  * @param take Número de registros a obter.
  * @returns Lista paginada de recebíveis.
  */
-export const getRecivesPagedService = async (skip: number, take: number): Promise<ReceiveList> => {
-  const response = await api.get<ReceiveList>("/receives", { params: { skip, take } });
+export const getRecivesPagedService = async (skip: number, take: number): Promise<Receive[]> => {
+  const response = await api.get<Receive[]>("/receives", { params: { skip, take } });
   return response.data;
 };
 

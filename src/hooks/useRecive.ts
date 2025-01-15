@@ -13,7 +13,7 @@ import {
  * Hook para obter uma lista paginada de recebíveis.
  */
 export const useGetRecivesPaged = (skip: number, take: number) =>
-  useQuery<ReceiveList, AxiosError>({
+  useQuery<Receive[], AxiosError>({
     queryKey: ["recives-list", { skip, take }],
     queryFn: () => getRecivesPagedService(skip, take),
   });

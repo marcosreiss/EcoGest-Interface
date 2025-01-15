@@ -160,7 +160,7 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                 </TableCell>
                 <TableCell>{recive.status || "-"}</TableCell>
                 <TableCell>{recive.dataVencimento || "-"}</TableCell>
-                <TableCell>{recive.totalValue.toFixed(2) || "-"}</TableCell>
+                <TableCell>{recive.totalValue || "-"}</TableCell>
                 <TableCell>
                   <IconButton
                     onClick={(event) => handleClick(event, recive.receiveId)}
