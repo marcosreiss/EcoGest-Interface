@@ -33,7 +33,7 @@ const menuItems = [
   { title: 'Compras', icon: icon('ic-cart', '#FF9D1E'), path: '/purchases' }, // Laranja
   { title: 'A Receber', icon: icon('ic-coins', '#007FFF'), path: '/recive' },
   { title: 'A Pagar', icon: icon('ic-bill', '#FF6347'), path: '/payable' },
-  { title: 'Lançamentos', icon: icon('ic-analytics', '#F45752'), path: '/entry' },
+  { title: 'Lançamentos', icon: icon('ic-analytics', '#F45752'), path: '/expenses' },
   { title: 'Funcionários', icon: icon('ic-employees', '#546161'), path: '/employees', adminOnly: true }, // Cinza
   { title: 'Balanço', icon: icon('ic-adm', '#38A95A'), path: '/admin', adminOnly: true }, // Verde
 ];
