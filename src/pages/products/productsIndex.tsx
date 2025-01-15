@@ -71,10 +71,6 @@ export default function ProductPage() {
   };
 
   const products = debouncedSearchString.length >= 3 ? searchResults?.data : data?.data;
-  products?.forEach((product) => {
-    const weight = parseFloat(product.weightAmount.toString());
-    product.weightAmount = weight / 1000;
-  });
   
   return (
     <>
