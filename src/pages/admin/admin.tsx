@@ -28,7 +28,7 @@ export default function Page() {
             </Typography>
 
 
-            <KpiFilter salesKpiParams={params} setSalesKpiParams={setParams} />
+            {/* <KpiFilter salesKpiParams={params} setSalesKpiParams={setParams} /> */}
 
             <Grid container spacing={3}>
                 {/* <Grid item xs={12} sm={6} md={3}>
@@ -73,7 +73,7 @@ export default function Page() {
                 </Grid>
 
 
-                <Grid item xs={12} md={12} lg={12} paddingBottom={5}>
+                {/* <Grid item xs={12} md={12} lg={12} paddingBottom={5}>
                     <FinancialOverviewCard
                         totalBalance={totalBalanceData}
                         income={totalSalesAmount}
@@ -84,7 +84,7 @@ export default function Page() {
                         expensesData={expensesData?.data.totalExpensesData ?? []}
                         setSalesKpiParams={setParams}
                     />
-                </Grid>
+                </Grid> */}
 
                 {/* <Grid container spacing={3}>
                     <Grid item xs={12} md={6} lg={4}>

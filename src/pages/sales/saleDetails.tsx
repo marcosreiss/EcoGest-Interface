@@ -1,11 +1,18 @@
+// src/pages/sales/SaleDetailsPage.tsx
+
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 
 import {
   Box,
   Grid,
+  Table,
+  Button,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableBody,
   Typography,
-  IconButton,
   LinearProgress,
 } from "@mui/material";
 
@@ -36,44 +43,28 @@ export default function SaleDetailsPage() {
     navigate.replace(`/sales/edit/${id}`);
   };
 
-  // Função para formatar preço no padrão Real (ex.: R$ 1.000,00)
+  // const handleViewReceipt = () => {
+  //   if (sale?.receipt?.data) {
+  //     const blob = new Blob([new Uint8Array(sale.receipt.data)], {
+  //       type: "application/pdf",
+  //     });
+  //     const url = URL.createObjectURL(blob);
+  //     window.open(url, "_blank");
+  //   }
+  // };
+
+  const formatDate = (dateStr?: string | Date) => {
+    if (!dateStr) return "-";
+    const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
+    return dateObj.toLocaleDateString("pt-BR");
+  };
+
   const formatPrice = (value?: number) => {
     if (value === undefined) return "-";
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
     }).format(value);
-  };
-
-  // Função para formatar quantidade com duas casas decimais (ex.: 1,50)
-  const formatQuantity = (value?: number) => {
-    if (value === undefined) return "-";
-    return new Intl.NumberFormat("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-  };
-
-    // Função para formatar a data no formato pt-BR
-    const formatDate = (dateStr?: string | Date) => {
-      if (!dateStr) return "-";
-      const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
-      dateObj.setDate(dateObj.getDate() + 1);
-      return dateObj.toLocaleDateString("pt-BR");
-    };
-
-  // Função para traduzir status
-  const translateStatus = (status?: string) => {
-    switch (status) {
-      case "processing":
-        return "Processando";
-      case "approved":
-        return "Aprovada";
-      case "canceled":
-        return "Cancelada";
-      default:
-        return status || "-";
-    }
   };
 
   return (
@@ -86,77 +77,96 @@ export default function SaleDetailsPage() {
           <LinearProgress />
         ) : (
           <>
-            <Grid item xs={6}>
-              <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>
-                Detalhes da Venda
-              </Typography>
-            </Grid>
+            <Typography variant="h4" sx={{ mb: 3 }}>
+              Detalhes da Venda
+            </Typography>
+            <Box sx={formStyle}>
+              <Grid container spacing={2}>
+                {/* Informações do Cliente */}
+                {/* <Grid item xs={12}>
+                  <Typography variant="h6">Cliente</Typography>
+                  <Typography>
+                    Nome: {sale?.person.name || "-"}
+                  </Typography>
+                </Grid> */}
 
-            <Grid container>
-              <Grid item xs={12}>
-                <Box sx={formStyle}>
-                  <Grid container spacing={2}>
-                    {/* Nome do Cliente */}
-                    <Grid item xs={6}>
-                      <Typography variant="h6" gutterBottom>
-                        Cliente: {sale?.customer?.name || "-"}
-                      </Typography>
-                    </Grid>
+                {/* Descrição */}
+                <Grid item xs={12}>
+                  <Typography variant="body1">
+                    Descrição: {sale?.description || "-"}
+                  </Typography>
+                </Grid>
 
-                    {/* Botão de Editar */}
-                    <Grid item xs={6}>
-                      <IconButton onClick={handleEditClick}>
-                        <img alt="icon" src="/assets/icons/ic-edit.svg" />
-                      </IconButton>
-                    </Grid>
+                {/* Data da Venda */}
+                <Grid item xs={12}>
+                  <Typography variant="body1">
+                    Data da Venda: {formatDate(sale?.date_time)}
+                  </Typography>
+                </Grid>
 
-                    {/* Nome do Produto */}
-                    <Grid item xs={12}>
-                      <Typography variant="body1" gutterBottom>
-                        Produto: {sale?.product?.name || "-"}
-                      </Typography>
-                    </Grid>
+                {/* Desconto */}
+                <Grid item xs={12}>
+                  <Typography variant="body1">
+                    Desconto: {formatPrice(sale?.discount)}
+                  </Typography>
+                </Grid>
 
-                    {/* Quantidade formatada */}
-                    <Grid item xs={12}>
-                      <Typography variant="body1" gutterBottom>
-                        Quantidade:{" "}
-                        {sale?.quantity !== undefined
-                          ? `${formatQuantity(sale.quantity)} Toneladas`
-                          : "-"}
-                      </Typography>
-                    </Grid>
+                {/* Preço Total */}
+                <Grid item xs={12}>
+                  <Typography variant="body1">
+                    Preço Total: {formatPrice(sale?.totalPrice)}
+                  </Typography>
+                </Grid>
 
-                    {/* Preço Total formatado */}
-                    <Grid item xs={12}>
-                      <Typography variant="body1" gutterBottom>
-                        Preço Total:{" "}
-                        {sale?.totalPrice !== undefined
-                          ? formatPrice(sale.totalPrice)
-                          : "-"}
-                      </Typography>
-                    </Grid>
+                {/* Lista de Produtos */}
+                <Grid item xs={12}>
+                  <Typography variant="h6" gutterBottom>
+                    Produtos
+                  </Typography>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Produto</TableCell>
+                        <TableCell>Quantidade</TableCell>
+                        <TableCell>Preço Unitário</TableCell>
+                        <TableCell>Total</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {sale?.products.map((saleProduct) => (
+                        <TableRow key={saleProduct.product.productId}>
+                          <TableCell>{saleProduct.product.name}</TableCell>
+                          <TableCell>{saleProduct.quantity}</TableCell>
+                          <TableCell>{formatPrice(saleProduct.product.price)}</TableCell>
+                          <TableCell>{formatPrice(saleProduct.totalPrice)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Grid>
 
-                    {/* Status traduzido */}
-                    <Grid item xs={12}>
-                      <Typography variant="body1" gutterBottom>
-                        Status: {translateStatus(sale?.saleStatus)}
-                      </Typography>
-                    </Grid>
+                {/* Botão para Editar */}
+                <Grid item xs={12}>
+                  <Button variant="contained" color="primary" onClick={handleEditClick}>
+                    Editar Venda
+                  </Button>
+                </Grid>
 
-                    {/* Data da Venda */}
-                    <Grid item xs={12}>
-                      <Typography variant="body1" gutterBottom>
-                        Data da Venda:{" "}
-                        {sale?.date_time
-                          ? formatDate(sale?.date_time)
-                          : "-"}
-                      </Typography>
-                    </Grid>
+                {/* Recibo */}
+                {/* {sale?.receipt?.data && (
+                  <Grid item xs={12}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleViewReceipt}
+                      fullWidth
+                    >
+                      Visualizar Recibo
+                    </Button>
                   </Grid>
-                </Box>
+                )} */}
               </Grid>
-            </Grid>
+            </Box>
           </>
         )}
       </DashboardContent>

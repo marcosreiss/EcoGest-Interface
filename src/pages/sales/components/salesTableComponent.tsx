@@ -81,11 +81,6 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
     setSelectedItem(null);
   };
 
-  const handleOpenStatusModal = () => {
-    setStatusModalOpen(true);
-    setAnchorEl(null);
-  };
-
   const handleCloseStatusModal = () => {
     setStatusModalOpen(false);
     setSelectedItem(null);
@@ -199,8 +194,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
-            <TableCell sx={{ width: "25%", minWidth: "150px" }}>Produto</TableCell>
-            <TableCell sx={{ width: "25%", minWidth: "150px" }}>Cliente</TableCell>
+            <TableCell sx={{ width: "5%", minWidth: "50px" }}>ID</TableCell>
             <TableCell sx={{ width: "15%", minWidth: "100px" }}>Data</TableCell>
             {/* <TableCell sx={{ width: "15%", minWidth: "100px" }}>Status</TableCell> */}
             <TableCell sx={{ width: "15%", minWidth: "100px" }}>Preço</TableCell>
@@ -223,8 +217,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                     onChange={(e) => handleSelectSale(e, sale)}
                   />
                 </TableCell>
-                <TableCell>{sale.product?.name || "N/A"}</TableCell>
-                <TableCell>{sale.customer?.name || "N/A"}</TableCell>
+                <TableCell>{sale.saleId}</TableCell>
                 {/* Data formatada */}
                 <TableCell>
                   {sale.date_time
@@ -261,11 +254,6 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                     <MenuItem onClick={() => handleGenerateReceipt(sale.saleId)}>
                       Gerar Recibo
                     </MenuItem>
-                    {sale.saleStatus === "processing" && (
-                      <MenuItem onClick={handleOpenStatusModal}>
-                        Atualizar Status
-                      </MenuItem>
-                    )}
                     <MenuItem onClick={() => handleDeleteClick(sale.saleId)}>
                       Deletar
                     </MenuItem>

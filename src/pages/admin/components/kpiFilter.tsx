@@ -15,7 +15,7 @@ import {
 import { useGetProductsBasicInfo } from "src/hooks/useProduct";
 import { useGetSuppliersBasicInfo } from "src/hooks/useSupplier";
 
-import { TimeGranularity } from "src/models/kpiModel";
+// import { TimeGranularity } from "src/models/kpiModel";
 
 interface KpiFilterProps {
     setSalesKpiParams: React.Dispatch<React.SetStateAction<KpiParams>>;
@@ -34,7 +34,7 @@ const KpiFilter: React.FC<KpiFilterProps> = ({ setSalesKpiParams, salesKpiParams
     const products = productsData?.data || [];
 
     const handleClearFilters = () => {
-        setSalesKpiParams({});
+        // setSalesKpiParams({});
         setSelectedFilter("");
     };
 
@@ -116,7 +116,7 @@ const KpiFilter: React.FC<KpiFilterProps> = ({ setSalesKpiParams, salesKpiParams
                         </Grid>
                     )}
 
-                    {selectedFilter === "timePeriod" && (
+                    {/* {selectedFilter === "timePeriod" && (
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <TextField
@@ -143,9 +143,9 @@ const KpiFilter: React.FC<KpiFilterProps> = ({ setSalesKpiParams, salesKpiParams
                                 </TextField>
                             </Grid>
                         </Grid>
-                    )}
+                    )} */}
 
-                    {selectedFilter === "product" && (
+                    {/* {selectedFilter === "product" && (
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <Autocomplete
@@ -172,9 +172,9 @@ const KpiFilter: React.FC<KpiFilterProps> = ({ setSalesKpiParams, salesKpiParams
                                 />
                             </Grid>
                         </Grid>
-                    )}
+                    )} */}
 
-                    {selectedFilter === "supplier" && (
+                    {/* {selectedFilter === "supplier" && (
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <Autocomplete
@@ -205,7 +205,7 @@ const KpiFilter: React.FC<KpiFilterProps> = ({ setSalesKpiParams, salesKpiParams
                                 />
                             </Grid>
                         </Grid>
-                    )}
+                    )} */}
                 </Card>
             </Grid>
         </Grid>

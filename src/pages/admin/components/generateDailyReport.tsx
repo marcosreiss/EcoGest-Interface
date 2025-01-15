@@ -11,15 +11,13 @@ import {
   CircularProgress,
 } from "@mui/material";
 
-import { useDownloadPdf } from "src/hooks/useKpi";
-
 import { useNotification } from "src/context/NotificationContext";
 
 export default function GenerateDailyReport() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { register, handleSubmit, reset } = useForm<{ date: string }>();
   const notification = useNotification();
-  const downloadPdf = useDownloadPdf();
+  // const downloadPdf = useDownloadPdf();
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -30,24 +28,24 @@ export default function GenerateDailyReport() {
     reset();
   };
 
-  const onSubmit = (data: { date: string }) => {
-    downloadPdf.mutate(data.date, {
-      onSuccess: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `RELATORIO-${data.date}.pdf`;
-        link.click();
-        window.URL.revokeObjectURL(url);
+  // const onSubmit = (data: { date: string }) => {
+  //   downloadPdf.mutate(data.date, {
+  //     onSuccess: (blob) => {
+  //       const url = window.URL.createObjectURL(blob);
+  //       const link = document.createElement("a");
+  //       link.href = url;
+  //       link.download = `RELATORIO-${data.date}.pdf`;
+  //       link.click();
+  //       window.URL.revokeObjectURL(url);
 
-        notification.addNotification("Relatório gerado com sucesso!", "success");
-        handleCloseModal();
-      },
-      onError: () => {
-        notification.addNotification("Erro ao gerar o relatório.", "error");
-      },
-    });
-  };
+  //       notification.addNotification("Relatório gerado com sucesso!", "success");
+  //       handleCloseModal();
+  //     },
+  //     onError: () => {
+  //       notification.addNotification("Erro ao gerar o relatório.", "error");
+  //     },
+  //   });
+  // };
 
   return (
     <>
@@ -76,7 +74,7 @@ export default function GenerateDailyReport() {
           <Button onClick={handleCloseModal} color="secondary">
             Cancelar
           </Button>
-          <Button
+          {/* <Button
             onClick={handleSubmit(onSubmit)}
             color="primary"
             disabled={downloadPdf.isPending}
@@ -85,7 +83,7 @@ export default function GenerateDailyReport() {
               <CircularProgress size={20} sx={{ marginRight: "10px" }} />
             ) : null}
             Gerar Relatório
-          </Button>
+          </Button> */}
         </DialogActions>
       </Dialog>
     </>
