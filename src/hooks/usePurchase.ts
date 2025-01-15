@@ -2,9 +2,9 @@ import type { AxiosError } from "axios";
 import type {
     Purchase,
     PurchaseStatus,
+    PurchasePayload,
     PurchaseResponse,
     PurchaseListResponse,
-    PurchasePayload,
     SearchByPeriodRequest,
     TotalPushchasesInPeriodRequest,
     TotalPushchasesInPeriodResponse,
@@ -39,9 +39,8 @@ export const useCreatePurchase = () => {
     return useMutation<PurchaseResponse, AxiosError, PurchasePayload>({
         mutationFn: (payload) => createPurchaseService(payload),
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["purchases-list"]
-            });
+            queryClient.invalidateQueries({queryKey: ["purchases-list"]});
+            queryClient.invalidateQueries({ queryKey: ['paybles-list'] });
         },
     });
 };
@@ -56,6 +55,7 @@ export const useUpdatePurchase = () => {
             queryClient.invalidateQueries({
                 queryKey: ["purchases-list"]
             });
+            queryClient.invalidateQueries({ queryKey: ['paybles-list'] });
         },
     });
 };
@@ -70,6 +70,7 @@ export const useDeletePurchase = () => {
             queryClient.invalidateQueries({
                 queryKey: ["purchases-list"]
             });
+            queryClient.invalidateQueries({ queryKey: ['paybles-list'] });
         },
     });
 };
@@ -93,8 +94,6 @@ export const useSearchPurchasesByPeriod = (payload: SearchByPeriodRequest) =>
         queryFn: () => searchPurchasesByPeriodService(payload.startDate!, payload.endDate!),
         enabled: !!payload?.startDate && !!payload?.endDate,
     });
-
-
 
 // Hook para buscar compras por fornecedor
 export const useGetPurchasesBySupplier = (supplierId: number) =>

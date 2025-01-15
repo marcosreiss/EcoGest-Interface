@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Receive, ReceiveList } from "src/models/recive";
+import type { Receive } from "src/models/recive";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -39,9 +39,7 @@ export const useDeleteRecive = () => {
       console.log("Deletando recebível com ID:", variables);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["recives-list"],
-      });
+      queryClient.invalidateQueries({queryKey: ["recives-list"],});
     },
   });
 };

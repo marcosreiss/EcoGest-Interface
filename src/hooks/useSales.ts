@@ -34,6 +34,7 @@ export const useCreateSale = () => {
             queryClient.invalidateQueries({
                 queryKey: ['sales-list'],
             });
+            queryClient.invalidateQueries({queryKey: ["recives-list"],});
         }
     });
 };
@@ -50,6 +51,7 @@ export const useUpdateSale = () => {
             queryClient.invalidateQueries({
                 queryKey: ['sales-list'],
             });
+            queryClient.invalidateQueries({queryKey: ["recives-list"],});
         }
     });
 }
@@ -67,6 +69,7 @@ export const useDeleteSale = () => {
             queryClient.invalidateQueries({
                 queryKey: ['sales-list'],
             });
+            queryClient.invalidateQueries({queryKey: ["recives-list"],});
         }
     });
 };
