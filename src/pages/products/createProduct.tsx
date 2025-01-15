@@ -58,7 +58,7 @@ export default function CreateProductPage() {
         <title>{`Criar Produto - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth='md'>
+      <DashboardContent maxWidth='lg'>
         <Grid container justifyContent="center">
           <Grid item xs={12}>
             <Box sx={formStyle}>

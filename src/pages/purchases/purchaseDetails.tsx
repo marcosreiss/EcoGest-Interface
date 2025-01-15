@@ -70,7 +70,7 @@ export default function PurchaseDetailsPage() {
       <Helmet>
         <title>{`Detalhes da Compra - ${CONFIG.appName}`}</title>
       </Helmet>
-      <DashboardContent maxWidth="md">
+      <DashboardContent maxWidth="lg">
         {isLoading ? (
           <LinearProgress />
         ) : (

@@ -52,7 +52,7 @@ export default function PayableDetailsPage() {
             <Helmet>
                 <title>{`Detalhes do Pagável - ${CONFIG.appName}`}</title>
             </Helmet>
-            <DashboardContent maxWidth="md">
+            <DashboardContent maxWidth="lg">
                 {isLoading ? (
                     <LinearProgress />
                 ) : (

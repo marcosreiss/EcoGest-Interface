@@ -56,10 +56,10 @@ export const EmployeeDetails = lazy(() => import('src/pages/employees/employeeDe
 
 
 // ---------- Expense Components
-export const ExpensesPage = lazy(() => import('src/pages/expenses/expensesIndex'));
-export const CreateExpense = lazy(() => import('src/pages/expenses/createExpense'));
-export const EditExpense = lazy(() => import('src/pages/expenses/editExpense'));
-export const ExpenseDetails = lazy(() => import('src/pages/expenses/expenseDetails'));
+export const ExpensesPage = lazy(() => import('src/pages/expenses/entryIndex'));
+export const CreateExpense = lazy(() => import('src/pages/expenses/createEntry'));
+export const EditExpense = lazy(() => import('src/pages/expenses/editEntry'));
+export const ExpenseDetails = lazy(() => import('src/pages/expenses/entryDetails'));
 
 // ---------- Person Components
 export const PersonPage = lazy(() => import('src/pages/person/personIndex'));

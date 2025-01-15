@@ -72,7 +72,7 @@ export default function PayableIndex() {
         <title>{`Contas a pagar - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth="md">
+      <DashboardContent maxWidth="lg">
         <Grid container>
           <Grid item xs={6}>
             <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>

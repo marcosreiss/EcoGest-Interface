@@ -17,8 +17,8 @@ import { useNotification } from "src/context/NotificationContext";
 import TableFooterComponent from "src/layouts/components/tableFooterComponent";
 
 import SalesTableSearch from "../sales/components/salesTableSearch";
-import ExpenseTableComponent from "./components/expenseTableComponent";
-import ExpensesTableHeaderComponent from "./components/expensesTableHeaderComponent";
+import ExpenseTableComponent from "./components/entryTableComponent";
+import ExpensesTableHeaderComponent from "./components/entryTableHeaderComponent";
 
 // ----------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ export default function ExpensePage() {
         <title>{`Despesas - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth="md">
+      <DashboardContent maxWidth="lg">
         <Grid container>
           <ExpensesTableHeaderComponent
             title="Lançamentos"

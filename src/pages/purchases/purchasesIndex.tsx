@@ -65,7 +65,7 @@ export default function PurchasePage() {
         <title>{`Compras - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth="md">
+      <DashboardContent maxWidth="lg">
         <Grid container>
           <TableHeaderComponent 
             title='Compras' 

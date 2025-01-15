@@ -106,7 +106,7 @@ export default function CreateSalePage() {
         <title>{`Criar Venda - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth="md">
+      <DashboardContent maxWidth="lg">
         <Grid container>
           <Grid item xs={12}>
             <Box sx={formStyle}>

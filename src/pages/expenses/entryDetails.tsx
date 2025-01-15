@@ -51,7 +51,7 @@ export default function EntryDetailsPage() {
         <title>{`Detalhes da Entrada - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth="md">
+      <DashboardContent maxWidth="lg">
         {isLoading ? (
           <LinearProgress />
         ) : (

@@ -78,7 +78,7 @@ export default function ProductPage() {
         <title>{`Produtos - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth="md">
+      <DashboardContent maxWidth="lg">
         <Grid container>
           <TableHeaderComponent
             title='Produtos'

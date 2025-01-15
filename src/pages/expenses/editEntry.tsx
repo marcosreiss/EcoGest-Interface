@@ -141,7 +141,7 @@ export default function EditExpensePage() {
         <title>{`Editar Despesa - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth="md">
+      <DashboardContent maxWidth="lg">
         <Grid container>
           <Grid item xs={12}>
             <Box sx={formStyle}>

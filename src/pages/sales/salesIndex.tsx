@@ -69,7 +69,7 @@ export default function SalesIndex() {
                 <title>{`Vendas - ${CONFIG.appName}`}</title>
             </Helmet>
 
-            <DashboardContent maxWidth="md">
+            <DashboardContent maxWidth="lg">
                 <Grid container>
                     <SaleTableHeaderComponent title="Vendas" addButtonName="Cadastrar Venda" addButtonPath="/sales/create" />
                     <Grid item xs={12}>
