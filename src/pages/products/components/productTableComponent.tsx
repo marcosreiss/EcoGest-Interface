@@ -135,10 +135,11 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
-            <TableCell sx={{ width: "40%", minWidth: "150px" }}>Nome</TableCell>
-            <TableCell sx={{ width: "30%", minWidth: "100px" }}>Quantidade</TableCell>
-            <TableCell sx={{ width: "20%", minWidth: "100px" }}>Preço</TableCell>
-            <TableCell sx={{ width: "5%" }}> </TableCell>
+            <TableCell >ID</TableCell>
+            <TableCell >Nome</TableCell>
+            <TableCell >Quantidade</TableCell>
+            <TableCell >Preço</TableCell>
+            <TableCell> </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -157,6 +158,7 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
                     onChange={(e) => handleSelectProduct(e, product)}
                   />
                 </TableCell>
+                <TableCell>{product.productId || "-"}</TableCell>
                 <TableCell>{product.name || "-"}</TableCell>
                 <TableCell>{formatWeight(Number(product.weightAmount))}</TableCell>
                 <TableCell>{formatPrice(Number(product.price))}</TableCell>
