@@ -6,6 +6,7 @@ import { } from 'src/hooks/useKpi';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import GenerateDailyReport from './components/generateDailyReport';
+import FluxoCaixaMensalComponent from './components/FluxoCaixaMensalComponent';
 // import { AnalyticsCurrentVisits } from '../../sections/overview/analytics-current-visits';
 // import { AnalyticsWebsiteVisits } from '../../sections/overview/analytics-website-visits';
 // import { AnalyticsWidgetSummary } from '../../sections/overview/analytics-widget-summary';
@@ -63,7 +64,7 @@ export default function Page() {
                         <GenerateDailyReport />
                     </Grid>
                 </Grid>
-
+                <FluxoCaixaMensalComponent />
 
                 {/* <Grid item xs={12} md={12} lg={12} paddingBottom={5}>
                     <FinancialOverviewCard

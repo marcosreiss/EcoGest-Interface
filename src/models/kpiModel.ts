@@ -1,6 +1,6 @@
 // Paremetros
 
-export interface KpiParams{
+export interface KpiParams {
     // year: number | null;
     // month: number | null;
     personId: number | null;
@@ -13,17 +13,19 @@ export interface KpiParams{
 
 // Responses
 
-export interface FluxoCaixaMensal{
-    year: number;
-    months: Month[];
-    totalProjectedReceivables: number;
-    totalProjectedPayables: number;
-    projectedBalance: number;
-    totalPaidReceivables: number;
-    totalPaidPayables: number;
-    paidBalance: number;
+export interface FluxoCaixaMensal {
+    data: {
+        year: number;
+        months: Month[];
+        totalProjectedReceivables: number;
+        totalProjectedPayables: number;
+        projectedBalance: number;
+        totalPaidReceivables: number;
+        totalPaidPayables: number;
+        paidBalance: number;
+    }
 }
-export interface Month{
+export interface Month {
     month: number;
     totalReceivables: number;
     totalReceived: number;
@@ -31,19 +33,22 @@ export interface Month{
     totalPaid: number;
 }
 
-export interface FluxoCaixaDiario{
-    year: number;
-    month: number;
-    days: Day[];
+export interface FluxoCaixaDiario {
+    data:
+    {
+        year: number;
+        month: number;
+        days: Day[];
 
-    totalProjectedReceivables: number;
-    totalProjectedPayables: number;
-    projectedBalance: number;
-    totalPaidReceivables: number;
-    totalPaidPayables: number;
-    paidBalance: number;
+        totalProjectedReceivables: number;
+        totalProjectedPayables: number;
+        projectedBalance: number;
+        totalPaidReceivables: number;
+        totalPaidPayables: number;
+        paidBalance: number;
 
-    finalBalance: number;
+        finalBalance: number;
+    }
 }
 export interface Day {
     day: number;
@@ -57,23 +62,23 @@ export interface Day {
 export interface PaybleRecibleAmount {
     data: {
         receivables: Receivables;
-        payables:Payables;
+        payables: Payables;
     }
 }
-export interface Receivables{
+export interface Receivables {
     open: number;
     overdue: number;
 }
-export interface Payables{
+export interface Payables {
     open: number;
     overdue: number;
 }
 
 
-export interface SaldoProjetado{
+export interface SaldoProjetado {
     profit: Profit[];
 }
-export interface Profit{
+export interface Profit {
     dateGroup: string;
     profit: number;
     salesTotal: number;
@@ -81,19 +86,19 @@ export interface Profit{
 }
 
 
-export interface GetDespesas{
+export interface GetDespesas {
     purchases: Purchase[];
 }
-export interface Purchase{
+export interface Purchase {
     dateGroup: number;
     total: number;
 }
 
 
-export interface GetVendas{
+export interface GetVendas {
     sale: Sale[];
 }
-export interface Sale{
+export interface Sale {
     dateGroup: number;
     total: number;
 }
