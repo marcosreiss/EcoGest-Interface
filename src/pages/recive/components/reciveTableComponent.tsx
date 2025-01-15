@@ -64,11 +64,6 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
     handleClose();
   };
 
-  const handleEditClick = (reciveId: number) => {
-    navigate.push(`edit/${reciveId}`);
-    handleClose();
-  };
-
   const handleDeleteRecive = (reciveId: number) => {
     handleClose();
     deleteRecive.mutate(reciveId, {
@@ -183,11 +178,6 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                       onClick={() => handleDetailsClick(recive.receiveId)}
                     >
                       Detalhes
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => handleEditClick(recive.receiveId)}
-                    >
-                      Editar
                     </MenuItem>
                     <MenuItem
                       onClick={() => handleDeleteClick(recive.receiveId)}
