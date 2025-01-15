@@ -1,114 +1,74 @@
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
+// src/pages/Page.tsx
 
-import { } from 'src/hooks/useKpi';
+import React, { useState } from "react";
 
-import { DashboardContent } from 'src/layouts/dashboard';
+import Tab from "@mui/material/Tab";
+import Box from "@mui/material/Box";
+import Tabs from "@mui/material/Tabs";
+import Typography from "@mui/material/Typography";
 
-import GenerateDailyReport from './components/generateDailyReport';
-import FluxoCaixaMensalComponent from './components/FluxoCaixaMensalComponent';
-// import { AnalyticsCurrentVisits } from '../../sections/overview/analytics-current-visits';
-// import { AnalyticsWebsiteVisits } from '../../sections/overview/analytics-website-visits';
-// import { AnalyticsWidgetSummary } from '../../sections/overview/analytics-widget-summary';
+import { DashboardContent } from "src/layouts/dashboard";
+
+import FluxoCaixaMensalComponent from "./components/FluxoCaixaMensalComponent";
+import FluxoCaixaDiarioComponent from "./components/FluxoCaixaDiarioComponent";
 
 export default function Page() {
-    // const [params, setParams] = useState<KpiParams>()
+  // Estado para controlar a aba selecionada
+  const [selectedTab, setSelectedTab] = useState<number>(0);
 
-    return (
-        <DashboardContent maxWidth="xl">
-            <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
-                Balanço
-            </Typography>
+  // Função para lidar com a mudança de aba
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setSelectedTab(newValue);
+  };
 
+  return (
+    <DashboardContent maxWidth="xl">
+      <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
+        Balanço
+      </Typography>
 
-            {/* <KpiFilter salesKpiParams={params} setSalesKpiParams={setParams} /> */}
+      {/* Abas de Navegação */}
+      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
+        <Tabs value={selectedTab} onChange={handleChange} aria-label="fluxo de caixa tabs">
+          <Tab label="Mensal" id="tab-0" aria-controls="tabpanel-0" />
+          <Tab label="Diário" id="tab-1" aria-controls="tabpanel-1" />
+        </Tabs>
+      </Box>
 
-            <Grid container spacing={3}>
-                {/* <Grid item xs={12} sm={6} md={3}>
-                    <AnalyticsWidgetSummary
-                        title="Total de Vendas"
-                        total={714000}
-                        icon={<img alt="icon" src="/assets/icons/glass/ic-glass-bag.svg" />}
-                    />
-                </Grid>
+      {/* Conteúdo das Abas */}
+      <TabPanel value={selectedTab} index={0}>
+        <FluxoCaixaMensalComponent />
+      </TabPanel>
+      <TabPanel value={selectedTab} index={1}>
+        <FluxoCaixaDiarioComponent />
+      </TabPanel>
+    </DashboardContent>
+  );
+}
 
-                <Grid item xs={12} sm={6} md={3}>
-                    <AnalyticsWidgetSummary
-                        title="Total de Compras"
-                        total={1352831}
-                        color="secondary"
-                        icon={<img alt="icon" src="/assets/icons/glass/ic-glass-users.svg" />}
-                    />
-                </Grid>
+/**
+ * Componente TabPanel para renderizar o conteúdo das abas.
+ * @param props 
+ * @returns 
+ */
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
 
-                <Grid item xs={12} sm={6} md={3}>
-                    <AnalyticsWidgetSummary
-                        title="Compras em processo:"
-                        total={1723315}
-                        color="warning"
-                        icon={<img alt="icon" src="/assets/icons/glass/ic-glass-buy.svg" />}
-                    />
-                </Grid>
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
 
-                <Grid item xs={12} sm={6} md={3}>
-                    <AnalyticsWidgetSummary
-                        title="Vendas em processo:"
-                        total={234}
-                        color="error"
-                        icon={<img alt="icon" src="/assets/icons/glass/ic-glass-message.svg" />}
-                    />
-                </Grid> */}
-
-                <Grid container justifyContent="end" sx={{ margin: 1, paddingRight: 8, scale: 1.1 }}>
-                    <Grid item>
-                        <GenerateDailyReport />
-                    </Grid>
-                </Grid>
-                <FluxoCaixaMensalComponent />
-
-                {/* <Grid item xs={12} md={12} lg={12} paddingBottom={5}>
-                    <FinancialOverviewCard
-                        totalBalance={totalBalanceData}
-                        income={totalSalesAmount}
-                        incomeChangePercentage={0}
-                        expenses={totalExpensesAmount}
-                        expenseChangePercentage={0}
-                        salesData={salesData?.data.totalSalesApprovedData ?? []}
-                        expensesData={expensesData?.data.totalExpensesData ?? []}
-                        setSalesKpiParams={setParams}
-                    />
-                </Grid> */}
-
-                {/* <Grid container spacing={3}>
-                    <Grid item xs={12} md={6} lg={4}>
-                        <AnalyticsCurrentVisits
-                            title="Current visits"
-                            chart={{
-                                series: [
-                                    { label: 'America', value: 3500 },
-                                    { label: 'Asia', value: 2500 },
-                                    { label: 'Europe', value: 1500 },
-                                    { label: 'Africa', value: 500 },
-                                ],
-                            }}
-                        />
-                    </Grid>
-
-                    <Grid item xs={12} md={6} lg={8}>
-                        <AnalyticsWebsiteVisits
-                            title="Website visits"
-                            subheader="(+43%) than last year"
-                            chart={{
-                                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
-                                series: [
-                                    { name: 'Team A', data: [43, 33, 22, 37, 67, 68, 37, 24, 55] },
-                                    { name: 'Team B', data: [51, 70, 47, 67, 40, 37, 24, 70, 24] },
-                                ],
-                            }}
-                        />
-                    </Grid>
-                </Grid> */}
-            </Grid>
-        </DashboardContent>
-    );
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`tabpanel-${index}`}
+      aria-labelledby={`tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
 }

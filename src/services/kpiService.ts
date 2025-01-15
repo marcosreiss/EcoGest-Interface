@@ -1,4 +1,4 @@
-import type { KpiParams, GetVendas, GetDespesas, SaldoProjetado, FluxoCaixaDiario, FluxoCaixaMensal, PaybleRecibleAmount } from 'src/models/kpiModel'
+import type { FluxoCaixaDiario, FluxoCaixaMensal, PaybleRecibleAmount } from 'src/models/kpiModel'
 
 import api from './api'
 
@@ -33,50 +33,50 @@ export const getPaybleRecibleAmountService = async (): Promise<PaybleRecibleAmou
   return response.data;
 };
 
-export const getSaldoProjetadoService = async (
-  params?: KpiParams
-): Promise<SaldoProjetado> => {
-  const response = await api.get<SaldoProjetado>("/kpi/profit", {
-    params: {
-      ...(params?.personId && { personId: params.personId }),
-      ...(params?.productId && { productId: params.productId }),
-      ...(params?.startDate && { startDate: params.startDate }),
-      ...(params?.endDate && { endDate: params.endDate }),
-      ...(params?.period && { period: params.period }),
-    },
-  });
-  return response.data;
-};
+// export const getSaldoProjetadoService = async (
+//   params?: KpiParams
+// ): Promise<SaldoProjetado> => {
+//   const response = await api.get<SaldoProjetado>("/kpi/profit", {
+//     params: {
+//       ...(params?.personId && { personId: params.personId }),
+//       ...(params?.productId && { productId: params.productId }),
+//       ...(params?.startDate && { startDate: params.startDate }),
+//       ...(params?.endDate && { endDate: params.endDate }),
+//       ...(params?.period && { period: params.period }),
+//     },
+//   });
+//   return response.data;
+// };
 
-export const getDespesasService = async (
-  params?: KpiParams
-): Promise<GetDespesas> => {
-  const response = await api.get<GetDespesas>("/kpi/expenses", {
-    params: {
-      ...(params?.personId && { personId: params.personId }),
-      ...(params?.productId && { productId: params.productId }),
-      ...(params?.startDate && { startDate: params.startDate }),
-      ...(params?.endDate && { endDate: params.endDate }),
-      ...(params?.period && { period: params.period }),
-    },
-  });
-  return response.data;
-};
+// export const getDespesasService = async (
+//   params?: KpiParams
+// ): Promise<GetDespesas> => {
+//   const response = await api.get<GetDespesas>("/kpi/expenses", {
+//     params: {
+//       ...(params?.personId && { personId: params.personId }),
+//       ...(params?.productId && { productId: params.productId }),
+//       ...(params?.startDate && { startDate: params.startDate }),
+//       ...(params?.endDate && { endDate: params.endDate }),
+//       ...(params?.period && { period: params.period }),
+//     },
+//   });
+//   return response.data;
+// };
 
-export const getVendasService = async (
-  params?: KpiParams
-): Promise<GetVendas> => {
-  const response = await api.get<GetVendas>("/kpi/sales", {
-    params: {
-      ...(params?.personId && { personId: params.personId }),
-      ...(params?.productId && { productId: params.productId }),
-      ...(params?.startDate && { startDate: params.startDate }),
-      ...(params?.endDate && { endDate: params.endDate }),
-      ...(params?.period && { period: params.period }),
-    },
-  });
-  return response.data;
-};
+// export const getVendasService = async (
+//   params?: KpiParams
+// ): Promise<GetVendas> => {
+//   const response = await api.get<GetVendas>("/kpi/sales", {
+//     params: {
+//       ...(params?.personId && { personId: params.personId }),
+//       ...(params?.productId && { productId: params.productId }),
+//       ...(params?.startDate && { startDate: params.startDate }),
+//       ...(params?.endDate && { endDate: params.endDate }),
+//       ...(params?.period && { period: params.period }),
+//     },
+//   });
+//   return response.data;
+// };
 
 
 export const getDownloadPdf = async (date: string, personId: number): Promise<Blob> => {

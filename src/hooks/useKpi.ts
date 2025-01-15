@@ -1,9 +1,5 @@
 import type { AxiosError } from "axios";
 import type {
-  GetVendas,
-  KpiParams,
-  GetDespesas,
-  SaldoProjetado,
   FluxoCaixaMensal,
   FluxoCaixaDiario,
   PaybleRecibleAmount,
@@ -13,9 +9,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 
 import {
   getDownloadPdf,
-  getVendasService,
-  getDespesasService,
-  getSaldoProjetadoService,
   getFluxoCaixaMensalService,
   getFluxoCaixaDiarioService,
   getPaybleRecibleAmountService,
@@ -48,26 +41,26 @@ export const useGetPaybleRecibleAmount = () =>
     queryFn: getPaybleRecibleAmountService,
   });
 
-// Hook para obter saldo projetado
-export const useGetSaldoProjetado = (params?: KpiParams) =>
-  useQuery<SaldoProjetado, AxiosError>({
-    queryKey: ["saldoProjetado", params],
-    queryFn: () => getSaldoProjetadoService(params),
-  });
+// // Hook para obter saldo projetado
+// export const useGetSaldoProjetado = (params?: KpiParams) =>
+//   useQuery<SaldoProjetado, AxiosError>({
+//     queryKey: ["saldoProjetado", params],
+//     queryFn: () => getSaldoProjetadoService(params),
+//   });
 
-// Hook para obter despesas
-export const useGetDespesas = (params?: KpiParams) =>
-  useQuery<GetDespesas, AxiosError>({
-    queryKey: ["despesas", params],
-    queryFn: () => getDespesasService(params),
-  });
+// // Hook para obter despesas
+// export const useGetDespesas = (params?: KpiParams) =>
+//   useQuery<GetDespesas, AxiosError>({
+//     queryKey: ["despesas", params],
+//     queryFn: () => getDespesasService(params),
+//   });
 
-// Hook para obter vendas
-export const useGetVendas = (params?: KpiParams) =>
-  useQuery<GetVendas, AxiosError>({
-    queryKey: ["vendas", params],
-    queryFn: () => getVendasService(params),
-  });
+// // Hook para obter vendas
+// export const useGetVendas = (params?: KpiParams) =>
+//   useQuery<GetVendas, AxiosError>({
+//     queryKey: ["vendas", params],
+//     queryFn: () => getVendasService(params),
+//   });
 
 // Hook para fazer download de PDF
 export const useGetDownloadPdf = () =>
