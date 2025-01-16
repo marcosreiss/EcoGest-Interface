@@ -3,7 +3,8 @@ import type {
   ProductResponse,
   ProductListResponse,
   CreateProductPayload,
-  ProductBasicInfoList
+  ProductBasicInfoList,
+  TotalProductsInStock
 } from "src/models/product";
 
 import api from "./api";
@@ -44,5 +45,10 @@ export const getProductsBasicInfoService = async (): Promise<ProductBasicInfoLis
   const response = await api.get<ProductBasicInfoList>("/products/basic-info");
   return response.data;
 };
+
+export const getTotalProductsInStock = async (): Promise<TotalProductsInStock> => {
+  const response = await api.get<TotalProductsInStock>("/products/totals/in-stock");
+  return response.data;
+}
 
 

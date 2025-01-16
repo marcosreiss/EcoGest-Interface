@@ -28,3 +28,12 @@ export interface ProductBasicInfo{
 export interface ProductBasicInfoList{
     data: ProductBasicInfo[];
 }
+
+export interface TotalProductsInStock{
+    totalProductsInStock: StrockProduct[];
+}
+
+export interface StrockProduct {
+    name: string;
+    totalWeight: number;
+}

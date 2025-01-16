@@ -29,6 +29,7 @@ const icon = (name: string, color: string) => (
 const menuItems = [
   { title: 'Pessoas', icon: icon('ic-people', '#FFC107'), path: '/person' }, // Amarelo Alaranjado
   { title: 'Produtos', icon: icon('ic-soda', '#1E6A3A'), path: '/products' }, // Verde Escuro
+  { title: 'Estoque', icon: icon('ic-soda', '#1E6A3A'), path: '/stock' }, // Verde Escuro
   { title: 'Vendas', icon: icon('ic-sales', '#34B864'), path: '/sales' }, // Verde
   { title: 'Compras', icon: icon('ic-cart', '#FF9D1E'), path: '/purchases' }, // Laranja
   { title: 'A Receber', icon: icon('ic-coins', '#007FFF'), path: '/recive' },

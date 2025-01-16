@@ -22,11 +22,11 @@ export const navData = [
     title: 'Produtos',
     path: '/products',
     icon: icon('ic-soda'),
-    // info: (
-    //   <Label color="error" variant="inverted">
-    //     +3
-    //   </Label>
-    // ),
+  },
+  {
+    title: 'Estoque',
+    path: '/Stock',
+    icon: icon('ic-soda'),
   },
   {
     title: 'Funcionarios',

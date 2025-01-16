@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Product, ProductResponse, ProductListResponse, CreateProductPayload, ProductBasicInfoList } from "src/models/product";
+import type { Product, ProductResponse, ProductListResponse, CreateProductPayload, ProductBasicInfoList, TotalProductsInStock } from "src/models/product";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -10,6 +10,7 @@ import {
   getProductByIdService,
   getProductsPagedService,
   getProductByNameService,
+  getTotalProductsInStock,
   getProductsBasicInfoService,
 } from "src/services/productService";
 
@@ -82,4 +83,13 @@ export const useGetProductById = (id: number) =>
       queryKey: ['products-basic-info'],
       queryFn: () => getProductsBasicInfoService(),
     });
+
+/**
+ * Hook para obter o total de produtos em estoque.
+ */
+export const useGetTotalProductsInStock = () =>
+  useQuery<TotalProductsInStock, AxiosError>({
+    queryKey: ["total-products-in-stock"],
+    queryFn: getTotalProductsInStock,
+  });   
   

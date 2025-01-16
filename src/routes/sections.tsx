@@ -28,6 +28,7 @@ export const ProductsPage = lazy(() => import('src/pages/products/productsIndex'
 export const CreateProduct = lazy(() => import('src/pages/products/createProduct'));
 export const EditProduct = lazy(() => import('src/pages/products/editProduct'));
 export const ProductDetails = lazy(() => import('src/pages/products/productDetails'));
+export const ProductsStock = lazy(() => import('src/pages/products/stock'));
 
 // ---------- Supplier Components
 export const SuppliersPage = lazy(() => import('src/pages/suppliers/suppliersIndex'));
@@ -118,6 +119,7 @@ export function PrivateRouter() {
         { path: 'products/create', element: <CreateProduct /> },
         { path: 'products/edit/:id', element: <EditProduct /> },
         { path: 'products/details/:id', element: <ProductDetails /> },
+        { path: 'stock', element: <ProductsStock /> },
 
         { path: 'suppliers', element: <SuppliersPage /> },
         { path: 'suppliers/create', element: <CreateSupplier /> },
@@ -171,6 +173,7 @@ export function PublicRouter() {
     { path: 'products/create', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'products/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'products/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'stock', element: <AuthLayout><SignInPage /></AuthLayout> },
 
     { path: 'blog', element: <AuthLayout><SignInPage /></AuthLayout> },
 
