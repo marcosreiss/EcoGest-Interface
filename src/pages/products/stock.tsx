@@ -11,7 +11,7 @@ export default function StockPage() {
 
   const formatPrice = (price: number | undefined): string => {
     if (price === undefined) return "-";
-    return `R$ ${price.toLocaleString("pt-BR", {
+    return `${price.toLocaleString("pt-BR", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })}`;
