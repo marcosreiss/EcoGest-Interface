@@ -48,7 +48,7 @@ export default function EntryDetailsPage() {
   return (
     <>
       <Helmet>
-        <title>{`Detalhes da Entrada - ${CONFIG.appName}`}</title>
+        <title>{`Detalhes da Lançamento - ${CONFIG.appName}`}</title>
       </Helmet>
 
       <DashboardContent maxWidth="lg">
@@ -58,7 +58,7 @@ export default function EntryDetailsPage() {
           <>
             <Grid item xs={6}>
               <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>
-                Detalhes da Entrada
+                Detalhes de Lançamento
               </Typography>
             </Grid>
 

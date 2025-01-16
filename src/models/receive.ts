@@ -18,3 +18,11 @@ export interface ReceiveList {
     data: Receive[];
     meta: any;
 }
+
+export interface ReceiveParams {
+    skip: number;
+    take: number;
+    startDate: string | null;
+    endDate: string | null;
+    status: "Pago" | "Atrasado" | "Aberto" | null;
+}

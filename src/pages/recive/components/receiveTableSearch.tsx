@@ -1,18 +1,29 @@
-import type { Dispatch, SetStateAction } from 'react';
-import type { SearchByPeriodRequest } from 'src/models/sale';
+import type { ReceiveParams } from "src/models/receive";
+import type {
+  SelectChangeEvent} from "@mui/material";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import { Box, Button, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Select,
+  MenuItem,
+  TextField,
+  Typography,
+  InputLabel,
+  FormControl
+} from "@mui/material";
 
-import ConfirmationDialog from 'src/components/confirmation-dialog/confirmationDialog';
+import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
 
 interface TableSearchProps {
   handleSearchChange: (event: React.ChangeEvent<HTMLInputElement>) => void | null;
   selectedRows: any[];
   isSearchDisabled: boolean;
   handleDelete: () => void;
-  setSearchByPeriod: Dispatch<SetStateAction<SearchByPeriodRequest>>;
+  setSearchByPeriod: Dispatch<SetStateAction<ReceiveParams>>;
 }
 
 const ReceiveTableSearch: React.FC<TableSearchProps> = ({
@@ -23,6 +34,7 @@ const ReceiveTableSearch: React.FC<TableSearchProps> = ({
   setSearchByPeriod,
 }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [status, setStatus] = useState<"Todos" | "Pago" | "Atrasado" | "Aberto">("Todos");
 
   const handleOpen = () => setDeleteModalOpen(true);
   const handleClose = () => setDeleteModalOpen(false);
@@ -32,63 +44,102 @@ const ReceiveTableSearch: React.FC<TableSearchProps> = ({
     handleDelete();
   };
 
+  const handleStatusChange = (event: SelectChangeEvent<"Todos" | "Pago" | "Atrasado" | "Aberto">, child: ReactNode) => {
+    const selectedStatus = event.target.value as "Todos" | "Pago" | "Atrasado" | "Aberto";
+    setStatus(selectedStatus);
+    setSearchByPeriod((prevState) => ({
+      ...prevState,
+      status: selectedStatus === "Todos" ? null : selectedStatus,
+    }));
+  };
+
+  const clearPeriodFilters = () => {
+    setSearchByPeriod((prevState) => ({
+      ...prevState,
+      startDate: null,
+      endDate: null,
+      status: null
+    }));
+  };
+
   return (
     <>
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '16px',
-          backgroundColor: '#f9fafb',
-          borderBottom: '1px solid #e0e0e0',
-          borderRadius: '8px 8px 0 0',
-          minHeight: '70px',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "16px",
+          backgroundColor: "#f9fafb",
+          borderBottom: "1px solid #e0e0e0",
+          borderRadius: "8px 8px 0 0",
+          minHeight: "70px",
+          gap: "16px",
         }}
       >
         {/* Campo para Data Inicial */}
-        <Box sx={{ flex: 1, marginRight: '16px' }}>
-          <TextField
-            fullWidth
-            label="Data Inicial"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            onChange={(e) =>
-              setSearchByPeriod((prevState) => ({
-                ...prevState,
-                startDate: e.target.value,
-              }))
-            }
-          />
-        </Box>
+        <TextField
+          fullWidth
+          label="Data Inicial"
+          type="date"
+          InputLabelProps={{ shrink: true }}
+          onChange={(e) =>
+            setSearchByPeriod((prevState) => ({
+              ...prevState,
+              startDate: e.target.value,
+            }))
+          }
+        />
 
         {/* Campo para Data Final */}
-        <Box sx={{ flex: 1, marginRight: '16px' }}>
-          <TextField
-            fullWidth
-            label="Data Final"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            onChange={(e) =>
-              setSearchByPeriod((prevState) => ({
-                ...prevState,
-                endDate: e.target.value,
-              }))
-            }
-          />
-        </Box>
+        <TextField
+          fullWidth
+          label="Data Final"
+          type="date"
+          InputLabelProps={{ shrink: true }}
+          onChange={(e) =>
+            setSearchByPeriod((prevState) => ({
+              ...prevState,
+              endDate: e.target.value,
+            }))
+          }
+        />
 
-        {/* Botão de Deletar */}
+        {/* Select de Status */}
+        <FormControl fullWidth size="small">
+          <InputLabel id="status-label">Status</InputLabel>
+          <Select
+            labelId="status-label"
+            id="status-select"
+            value={status}
+            label="Status"
+            onChange={handleStatusChange}
+          >
+            <MenuItem value="Todos">Todos</MenuItem>
+            <MenuItem value="Pago">Pago</MenuItem>
+            <MenuItem value="Atrasado">Atrasado</MenuItem>
+            <MenuItem value="Aberto">Aberto</MenuItem>
+          </Select>
+        </FormControl>
+
+        {/* Botão para limpar filtros de período */}
+        {(status !== "Todos" || !!status || !!selectedRows.length) && (
+          <Button
+            variant="outlined"
+            color="secondary"
+            size="small"
+            onClick={clearPeriodFilters}
+          >
+            Limpar Filtros
+          </Button>
+        )}
+
+        {/* Botão de Deletar Selecionados */}
         {selectedRows.length > 0 ? (
           <Button
             variant="contained"
             color="error"
-            sx={{
-              textTransform: 'none',
-              marginLeft: '16px',
-              padding: '6px 16px',
-              borderRadius: '8px',
-            }}
+            size="small"
             onClick={handleOpen}
           >
             Deletar Selecionados ({selectedRows.length})
@@ -97,8 +148,8 @@ const ReceiveTableSearch: React.FC<TableSearchProps> = ({
           <Typography
             variant="subtitle1"
             color="text.secondary"
-            sx={{ marginLeft: '16px' }}
-          > </Typography>
+            sx={{ marginLeft: "16px" }}
+          />
         )}
       </Box>
 
@@ -106,10 +157,10 @@ const ReceiveTableSearch: React.FC<TableSearchProps> = ({
       <ConfirmationDialog
         open={deleteModalOpen}
         confirmButtonText="Deletar"
-        description="Tem certeza que você quer deletar as vendas selecionadas?"
+        description="Tem certeza que você quer deletar os registros selecionados?"
         onClose={handleClose}
         onConfirm={handleDeleteRows}
-        title="Deletar Vendas"
+        title="Deletar Registros"
       />
     </>
   );

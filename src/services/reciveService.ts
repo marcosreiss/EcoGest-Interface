@@ -1,4 +1,4 @@
-import type { Receive } from "src/models/receive";
+import type { Receive, ReceiveList, ReceiveParams } from "src/models/receive";
 
 import api from "./api";
 
@@ -9,20 +9,10 @@ import api from "./api";
  * @param take Número de registros a obter.
  * @returns Lista paginada de recebíveis.
  */
-export const getRecivesPagedService = async (
-  skip: number,
-  take: number,
-  startDate?: string,
-  endDate?: string,
-  status?: "Pago" | "Atrasado" | "Aberto"
-): Promise<Receive[]> => {
-  const params: Record<string, any> = { skip, take };
-
-  if (startDate) params.startDate = startDate;
-  if (endDate) params.endDate = endDate;
-  if(status) params.status = status;
-
-  const response = await api.get<Receive[]>("/receives", { params });
+export const getRecivesPagedService = async (params: ReceiveParams): Promise<ReceiveList> => {
+  console.log(params);
+  
+  const response = await api.get<ReceiveList>("/receives", { params });
   return response.data;
 };
 

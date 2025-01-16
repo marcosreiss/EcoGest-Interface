@@ -1,4 +1,4 @@
-import type { Receive } from "src/models/receive";
+import type { Receive, ReceiveParams } from "src/models/receive";
 
 import * as React from "react";
 import { useState } from "react";
@@ -24,13 +24,17 @@ export default function RecivePage() {
   const [selectedRecives, setSelectedRecives] = useState<Receive[]>([]);
   const rowsPerPage = 5;
   const [page, setPage] = useState(0);
+  const [searchByPeriod, setSearchByPeriod] = useState<ReceiveParams>(
+    { skip: page * rowsPerPage,
+      take: rowsPerPage,
+      startDate: null,
+      endDate: null,
+      status: null});
 
   // Dados paginados
-  const { data: pagedData, isLoading: isPagedLoading } = useGetRecivesPaged(
-    page * rowsPerPage,
-    rowsPerPage
-  );
-  const recives = pagedData ?? [];
+  const { data: pagedData, isLoading: isPagedLoading } = useGetRecivesPaged(searchByPeriod);
+
+  const recives = pagedData?.data ?? [];
 
   // Define o estado de carregamento
   const isLoading = isPagedLoading;
@@ -54,7 +58,7 @@ export default function RecivePage() {
       });
     });
   };
-
+  
   return (
     <>
       <Helmet>
@@ -72,12 +76,15 @@ export default function RecivePage() {
             <ReceiveTableSearch
               handleDelete={handleDeleteRecive}
               selectedRows={selectedRecives}
-              isSearchDisabled
-              setSearchByPeriod={() => null} // Não utilizado neste contexto
-              handleSearchChange={() => null} // Não utilizado neste contexto
+              isSearchDisabled={false}
+              setSearchByPeriod={setSearchByPeriod}
+              handleSearchChange={() => null} // Opcional, dependendo da lógica de busca
             />
 
-            <TableContainer component={Paper} sx={{ height: "65vh", display: "flex", flexDirection: "column" }}>
+            <TableContainer
+              component={Paper}
+              sx={{ height: "65vh", display: "flex", flexDirection: "column" }}
+            >
               <Box component="div" sx={{ flex: 1, overflow: "auto" }}>
                 <ReciveTableComponent
                   setSelectedRecives={setSelectedRecives}
@@ -91,7 +98,7 @@ export default function RecivePage() {
                 setPage={setPage}
                 page={page}
                 rowsPerPage={rowsPerPage}
-                totalItems={pagedData?.length || 0}
+                totalItems={pagedData?.meta.totalItems || 0}
               />
             </TableContainer>
           </Grid>

@@ -11,8 +11,6 @@ import type
 
 import api from './api'
 
-
-
 export const getFluxoCaixaMensalService = async (year?: number): Promise<FluxoCaixaMensal> => {
   const response = await api.get<FluxoCaixaMensal>("/kpi/monthly-cashflow", {
     params: year ? { year } : undefined,
@@ -83,7 +81,6 @@ export const getVendasService = async (
   });
   return response.data;
 };
-
 
 export const getDownloadPdf = async (date: string, personId?: number): Promise<Blob> => {
   const response = await api.get('/kpi/relatory?', {

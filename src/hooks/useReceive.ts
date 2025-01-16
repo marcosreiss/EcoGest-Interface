@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Receive } from "src/models/receive";
+import type { Receive, ReceiveList, ReceiveParams } from "src/models/receive";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -9,20 +9,13 @@ import {
   getRecivesPagedService,
 } from "src/services/reciveService";
 
-/**
+/** 
  * Hook para obter uma lista paginada de recebíveis.
  */
-export const useGetRecivesPaged = (
-  skip: number,
-  take: number,
-  startDate?: string,
-  endDate?: string,
-  status?: "Pago" | "Atrasado" | "Aberto"
-) =>
-  useQuery<Receive[], AxiosError>({
-    queryKey: ["recives-list", { skip, take, startDate, endDate, status }],
-    queryFn: () => getRecivesPagedService(skip, take, startDate, endDate, status),
-    enabled: !!skip && !!take, 
+export const useGetRecivesPaged = (params: ReceiveParams) =>
+  useQuery<ReceiveList, AxiosError>({
+    queryKey: ["recives-list", { params }],
+    queryFn: () => getRecivesPagedService(params),
   });
 
 

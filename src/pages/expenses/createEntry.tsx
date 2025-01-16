@@ -86,7 +86,7 @@ export default function CreateExpensePage() {
   return (
     <>
       <Helmet>
-        <title>{`Criar Despesa - ${CONFIG.appName}`}</title>
+        <title>{`Criar Lançamento - ${CONFIG.appName}`}</title>
       </Helmet>
 
       <DashboardContent maxWidth="lg">
@@ -96,7 +96,7 @@ export default function CreateExpensePage() {
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
-                    Criar Entry
+                    Criar Lançamento
                   </Typography>
                 </Grid>
 

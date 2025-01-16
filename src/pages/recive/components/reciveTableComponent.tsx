@@ -129,7 +129,7 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
       );
     }
   };
-
+  
   return (
     <>
       <Table stickyHeader aria-label="recives table">

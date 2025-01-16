@@ -138,7 +138,7 @@ export default function EditExpensePage() {
   return (
     <>
       <Helmet>
-        <title>{`Editar Despesa - ${CONFIG.appName}`}</title>
+        <title>{`Editar Lançamento - ${CONFIG.appName}`}</title>
       </Helmet>
 
       <DashboardContent maxWidth="lg">
@@ -148,7 +148,7 @@ export default function EditExpensePage() {
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
-                    Editar Entry
+                    Editar Lançamento
                   </Typography>
                 </Grid>
 
