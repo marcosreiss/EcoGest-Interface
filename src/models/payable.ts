@@ -9,6 +9,7 @@ export interface Payble {
     status: string;
     dataVencimento: string;
     dataEmissao: string;
+    dataPagamento: string;
     payedValue: number;
     totalValue: number;
     entry: Entry | null;

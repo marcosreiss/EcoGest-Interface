@@ -20,7 +20,7 @@ const formatPrice = (price: number | string | undefined): string => {
 
 // Função para formatar datas em PT-BR
 const formatDate = (date?: string | Date): string => {
-    if (!date) return "-";
+    if (!date) return "";
     return new Date(date).toLocaleDateString("pt-BR");
 };
 
@@ -77,6 +77,13 @@ export default function PayableDetailsPage() {
                                         <Grid item xs={12}>
                                             <Typography variant="body1" gutterBottom>
                                                 Data de Emissão: {formatDate(payble?.dataEmissao)}
+                                            </Typography>
+                                        </Grid>
+
+                                        {/* Data de Emissão */}
+                                        <Grid item xs={12}>
+                                            <Typography variant="body1" gutterBottom>
+                                                Data do Pagamento: {formatDate(payble?.dataPagamento)}
                                             </Typography>
                                         </Grid>
 
