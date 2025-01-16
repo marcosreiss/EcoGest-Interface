@@ -82,7 +82,7 @@ export default function CreateProductPage() {
                 </Grid>
 
                 {/* Quantidade (Toneladas) */}
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Quantidade (Quilos)"
@@ -95,7 +95,7 @@ export default function CreateProductPage() {
                     error={!!errors.weightAmount}
                     helperText={errors.weightAmount?.message}
                   />
-                </Grid>
+                </Grid> */}
 
                 {/* Preço (R$) */}
                 <Grid item xs={12}>
