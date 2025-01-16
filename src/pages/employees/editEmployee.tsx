@@ -1,36 +1,29 @@
-import type { SubmitHandler } from "react-hook-form";
 import type { EmployeePayload } from "src/models/employee";
 
-import React, { useEffect } from "react";
-import { useForm, Controller } from "react-hook-form"; // <--- import Controller
+import { useEffect } from "react";
+import InputMask from "react-input-mask";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
+import { useForm, Controller } from "react-hook-form";
 
 import {
   Box,
   Grid,
   Button,
-  Select,
-  MenuItem,
   TextField,
   Typography,
-  InputLabel,
-  FormControl,
   CircularProgress,
 } from "@mui/material";
 
-import InputMask from "react-input-mask"; // <--- import InputMask
-
 import { useRouter } from "src/routes/hooks";
+
 import { useUpdateEmployee, useGetEmployeeById } from "src/hooks/useEmployee";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
 
-// ----------------------------------------------------------------------
-
-export default function EditEmployeePage() {
+export default function EditEmployee() {
   const { id } = useParams<{ id: string }>();
   const employeeId = Number(id);
 
@@ -47,15 +40,20 @@ export default function EditEmployeePage() {
     handleSubmit,
     setValue,
     formState: { errors },
-    control, // para usar máscaras
+    control,
   } = useForm<EmployeePayload>();
 
   const updateEmployee = useUpdateEmployee();
   const router = useRouter();
   const { addNotification } = useNotification();
 
-  const { data, isLoading, isError, error } = useGetEmployeeById(employeeId);
-  const employee = data?.data; // A API retorna algo como { data: EmployeePayload }
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+  } = useGetEmployeeById(employeeId);
+  const employee = data?.data;
 
   useEffect(() => {
     if (employee) {
@@ -63,34 +61,32 @@ export default function EditEmployeePage() {
       setValue("nome", employee.nome);
       setValue("rg", employee.rg);
       setValue("cpf", employee.cpf);
-      setValue("endereco", employee.endereco);
       setValue("contato", employee.contato);
       setValue("funcao", employee.funcao);
       setValue("salario", employee.salario);
       setValue("dataAdmissao", employee.dataAdmissao);
-      setValue("dataDemissao", employee.dataDemissao ? new Date(employee.dataDemissao) : undefined);
-      setValue("periodoFerias", employee.periodoFerias || undefined);
-      setValue("dataDePagamento", employee.dataDePagamento || 0);
-      setValue("status", employee.status);
+      setValue("dataDemissao", employee.dataDemissao);
+      setValue("periodoFerias", employee.periodoFerias);
+
+      setValue("cep", employee.address.cep);
+      setValue("cidade", employee.address.cidade);
+      setValue("uf", employee.address.uf);
+      setValue("bairro", employee.address.bairro);
+      setValue("endereco", employee.address.endereco);
+      setValue("numero", employee.address.numero);
+      setValue("complemento", employee.address.complemento);
     }
   }, [employee, setValue]);
 
-  const onSubmit: SubmitHandler<EmployeePayload> = (formData) => {
-    // Converte vírgula para ponto no salário
-    const salarioStr = String(formData.salario || "").replace(",", ".");
-    const updatedData: EmployeePayload = {
-      ...formData,
-      salario: parseFloat(salarioStr),
-    };
-
+  const onSubmit = (payload: EmployeePayload) => {
     updateEmployee.mutate(
-      { id: employeeId, data: updatedData },
+      { id: employeeId, data: payload },
       {
         onSuccess: () => {
           addNotification("Funcionário atualizado com sucesso!", "success");
           router.push("/employees");
         },
-        onError: (err: any) => {
+        onError: (err) => {
           addNotification(`Erro ao atualizar funcionário: ${err.message}`, "error");
         },
       }
@@ -100,7 +96,12 @@ export default function EditEmployeePage() {
   if (isLoading) {
     return (
       <DashboardContent>
-        <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
           <CircularProgress />
         </Box>
       </DashboardContent>
@@ -125,7 +126,7 @@ export default function EditEmployeePage() {
         <title>{`Editar Funcionário - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth="md">
+      <DashboardContent maxWidth="lg">
         <Grid container>
           <Grid item xs={12}>
             <Box sx={formStyle}>
@@ -136,45 +137,43 @@ export default function EditEmployeePage() {
                   </Typography>
                 </Grid>
 
-                {/* Registro */}
-                <Grid item xs={12}>
+                {/* Registro Número */}
+                <Grid item xs={6}>
                   <TextField
                     fullWidth
-                    label="Registro"
-                    placeholder="Número de Registro"
-                    {...register("registroNumero", {
-                      required: "O número de registro é obrigatório.",
-                    })}
+                    label="Registro Número"
+                    {...register("registroNumero", { required: "Preencha o registro número" })}
                     error={!!errors.registroNumero}
                     helperText={errors.registroNumero?.message}
                   />
                 </Grid>
 
                 {/* Nome */}
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                   <TextField
                     fullWidth
                     label="Nome"
-                    placeholder="Nome do Funcionário"
-                    {...register("nome", {
-                      required: "O nome é obrigatório.",
-                    })}
+                    {...register("nome", { required: "Preencha o nome do funcionário" })}
                     error={!!errors.nome}
                     helperText={errors.nome?.message}
                   />
                 </Grid>
 
-                {/* RG com máscara */}
-                <Grid item xs={12}>
+                {/* RG */}
+                <Grid item xs={6}>
                   <Controller
                     name="rg"
                     control={control}
-                    rules={{ required: "O RG é obrigatório." }}
+                    rules={{
+                      required: "Preencha o RG",
+                      pattern: {
+                        value: /^\d{2}\.\d{3}\.\d{3}-\d{1}$/,
+                        message: "Formato inválido",
+                      },
+                    }}
                     render={({ field }) => (
                       <InputMask
-                        mask="99.999.999-9" // Exemplo de formato RG
-                        maskChar=""
-                        placeholder="RG do Funcionário"
+                        mask="99.999.999-9"
                         value={field.value || ""}
                         onChange={field.onChange}
                         onBlur={field.onBlur}
@@ -193,17 +192,21 @@ export default function EditEmployeePage() {
                   />
                 </Grid>
 
-                {/* CPF com máscara */}
-                <Grid item xs={12}>
+                {/* CPF */}
+                <Grid item xs={6}>
                   <Controller
                     name="cpf"
                     control={control}
-                    rules={{ required: "O CPF é obrigatório." }}
+                    rules={{
+                      required: "Preencha o CPF",
+                      pattern: {
+                        value: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
+                        message: "Formato inválido",
+                      },
+                    }}
                     render={({ field }) => (
                       <InputMask
                         mask="999.999.999-99"
-                        maskChar=""
-                        placeholder="CPF do Funcionário"
                         value={field.value || ""}
                         onChange={field.onChange}
                         onBlur={field.onBlur}
@@ -222,31 +225,15 @@ export default function EditEmployeePage() {
                   />
                 </Grid>
 
-                {/* Endereço */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Endereço"
-                    placeholder="Endereço do Funcionário"
-                    {...register("endereco", {
-                      required: "O endereço é obrigatório.",
-                    })}
-                    error={!!errors.endereco}
-                    helperText={errors.endereco?.message}
-                  />
-                </Grid>
-
-                {/* Contato com máscara (telefone) */}
-                <Grid item xs={12}>
+                {/* Contato */}
+                <Grid item xs={6}>
                   <Controller
                     name="contato"
                     control={control}
-                    rules={{ required: "O contato é obrigatório." }}
+                    rules={{ required: "Preencha o contato" }}
                     render={({ field }) => (
                       <InputMask
-                        mask="(99)99999-9999"
-                        maskChar=""
-                        placeholder="(98)98923-4455"
+                        mask="(99) 99999-9999"
                         value={field.value || ""}
                         onChange={field.onChange}
                         onBlur={field.onBlur}
@@ -266,132 +253,133 @@ export default function EditEmployeePage() {
                 </Grid>
 
                 {/* Função */}
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                   <TextField
                     fullWidth
                     label="Função"
-                    placeholder="Função do Funcionário"
-                    {...register("funcao", {
-                      required: "A função é obrigatória.",
-                    })}
+                    {...register("funcao", { required: "Preencha a função" })}
                     error={!!errors.funcao}
                     helperText={errors.funcao?.message}
                   />
                 </Grid>
 
-                {/* Salário (aceita vírgula) */}
-                <Grid item xs={12}>
+                {/* Salário */}
+                <Grid item xs={6}>
                   <TextField
                     fullWidth
-                    label="Salário (R$)"
-                    placeholder="Ex.: 1500,00"
-                    type="text" // para aceitar vírgulas
-                    {...register("salario", {
-                      required: "O salário é obrigatório.",
-                      min: { value: 0, message: "Salário não pode ser negativo." },
-                    })}
+                    label="Salário"
+                    type="number"
+                    {...register("salario", { required: "Preencha o salário", valueAsNumber: true })}
                     error={!!errors.salario}
                     helperText={errors.salario?.message}
                   />
                 </Grid>
 
                 {/* Data de Admissão */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Data de Admissão"
-                    type="date"
-                    InputLabelProps={{ shrink: true }}
-                    {...register("dataAdmissao")}
-                    error={!!errors.dataAdmissao}
-                    helperText={errors.dataAdmissao?.message}
-                    // Mostra a data se houver
-                    value={
-                      employee?.dataAdmissao
-                        ? new Date(employee.dataAdmissao).toISOString().split("T")[0]
-                        : ""
-                    }
+                <Grid item xs={6}>
+                  <Controller
+                    name="dataAdmissao"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        type="date"
+                        fullWidth
+                        label="Data de Admissão"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        error={!!errors.dataAdmissao}
+                        helperText={errors.dataAdmissao?.message}
+                      />
+                    )}
                   />
                 </Grid>
 
-                {/* Data de Demissão (descomente se quiser usar) */}
-                {/* 
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Data de Demissão"
-                    type="date"
-                    InputLabelProps={{ shrink: true }}
-                    {...register("dataDemissao")}
+                {/* Data de Demissão */}
+                <Grid item xs={6}>
+                  <Controller
+                    name="dataDemissao"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        type="date"
+                        fullWidth
+                        label="Data de Demissão"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        error={!!errors.dataDemissao}
+                        helperText={errors.dataDemissao?.message}
+                      />
+                    )}
                   />
                 </Grid>
-                */}
 
                 {/* Período de Férias */}
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                   <TextField
                     fullWidth
                     label="Período de Férias"
-                    placeholder="Período de Férias"
                     {...register("periodoFerias")}
                   />
                 </Grid>
 
-                {/* Dia do Pagamento */}
+                {/* Endereço */}
                 <Grid item xs={12}>
+                  <Typography variant="h6">Endereço</Typography>
+                </Grid>
+                <Grid item xs={6}>
                   <TextField
                     fullWidth
-                    label="Dia do Pagamento"
-                    type="number"
-                    placeholder="Dia do pagamento (1-31)"
-                    InputProps={{ inputProps: { min: 1, max: 31 } }}
-                    {...register("dataDePagamento", {
-                      required: "O dia de pagamento é obrigatório.",
-                      min: { value: 1, message: "O dia deve ser pelo menos 1." },
-                      max: { value: 31, message: "O dia não pode exceder 31." },
-                      validate: {
-                        isInteger: (value) =>
-                            value !== undefined && Number.isInteger(value) || "O dia deve ser um número inteiro.",
-                    },                    
-                    })}
-                    error={!!errors.dataDePagamento}
-                    helperText={errors.dataDePagamento?.message}
+                    label="CEP"
+                    {...register("cep")}
                   />
                 </Grid>
-
-
-
-                {/* Status */}
-                <Grid item xs={12}>
-                  <FormControl fullWidth error={!!errors.status}>
-                    <InputLabel id="status-label">Status</InputLabel>
-                    <Controller
-                      name="status"
-                      control={control}
-                      defaultValue={employee?.status || "Empregado"} // Valor inicial padrão
-                      rules={{ required: "Selecione um status." }}
-                      render={({ field }) => (
-                        <Select
-                          {...field}
-                          labelId="status-label"
-                          id="status-select"
-                          label="Status"
-                          fullWidth
-                        >
-                          <MenuItem value="Empregado">Empregado</MenuItem>
-                          <MenuItem value="Demitido">Demitido</MenuItem>
-                          <MenuItem value="Férias">Férias</MenuItem>
-                        </Select>
-                      )}
-                    />
-                    {errors.status && (
-                      <Typography variant="body2" color="error">
-                        {errors.status.message}
-                      </Typography>
-                    )}
-                  </FormControl>
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    label="Cidade"
+                    {...register("cidade")}
+                  />
                 </Grid>
-
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    label="Bairro"
+                    {...register("bairro")}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    label="UF"
+                    {...register("uf")}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    label="Endereço"
+                    {...register("endereco")}
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField
+                    fullWidth
+                    label="Número"
+                    type="number"
+                    {...register("numero")}
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField
+                    fullWidth
+                    label="Complemento"
+                    {...register("complemento")}
+                  />
+                </Grid>
 
                 {/* Botão de Atualizar */}
                 <Grid item xs={12}>
@@ -400,13 +388,9 @@ export default function EditEmployeePage() {
                     variant="contained"
                     color="primary"
                     fullWidth
-                    onClick={() => handleSubmit(onSubmit)()}
-                    disabled={updateEmployee.isPending}
+                    onClick={handleSubmit(onSubmit)}
                   >
                     Atualizar
-                    {updateEmployee.isPending && (
-                      <CircularProgress size={20} sx={{ marginLeft: "20px" }} />
-                    )}
                   </Button>
                 </Grid>
               </Grid>

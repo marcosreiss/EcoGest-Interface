@@ -10,14 +10,16 @@ export interface Employee {
     dataAdmissao: Date;
     dataDemissao?: Date | null;
     periodoFerias?: string;
+    address: {
+        cep: string;
+        cidade: string;
+        uf: string;
+        bairro: string;
+        endereco: string;
+        numero: number;
+        complemento: string;
+    }
 
-    cep: string;
-    cidade: string;
-    uf: string;
-    bairro: string;
-    endereco: string;
-    numero: number;
-    complemento: string;
 }
 
 export interface EmployeeListResponse {
@@ -29,7 +31,7 @@ export interface EmployeeResponse {
     data: Employee;
 }
 
-export interface EmployeePayload{
+export interface EmployeePayload {
     registroNumero: string;
     nome: string;
     rg: string;

@@ -75,11 +75,6 @@ const EmployeeTableComponent: React.FC<EmployeeTableComponentProps> = ({
     setDeleteModalOpen(false);
   };
 
-  const handleAdvancePaymentClick = (employeeId: number) => {
-    setAdvancePaymentModalOpen(true);
-    setSelectedItem(employeeId);
-  };
-
   const handleAdvancePayment = (employeeId: number) => {
     const employee = employees.find((e) => e.employeeId === employeeId);
     if (!employee) return;
@@ -135,11 +130,10 @@ const EmployeeTableComponent: React.FC<EmployeeTableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
-            <TableCell sx={{ width: "40%", minWidth: "150px" }}>Nome</TableCell>
-            <TableCell sx={{ width: "25%", minWidth: "100px" }}>Função</TableCell>
-            <TableCell sx={{ width: "20%", minWidth: "100px" }}>Salário</TableCell>
-            <TableCell sx={{ width: "10%", minWidth: "100px" }}>Status</TableCell>
-            <TableCell sx={{ width: "5%" }}> </TableCell>
+            <TableCell >Nome</TableCell>
+            <TableCell >Função</TableCell>
+            <TableCell >Contato</TableCell>
+            <TableCell>Ações</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -161,15 +155,9 @@ const EmployeeTableComponent: React.FC<EmployeeTableComponentProps> = ({
                 <TableCell>{employee.nome || "-"}</TableCell>
                 <TableCell>{employee.funcao || "-"}</TableCell>
                 <TableCell>
-                  {employee.salario
-                    ? new Intl.NumberFormat("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    }).format(Number(employee.salario))
-                    : "Não disponível"}
+                  {employee.contato}
                 </TableCell>
 
-                <TableCell>{employee.status || "-"}</TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, employee.employeeId)}>︙</IconButton>
                   <Menu
@@ -187,9 +175,6 @@ const EmployeeTableComponent: React.FC<EmployeeTableComponentProps> = ({
                   >
                     <MenuItem onClick={() => handleDetailsClick(employee.employeeId)}>
                       Detalhes
-                    </MenuItem>
-                    <MenuItem onClick={() => handleAdvancePaymentClick(employee.employeeId)}>
-                      Adiantar pagamento
                     </MenuItem>
                     <MenuItem onClick={() => handleEditClick(employee.employeeId)}>
                       Editar
