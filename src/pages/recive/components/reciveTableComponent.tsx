@@ -17,7 +17,7 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
-import { useDeleteRecive } from "src/hooks/useRecive";
+import { useDeleteRecive } from "src/hooks/useReceive";
 
 import { useNotification } from "src/context/NotificationContext";
 

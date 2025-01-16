@@ -19,12 +19,12 @@ export const useGetPayblesPaged = (
   take: number,
   startDate?: string,
   endDate?: string,
-  personId?: string
+  status?: "Pago" | "Atrasado" | "Aberto"
 ) =>
   useQuery<PaybleList, AxiosError>({
-    queryKey: ["paybles-list", { skip, take, startDate, endDate, personId }],
-    queryFn: () => getPayblesPagedService(skip, take, startDate, endDate, personId),
-    enabled: !!skip && !!take, // Evita executar a query se os parâmetros obrigatórios não forem fornecidos
+    queryKey: ["paybles-list", { skip, take, startDate, endDate, status }],
+    queryFn: () => getPayblesPagedService(skip, take, startDate, endDate, status),
+    enabled: !!skip && !!take,
   });
 
 

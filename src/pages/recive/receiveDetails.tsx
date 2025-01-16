@@ -5,7 +5,7 @@ import { Box, Grid, Typography, IconButton, LinearProgress } from "@mui/material
 
 import { useRouter } from "src/routes/hooks";
 
-import { useGetReceiveById } from "src/hooks/useRecive";
+import { useGetReceiveById } from "src/hooks/useReceive";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";

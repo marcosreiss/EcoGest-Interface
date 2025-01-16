@@ -8,14 +8,14 @@ import Paper from "@mui/material/Paper";
 import { Box, Grid, Typography } from "@mui/material";
 import TableContainer from "@mui/material/TableContainer";
 
-import { useDeleteRecive, useGetRecivesPaged } from "src/hooks/useRecive";
+import { useDeleteRecive, useGetRecivesPaged } from "src/hooks/useReceive";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
 import TableFooterComponent from "src/layouts/components/tableFooterComponent";
 
-import SalesTableSearch from "../sales/components/salesTableSearch";
+import ReceiveTableSearch from "./components/receiveTableSearch";
 import ReciveTableComponent from "./components/reciveTableComponent";
 
 // ----------------------------------------------------------------------
@@ -69,7 +69,7 @@ export default function RecivePage() {
             </Typography>
           </Grid>
           <Grid item xs={12}>
-            <SalesTableSearch
+            <ReceiveTableSearch
               handleDelete={handleDeleteRecive}
               selectedRows={selectedRecives}
               isSearchDisabled

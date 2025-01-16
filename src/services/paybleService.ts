@@ -13,13 +13,13 @@ export const getPayblesPagedService = async (
   take: number,
   startDate?: string,
   endDate?: string,
-  personId?: string
+  status?: "Pago" | "Atrasado" | "Aberto"
 ): Promise<PaybleList> => {
   const params: Record<string, any> = { skip, take };
 
   if (startDate) params.startDate = startDate;
   if (endDate) params.endDate = endDate;
-  if (personId) params.personId = personId;
+  if (status) params.status = status;
 
   const response = await api.get<PaybleList>("/payables", { params });
   return response.data;

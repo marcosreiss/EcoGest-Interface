@@ -17,12 +17,12 @@ export const useGetRecivesPaged = (
   take: number,
   startDate?: string,
   endDate?: string,
-  personId?: string
+  status?: "Pago" | "Atrasado" | "Aberto"
 ) =>
   useQuery<Receive[], AxiosError>({
-    queryKey: ["recives-list", { skip, take, startDate, endDate, personId }],
-    queryFn: () => getRecivesPagedService(skip, take, startDate, endDate, personId),
-    enabled: !!skip && !!take, // Evita executar a query se os parâmetros obrigatórios não forem fornecidos
+    queryKey: ["recives-list", { skip, take, startDate, endDate, status }],
+    queryFn: () => getRecivesPagedService(skip, take, startDate, endDate, status),
+    enabled: !!skip && !!take, 
   });
 
 
