@@ -1,17 +1,6 @@
 import type { Person } from "./person";
 import type { Product } from "./product";
 
-export enum PurchaseStatus {
-    processing = "processing",
-    approved = "approved",
-    canceled = "canceled"
-}
-export const purchaseStatusMapping: Record<string, string> = {
-    processing: "Processando",
-    approved: "Aprovado",
-    canceled: "Cancelado",
-}
-
 export interface Purchase {
     purchaseId: number;
     supplier: Person;

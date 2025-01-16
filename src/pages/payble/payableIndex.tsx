@@ -1,4 +1,4 @@
-import type { Payble, SearchByPeriodRequest } from 'src/models/payble';
+import type { Payble, SearchByPeriodRequest } from 'src/models/payable';
 
 import * as React from 'react';
 import { useState } from 'react';

@@ -1,4 +1,4 @@
-import type { Payble } from "src/models/payble";
+import type { Payble } from "src/models/payable";
 
 import React, { useState } from "react";
 
@@ -165,12 +165,13 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
-            <TableCell sx={{ width: "10%", minWidth: "50px" }}>ID</TableCell>
-            <TableCell sx={{ width: "15%", minWidth: "100px" }}>Status</TableCell>
-            <TableCell sx={{ width: "15%", minWidth: "150px" }}>Data de Emissão</TableCell>
-            <TableCell sx={{ width: "30%", minWidth: "200px" }}>Descrição</TableCell>
-            <TableCell sx={{ width: "15%", minWidth: "150px" }}>Valor Total</TableCell>
-            <TableCell sx={{ width: "10%" }} />
+            <TableCell >ID</TableCell>
+            <TableCell >Status</TableCell>
+            <TableCell >Data de Emissão</TableCell>
+            <TableCell >Data do Vencimento</TableCell>
+            <TableCell >Descrição</TableCell>
+            <TableCell >Valor Total</TableCell>
+            <TableCell>Ações</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -192,6 +193,7 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
                 <TableCell>{payble.payableId}</TableCell>
                 <TableCell>{payble.status || "-"}</TableCell>
                 <TableCell>{formatDate(payble.dataEmissao)}</TableCell>
+                <TableCell>{formatDate(payble.dataVencimento)}</TableCell>
                 <TableCell>{payble.entry?.description || payble.purchase?.description || "-"}</TableCell>
                 <TableCell>{formatPrice(payble.totalValue)}</TableCell>
                 <TableCell>

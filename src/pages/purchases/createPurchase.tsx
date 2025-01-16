@@ -289,6 +289,7 @@ export default function CreatePurchasePage() {
         <DialogTitle>Adicionar Produto</DialogTitle>
         <DialogContent>
           <Autocomplete
+              sx={{margin: "10px 0"}}
             options={products?.data || []}
             loading={loadingProducts}
             getOptionLabel={(option: ProductBasicInfo) => option.name}
@@ -302,6 +303,7 @@ export default function CreatePurchasePage() {
             renderInput={(params) => <TextField {...params} label="Produto" />}
           />
           <TextField
+              sx={{margin: "10px 0"}}
             fullWidth
             label="Quantidade"
             type="number"
@@ -311,6 +313,7 @@ export default function CreatePurchasePage() {
             }
           />
           <TextField
+              sx={{margin: "10px 0"}}
             fullWidth
             label="Preço"
             type="number"

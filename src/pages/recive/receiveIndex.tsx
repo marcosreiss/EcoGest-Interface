@@ -1,4 +1,4 @@
-import type { Receive } from "src/models/recive";
+import type { Receive } from "src/models/receive";
 
 import * as React from "react";
 import { useState } from "react";

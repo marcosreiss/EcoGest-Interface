@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Payble, PaybleList, SearchByPeriodRequest } from "src/models/payble";
+import type { Payble, PaybleList, SearchByPeriodRequest } from "src/models/payable";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 

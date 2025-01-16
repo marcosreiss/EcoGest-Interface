@@ -1,4 +1,4 @@
-import type { Payble, PaybleList } from "src/models/payble";
+import type { Payble, PaybleList } from "src/models/payable";
 
 import api from "./api";
 

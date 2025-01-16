@@ -1,4 +1,4 @@
-import type { Receive } from "src/models/recive";
+import type { Receive } from "src/models/receive";
 
 import React, { useState } from "react";
 
@@ -45,6 +45,23 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
   const navigate = useRouter();
   const deleteRecive = useDeleteRecive();
   const notification = useNotification();
+
+  // Função para formatar o valor em R$ (Real)
+  const formatPrice = (value?: number) => {
+    if (value === undefined) return "-";
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
+
+  // Função para formatar a data no formato pt-BR
+  const formatDate = (dateStr?: string | Date) => {
+    if (!dateStr) return "-";
+    const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
+    dateObj.setDate(dateObj.getDate() + 1);
+    return dateObj.toLocaleDateString("pt-BR");
+  };
 
   const handleClick = (
     event: React.MouseEvent<HTMLElement>,
@@ -131,10 +148,12 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
-            <TableCell sx={{ width: "25%", minWidth: "150px" }}>Status</TableCell>
-            <TableCell sx={{ width: "25%", minWidth: "150px" }}>Data de Vencimento</TableCell>
-            <TableCell sx={{ width: "25%", minWidth: "150px" }}>Valor Total</TableCell>
-            <TableCell sx={{ width: "5%" }} />
+            <TableCell >ID</TableCell>
+            <TableCell >Status</TableCell>
+            <TableCell >Data de Emissão</TableCell>
+            <TableCell >Data do Vencimento</TableCell>
+            <TableCell >Valor Total</TableCell>
+            <TableCell>Ações</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -153,9 +172,11 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                     onChange={(e) => handleSelectRecive(e, recive)}
                   />
                 </TableCell>
+                <TableCell>{recive.receiveId || "-"}</TableCell>
                 <TableCell>{recive.status || "-"}</TableCell>
-                <TableCell>{recive.dataVencimento || "-"}</TableCell>
-                <TableCell>{recive.totalValue || "-"}</TableCell>
+                <TableCell>{formatDate(recive.dataEmissao) || "-"}</TableCell>
+                <TableCell>{formatDate(recive.dataVencimento) || "-"}</TableCell>
+                <TableCell>{formatPrice(recive.totalValue) || "-"}</TableCell>
                 <TableCell>
                   <IconButton
                     onClick={(event) => handleClick(event, recive.receiveId)}

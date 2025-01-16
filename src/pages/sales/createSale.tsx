@@ -243,6 +243,7 @@ export default function CreateSalePage() {
           <DialogTitle>Adicionar Produto</DialogTitle>
           <DialogContent>
             <Autocomplete
+              sx={{ margin: "10px 0" }}
               options={products?.data || []}
               loading={loadingProducts}
               getOptionLabel={(option) => option.name || ""}
@@ -260,6 +261,7 @@ export default function CreateSalePage() {
               )}
             />
             <TextField
+              sx={{ margin: "10px 0" }}
               fullWidth
               label="Quantidade"
               type="number"

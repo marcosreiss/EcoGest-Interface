@@ -1,9 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 
-import { Box, Grid, Typography, IconButton, LinearProgress } from "@mui/material";
-
-import { useRouter } from "src/routes/hooks";
+import { Box, Grid, Typography,  LinearProgress } from "@mui/material";
 
 import { useGetPaybleById } from "src/hooks/usePayble";
 
@@ -42,11 +40,6 @@ export default function PayableDetailsPage() {
         bgcolor: "background.paper",
     };
 
-    const navigate = useRouter();
-    const handleEditClick = () => {
-        navigate.replace(`/payables/edit/${id}`);
-    };
-
     return (
         <>
             <Helmet>
@@ -71,12 +64,6 @@ export default function PayableDetailsPage() {
                                             <Typography variant="body1" gutterBottom>
                                                 ID: {payble?.payableId || "-"}
                                             </Typography>
-                                        </Grid>
-                                        {/* Botão de Editar */}
-                                        <Grid item xs={6}>
-                                            <IconButton onClick={handleEditClick}>
-                                                <img alt="icon" src="/assets/icons/ic-edit.svg" />
-                                            </IconButton>
                                         </Grid>
 
                                         {/* Status */}

@@ -3,9 +3,6 @@ import React, { useState } from "react";
 import {
   Menu,
   Table,
-  Button,
-  Select,
-  Dialog,
   Checkbox,
   MenuItem,
   TableRow,
@@ -13,18 +10,15 @@ import {
   TableCell,
   TableBody,
   IconButton,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   LinearProgress,
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
 
-import { useDeletePurchase, useUpdatePurchaseStatus } from "src/hooks/usePurchase";
+import { useDeletePurchase } from "src/hooks/usePurchase";
 
+import { type Purchase,  } from "src/models/purchase";
 import { useNotification } from "src/context/NotificationContext";
-import { type Purchase, PurchaseStatus, purchaseStatusMapping } from "src/models/purchase";
 
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
 
@@ -43,12 +37,9 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [statusModalOpen, setStatusModalOpen] = useState(false);
-  const [newStatus, setNewStatus] = useState<PurchaseStatus>(PurchaseStatus.processing);
 
   const navigate = useRouter();
   const deletePurchase = useDeletePurchase();
-  const updatePurchaseStatus = useUpdatePurchaseStatus();
   const notification = useNotification();
 
   // Função para formatar o valor em R$ (Real)
@@ -76,33 +67,6 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
   const handleCloseMenu = () => {
     setAnchorEl(null);
     setSelectedItem(null);
-  };
-
-  const handleOpenStatusModal = () => {
-    setStatusModalOpen(true);
-    setAnchorEl(null);
-  };
-
-  const handleCloseStatusModal = () => {
-    setStatusModalOpen(false);
-    setSelectedItem(null);
-  };
-
-  const handleConfirmStatusChange = () => {
-    if (selectedItem !== null) {
-      updatePurchaseStatus.mutate(
-        { id: selectedItem, purchaseStatus: newStatus },
-        {
-          onSuccess: () => {
-            notification.addNotification("Status da compra atualizado com sucesso", "success");
-            setStatusModalOpen(false);
-          },
-          onError: () => {
-            notification.addNotification("Erro ao atualizar o status da compra", "error");
-          },
-        }
-      );
-    }
   };
 
   const handleDetailsClick = (purchaseId: number) => {
@@ -174,8 +138,11 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
+            <TableCell>ID</TableCell>
             <TableCell>Fornecedor</TableCell>
+            <TableCell>Descrição</TableCell>
             <TableCell>Data</TableCell>
+            <TableCell>Valor</TableCell>
             <TableCell>Ações</TableCell>
           </TableRow>
         </TableHead>
@@ -195,13 +162,18 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                     onChange={(e) => handleSelectPurchase(e, purchase)}
                   />
                 </TableCell>
+                <TableCell>{purchase.purchaseId || "-"}</TableCell>
                 <TableCell>{purchase.supplier?.name || "-"}</TableCell>
+                <TableCell>{purchase.description || "-"}</TableCell>
                 {/* Data formatada */}
                 <TableCell>
                   {purchase.date_time
                     ? formatDate(purchase.date_time)
                     : "-"}
                 </TableCell>
+
+                <TableCell>{formatPrice(purchase.totalPrice)}</TableCell>
+
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, purchase.purchaseId)}>︙</IconButton>
                   <Menu
@@ -238,30 +210,6 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
           )}
         </TableBody>
       </Table>
-
-      {/* Dialog para Atualizar Status */}
-      <Dialog open={statusModalOpen} onClose={handleCloseStatusModal}>
-        <DialogTitle>Atualizar Status</DialogTitle>
-        <DialogContent>
-          <Select
-            fullWidth
-            value={newStatus}
-            onChange={(e) => setNewStatus(e.target.value as PurchaseStatus)}
-          >
-            {Object.entries(purchaseStatusMapping).map(([value, label]) => (
-              <MenuItem key={value} value={value}>
-                {label}
-              </MenuItem>
-            ))}
-          </Select>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseStatusModal}>Cancelar</Button>
-          <Button onClick={handleConfirmStatusChange} variant="contained">
-            Confirmar
-          </Button>
-        </DialogActions>
-      </Dialog>
 
       {/* Dialog de Confirmação para Deletar */}
       <ConfirmationDialog

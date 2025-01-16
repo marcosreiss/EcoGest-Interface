@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Receive } from "src/models/recive";
+import type { Receive } from "src/models/receive";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 

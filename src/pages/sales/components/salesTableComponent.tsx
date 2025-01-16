@@ -194,11 +194,11 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
-            <TableCell sx={{ width: "5%", minWidth: "50px" }}>ID</TableCell>
-            <TableCell sx={{ width: "15%", minWidth: "100px" }}>Data</TableCell>
-            {/* <TableCell sx={{ width: "15%", minWidth: "100px" }}>Status</TableCell> */}
-            <TableCell sx={{ width: "15%", minWidth: "100px" }}>Preço</TableCell>
-            <TableCell sx={{ width: "5%" }}>Ações</TableCell>
+            <TableCell>ID</TableCell>
+            <TableCell>Descrição</TableCell>
+            <TableCell>Data</TableCell>
+            <TableCell>Valor</TableCell>
+            <TableCell>Ações</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -218,6 +218,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                   />
                 </TableCell>
                 <TableCell>{sale.saleId}</TableCell>
+                <TableCell>{sale.description}</TableCell>
                 {/* Data formatada */}
                 <TableCell>
                   {sale.date_time
