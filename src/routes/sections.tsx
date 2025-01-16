@@ -15,7 +15,6 @@ export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
-export const ReceiptsPage = lazy(() => import('src/pages/receipts/receipts'));
 export const AdminPage = lazy(() => import('src/pages/admin/admin'));
 
 // ---------- Costumer Components
@@ -56,10 +55,10 @@ export const EmployeeDetails = lazy(() => import('src/pages/employees/employeeDe
 
 
 // ---------- Expense Components
-export const ExpensesPage = lazy(() => import('src/pages/expenses/entryIndex'));
-export const CreateExpense = lazy(() => import('src/pages/expenses/createEntry'));
-export const EditExpense = lazy(() => import('src/pages/expenses/editEntry'));
-export const ExpenseDetails = lazy(() => import('src/pages/expenses/entryDetails'));
+export const ExpensesPage = lazy(() => import('src/pages/entry/entryIndex'));
+export const CreateExpense = lazy(() => import('src/pages/entry/createEntry'));
+export const EditExpense = lazy(() => import('src/pages/entry/editEntry'));
+export const ExpenseDetails = lazy(() => import('src/pages/entry/entryDetails'));
 
 // ---------- Person Components
 export const PersonPage = lazy(() => import('src/pages/person/personIndex'));
@@ -108,7 +107,6 @@ export function PrivateRouter() {
         { path: 'sales', element: <SalesPage /> },
         { path: 'expenses', element: <ExpensesPage /> },
         { path: 'employees', element: <EmployeesPage /> },
-        { path: 'receipts', element: <ReceiptsPage /> },
         { path: 'admin', element: <AdminPage /> },
 
         { path: 'customers', element: <CustomersPage /> },
