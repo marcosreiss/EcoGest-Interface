@@ -5,20 +5,20 @@ import type { SelectChangeEvent } from "@mui/material";
 import React, { useState } from "react";
 
 import {
-Box,
-Grid,
-Alert,
-Table,
-Select,
-MenuItem,
-TableRow,
-TableBody,
-TableCell,
-TableHead,
-InputLabel,
-Typography,
-FormControl,
-LinearProgress
+    Box,
+    Grid,
+    Alert,
+    Table,
+    Select,
+    MenuItem,
+    TableRow,
+    TableBody,
+    TableCell,
+    TableHead,
+    InputLabel,
+    Typography,
+    FormControl,
+    LinearProgress
 } from "@mui/material";
 
 import { useGetFluxoCaixaDiario } from "src/hooks/useKpi";
@@ -107,7 +107,7 @@ export default function FluxoCaixaDiarioComponent() {
 
     const handleMonthChange = (event: SelectChangeEvent<string>) => {
         const month = Number(event.target.value);
-        if ( month >= 1 && month <= 12) {
+        if (month >= 1 && month <= 12) {
             setSelectedMonth(month);
         } else {
             console.error("Mês selecionado inválido:", event.target.value);
@@ -115,7 +115,7 @@ export default function FluxoCaixaDiarioComponent() {
     };
 
     const handleSupplierChange = (event: SelectChangeEvent<string>) => {
-        const {value} = event.target;
+        const { value } = event.target;
         if (value === "all") {
             setSelectedSupplierId("all");
         } else {
@@ -129,7 +129,7 @@ export default function FluxoCaixaDiarioComponent() {
     };
 
     const handleProductChange = (event: SelectChangeEvent<string>) => {
-        const {value} = event.target;
+        const { value } = event.target;
         if (value === "all") {
             setSelectedProductId("all");
         } else {
@@ -265,13 +265,13 @@ export default function FluxoCaixaDiarioComponent() {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>Total Recebíveis Projetados</TableCell>
-                                <TableCell>Total Pagáveis Projetados</TableCell>
+                                <TableCell>Total A Receber Projetados</TableCell>
+                                <TableCell>Total A Pagar Projetados</TableCell>
                                 <TableCell>Saldo Projetado</TableCell>
-                                <TableCell>Total Recebíveis Pagos</TableCell>
-                                <TableCell>Total Pagáveis Pagos</TableCell>
-                                <TableCell>Saldo Pago</TableCell>
-                                <TableCell>Saldo Final</TableCell>
+                                <TableCell>Total A Receber Pagos</TableCell>
+                                <TableCell>Total A Pagar Pagos</TableCell>
+                                <TableCell>Saldo Realizado</TableCell>
+                                <TableCell>Saldo Atual</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -298,10 +298,10 @@ export default function FluxoCaixaDiarioComponent() {
                         <TableHead>
                             <TableRow>
                                 <TableCell>Dia</TableCell>
-                                <TableCell>Total Recebíveis Projetados</TableCell>
-                                <TableCell>Total Recebidos</TableCell>
-                                <TableCell>Total Pagáveis Projetados</TableCell>
-                                <TableCell>Total Pagos</TableCell>
+                                <TableCell>Total A Receber Projetados</TableCell>
+                                <TableCell>Total A Receber Pagos</TableCell>
+                                <TableCell>Total A Pagar Projetados</TableCell>
+                                <TableCell>Total A Pagar Pagos</TableCell>
                                 <TableCell>Saldo</TableCell>
                             </TableRow>
                         </TableHead>

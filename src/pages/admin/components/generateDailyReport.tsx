@@ -75,7 +75,7 @@ export default function GenerateDailyReport() {
         color="primary"
         onClick={handleOpenModal}
         startIcon={<DownloadIcon />}
-        sx={{ mt: { xs: 2, sm: 0 } }}
+        sx={{ mt: { xs: 2, sm: 2 } }}
       >
         Gerar Relatório Diário
       </Button>
@@ -86,7 +86,7 @@ export default function GenerateDailyReport() {
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
               {/* Campo de Data */}
-              <Grid item xs={12}>
+              <Grid item xs={12} marginTop={1}>
                 <Controller
                   name="date"
                   control={control}

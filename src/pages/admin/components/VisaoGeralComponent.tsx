@@ -9,8 +9,6 @@ import {
   LinearProgress,
 } from "@mui/material";
 
-import GenerateDailyReport from "./generateDailyReport";
-
 export default function VisaoGeralComponent() {
   // Mock de dados
   const dataMock = {
@@ -40,7 +38,6 @@ export default function VisaoGeralComponent() {
             <Typography variant="h4" component="h1">
               Visão Geral
             </Typography>
-            <GenerateDailyReport />
           </Box>
 
           {/* Indicador de Carregamento */}
