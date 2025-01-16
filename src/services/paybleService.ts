@@ -1,4 +1,4 @@
-import type { Payble, PaybleList } from "src/models/payable";
+import type { Payble, PaybleList, PayableParams } from "src/models/payable";
 
 import api from "./api";
 
@@ -8,19 +8,7 @@ import api from "./api";
  * @param take Número de registros a obter.
  * @returns Lista paginada de pagáveis.
  */
-export const getPayblesPagedService = async (
-  skip: number,
-  take: number,
-  startDate?: string,
-  endDate?: string,
-  status?: "Pago" | "Atrasado" | "Aberto"
-): Promise<PaybleList> => {
-  const params: Record<string, any> = { skip, take };
-
-  if (startDate) params.startDate = startDate;
-  if (endDate) params.endDate = endDate;
-  if (status) params.status = status;
-
+export const getPayblesPagedService = async (params: PayableParams): Promise<PaybleList> => {
   const response = await api.get<PaybleList>("/payables", { params });
   return response.data;
 };

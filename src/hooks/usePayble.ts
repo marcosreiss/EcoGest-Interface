@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Payble, PaybleList, SearchByPeriodRequest } from "src/models/payable";
+import type { Payble, PaybleList, PayableParams } from "src/models/payable";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -8,23 +8,15 @@ import {
   getPaybleByIdService,
   getPayblesPagedService,
   updatePaybleStatusService,
-  searchPayblesByPeriodService,
 } from "src/services/paybleService";
 
 /**
  * Hook para obter uma lista paginada de pagáveis com filtros opcionais.
  */
-export const useGetPayblesPaged = (
-  skip: number,
-  take: number,
-  startDate?: string,
-  endDate?: string,
-  status?: "Pago" | "Atrasado" | "Aberto"
-) =>
+export const useGetPayblesPaged = (params: PayableParams) =>
   useQuery<PaybleList, AxiosError>({
-    queryKey: ["paybles-list", { skip, take, startDate, endDate, status }],
-    queryFn: () => getPayblesPagedService(skip, take, startDate, endDate, status),
-    enabled: !!skip && !!take,
+    queryKey: ["paybles-list", { params }],
+    queryFn: () => getPayblesPagedService(params),
   });
 
 
@@ -70,14 +62,3 @@ export const useDeletePayble = () => {
   });
 };
 
-/**
- * Hook para buscar pagáveis por período.
- * @param payload Objeto contendo as datas inicial e final do período.
- * @returns Dados dos pagáveis no período especificado.
- */
-export const useSearchPayblesByPeriod = (payload: SearchByPeriodRequest) =>
-  useQuery<PaybleList, AxiosError>({
-    queryKey: ['payblesByPeriod', payload],
-    queryFn: () => searchPayblesByPeriodService(payload.startDate!, payload.endDate!),
-    enabled: !!payload?.startDate && !!payload?.endDate,
-  });

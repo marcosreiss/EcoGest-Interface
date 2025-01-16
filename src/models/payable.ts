@@ -21,7 +21,10 @@ export interface PaybleList {
     meta: any;
 }
 
-export interface SearchByPeriodRequest {
+export interface PayableParams {
+    skip: number;
+    take: number;
     startDate: string | null;
     endDate: string | null;
+    status: "Pago" | "Atrasado" | "Aberto" | null;
 }
