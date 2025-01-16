@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 
 import {
@@ -35,6 +35,7 @@ const predefinedSubtypes = [
   "PAG FRETE",
   "VALE TRANSPORTE",
   "IMPOSTOS FEDERAIS",
+  "Trabalhos Profissionais"
 ];
 
 export default function EditExpensePage() {
@@ -74,12 +75,14 @@ export default function EditExpensePage() {
       setValue("subtype", expense.subtype || "");
       setValue("description", expense.description || "");
       setValue("value", expense.value || 0);
-      setValue("date_time", expense.date_time);
+      setValue("date_time", expense.date_time.split("T")[0]);
     }
   }, [expense, setValue]);
 
+  const [previusType, setPreviusType] = useState<string>(expense?.type === EntryType.ganho ? "Entrada" : "Saída");
   const setEntryType = (frontendType: string) => {
     const entryType = frontendType === "Entrada" ? EntryType.ganho : EntryType.perda;
+    setPreviusType(frontendType);
     setValue("type", entryType);
   };
 
@@ -163,7 +166,7 @@ export default function EditExpensePage() {
                       <Autocomplete
                         {...field}
                         options={predefinedTypes}
-                        value={field.value || ""}
+                        value={previusType || ""}
                         onChange={(_, newValue) => {
                           field.onChange(newValue);
                           setEntryType(newValue || "");

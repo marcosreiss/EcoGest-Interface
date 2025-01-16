@@ -4,12 +4,12 @@ export interface Entry {
     subtype: string;
     description?: string | null;
     value?: number;
-    date_time: Date;
-    createdAt: Date;
+    date_time: string;
+    createdAt: string;
 }
 export enum EntryType {
-    ganho = "ganho",
-    perda = "perda"
+    ganho = "Ganho",
+    perda = "Perda"
 }
 
 export interface EntryListResponse {
@@ -26,7 +26,7 @@ export interface EntryPayload{
     subtype: string;
     description?: string | null;
     value?: number;
-    date_time: Date;
+    date_time: string;
 }
 
 export interface CustomEntryReceiptInfo{

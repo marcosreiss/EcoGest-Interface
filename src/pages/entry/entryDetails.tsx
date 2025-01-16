@@ -14,6 +14,7 @@ import { useRouter } from "src/routes/hooks";
 import { useGetEntryById } from "src/hooks/useExpense";
 
 import { CONFIG } from "src/config-global";
+import { EntryType } from "src/models/entry";
 import { DashboardContent } from "src/layouts/dashboard";
 
 export default function EntryDetailsPage() {
@@ -70,7 +71,7 @@ export default function EntryDetailsPage() {
                     {/* Tipo da Entrada */}
                     <Grid item xs={6}>
                       <Typography variant="h6" gutterBottom>
-                        Tipo: {entry?.type}
+                        Tipo: {entry?.type === EntryType.ganho ? "Entrada" : "Saída"}
                       </Typography>
                     </Grid>
 

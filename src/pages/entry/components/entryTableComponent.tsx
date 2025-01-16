@@ -17,7 +17,7 @@ import { useRouter } from "src/routes/hooks";
 
 import { useDeleteEntry, useGetExpenseReceipt } from "src/hooks/useExpense";
 
-import { type Entry } from "src/models/entry";
+import { EntryType, type Entry } from "src/models/entry";
 import { useNotification } from "src/context/NotificationContext";
 
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
@@ -54,11 +54,7 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
   };
 
   // Formata a data (createdAt) em pt-BR
-  const formatDate = (dateStr?: Date) => {
-    if (!dateStr) return "-";
-    const dateObj = new Date(dateStr);
-    return dateObj.toLocaleDateString("pt-BR");
-  };
+  const formatDate = (date?: string) => (date ? new Date(date).toLocaleDateString("pt-BR") : "-");
 
   const handleClick = (event: React.MouseEvent<HTMLElement>, expenseId: number) => {
     setAnchorEl(event.currentTarget);
@@ -138,6 +134,7 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
     }
   };
   
+  
   return (
     <>
       <Table stickyHeader aria-label="expenses table">
@@ -174,20 +171,24 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
                     onChange={(e) => handleSelectExpense(e, expense)}
                   />
                 </TableCell>
+
                 <TableCell>{expense.entryId || "-"}</TableCell>
-                <TableCell>{expense.type}</TableCell>
-                {/* <TableCell>{expense.type === EntryType.ganho ? 'Entrada' : 'Saida'}</TableCell> */}
-                {/* <TableCell>{expense.type === EntryType.ganho ? "Entrada" : (expense.type === EntryType.perda ? "Saída" : "-")}</TableCell> */}
+
+                <TableCell>{expense.type === EntryType.ganho ? "Entrada" : "Saída"}</TableCell>
 
                 <TableCell>{expense.subtype || "-" }</TableCell>
+
                 {/* Data formatada (createdAt) */}
                 <TableCell>
                   {expense.createdAt ? formatDate(expense.createdAt) : "-"}
                 </TableCell>
+
                 {/* Valor formatado em R$ */}
                 <TableCell>
                   {expense.value !== undefined ? formatPrice(expense.value) : "-"}
                 </TableCell>
+
+                {/* Menu de ações */}
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, expense.entryId)}>︙</IconButton>
                   <Menu
