@@ -5,16 +5,15 @@ import React, { useState } from "react";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
-import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 
 import { DashboardContent } from "src/layouts/dashboard";
 
+import VisaoGeralComponent from "./components/VisaoGeralComponent";
+import GenerateDailyReport from "./components/generateDailyReport";
 import FluxoCaixaMensalComponent from "./components/FluxoCaixaMensalComponent";
 import FluxoCaixaDiarioComponent from "./components/FluxoCaixaDiarioComponent";
-import VisaoGeralComponent from "./components/VisaoGeralComponent";
-
-import GenerateDailyReport from "./components/generateDailyReport";
 
 export default function Page() {
   // Estado para controlar a aba selecionada
