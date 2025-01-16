@@ -1,7 +1,8 @@
 // src/components/FluxoCaixaMensalComponent.tsx
 
 import type {
-  SelectChangeEvent} from "@mui/material";
+  SelectChangeEvent
+} from "@mui/material";
 
 import React, { useState } from "react";
 
@@ -118,12 +119,12 @@ export default function FluxoCaixaMensalComponent() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Total Recebíveis Projetados</TableCell>
-                <TableCell>Total Pagáveis Projetados</TableCell>
+                <TableCell>Total A Receber Projetados</TableCell>
+                <TableCell>Total A Pagar Projetados</TableCell>
                 <TableCell>Saldo Projetado</TableCell>
-                <TableCell>Total Recebíveis Pagos</TableCell>
-                <TableCell>Total Pagáveis Pagos</TableCell>
-                <TableCell>Saldo Pago</TableCell>
+                <TableCell>Total A Receber Pagos</TableCell>
+                <TableCell>Total A Pagar Pagos</TableCell>
+                <TableCell>Saldo Realizado</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -149,10 +150,10 @@ export default function FluxoCaixaMensalComponent() {
             <TableHead>
               <TableRow>
                 <TableCell>Mês</TableCell>
-                <TableCell>Total Recebíveis Projetados</TableCell>
-                <TableCell>Total Recebidos</TableCell>
-                <TableCell>Total Pagáveis Projetados</TableCell>
-                <TableCell>Total Pagos</TableCell>
+                <TableCell>Total A Receber Projetados</TableCell>
+                <TableCell>Total A Receber Pagos</TableCell>
+                <TableCell>Total A Pagar Projetados</TableCell>
+                <TableCell>Total A Pagar Pagos</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

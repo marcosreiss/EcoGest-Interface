@@ -6,12 +6,15 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
 
 import { DashboardContent } from "src/layouts/dashboard";
 
 import FluxoCaixaMensalComponent from "./components/FluxoCaixaMensalComponent";
 import FluxoCaixaDiarioComponent from "./components/FluxoCaixaDiarioComponent";
 import VisaoGeralComponent from "./components/VisaoGeralComponent";
+
+import GenerateDailyReport from "./components/generateDailyReport";
 
 export default function Page() {
   // Estado para controlar a aba selecionada
@@ -24,9 +27,10 @@ export default function Page() {
 
   return (
     <DashboardContent maxWidth="xl">
-      <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
-        Balanço
-      </Typography>
+      <Grid container alignItems="center" justifyContent="space-between" sx={{ mb: { xs: 3, md: 4 } }}>
+        <Typography variant="h4">Balanço</Typography>
+        <GenerateDailyReport />
+      </Grid>
 
       {/* Abas de Navegação */}
       <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
@@ -73,7 +77,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ p: 0 }}>{children}</Box>}
     </div>
   );
 }
