@@ -36,14 +36,20 @@ export default function CreatePerson() {
 
   const [isCnpj, setIsCnpj] = useState(false);
 
-  const toggleCpfCnpj = () => setIsCnpj(!isCnpj);
+
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     control,
+    setValue
   } = useForm<PersonPayload>();
+
+  const toggleCpfCnpj = () => {
+    setIsCnpj(!isCnpj);
+    setValue("cpfCnpj", "");
+  };
 
   const createPerson = useCreatePerson();
   const router = useRouter();

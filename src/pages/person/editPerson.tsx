@@ -22,7 +22,6 @@ import { useRouter } from "src/routes/hooks";
 import { useUpdatePerson, useGetPersonById } from "src/hooks/usePerson";
 
 import { CONFIG } from "src/config-global";
-import { PersonType } from "src/models/person";
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
 
@@ -40,7 +39,7 @@ export default function EditPerson() {
 
   const [isCnpj, setIsCnpj] = useState(false);
 
-  const toggleCpfCnpj = () => setIsCnpj(!isCnpj);
+  
 
   const {
     register,
@@ -49,6 +48,11 @@ export default function EditPerson() {
     formState: { errors },
     control,
   } = useForm<Person>();
+
+  const toggleCpfCnpj = () => {
+    setIsCnpj(!isCnpj);
+    setValue("cpfCnpj", "");
+  };
 
   const updatePerson = useUpdatePerson();
   const router = useRouter();
@@ -158,21 +162,6 @@ export default function EditPerson() {
                     error={!!errors.name}
                     helperText={errors.name?.message}
                   />
-                </Grid>
-
-                {/* Tipo */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    select
-                    label="Tipo"
-                    {...register("type", { required: "Selecione o tipo da pessoa" })}
-                    error={!!errors.type}
-                    helperText={errors.type?.message}
-                  >
-                    <option value={PersonType.cliente}>Cliente</option>
-                    <option value={PersonType.fornecedor}>Fornecedor</option>
-                  </TextField>
                 </Grid>
 
                 {/* Toggle CPF/CNPJ */}
