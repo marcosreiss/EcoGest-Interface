@@ -76,7 +76,7 @@ export interface Payables {
 
 
 export interface SaldoProjetado {
-    profit: Profit[];
+    profit: Profit;
 }
 export interface Profit {
     dateGroup: string;

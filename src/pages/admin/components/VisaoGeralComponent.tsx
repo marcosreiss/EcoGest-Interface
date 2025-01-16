@@ -1,5 +1,3 @@
-import React, { useState } from "react";
-
 import {
   Box,
   Grid,
@@ -9,17 +7,28 @@ import {
   LinearProgress,
 } from "@mui/material";
 
-export default function VisaoGeralComponent() {
-  // Mock de dados
-  const dataMock = {
-    saldo: 12500.75,
-    contasReceber: 150,
-    contasPagar: 120,
-    contasReceberAtrasadas: 15,
-    contasPagarAtrasadas: 10,
-  };
+import { useGetSaldoProjetado, useGetPaybleRecibleAmount } from "src/hooks/useKpi";
 
-  const [isLoading] = useState(false);
+export default function VisaoGeralComponent() {
+  const {
+    data: paybleRecibleAmount,
+    isLoading: isLoadingPayableRecibleAmount,
+  } = useGetPaybleRecibleAmount();
+
+  const {
+    data: saldoProjetado,
+    isLoading: isLoadingSaldoProjetado,
+  } = useGetSaldoProjetado();
+
+  const isLoading = isLoadingPayableRecibleAmount || isLoadingSaldoProjetado;
+
+  const formatPrice = (price: number | undefined): string => {
+    if (price === undefined) return "-";
+    return `R$ ${price.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: "background.default", minHeight: "100vh" }}>
@@ -39,124 +48,129 @@ export default function VisaoGeralComponent() {
               Visão Geral
             </Typography>
           </Box>
-
-          {/* Indicador de Carregamento */}
-          {isLoading && <LinearProgress sx={{ mb: 3, width: "100%" }} />}
         </Grid>
+
+        {/* Exibe LinearProgress enquanto os dados estão sendo carregados */}
+        {isLoading && (
+          <Grid item xs={12}>
+            <LinearProgress />
+          </Grid>
+        )}
 
         {/* Saldo Total */}
-        <Grid item xs={12}>
-          <Card sx={{ boxShadow: 3 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Saldo Total
-              </Typography>
-              <Typography variant="h5">
-                {new Intl.NumberFormat("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                }).format(dataMock.saldo)}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+        {!isLoading && (
+          <Grid item xs={12}>
+            <Card sx={{ boxShadow: 3 }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Saldo Total
+                </Typography>
+                <Typography variant="h5">
+                  {formatPrice(saldoProjetado?.profit.profit)}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        )}
 
         {/* Indicadores */}
-        <Grid item xs={12}>
-          <Grid container spacing={3}>
-            {/* Contas a Receber */}
-            <Grid item xs={12} sm={6} md={3}>
-              <Card
-                sx={{
-                  height: "100%",
-                  boxShadow: 3,
-                  transition: "transform 0.3s",
-                  "&:hover": {
-                    transform: "scale(1.05)",
-                  },
-                }}
-              >
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    Contas a Receber
-                  </Typography>
-                  <Typography variant="h5" >
-                    {dataMock.contasReceber}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+        {!isLoading && (
+          <Grid item xs={12}>
+            <Grid container spacing={3}>
+              {/* Contas a Receber */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Card
+                  sx={{
+                    height: "100%",
+                    boxShadow: 3,
+                    transition: "transform 0.3s",
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                    },
+                  }}
+                >
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      Contas a Receber
+                    </Typography>
+                    <Typography variant="h5">
+                      {paybleRecibleAmount?.data.receivables.open || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
 
-            {/* Contas a Pagar */}
-            <Grid item xs={12} sm={6} md={3}>
-              <Card
-                sx={{
-                  height: "100%",
-                  boxShadow: 3,
-                  transition: "transform 0.3s",
-                  "&:hover": {
-                    transform: "scale(1.05)",
-                  },
-                }}
-              >
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    Contas a Pagar
-                  </Typography>
-                  <Typography variant="h5">
-                    {dataMock.contasPagar}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+              {/* Contas a Pagar */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Card
+                  sx={{
+                    height: "100%",
+                    boxShadow: 3,
+                    transition: "transform 0.3s",
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                    },
+                  }}
+                >
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      Contas a Pagar
+                    </Typography>
+                    <Typography variant="h5">
+                      {paybleRecibleAmount?.data.payables.open || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
 
-            {/* Contas Receber Atrasadas */}
-            <Grid item xs={12} sm={6} md={3}>
-              <Card
-                sx={{
-                  height: "100%",
-                  boxShadow: 3,
-                  transition: "transform 0.3s",
-                  "&:hover": {
-                    transform: "scale(1.05)",
-                  },
-                }}
-              >
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    Contas Receber Atrasadas
-                  </Typography>
-                  <Typography variant="h5" >
-                    {dataMock.contasReceberAtrasadas}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+              {/* Contas Receber Atrasadas */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Card
+                  sx={{
+                    height: "100%",
+                    boxShadow: 3,
+                    transition: "transform 0.3s",
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                    },
+                  }}
+                >
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      Contas Receber Atrasadas
+                    </Typography>
+                    <Typography variant="h5">
+                      {paybleRecibleAmount?.data.receivables.overdue || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
 
-            {/* Contas Pagar Atrasadas */}
-            <Grid item xs={12} sm={6} md={3}>
-              <Card
-                sx={{
-                  height: "100%",
-                  boxShadow: 3,
-                  transition: "transform 0.3s",
-                  "&:hover": {
-                    transform: "scale(1.05)",
-                  },
-                }}
-              >
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    Contas Pagar Atrasadas
-                  </Typography>
-                  <Typography variant="h5">
-                    {dataMock.contasPagarAtrasadas}
-                  </Typography>
-                </CardContent>
-              </Card>
+              {/* Contas Pagar Atrasadas */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Card
+                  sx={{
+                    height: "100%",
+                    boxShadow: 3,
+                    transition: "transform 0.3s",
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                    },
+                  }}
+                >
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      Contas Pagar Atrasadas
+                    </Typography>
+                    <Typography variant="h5">
+                      {paybleRecibleAmount?.data.payables.overdue || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
+        )}
       </Grid>
     </Box>
   );
