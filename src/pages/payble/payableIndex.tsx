@@ -1,22 +1,22 @@
-import type { Payble, SearchByPeriodRequest } from 'src/models/payable';
+import type { Payble, PayableParams } from "src/models/payable";
 
-import * as React from 'react';
-import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import * as React from "react";
+import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 
-import Paper from '@mui/material/Paper';
-import { Box, Grid, Typography } from '@mui/material';
-import TableContainer from '@mui/material/TableContainer';
+import Paper from "@mui/material/Paper";
+import { Box, Grid, Typography } from "@mui/material";
+import TableContainer from "@mui/material/TableContainer";
 
-import { useDeletePayble, useGetPayblesPaged, useSearchPayblesByPeriod } from 'src/hooks/usePayble';
+import { useDeletePayble, useGetPayblesPaged } from "src/hooks/usePayble";
 
-import { CONFIG } from 'src/config-global';
-import { DashboardContent } from 'src/layouts/dashboard';
-import { useNotification } from 'src/context/NotificationContext';
+import { CONFIG } from "src/config-global";
+import { DashboardContent } from "src/layouts/dashboard";
+import { useNotification } from "src/context/NotificationContext";
 
-import PaybleTableSearch from './components/payableTableSearch';
-import PaybleTableComponent from './components/payableTableComponent';
-import TableFooterComponent from '../../layouts/components/tableFooterComponent';
+import PaybleTableSearch from "./components/payableTableSearch";
+import PaybleTableComponent from "./components/payableTableComponent";
+import TableFooterComponent from "../../layouts/components/tableFooterComponent";
 
 // ----------------------------------------------------------------------
 
@@ -24,31 +24,22 @@ export default function PayableIndex() {
   const [selectedPaybles, setSelectedPaybles] = useState<Payble[]>([]);
   const rowsPerPage = 5;
   const [page, setPage] = useState(0);
-
-  // Estados para gerenciar os dados paginados
-  const { data: pagedData, isLoading: isPagedLoading } = useGetPayblesPaged(
-    page * rowsPerPage,
-    rowsPerPage
-  );
-
-  // Estados para filtro por período
-  const [searchByPeriodRequest, setSearchByPeriod] = useState<SearchByPeriodRequest>({
+  const [searchByPeriod, setSearchByPeriod] = useState<PayableParams>({
+    skip: page * rowsPerPage,
+    take: rowsPerPage,
     startDate: null,
     endDate: null,
+    status: null,
   });
 
-  const { data: filteredData, isLoading: isFilteredLoading } = useSearchPayblesByPeriod(searchByPeriodRequest);
+  // Dados paginados
+  const { data: pagedData, isLoading: isPagedLoading } = useGetPayblesPaged(searchByPeriod);
 
-  // Define os dados para exibição (filtrados ou gerais)
-  const paybles =
-    searchByPeriodRequest.startDate && searchByPeriodRequest.endDate
-      ? filteredData?.data ?? []
-      : pagedData?.data ?? [];
+  const paybles = pagedData?.data ?? [];
 
-  // Define o estado de carregamento com base no contexto
-  const isLoading = isFilteredLoading || isPagedLoading;
+  // Define o estado de carregamento
+  const isLoading = isPagedLoading;
 
-  // Gerenciar exclusão de pagáveis
   const deletePayble = useDeletePayble();
   const notification = useNotification();
 
@@ -56,11 +47,14 @@ export default function PayableIndex() {
     selectedPaybles.forEach((payble) => {
       deletePayble.mutate(payble.payableId, {
         onSuccess: () => {
-          notification.addNotification('Pagável deletado com sucesso', 'success');
+          notification.addNotification("Pagável deletado com sucesso", "success");
           setSelectedPaybles([]);
         },
         onError: () => {
-          notification.addNotification('Erro ao deletar pagável, tente novamente mais tarde', 'error');
+          notification.addNotification(
+            "Erro ao deletar pagável, tente novamente mais tarde",
+            "error"
+          );
         },
       });
     });
@@ -90,9 +84,9 @@ export default function PayableIndex() {
 
             <TableContainer
               component={Paper}
-              sx={{ height: '65vh', display: 'flex', flexDirection: 'column' }}
+              sx={{ height: "65vh", display: "flex", flexDirection: "column" }}
             >
-              <Box component="div" sx={{ flex: 1, overflow: 'auto' }}>
+              <Box component="div" sx={{ flex: 1, overflow: "auto" }}>
                 <PaybleTableComponent
                   setSelectedPaybles={setSelectedPaybles}
                   paybles={paybles}
@@ -104,11 +98,7 @@ export default function PayableIndex() {
                 setPage={setPage}
                 page={page}
                 rowsPerPage={rowsPerPage}
-                totalItems={
-                  searchByPeriodRequest.startDate && searchByPeriodRequest.endDate
-                    ? filteredData?.meta?.totalItems || 0 // Se undefined, retorna 0
-                    : pagedData?.meta?.totalItems || 0 // Se undefined, retorna 0
-                }
+                totalItems={pagedData?.meta?.totalItems || 0}
               />
             </TableContainer>
           </Grid>

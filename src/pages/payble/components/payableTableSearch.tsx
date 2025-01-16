@@ -1,18 +1,28 @@
-import type { Dispatch, SetStateAction } from 'react';
-import type { SearchByPeriodRequest } from 'src/models/sale';
+import type { Dispatch, SetStateAction } from "react";
+import type { PayableParams } from "src/models/payable";
+import type {
+  SelectChangeEvent} from "@mui/material";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import { Box, Button, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Select,
+  MenuItem,
+  TextField,
+  InputLabel,
+  FormControl
+} from "@mui/material";
 
-import ConfirmationDialog from 'src/components/confirmation-dialog/confirmationDialog';
+import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
 
 interface PaybleTableSearchProps {
   handleSearchChange: (event: React.ChangeEvent<HTMLInputElement>) => void | null;
   selectedRows: any[];
   isSearchDisabled: boolean;
   handleDelete: () => void;
-  setSearchByPeriod: Dispatch<SetStateAction<SearchByPeriodRequest>>;
+  setSearchByPeriod: Dispatch<SetStateAction<PayableParams>>;
 }
 
 const PaybleTableSearch: React.FC<PaybleTableSearchProps> = ({
@@ -23,6 +33,9 @@ const PaybleTableSearch: React.FC<PaybleTableSearchProps> = ({
   setSearchByPeriod,
 }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [status, setStatus] = useState<"Todos" | "Pago" | "Atrasado" | "Aberto">("Todos");
+  const [startDate, setStartDate] = useState<string | null>(null);
+  const [endDate, setEndDate] = useState<string | null>(null);
 
   const handleOpen = () => setDeleteModalOpen(true);
   const handleClose = () => setDeleteModalOpen(false);
@@ -32,75 +45,116 @@ const PaybleTableSearch: React.FC<PaybleTableSearchProps> = ({
     handleDelete();
   };
 
+  const handleStatusChange = (event: SelectChangeEvent<"Todos" | "Pago" | "Atrasado" | "Aberto">) => {
+    const selectedStatus = event.target.value as "Todos" | "Pago" | "Atrasado" | "Aberto";
+    setStatus(selectedStatus);
+    setSearchByPeriod((prevState) => ({
+      ...prevState,
+      status: selectedStatus === "Todos" ? null : selectedStatus,
+    }));
+  };
+
+  const clearPeriodFilters = () => {
+    setStatus("Todos");
+    setStartDate(null);
+    setEndDate(null);
+    setSearchByPeriod((prevState) => ({
+      ...prevState,
+      startDate: null,
+      endDate: null,
+      status: null
+    }));
+  };
+
   return (
     <>
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '16px',
-          backgroundColor: '#f9fafb',
-          borderBottom: '1px solid #e0e0e0',
-          borderRadius: '8px 8px 0 0',
-          minHeight: '70px',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "16px",
+          backgroundColor: "#f9fafb",
+          borderBottom: "1px solid #e0e0e0",
+          borderRadius: "8px 8px 0 0",
+          minHeight: "70px",
+          gap: "16px",
         }}
       >
         {/* Campo para Data Inicial */}
-        <Box sx={{ flex: 1, marginRight: '16px' }}>
-          <TextField
-            fullWidth
-            label="Data Inicial"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            onChange={(e) =>
-              setSearchByPeriod((prevState) => ({
-                ...prevState,
-                startDate: e.target.value,
-              }))
-            }
-          />
-        </Box>
+        <TextField
+          fullWidth
+          label="Data Inicial"
+          type="date"
+          InputLabelProps={{ shrink: true }}
+          value={startDate || ""}
+          onChange={(e) => {
+            const {value} = e.target;
+            setStartDate(value);
+            setSearchByPeriod((prevState) => ({
+              ...prevState,
+              startDate: value,
+            }));
+          }}
+        />
 
         {/* Campo para Data Final */}
-        <Box sx={{ flex: 1, marginRight: '16px' }}>
-          <TextField
-            fullWidth
-            label="Data Final"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            onChange={(e) =>
-              setSearchByPeriod((prevState) => ({
-                ...prevState,
-                endDate: e.target.value,
-              }))
-            }
-          />
-        </Box>
+        <TextField
+          fullWidth
+          label="Data Final"
+          type="date"
+          InputLabelProps={{ shrink: true }}
+          value={endDate || ""}
+          onChange={(e) => {
+            const {value} = e.target;
+            setEndDate(value);
+            setSearchByPeriod((prevState) => ({
+              ...prevState,
+              endDate: value,
+            }));
+          }}
+        />
 
-        {/* Botão de Deletar */}
-        {selectedRows.length > 0 ? (
+        {/* Select de Status */}
+        <FormControl fullWidth size="small">
+          <InputLabel id="status-label">Status</InputLabel>
+          <Select
+            labelId="status-label"
+            id="status-select"
+            value={status}
+            label="Status"
+            onChange={handleStatusChange}
+          >
+            <MenuItem value="Todos">Todos</MenuItem>
+            <MenuItem value="Pago">Pago</MenuItem>
+            <MenuItem value="Atrasado">Atrasado</MenuItem>
+            <MenuItem value="Aberto">Aberto</MenuItem>
+          </Select>
+        </FormControl>
+
+        {/* Botão para limpar filtros de período */}
+        {(startDate || endDate || status !== "Todos") && (
+          <Button
+            sx={{width: 500}}
+            variant="outlined"
+            color="primary"
+            size="medium"
+            onClick={clearPeriodFilters}
+          >
+            Limpar Filtros
+          </Button>
+        )}
+
+        {/* Botão de Deletar Selecionados */}
+        {selectedRows.length > 0 && (
           <Button
             variant="contained"
             color="error"
-            sx={{
-              textTransform: 'none',
-              marginLeft: '16px',
-              padding: '6px 16px',
-              borderRadius: '8px',
-            }}
+            size="small"
             onClick={handleOpen}
           >
             Deletar Selecionados ({selectedRows.length})
           </Button>
-        ) : (
-          <Typography
-            variant="subtitle1"
-            color="text.secondary"
-            sx={{ marginLeft: '16px' }}
-          >
-            Nenhum item selecionado
-          </Typography>
         )}
       </Box>
 

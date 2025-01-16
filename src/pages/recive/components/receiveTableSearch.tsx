@@ -10,7 +10,6 @@ import {
   Select,
   MenuItem,
   TextField,
-  Typography,
   InputLabel,
   FormControl,
 } from "@mui/material";
@@ -146,21 +145,15 @@ const ReceiveTableSearch: React.FC<TableSearchProps> = ({
         )}
 
         {/* Botão de Deletar Selecionados */}
-        {selectedRows.length > 0 ? (
+        {selectedRows.length > 0 && (
           <Button
             variant="contained"
             color="error"
-            size="small"
+            size="medium"
             onClick={handleOpen}
           >
             Deletar Selecionados ({selectedRows.length})
           </Button>
-        ) : (
-          <Typography
-            variant="subtitle1"
-            color="text.secondary"
-            sx={{ marginLeft: "16px" }}
-          />
         )}
       </Box>
 
