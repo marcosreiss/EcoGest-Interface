@@ -1,7 +1,6 @@
+import type { Dispatch, SetStateAction } from "react";
+import type { SelectChangeEvent } from "@mui/material";
 import type { ReceiveParams } from "src/models/receive";
-import type {
-  SelectChangeEvent} from "@mui/material";
-import type { Dispatch, ReactNode, SetStateAction } from "react";
 
 import React, { useState } from "react";
 
@@ -13,7 +12,7 @@ import {
   TextField,
   Typography,
   InputLabel,
-  FormControl
+  FormControl,
 } from "@mui/material";
 
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
@@ -35,6 +34,8 @@ const ReceiveTableSearch: React.FC<TableSearchProps> = ({
 }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [status, setStatus] = useState<"Todos" | "Pago" | "Atrasado" | "Aberto">("Todos");
+  const [startDate, setStartDate] = useState<string | null>(null);
+  const [endDate, setEndDate] = useState<string | null>(null);
 
   const handleOpen = () => setDeleteModalOpen(true);
   const handleClose = () => setDeleteModalOpen(false);
@@ -44,7 +45,7 @@ const ReceiveTableSearch: React.FC<TableSearchProps> = ({
     handleDelete();
   };
 
-  const handleStatusChange = (event: SelectChangeEvent<"Todos" | "Pago" | "Atrasado" | "Aberto">, child: ReactNode) => {
+  const handleStatusChange = (event: SelectChangeEvent<"Todos" | "Pago" | "Atrasado" | "Aberto">) => {
     const selectedStatus = event.target.value as "Todos" | "Pago" | "Atrasado" | "Aberto";
     setStatus(selectedStatus);
     setSearchByPeriod((prevState) => ({
@@ -54,6 +55,9 @@ const ReceiveTableSearch: React.FC<TableSearchProps> = ({
   };
 
   const clearPeriodFilters = () => {
+    setStatus("Todos");
+    setStartDate(null);
+    setEndDate(null);
     setSearchByPeriod((prevState) => ({
       ...prevState,
       startDate: null,
@@ -79,34 +83,40 @@ const ReceiveTableSearch: React.FC<TableSearchProps> = ({
       >
         {/* Campo para Data Inicial */}
         <TextField
-          fullWidth
+          sx={{ width: 250 }}
           label="Data Inicial"
           type="date"
           InputLabelProps={{ shrink: true }}
-          onChange={(e) =>
+          value={startDate || ""}
+          onChange={(e) => {
+            const { value } = e.target;
+            setStartDate(value);
             setSearchByPeriod((prevState) => ({
               ...prevState,
-              startDate: e.target.value,
-            }))
-          }
+              startDate: value,
+            }));
+          }}
         />
 
         {/* Campo para Data Final */}
         <TextField
-          fullWidth
+          sx={{ width: 250 }}
           label="Data Final"
           type="date"
           InputLabelProps={{ shrink: true }}
-          onChange={(e) =>
+          value={endDate || ""}
+          onChange={(e) => {
+            const { value } = e.target;
+            setEndDate(value);
             setSearchByPeriod((prevState) => ({
               ...prevState,
-              endDate: e.target.value,
-            }))
-          }
+              endDate: value,
+            }));
+          }}
         />
 
         {/* Select de Status */}
-        <FormControl fullWidth size="small">
+        <FormControl sx={{ width: 350 }} size="small">
           <InputLabel id="status-label">Status</InputLabel>
           <Select
             labelId="status-label"
@@ -123,10 +133,11 @@ const ReceiveTableSearch: React.FC<TableSearchProps> = ({
         </FormControl>
 
         {/* Botão para limpar filtros de período */}
-        {(status !== "Todos" || !!status || !!selectedRows.length) && (
+        {(startDate || endDate || status !== "Todos") && (
           <Button
+            sx={{ width: 200 }}
             variant="outlined"
-            color="secondary"
+            color="primary"
             size="small"
             onClick={clearPeriodFilters}
           >
