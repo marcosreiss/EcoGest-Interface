@@ -9,10 +9,23 @@ import api from "./api";
  * @param take Número de registros a obter.
  * @returns Lista paginada de recebíveis.
  */
-export const getRecivesPagedService = async (skip: number, take: number): Promise<Receive[]> => {
-  const response = await api.get<Receive[]>("/receives", { params: { skip, take } });
+export const getRecivesPagedService = async (
+  skip: number,
+  take: number,
+  startDate?: string,
+  endDate?: string,
+  personId?: string
+): Promise<Receive[]> => {
+  const params: Record<string, any> = { skip, take };
+
+  if (startDate) params.startDate = startDate;
+  if (endDate) params.endDate = endDate;
+  if (personId) params.personId = personId;
+
+  const response = await api.get<Receive[]>("/receives", { params });
   return response.data;
 };
+
 
 /**
  * Obter um recebível por ID.

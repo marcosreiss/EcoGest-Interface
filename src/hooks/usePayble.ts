@@ -12,13 +12,21 @@ import {
 } from "src/services/paybleService";
 
 /**
- * Hook para obter uma lista paginada de pagáveis.
+ * Hook para obter uma lista paginada de pagáveis com filtros opcionais.
  */
-export const useGetPayblesPaged = (skip: number, take: number) =>
+export const useGetPayblesPaged = (
+  skip: number,
+  take: number,
+  startDate?: string,
+  endDate?: string,
+  personId?: string
+) =>
   useQuery<PaybleList, AxiosError>({
-    queryKey: ["paybles-list", { skip, take }],
-    queryFn: () => getPayblesPagedService(skip, take),
+    queryKey: ["paybles-list", { skip, take, startDate, endDate, personId }],
+    queryFn: () => getPayblesPagedService(skip, take, startDate, endDate, personId),
+    enabled: !!skip && !!take, // Evita executar a query se os parâmetros obrigatórios não forem fornecidos
   });
+
 
 /**
  * Hook para obter os detalhes de um pagável pelo ID.

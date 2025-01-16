@@ -12,11 +12,19 @@ import {
 /**
  * Hook para obter uma lista paginada de recebíveis.
  */
-export const useGetRecivesPaged = (skip: number, take: number) =>
+export const useGetRecivesPaged = (
+  skip: number,
+  take: number,
+  startDate?: string,
+  endDate?: string,
+  personId?: string
+) =>
   useQuery<Receive[], AxiosError>({
-    queryKey: ["recives-list", { skip, take }],
-    queryFn: () => getRecivesPagedService(skip, take),
+    queryKey: ["recives-list", { skip, take, startDate, endDate, personId }],
+    queryFn: () => getRecivesPagedService(skip, take, startDate, endDate, personId),
+    enabled: !!skip && !!take, // Evita executar a query se os parâmetros obrigatórios não forem fornecidos
   });
+
 
 /**
  * Hook para obter os detalhes de um recebível pelo ID.

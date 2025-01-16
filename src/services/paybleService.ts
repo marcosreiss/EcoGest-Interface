@@ -8,11 +8,23 @@ import api from "./api";
  * @param take Número de registros a obter.
  * @returns Lista paginada de pagáveis.
  */
-export const getPayblesPagedService = async (skip: number, take: number): Promise<PaybleList> => {
-  
-  const response = await api.get<PaybleList>("/payables", { params: { skip, take } });
+export const getPayblesPagedService = async (
+  skip: number,
+  take: number,
+  startDate?: string,
+  endDate?: string,
+  personId?: string
+): Promise<PaybleList> => {
+  const params: Record<string, any> = { skip, take };
+
+  if (startDate) params.startDate = startDate;
+  if (endDate) params.endDate = endDate;
+  if (personId) params.personId = personId;
+
+  const response = await api.get<PaybleList>("/payables", { params });
   return response.data;
 };
+
 
 /**
  * Obter um pagável por ID.
