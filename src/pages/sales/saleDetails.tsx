@@ -140,7 +140,7 @@ export default function SaleDetailsPage() {
                         <TableRow key={saleProduct.product.productId}>
                           <TableCell>{saleProduct.product.name}</TableCell>
                           <TableCell>
-                            {formatNumber(Number(saleProduct.quantity))}
+                            {formatNumber(Number(saleProduct.quantity / 1000))} Tons
                           </TableCell>
                           <TableCell>
                             {formatPrice(saleProduct.product.price)}

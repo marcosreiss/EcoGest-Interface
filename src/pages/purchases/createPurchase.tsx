@@ -231,7 +231,7 @@ export default function CreatePurchasePage() {
                                 "Produto não encontrado"}
                             </TableCell>
                             <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
-                              {product.quantity}
+                              {product.quantity} Kg
                             </TableCell>
                             <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
                               R$ {product.price.toFixed(2)}

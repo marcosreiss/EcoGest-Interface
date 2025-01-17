@@ -268,7 +268,7 @@ export default function EditPurchasePage() {
                                 "Produto não encontrado"}
                             </TableCell>
                             <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
-                              {product.quantity}
+                              {product.quantity} Kg
                             </TableCell>
                             <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
                               R$ {product.price}

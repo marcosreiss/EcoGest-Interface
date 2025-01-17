@@ -142,7 +142,7 @@ export default function PurchaseDetailsPage() {
                       {purchase?.products.map((product) => (
                         <TableRow key={product.productId}>
                           <TableCell>{product.product.name}</TableCell>
-                          <TableCell>{formatNumber(product.quantity)}</TableCell>
+                          <TableCell>{formatNumber(product.quantity / 1000)} Tons</TableCell>
                           <TableCell>{formatPrice(product.price)}</TableCell>
                           <TableCell>{formatPrice(product.quantity * product.price)}</TableCell>
                         </TableRow>
