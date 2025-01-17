@@ -7,6 +7,7 @@ import {
   deleteReciveService,
   getReciveByIdService,
   getRecivesPagedService,
+  updateReceiveStatusService,
 } from "src/services/reciveService";
 
 /** 
@@ -41,6 +42,20 @@ export const useDeleteRecive = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ["recives-list"],});
+    },
+  });
+};
+
+export const useUpdateReceiveStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<number, AxiosError, { id: number; paybleStatus: 'approved' | 'canceled' }>({
+    mutationFn: ({ id, paybleStatus }) => updateReceiveStatusService(id, paybleStatus),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recives-list'] });
+    },
+    onError: (error) => {
+      console.error("Erro ao atualizar o status da conta a receber:", error);
     },
   });
 };
