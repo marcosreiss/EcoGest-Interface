@@ -82,7 +82,7 @@ const ReceiveTableSearch: React.FC<TableSearchProps> = ({
       >
         {/* Campo para Data Inicial */}
         <TextField
-          sx={{ width: 250 }}
+          fullWidth
           label="Data Inicial"
           type="date"
           InputLabelProps={{ shrink: true }}
@@ -99,7 +99,7 @@ const ReceiveTableSearch: React.FC<TableSearchProps> = ({
 
         {/* Campo para Data Final */}
         <TextField
-          sx={{ width: 250 }}
+          fullWidth
           label="Data Final"
           type="date"
           InputLabelProps={{ shrink: true }}
@@ -115,7 +115,7 @@ const ReceiveTableSearch: React.FC<TableSearchProps> = ({
         />
 
         {/* Select de Status */}
-        <FormControl sx={{ width: 350 }} size="small">
+        <FormControl fullWidth size="small">
           <InputLabel id="status-label">Status</InputLabel>
           <Select
             labelId="status-label"
@@ -134,7 +134,7 @@ const ReceiveTableSearch: React.FC<TableSearchProps> = ({
         {/* Botão para limpar filtros de período */}
         {(startDate || endDate || status !== "Todos") && (
           <Button
-            sx={{ width: 200 }}
+            sx={{ width: 500 }}
             variant="outlined"
             color="primary"
             size="small"
