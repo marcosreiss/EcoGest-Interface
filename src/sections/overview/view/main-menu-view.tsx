@@ -29,12 +29,12 @@ const icon = (name: string, color: string) => (
 const menuItems = [
   { title: 'Pessoas', icon: icon('ic-people', '#FFC107'), path: '/person' }, // Amarelo Alaranjado
   { title: 'Produtos', icon: icon('ic-soda', '#1E6A3A'), path: '/products' }, // Verde Escuro
-  { title: 'Estoque', icon: icon('ic-soda', '#1E6A3A'), path: '/stock' }, // Verde Escuro
-  { title: 'Vendas', icon: icon('ic-sales', '#34B864'), path: '/sales' }, // Verde
-  { title: 'Compras', icon: icon('ic-cart', '#FF9D1E'), path: '/purchases' }, // Laranja
-  { title: 'A Receber', icon: icon('ic-coins', '#007FFF'), path: '/recive' },
+  { title: 'Estoque', icon: icon('ic-stock', '#1d7fc4'), path: '/stock' }, // Verde Escuro
+  { title: 'Compras', icon: icon('ic-cart', '#fa4700'), path: '/purchases' }, // Laranja
+  { title: 'Vendas', icon: icon('ic-sales', '#fa4700'), path: '/sales' }, // Verde
+  { title: 'Lançamentos', icon: icon('ic-entry', '#1dc479'), path: '/expenses' },
+  { title: 'A Receber', icon: icon('ic-coins', '#10e3bc'), path: '/recive' },
   { title: 'A Pagar', icon: icon('ic-bill', '#FF6347'), path: '/payable' },
-  { title: 'Lançamentos', icon: icon('ic-analytics', '#F45752'), path: '/expenses' },
   { title: 'Funcionários', icon: icon('ic-employees', '#546161'), path: '/employees', adminOnly: true }, // Cinza
   { title: 'Balanço', icon: icon('ic-adm', '#38A95A'), path: '/admin', adminOnly: true }, // Verde
 ];

@@ -265,13 +265,12 @@ export default function FluxoCaixaDiarioComponent() {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>Total A Receber Projetados</TableCell>
-                                <TableCell>Total A Pagar Projetados</TableCell>
+                                <TableCell>Total A Receber</TableCell>
+                                <TableCell>Total A Pagar</TableCell>
                                 <TableCell>Saldo Projetado</TableCell>
                                 <TableCell>Total A Receber Pagos</TableCell>
                                 <TableCell>Total A Pagar Pagos</TableCell>
                                 <TableCell>Saldo Realizado</TableCell>
-                                <TableCell>Saldo Atual</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -281,7 +280,6 @@ export default function FluxoCaixaDiarioComponent() {
                                 <TableCell>{formatCurrency(fluxoCaixaDiario.data.projectedBalance)}</TableCell>
                                 <TableCell>{formatCurrency(fluxoCaixaDiario.data.totalPaidReceivables)}</TableCell>
                                 <TableCell>{formatCurrency(fluxoCaixaDiario.data.totalPaidPayables)}</TableCell>
-                                <TableCell>{formatCurrency(fluxoCaixaDiario.data.paidBalance)}</TableCell>
                                 <TableCell>{formatCurrency(fluxoCaixaDiario.data.finalBalance)}</TableCell>
                             </TableRow>
                         </TableBody>
@@ -298,16 +296,21 @@ export default function FluxoCaixaDiarioComponent() {
                         <TableHead>
                             <TableRow>
                                 <TableCell>Dia</TableCell>
-                                <TableCell>Total A Receber Projetados</TableCell>
-                                <TableCell>Total A Receber Pagos</TableCell>
-                                <TableCell>Total A Pagar Projetados</TableCell>
-                                <TableCell>Total A Pagar Pagos</TableCell>
+                                <TableCell>A Receber</TableCell>
+                                <TableCell>A Receber Pagos</TableCell>
+                                <TableCell>A Pagar</TableCell>
+                                <TableCell>A Pagar Pagos</TableCell>
                                 <TableCell>Saldo</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {fluxoCaixaDiario.data.days.map((day) => (
-                                <TableRow key={day.day}>
+                            {fluxoCaixaDiario.data.days.map((day, index) => (
+                                <TableRow
+                                    key={day.day}
+                                    sx={{
+                                        backgroundColor: index % 2 === 0 ? "grey.100" : "grey.50", // Alterna entre tons de cinza
+                                    }}
+                                >
                                     <TableCell>{day.day}</TableCell>
                                     <TableCell>{formatCurrency(day.totalReceivables)}</TableCell>
                                     <TableCell>{formatCurrency(day.totalReceived)}</TableCell>

@@ -26,7 +26,7 @@ export const navData = [
   {
     title: 'Estoque',
     path: '/Stock',
-    icon: icon('ic-soda'),
+    icon: icon('ic-stock'),
   },
   {
     title: 'Funcionarios',
@@ -46,7 +46,7 @@ export const navData = [
   {
     title: 'Lançamentos',
     path: '/expenses',
-    icon: icon('ic-analytics')
+    icon: icon('ic-entry')
   },
   {
     title: 'Contas a Receber',

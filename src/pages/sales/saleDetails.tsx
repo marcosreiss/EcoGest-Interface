@@ -1,5 +1,3 @@
-// src/pages/sales/SaleDetailsPage.tsx
-
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 
@@ -43,28 +41,30 @@ export default function SaleDetailsPage() {
     navigate.replace(`/sales/edit/${id}`);
   };
 
-  // const handleViewReceipt = () => {
-  //   if (sale?.receipt?.data) {
-  //     const blob = new Blob([new Uint8Array(sale.receipt.data)], {
-  //       type: "application/pdf",
-  //     });
-  //     const url = URL.createObjectURL(blob);
-  //     window.open(url, "_blank");
-  //   }
-  // };
-
   const formatDate = (dateStr?: string | Date) => {
     if (!dateStr) return "-";
     const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
-    return dateObj.toLocaleDateString("pt-BR");
+    return dateObj.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
   };
 
   const formatPrice = (value?: number) => {
-    if (value === undefined) return "-";
+    if (value === undefined || value === null) return "-";
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
     }).format(value);
+  };
+
+  const formatNumber = (value?: number) => {
+    if (value === undefined || value === null) return "-";
+    return value.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   };
 
   return (
@@ -82,39 +82,31 @@ export default function SaleDetailsPage() {
             </Typography>
             <Box sx={formStyle}>
               <Grid container spacing={2}>
-                {/* Informações do Cliente */}
-                {/* <Grid item xs={12}>
-                  <Typography variant="h6">Cliente</Typography>
-                  <Typography>
-                    Nome: {sale?.person.name || "-"}
-                  </Typography>
-                </Grid> */}
-
                 {/* Descrição */}
                 <Grid item xs={12}>
                   <Typography variant="body1">
-                    Descrição: {sale?.description || "-"}
+                    <strong>Descrição:</strong> {sale?.description || "-"}
                   </Typography>
                 </Grid>
 
                 {/* Data da Venda */}
                 <Grid item xs={12}>
                   <Typography variant="body1">
-                    Data da Venda: {formatDate(sale?.date_time)}
+                    <strong>Data da Venda:</strong> {formatDate(sale?.date_time)}
                   </Typography>
                 </Grid>
 
                 {/* Desconto */}
                 <Grid item xs={12}>
                   <Typography variant="body1">
-                    Desconto: {formatPrice(sale?.discount)}
+                    <strong>Desconto:</strong> {formatPrice(sale?.discount)}
                   </Typography>
                 </Grid>
 
                 {/* Preço Total */}
                 <Grid item xs={12}>
                   <Typography variant="body1">
-                    Preço Total: {formatPrice(sale?.totalPrice)}
+                    <strong>Preço Total:</strong> {formatPrice(sale?.totalPrice)}
                   </Typography>
                 </Grid>
 
@@ -136,9 +128,15 @@ export default function SaleDetailsPage() {
                       {sale?.products.map((saleProduct) => (
                         <TableRow key={saleProduct.product.productId}>
                           <TableCell>{saleProduct.product.name}</TableCell>
-                          <TableCell>{saleProduct.quantity}</TableCell>
-                          <TableCell>{formatPrice(saleProduct.product.price)}</TableCell>
-                          <TableCell>{formatPrice(saleProduct.totalPrice)}</TableCell>
+                          <TableCell>
+                            {formatNumber(Number(saleProduct.quantity))}
+                          </TableCell>
+                          <TableCell>
+                            {formatPrice(saleProduct.product.price)}
+                          </TableCell>
+                          <TableCell>
+                            {formatPrice(saleProduct.totalPrice)}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -151,20 +149,6 @@ export default function SaleDetailsPage() {
                     Editar Venda
                   </Button>
                 </Grid>
-
-                {/* Recibo */}
-                {/* {sale?.receipt?.data && (
-                  <Grid item xs={12}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleViewReceipt}
-                      fullWidth
-                    >
-                      Visualizar Recibo
-                    </Button>
-                  </Grid>
-                )} */}
               </Grid>
             </Box>
           </>

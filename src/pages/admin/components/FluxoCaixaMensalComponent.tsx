@@ -119,8 +119,8 @@ export default function FluxoCaixaMensalComponent() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Total A Receber Projetados</TableCell>
-                <TableCell>Total A Pagar Projetados</TableCell>
+                <TableCell>A Receber</TableCell>
+                <TableCell>A Pagar</TableCell>
                 <TableCell>Saldo Projetado</TableCell>
                 <TableCell>Total A Receber Pagos</TableCell>
                 <TableCell>Total A Pagar Pagos</TableCell>
@@ -150,15 +150,20 @@ export default function FluxoCaixaMensalComponent() {
             <TableHead>
               <TableRow>
                 <TableCell>Mês</TableCell>
-                <TableCell>Total A Receber Projetados</TableCell>
-                <TableCell>Total A Receber Pagos</TableCell>
-                <TableCell>Total A Pagar Projetados</TableCell>
-                <TableCell>Total A Pagar Pagos</TableCell>
+                <TableCell>A Receber</TableCell>
+                <TableCell>Total Pagos</TableCell>
+                <TableCell>A Pagar</TableCell>
+                <TableCell>Total Pagos</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.data.months.map((month) => (
-                <TableRow key={month.month}>
+            {data.data.months.map((month, index) => (
+                <TableRow
+                  key={month.month}
+                  sx={{
+                    backgroundColor: index % 2 === 0 ? "grey.100" : "grey.50", // Alterna entre tons de cinza
+                  }}
+                >
                   <TableCell>{getMonthName(month.month)}</TableCell>
                   <TableCell>{formatCurrency(month.totalReceivables)}</TableCell>
                   <TableCell>{formatCurrency(month.totalReceived)}</TableCell>
