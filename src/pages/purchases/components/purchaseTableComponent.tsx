@@ -156,15 +156,20 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
           ) : purchases.length > 0 ? (
             purchases.map((purchase) => (
               <TableRow key={purchase.purchaseId}>
+
                 <TableCell>
                   <Checkbox
                     checked={selectedPurchaseIds.includes(purchase.purchaseId)}
                     onChange={(e) => handleSelectPurchase(e, purchase)}
                   />
                 </TableCell>
+
                 <TableCell>{purchase.purchaseId || "-"}</TableCell>
+
                 <TableCell>{purchase.supplier?.name || "-"}</TableCell>
+
                 <TableCell>{purchase.description || "-"}</TableCell>
+
                 {/* Data formatada */}
                 <TableCell>
                   {purchase.date_time
@@ -181,8 +186,8 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                     open={Boolean(anchorEl && selectedItem === purchase.purchaseId)}
                     onClose={handleCloseMenu}
                   >
-                    <MenuItem onClick={() => handleEditClick(purchase.purchaseId)}>Editar</MenuItem>
                     <MenuItem onClick={() => handleDetailsClick(purchase.purchaseId)}>Detalhes</MenuItem>
+                    <MenuItem onClick={() => handleEditClick(purchase.purchaseId)}>Editar</MenuItem>
                     {purchase.paymentSlip !== null && (
                       <MenuItem onClick={() => handleViewDocumentClick(purchase.paymentSlip)}>
                         Visualizar Documento
@@ -191,6 +196,7 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                     <MenuItem onClick={() => handleDeleteClick(purchase.purchaseId)}>Deletar</MenuItem>
                   </Menu>
                 </TableCell>
+
               </TableRow>
             ))
           ) : (
