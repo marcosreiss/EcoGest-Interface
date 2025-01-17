@@ -48,7 +48,6 @@ export const useUpdatePaybleStatus = () => {
  */
 export const useDeletePayble = () => {
   const queryClient = useQueryClient();
-
   return useMutation<void, AxiosError, number>({
     mutationFn: (id) => deletePaybleService(id),
     onSuccess: () => {
