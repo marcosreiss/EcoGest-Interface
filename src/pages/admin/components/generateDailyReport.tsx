@@ -1,3 +1,7 @@
+import type { DownloadPdfParams } from "src/models/kpiModel";
+import type { SupplierBasicInfo } from "src/models/supplier";
+import type { CustomerBasicInfo } from "src/models/customers";
+
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 
@@ -6,39 +10,58 @@ import {
   Grid,
   Button,
   Dialog,
+  Switch,
   TextField,
+  Typography,
   DialogTitle,
   Autocomplete,
   DialogActions,
   DialogContent,
   CircularProgress,
+  FormControlLabel,
 } from "@mui/material";
 
 import { useGetDownloadPdf } from "src/hooks/useKpi";
 import { useGetSuppliersBasicInfo } from "src/hooks/useSupplier";
+import { useGetCustomersBasicInfo } from "src/hooks/useCustomer";
 
 import { useNotification } from "src/context/NotificationContext";
 
-export interface SupplierBasicInfo {
-  personId: number;
-  name: string;
-}
+const meses = [
+  { nome: "Janeiro", numero: 1 },
+  { nome: "Fevereiro", numero: 2 },
+  { nome: "Março", numero: 3 },
+  { nome: "Abril", numero: 4 },
+  { nome: "Maio", numero: 5 },
+  { nome: "Junho", numero: 6 },
+  { nome: "Julho", numero: 7 },
+  { nome: "Agosto", numero: 8 },
+  { nome: "Setembro", numero: 9 },
+  { nome: "Outubro", numero: 10 },
+  { nome: "Novembro", numero: 11 },
+  { nome: "Dezembro", numero: 12 },
+];
+const anos = Array.from({ length: 10 }, (_, i) => {
+  const ano = new Date().getFullYear() - i;
+  return { ano };
+});
 
-export interface SuppliersBasicInfoList {
-  data: SupplierBasicInfo[];
-}
+
 
 export default function GenerateDailyReport() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { control, handleSubmit, reset, formState: { errors } } = useForm<{ date: string; personId?: number }>({
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isSupplier, setIsSupplier] = useState<boolean>(false);
+  const { control, setValue, handleSubmit, reset, formState: { errors } } = useForm<DownloadPdfParams>({
     defaultValues: {
-      date: new Date().toISOString().split("T")[0],
+      month: undefined,
+      year: undefined,
       personId: undefined,
     },
   });
   const downloadPdf = useGetDownloadPdf();
   const notification = useNotification();
   const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
+  const { data: customers, isLoading: loadingCustomers } = useGetCustomersBasicInfo();
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -49,13 +72,19 @@ export default function GenerateDailyReport() {
     reset();
   };
 
-  const onSubmit = (data: { date: string; personId?: number }) => {
-    downloadPdf.mutate(data, {
+  const toggleCustomerSupplier = () => {
+    setIsSupplier(!isSupplier);
+    setValue("personId", 0);
+  };
+
+  const onSubmit = (params: DownloadPdfParams) => {
+    
+    downloadPdf.mutate({ params }, {
       onSuccess: (blob) => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `RELATORIO-${data.date}.pdf`;
+        link.download = `RELATORIO-${params.month}/${params.year}.pdf`;
         link.click();
         window.URL.revokeObjectURL(url);
 
@@ -80,62 +109,38 @@ export default function GenerateDailyReport() {
         Gerar Relatório Diário
       </Button>
 
-      <Dialog open={isModalOpen} onClose={handleCloseModal} fullWidth maxWidth="sm">
+      <Dialog open={isModalOpen} onClose={handleCloseModal} fullWidth maxWidth="md">
         <DialogTitle>Gerar Relatório Diário</DialogTitle>
         <DialogContent sx={{ margin: 1 }}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
-              {/* Campo de Data */}
-              <Grid item xs={12} marginTop={1}>
-                <Controller
-                  name="date"
-                  control={control}
-                  rules={{ required: "A data é obrigatória" }}
-                  render={({ field, fieldState }) => (
-                    <TextField
-                      {...field}
-                      label="Data"
-                      type="date"
-                      fullWidth
-                      InputLabelProps={{ shrink: true }}
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                    />
-                  )}
-                />
-              </Grid>
 
-              {/* Campo de Fornecedor (Autocomplete) */}
+              {/* Campo de Mês */}
               <Grid item xs={12}>
                 <Controller
-                  name="personId"
+                  name="month"
                   control={control}
+                  rules={{ required: "Selecione um Mês" }}
                   render={({ field }) => (
                     <Autocomplete
-                      options={suppliers?.data || []}
-                      loading={loadingSuppliers}
-                      getOptionLabel={(option: SupplierBasicInfo) => option.name}
-                      isOptionEqualToValue={(option, value) =>
-                        option.personId === value.personId
-                      }
+                      options={meses} // Referência ao array de meses já definido
+                      getOptionLabel={(option) => option.nome} // Exibe o nome do mês
+                      isOptionEqualToValue={(option, value) => option.numero === value.numero}
                       onChange={(_, newValue) => {
-                        field.onChange(newValue ? newValue.personId : undefined);
+                        field.onChange(newValue ? newValue.numero : undefined); // Define o número do mês no form
                       }}
-                      value={
-                        suppliers?.data.find(supplier => supplier.personId === field.value) || null
-                      }
+                      value={meses.find((mes) => mes.numero === field.value) || null} // Sincroniza o valor com o form
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Fornecedor (Opcional)"
+                          label="Mês"
                           variant="outlined"
-                          error={!!errors.personId}
-                          helperText={errors.personId?.message}
+                          error={!!errors.month}
+                          helperText={errors.month?.message}
                           InputProps={{
                             ...params.InputProps,
                             endAdornment: (
                               <>
-                                {loadingSuppliers ? <CircularProgress size={20} /> : null}
                                 {params.InputProps.endAdornment}
                               </>
                             ),
@@ -146,6 +151,143 @@ export default function GenerateDailyReport() {
                   )}
                 />
               </Grid>
+
+              {/* Ano */}
+              <Grid item xs={12}>
+                <Controller
+                  name="year"
+                  control={control}
+                  rules={{ required: "Selecione um Ano" }}
+                  render={({ field }) => (
+                    <Autocomplete
+                      options={anos} // Referencia o array de anos
+                      getOptionLabel={(option) => option.ano.toString()} // Exibe o ano como texto
+                      // isOptionEqualToValue={(option, value) => option.ano === value} // Compara corretamente o número do ano
+                      onChange={(_, newValue) => {
+                        field.onChange(newValue ? newValue.ano : undefined); // Armazena apenas o número do ano
+                      }}
+                      value={anos.find((ano) => ano.ano === field.value) || null} // Sincroniza o valor com o formulário
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Ano"
+                          variant="outlined"
+                          error={!!errors.year}
+                          helperText={errors.year?.message}
+                        />
+                      )}
+                    />
+                  )}
+                />
+              </Grid>
+
+              {/* Toggle Cliente/Fornecedor */}
+              <Grid item xs={12}>
+                <Typography component="span" fontSize={13.6} marginRight={2}>
+                  Cliente
+                </Typography>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={isSupplier}
+                      onChange={toggleCustomerSupplier}
+                      color="primary"
+                    />
+                  }
+                  label="Fornecedor"
+                />
+              </Grid>
+
+              {/* Campo de Fornecedor (Autocomplete) */}
+              {isSupplier && (
+                <Grid item xs={12}>
+                  <Controller
+                    name="personId"
+                    control={control}
+                    rules={isSupplier ? { required: "O fornecedor é obrigatório" } : undefined}
+                    render={({ field }) => (
+                      <Autocomplete
+                        options={suppliers?.data || []}
+                        loading={loadingSuppliers}
+                        getOptionLabel={(option: SupplierBasicInfo) => option.name}
+                        isOptionEqualToValue={(option, value) =>
+                          option.personId === value.personId
+                        }
+                        onChange={(_, newValue) => {
+                          field.onChange(newValue ? newValue.personId : undefined);
+                        }}
+                        value={
+                          suppliers?.data.find(supplier => supplier.personId === field.value) || null
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Fornecedor"
+                            variant="outlined"
+                            error={!!errors.personId}
+                            helperText={errors.personId?.message}
+                            InputProps={{
+                              ...params.InputProps,
+                              endAdornment: (
+                                <>
+                                  {loadingSuppliers ? <CircularProgress size={20} /> : null}
+                                  {params.InputProps.endAdornment}
+                                </>
+                              ),
+                            }}
+                          />
+                        )}
+                      />
+                    )}
+                  />
+                </Grid>
+              )}
+
+              {/* Campo de Cliente (Autocomplete) */}
+              {!isSupplier && (
+                <Grid item xs={12}>
+                  <Controller
+                    name="personId"
+                    control={control}
+                    rules={!isSupplier ? { required: "O cliente é obrigatório" } : undefined}
+                    render={({ field }) => (
+                      <Autocomplete
+                        options={customers?.data || []}
+                        loading={loadingCustomers}
+                        getOptionLabel={(option: CustomerBasicInfo) => option.name}
+                        isOptionEqualToValue={(option, value) =>
+                          option.personId === value.personId
+                        }
+                        onChange={(_, newValue) => {
+                          field.onChange(newValue ? newValue.personId : undefined);
+                        }}
+                        value={
+                          suppliers?.data.find(supplier => supplier.personId === field.value) || null
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Cliente"
+                            variant="outlined"
+                            error={!!errors.personId}
+                            helperText={errors.personId?.message}
+                            InputProps={{
+                              ...params.InputProps,
+                              endAdornment: (
+                                <>
+                                  {loadingSuppliers ? <CircularProgress size={20} /> : null}
+                                  {params.InputProps.endAdornment}
+                                </>
+                              ),
+                            }}
+                          />
+                        )}
+                      />
+                    )}
+                  />
+                </Grid>
+              )}
+
             </Grid>
           </form>
         </DialogContent>

@@ -6,6 +6,7 @@ import type {
   SaldoProjetado,
   FluxoCaixaMensal,
   FluxoCaixaDiario,
+  DownloadPdfParams,
   PaybleRecibleAmount,
 } from "src/models/kpiModel";
 
@@ -71,6 +72,6 @@ export const useGetVendas = (params?: KpiParams) =>
 
 // Hook para fazer download de PDF
 export const useGetDownloadPdf = () =>
-  useMutation<Blob, AxiosError, { date: string; personId?: number }>({
-    mutationFn: ({ date, personId }) => getDownloadPdf(date, personId),
+  useMutation<Blob, AxiosError, { params: DownloadPdfParams }>({
+    mutationFn: ({params}) => getDownloadPdf(params),
   });

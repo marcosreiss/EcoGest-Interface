@@ -11,6 +11,12 @@ export interface KpiParams {
     period: "day" | "month" | "year" | null;
 }
 
+export interface DownloadPdfParams {
+    month: number;
+    year: number;
+    personId: number;
+}
+
 // Responses
 
 export interface FluxoCaixaMensal {

@@ -6,6 +6,7 @@ import type
   SaldoProjetado,
   FluxoCaixaDiario,
   FluxoCaixaMensal,
+  DownloadPdfParams,
   PaybleRecibleAmount
 } from 'src/models/kpiModel'
 
@@ -82,10 +83,10 @@ export const getVendasService = async (
   return response.data;
 };
 
-export const getDownloadPdf = async (date: string, personId?: number): Promise<Blob> => {
-  const response = await api.get('/kpi/relatory?', {
-    params: { date, personId }, // Corrige para passar 'date' como parâmetro
-    responseType: 'blob', // Indica que a resposta é um arquivo binário
+export const getDownloadPdf = async (params: DownloadPdfParams): Promise<Blob> => {
+  const response = await api.get<Blob>('/kpi/relatory?', {
+    params, 
+    responseType: 'blob', 
   });
   return response.data;
 };

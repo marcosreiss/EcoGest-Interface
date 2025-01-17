@@ -35,7 +35,7 @@ export interface CustomerPayload {
 }
 
 export interface CustomerBasicInfo {
-    customerId: number;
+    personId: number;
     name: string;
 }
 
