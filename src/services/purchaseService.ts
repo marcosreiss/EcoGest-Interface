@@ -22,16 +22,14 @@ export const createPurchaseService = async (payload: PurchasePayload): Promise<P
     if (payload.paymentSlip) {
         formData.append("paymentSlip", payload.paymentSlip);
     }
-    console.log(payload);
-    
-    
+
     const response = await api.post<PurchaseResponse>("/purchases", payload, {
         headers: {
             "Content-Type": "multipart/form-data",
         },
         data: formData,
     });
-
+    
     return response.data;
 };
 
@@ -72,7 +70,6 @@ export const getTotalPurchasesInPeriodService = async (
     return response.data;
 };
 
-
 // Buscar todas as compras por período
 export const searchPurchasesByPeriodService = async (startDate: string, endDate: string): Promise<Purchase[]> => {
     try {
@@ -83,8 +80,6 @@ export const searchPurchasesByPeriodService = async (startDate: string, endDate:
         throw new Error('Error fetching purchases by period.');
     }
 };
-
-
 
 export const getPurchasesBySupplierService = async (supplierId: number): Promise<PurchaseListResponse> => {
     const response = await api.get<PurchaseListResponse>(`/purchases/supplier?supplierId=${supplierId}`);

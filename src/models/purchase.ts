@@ -18,7 +18,7 @@ export interface PurchasePayload {
     description?: string | null;
     date_time: string;
     paymentSlip: Blob | null;
-    discount: number;
+    discount: number | null;
 }
 
 export interface PurchaseProduct {

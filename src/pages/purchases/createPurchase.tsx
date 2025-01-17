@@ -112,7 +112,7 @@ export default function CreatePurchasePage() {
       paymentSlip: file,
       date_time: data.date_time,
     };
-
+    
     createPurchase.mutate(payload, {
       onSuccess: () => {
         addNotification("Compra criada com sucesso!", "success");
@@ -200,7 +200,7 @@ export default function CreatePurchasePage() {
                     InputProps={{
                       startAdornment: <InputAdornment position="end">R$</InputAdornment>,
                     }}
-                    {...register("discount")}
+                    {...register("discount", {setValueAs: (v)=> (v === "" ? "0" : parseFloat(v))})}
                   />
                 </Grid>
 
