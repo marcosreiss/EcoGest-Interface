@@ -187,10 +187,10 @@ export default function CreatePurchasePage() {
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
-                    label="Desconto (%)"
+                    label="Desconto (R$)"
                     type="number"
                     InputProps={{
-                      endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                      startAdornment: <InputAdornment position="end">R$</InputAdornment>,
                     }}
                     {...register("discount")}
                   />

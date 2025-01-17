@@ -17,8 +17,6 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
-import { useAdvancePayment } from "src/hooks/useEmployee";
-
 import { useNotification } from "src/context/NotificationContext";
 
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
@@ -38,11 +36,11 @@ const EmployeeTableComponent: React.FC<EmployeeTableComponentProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [advancePaymentModalOpen, setAdvancePaymentModalOpen] = useState(false);
+  // const [advancePaymentModalOpen, setAdvancePaymentModalOpen] = useState(false);
 
   const navigate = useRouter();
   const notification = useNotification();
-  const advancePayment = useAdvancePayment();
+  // const advancePayment = useAdvancePayment();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>, employeeId: number) => {
     setAnchorEl(event.currentTarget);
@@ -75,27 +73,27 @@ const EmployeeTableComponent: React.FC<EmployeeTableComponentProps> = ({
     setDeleteModalOpen(false);
   };
 
-  const handleAdvancePayment = (employeeId: number) => {
-    const employee = employees.find((e) => e.employeeId === employeeId);
-    if (!employee) return;
+  // const handleAdvancePayment = (employeeId: number) => {
+  //   const employee = employees.find((e) => e.employeeId === employeeId);
+  //   if (!employee) return;
 
-    advancePayment.mutate(employeeId, {
-      onSuccess: () => {
-        notification.addNotification(
-          `Pagamento adiantado com sucesso para ${employee.nome}`,
-          'success'
-        );
-      },
-      onError: () => {
-        notification.addNotification(
-          `Erro ao adiantar pagamento para ${employee.nome}, tente novamente mais tarde`,
-          'error'
-        );
-      },
-    });
-    setAdvancePaymentModalOpen(false);
-    handleCloseMenu();
-  };
+  //   advancePayment.mutate(employeeId, {
+  //     onSuccess: () => {
+  //       notification.addNotification(
+  //         `Pagamento adiantado com sucesso para ${employee.nome}`,
+  //         'success'
+  //       );
+  //     },
+  //     onError: () => {
+  //       notification.addNotification(
+  //         `Erro ao adiantar pagamento para ${employee.nome}, tente novamente mais tarde`,
+  //         'error'
+  //       );
+  //     },
+  //   });
+  //   setAdvancePaymentModalOpen(false);
+  //   handleCloseMenu();
+  // };
 
   const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -215,14 +213,14 @@ const EmployeeTableComponent: React.FC<EmployeeTableComponentProps> = ({
         title="Deletar Funcionário"
       />
 
-      <ConfirmationDialog
+      {/* <ConfirmationDialog
         open={advancePaymentModalOpen}
         confirmButtonText="Confirmar"
         description={`Tem certeza que deseja adiantar o pagamento de ${employees.find(e => e.employeeId === selectedItem)?.nome}?`}
         onClose={() => setAdvancePaymentModalOpen(false)}
         onConfirm={() => selectedItem && handleAdvancePayment(selectedItem)}
         title="Adiantar Pagamento"
-      />
+      /> */}
     </>
   );
 };

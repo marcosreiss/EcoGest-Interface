@@ -46,16 +46,12 @@ export const useUpdateEmployee = () => {
     });
 };
 
-
 // Hook para deletar um funcionário
 export const useDeleteEmployee = () => {
     const queryClient = useQueryClient();
 
     return useMutation<void, AxiosError, number>({
         mutationFn: (id) => deleteEmployeeService(id),
-        onMutate: (variables) => {
-            console.log("Deletando funcionário com ID:", variables);
-        },
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['employees-list'],
