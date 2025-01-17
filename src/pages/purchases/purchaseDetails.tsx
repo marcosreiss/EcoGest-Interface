@@ -54,15 +54,27 @@ export default function PurchaseDetailsPage() {
   const formatDate = (dateStr?: string | Date) => {
     if (!dateStr) return "-";
     const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
-    return dateObj.toLocaleDateString("pt-BR");
+    return dateObj.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
   };
 
   const formatPrice = (value?: number) => {
-    if (value === undefined) return "-";
+    if (value === undefined || value === null) return "-";
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
     }).format(value);
+  };
+
+  const formatNumber = (value?: number) => {
+    if (value === undefined || value === null) return "-";
+    return value.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   };
 
   return (
@@ -83,27 +95,32 @@ export default function PurchaseDetailsPage() {
                 {/* Nome do Fornecedor */}
                 <Grid item xs={12}>
                   <Typography variant="h6">Fornecedor</Typography>
-                  <Typography>Nome: {purchase?.supplier.name || "-"}</Typography>
+                  <Typography>
+                    <strong>Nome:</strong> {purchase?.supplier.name || "-"}
+                  </Typography>
+                  <Typography>
+                    <strong>CPF/CNPJ:</strong> {purchase?.supplier.cpfCnpj || "-"}
+                  </Typography>
                 </Grid>
 
                 {/* Descrição */}
                 <Grid item xs={12}>
                   <Typography variant="body1">
-                    Descrição: {purchase?.description || "-"}
+                    <strong>Descrição:</strong> {purchase?.description || "-"}
                   </Typography>
                 </Grid>
 
                 {/* Data da Compra */}
                 <Grid item xs={12}>
                   <Typography variant="body1">
-                    Data da Compra: {formatDate(purchase?.date_time)}
+                    <strong>Data da Compra:</strong> {formatDate(purchase?.date_time)}
                   </Typography>
                 </Grid>
 
                 {/* Desconto */}
                 <Grid item xs={12}>
                   <Typography variant="body1">
-                    Desconto: {formatPrice(purchase?.discount)}
+                    <strong>Desconto:</strong> {formatPrice(purchase?.discount)}
                   </Typography>
                 </Grid>
 
@@ -125,7 +142,7 @@ export default function PurchaseDetailsPage() {
                       {purchase?.products.map((product) => (
                         <TableRow key={product.productId}>
                           <TableCell>{product.product.name}</TableCell>
-                          <TableCell>{product.quantity}</TableCell>
+                          <TableCell>{formatNumber(product.quantity)}</TableCell>
                           <TableCell>{formatPrice(product.price)}</TableCell>
                           <TableCell>{formatPrice(product.quantity * product.price)}</TableCell>
                         </TableRow>

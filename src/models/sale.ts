@@ -1,8 +1,10 @@
+import { Person } from "./person";
 import type { Product } from "./product";
 
 export interface Sale {
     saleId: number;
     personId:number;
+    customer: Person;
     date_time: string;
     description: string;
     discount: number;

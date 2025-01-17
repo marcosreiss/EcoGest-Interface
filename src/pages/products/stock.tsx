@@ -84,7 +84,7 @@ export default function StockPage() {
                   <Typography variant="h6" sx={{ mb: 1 }}>
                     {item.name || "Produto Desconhecido"}
                   </Typography>
-                  <Typography variant="h5" color="primary" sx={{ fontWeight: "bold" }}>
+                  <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                     {formatWeight(item.totalWeight)}
                   </Typography>
                 </CardContent>

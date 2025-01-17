@@ -82,6 +82,17 @@ export default function SaleDetailsPage() {
             </Typography>
             <Box sx={formStyle}>
               <Grid container spacing={2}>
+                {/* Nome e CPF/CNPJ do Cliente */}
+                <Grid item xs={12}>
+                  <Typography variant="h6">Cliente</Typography>
+                  <Typography>
+                    <strong>Nome:</strong> {sale?.customer?.name || "-"}
+                  </Typography>
+                  <Typography>
+                    <strong>CPF/CNPJ:</strong> {sale?.customer?.cpfCnpj || "-"}
+                  </Typography>
+                </Grid>
+
                 {/* Descrição */}
                 <Grid item xs={12}>
                   <Typography variant="body1">
