@@ -76,13 +76,28 @@ export default function CreatePurchasePage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = e.target.files?.[0];
-    if (uploadedFile && uploadedFile.size <= 5 * 1024 * 1024) {
-      // Limite de 5MB
-      setFile(uploadedFile);
-    } else {
-      addNotification("Arquivo excede o limite de 5MB", "error");
+  
+    if (!uploadedFile) {
+      return;
     }
+  
+    // Verifica o tipo do arquivo
+    const allowedExtensions = ["application/pdf", "image/jpeg", "image/png"];
+    if (!allowedExtensions.includes(uploadedFile.type)) {
+      addNotification("Formato de arquivo inválido. Apenas .pdf, .jpg e .png são permitidos.", "error");
+      return;
+    }
+  
+    // Verifica o tamanho do arquivo
+    if (uploadedFile.size > 5 * 1024 * 1024) {
+      addNotification("Arquivo excede o limite de 5MB.", "error");
+      return;
+    }
+  
+    // Se todas as condições forem atendidas
+    setFile(uploadedFile);
   };
+  
 
   const handleAddProduct = (data: PurchasePayloadProduct) => {
     setProductsList([

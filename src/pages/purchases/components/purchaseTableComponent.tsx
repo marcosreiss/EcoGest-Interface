@@ -79,12 +79,50 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
     handleCloseMenu();
   };
 
-  const handleViewDocumentClick = (paymentSlip: { data: number[] } | null) => {
-    if (paymentSlip) {
-      const blob = new Blob([new Uint8Array(paymentSlip.data)], { type: "application/pdf" });
-      const url = URL.createObjectURL(blob);
-      window.open(url, "_blank");
+  const handleViewDocumentClick = async (paymentSlip: { data: number[] } | null) => {
+    if (!paymentSlip) {
+      notification.addNotification("Nenhum documento disponível.", "error");
+      return;
     }
+  
+    const blob = new Blob([new Uint8Array(paymentSlip.data)]);
+    const fileReader = new FileReader();
+  
+    fileReader.onload = (event) => {
+      const arrayBuffer = event.target?.result as ArrayBuffer;
+      const uintArray = new Uint8Array(arrayBuffer);
+  
+      // Extrai os primeiros bytes para verificação do tipo
+      const header = uintArray.slice(0, 4);
+  
+      // Converte os primeiros bytes para uma string legível
+      const headerHex = Array.from(header).map((byte) => byte.toString(16).padStart(2, "0")).join(" ");
+  
+      if (headerHex.startsWith("25 50 44 46")) {
+        // PDF (%PDF)
+        const pdfBlob = new Blob([uintArray], { type: "application/pdf" });
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        window.open(pdfUrl, "_blank");
+      } else if (headerHex.startsWith("ff d8 ff")) {
+        // JPEG (FFD8FF)
+        const jpegBlob = new Blob([uintArray], { type: "image/jpeg" });
+        const jpegUrl = URL.createObjectURL(jpegBlob);
+        window.open(jpegUrl, "_blank");
+      } else if (headerHex.startsWith("89 50 4e 47")) {
+        // PNG (\x89PNG)
+        const pngBlob = new Blob([uintArray], { type: "image/png" });
+        const pngUrl = URL.createObjectURL(pngBlob);
+        window.open(pngUrl, "_blank");
+      } else {
+        notification.addNotification("Formato de arquivo não suportado.", "error");
+      }
+    };
+  
+    fileReader.onerror = () => {
+      notification.addNotification("Erro ao ler o arquivo.", "error");
+    };
+  
+    fileReader.readAsArrayBuffer(blob);
   };
 
   const handleDeleteClick = (purchaseId: number) => {
