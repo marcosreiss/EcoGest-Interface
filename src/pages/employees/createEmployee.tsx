@@ -278,7 +278,6 @@ export default function CreateEmployee() {
                   <Controller
                     name="cep"
                     control={control}
-                    rules={{ required: "Preencha o CEP" }}
                     render={({ field }) => (
                       <InputMask
                         mask="99999-999"
@@ -306,7 +305,7 @@ export default function CreateEmployee() {
                     fullWidth
                     label="Cidade"
                     placeholder="São Paulo"
-                    {...register("cidade", { required: "Preencha a cidade" })}
+                    {...register("cidade")}
                     error={!!errors.cidade}
                     helperText={errors.cidade?.message}
                   />
@@ -317,7 +316,7 @@ export default function CreateEmployee() {
                     fullWidth
                     label="Bairro"
                     placeholder="Centro"
-                    {...register("bairro", { required: "Preencha o bairro" })}
+                    {...register("bairro")}
                     error={!!errors.bairro}
                     helperText={errors.bairro?.message}
                   />
@@ -329,7 +328,7 @@ export default function CreateEmployee() {
                     fullWidth
                     label="UF"
                     placeholder="SP"
-                    {...register("uf", { required: "Preencha a UF" })}
+                    {...register("uf")}
                     error={!!errors.uf}
                     helperText={errors.uf?.message}
                   />
@@ -341,7 +340,7 @@ export default function CreateEmployee() {
                     fullWidth
                     label="Endereço"
                     placeholder="Rua dos Anzois"
-                    {...register("endereco", { required: "Preencha o endereço" })}
+                    {...register("endereco")}
                     error={!!errors.endereco}
                     helperText={errors.endereco?.message}
                   />
@@ -354,7 +353,7 @@ export default function CreateEmployee() {
                     label="Número"
                     type="number"
                     placeholder="123"
-                    {...register("numero", { required: "Preencha o número", valueAsNumber: true })}
+                    {...register("numero", { valueAsNumber: true })}
                     error={!!errors.numero}
                     helperText={errors.numero?.message}
                   />
