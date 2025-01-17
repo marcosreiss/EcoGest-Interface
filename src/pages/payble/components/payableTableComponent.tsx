@@ -73,7 +73,7 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
   const handleConfirmStatusChange = () => {
     if (selectedItem !== null) {
       updatePaybleStatus.mutate(
-        { id: selectedItem, paybleStatus: "approved" },
+        { id: selectedItem },
         {
           onSuccess: () => {
             notification.addNotification("Baixa realizada com sucesso!", "success");

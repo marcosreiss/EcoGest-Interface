@@ -15,11 +15,9 @@ export const getPaybleByIdService = async (id: number): Promise<Payble> => {
 
 export const updatePaybleStatusService = async (
   paybleId: number,
-  paybleStatus: 'approved' | 'canceled'
 ): Promise<number> => {
-  console.log(paybleId, " status: ", paybleStatus);
   
-  const response = await api.put(`/payables/status?id=${paybleId}`, { paybleStatus });
+  const response = await api.put(`/payables/status?id=${paybleId}`);
   return response.status;
 };
 

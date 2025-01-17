@@ -32,8 +32,8 @@ export const useGetPaybleById = (id: number) =>
 export const useUpdatePaybleStatus = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<number, AxiosError, { id: number; paybleStatus: 'approved' | 'canceled' }>({
-    mutationFn: ({ id, paybleStatus }) => updatePaybleStatusService(id, paybleStatus),
+  return useMutation<number, AxiosError, { id: number}>({
+    mutationFn: ({ id }) => updatePaybleStatusService(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['paybles-list'] });
     },
