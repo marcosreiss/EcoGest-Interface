@@ -17,7 +17,7 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
-import { useDeleteRecive } from "src/hooks/useReceive";
+import { useDeleteRecive, useUpdateReceiveStatus } from "src/hooks/useReceive";
 
 import { useNotification } from "src/context/NotificationContext";
 
@@ -39,12 +39,15 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+
 
   const [selectedReciveIds, setSelectedReciveIds] = useState<number[]>([]);
 
   const navigate = useRouter();
   const deleteRecive = useDeleteRecive();
   const notification = useNotification();
+  const updateReceiveStatus = useUpdateReceiveStatus();
 
   // Função para formatar o valor em R$ (Real)
   const formatPrice = (value?: number) => {
@@ -129,7 +132,26 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
       );
     }
   };
-  
+
+  // Função para confirmar a alteração de status
+  const handleConfirmStatusChange = () => {
+    if (selectedItem !== null) {
+      updateReceiveStatus.mutate(
+        { id: selectedItem },
+        {
+          onSuccess: () => {
+            notification.addNotification("Baixa realizada com sucesso!", "success");
+            setStatusModalOpen(false);
+            // Opcional: atualizar a lista de paybles após a alteração
+          },
+          onError: () => {
+            notification.addNotification("Erro ao realizar a baixa", "error");
+          },
+        }
+      );
+    }
+  };
+
   return (
     <>
       <Table stickyHeader aria-label="recives table">
@@ -200,6 +222,9 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                     >
                       Detalhes
                     </MenuItem>
+                    {recive.status !== "Pago" && (
+                      <MenuItem onClick={() => setStatusModalOpen(true)}>Dar Baixa</MenuItem>
+                    )}
                     <MenuItem
                       onClick={() => handleDeleteClick(recive.receiveId)}
                     >
@@ -225,6 +250,16 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
           )}
         </TableBody>
       </Table>
+
+      {/* Modal de Confirmação para Dar Baixa */}
+      <ConfirmationDialog
+        open={statusModalOpen}
+        confirmButtonText="Confirmar"
+        description="Tem certeza que deseja dar baixa neste pagável?"
+        onClose={() => setStatusModalOpen(false)}
+        onConfirm={handleConfirmStatusChange}
+        title="Dar Baixa"
+      />
 
       <ConfirmationDialog
         open={deleteModalOpen}

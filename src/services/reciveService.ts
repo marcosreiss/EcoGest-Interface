@@ -21,10 +21,9 @@ export const deleteReciveService = async (id: number): Promise<void> => {
 
 export const updateReceiveStatusService = async (
   paybleId: number,
-  paybleStatus: 'approved' | 'canceled'
 ): Promise<number> => {
-  console.log(paybleId, " status: ", paybleStatus);
+  console.log(paybleId, " status: ");
   
-  const response = await api.put(`/receives/status?id=${paybleId}`, { paybleStatus });
+  const response = await api.put(`/receives/status?id=${paybleId}`);
   return response.status;
 };

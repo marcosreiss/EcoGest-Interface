@@ -49,8 +49,8 @@ export const useDeleteRecive = () => {
 export const useUpdateReceiveStatus = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<number, AxiosError, { id: number; paybleStatus: 'approved' | 'canceled' }>({
-    mutationFn: ({ id, paybleStatus }) => updateReceiveStatusService(id, paybleStatus),
+  return useMutation<number, AxiosError, { id: number }>({
+    mutationFn: ({ id }) => updateReceiveStatusService(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recives-list'] });
     },
