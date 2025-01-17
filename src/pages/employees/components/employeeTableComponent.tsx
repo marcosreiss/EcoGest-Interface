@@ -17,6 +17,8 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
+import { useDeleteEmployee } from "src/hooks/useEmployee";
+
 import { useNotification } from "src/context/NotificationContext";
 
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
@@ -39,6 +41,7 @@ const EmployeeTableComponent: React.FC<EmployeeTableComponentProps> = ({
   // const [advancePaymentModalOpen, setAdvancePaymentModalOpen] = useState(false);
 
   const navigate = useRouter();
+  const deleteEmployee = useDeleteEmployee();
   const notification = useNotification();
   // const advancePayment = useAdvancePayment();
 
@@ -69,7 +72,18 @@ const EmployeeTableComponent: React.FC<EmployeeTableComponentProps> = ({
 
   const handleDeleteEmployee = (employeeId: number) => {
     handleCloseMenu();
-    notification.addNotification('Funcionário deletado com sucesso', 'success');
+    deleteEmployee.mutate(employeeId, {
+      onSuccess: () => {
+        notification.addNotification("Funcionário deletada com sucesso", "success");
+        setDeleteModalOpen(false);
+      },
+      onError: () => {
+        notification.addNotification(
+          "Erro ao deletar funcionário, tente novamente mais tarde",
+          "error"
+        );
+      },
+    });
     setDeleteModalOpen(false);
   };
 
