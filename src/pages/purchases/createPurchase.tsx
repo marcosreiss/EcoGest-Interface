@@ -3,8 +3,8 @@ import type { SupplierBasicInfo } from "src/models/supplier";
 import type { PurchasePayload, PurchasePayloadProduct } from "src/models/purchase";
 
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
+import { useForm, Controller } from "react-hook-form";
 
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -64,11 +64,12 @@ export default function CreatePurchasePage() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
 
-  const [modalProduct, setModalProduct] = useState<PurchasePayloadProduct>({
-    productId: 0,
-    quantity: 0,
-    price: 0,
-  });
+  const {
+    control,
+    handleSubmit: handleModalSubmit,
+    reset,
+    formState: { errors: modalErrors },
+  } = useForm<PurchasePayloadProduct>();
 
   const createPurchase = useCreatePurchase();
   const { addNotification } = useNotification();
@@ -83,9 +84,16 @@ export default function CreatePurchasePage() {
     }
   };
 
-  const handleAddProduct = () => {
-    setProductsList([...productsList, modalProduct]);
-    setModalProduct({ productId: 0, quantity: 0, price: 0 });
+  const handleAddProduct = (data: PurchasePayloadProduct) => {
+    setProductsList([
+      ...productsList,
+      {
+        productId: data.productId,
+        quantity: Number(data.quantity),
+        price: Number(data.price),
+      },
+    ]);
+    reset();
     setModalOpen(false);
   };
 
@@ -139,7 +147,7 @@ export default function CreatePurchasePage() {
                     loading={loadingSuppliers}
                     getOptionLabel={(option: SupplierBasicInfo) => option.name}
                     isOptionEqualToValue={(option, value) =>
-                      option.personId === value.personId
+                      option.personId === value?.personId
                     }
                     onChange={(_, newValue) =>
                       setValue("personId", newValue ? newValue.personId : -1, {
@@ -206,7 +214,7 @@ export default function CreatePurchasePage() {
                     Adicionar Produto
                   </Button>
                   {productsList.length > 0 && (
-                    <Table size="small" sx={{marginTop: 3, marginBottom: 3}}>
+                    <Table size="small" sx={{ marginTop: 3, marginBottom: 3 }}>
                       <TableHead>
                         <TableRow>
                           <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Produto</TableCell>
@@ -287,49 +295,91 @@ export default function CreatePurchasePage() {
       {/* Modal para adicionar produto */}
       <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
         <DialogTitle>Adicionar Produto</DialogTitle>
-        <DialogContent>
-          <Autocomplete
-              sx={{margin: "10px 0"}}
-            options={products?.data || []}
-            loading={loadingProducts}
-            getOptionLabel={(option: ProductBasicInfo) => option.name}
-            isOptionEqualToValue={(option, value) => option.productId === value.productId}
-            onChange={(_, newValue) =>
-              setModalProduct((prev) => ({
-                ...prev,
-                productId: newValue ? newValue.productId : 0,
-              }))
-            }
-            renderInput={(params) => <TextField {...params} label="Produto" />}
-          />
-          <TextField
-              sx={{margin: "10px 0"}}
-            fullWidth
-            label="Quantidade"
-            type="number"
-            value={modalProduct.quantity}
-            onChange={(e) =>
-              setModalProduct({ ...modalProduct, quantity: +e.target.value })
-            }
-          />
-          <TextField
-              sx={{margin: "10px 0"}}
-            fullWidth
-            label="Preço"
-            type="number"
-            value={modalProduct.price}
-            onChange={(e) =>
-              setModalProduct({ ...modalProduct, price: +e.target.value })
-            }
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setModalOpen(false)}>Cancelar</Button>
-          <Button onClick={handleAddProduct} variant="contained">
-            Adicionar
-          </Button>
-        </DialogActions>
+        <form onSubmit={handleModalSubmit(handleAddProduct)}>
+          <DialogContent>
+            <Controller
+              name="productId"
+              control={control}
+              rules={{ required: "Produto é obrigatório." }}
+              defaultValue={undefined}
+              render={({ field }) => (
+                <Autocomplete
+                  options={products?.data || []}
+                  loading={loadingProducts}
+                  getOptionLabel={(option: ProductBasicInfo) => option.name}
+                  isOptionEqualToValue={(option, value) => option.productId === value.productId}
+                  value={
+                    products?.data.find((product) => product.productId === field.value) || null
+                  }
+                  onChange={(_, newValue) => {
+                    field.onChange(newValue ? newValue.productId : null);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Produto"
+                      placeholder="Selecione o produto"
+                      variant="outlined"
+                      error={!!modalErrors.productId}
+                      helperText={modalErrors.productId?.message}
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {loadingProducts ? <CircularProgress color="inherit" size={20} /> : null}
+                            {params.InputProps.endAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+              )}
+            />
+            <Controller
+              name="quantity"
+              control={control}
+              rules={{ required: "Quantidade é obrigatória." }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label="Quantidade"
+                  type="number"
+                  variant="outlined"
+                  error={!!modalErrors.quantity}
+                  helperText={modalErrors.quantity?.message}
+                  sx={{ margin: "10px 0" }}
+                />
+              )}
+            />
+            <Controller
+              name="price"
+              control={control}
+              rules={{ required: "Preço é obrigatório." }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label="Preço"
+                  type="number"
+                  variant="outlined"
+                  error={!!modalErrors.price}
+                  helperText={modalErrors.price?.message}
+                  sx={{ margin: "10px 0" }}
+                />
+              )}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setModalOpen(false)}>Cancelar</Button>
+            <Button type="submit" variant="contained">
+              Adicionar
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
+
 
       {/* Dialog de confirmação para remover produto */}
       <Dialog

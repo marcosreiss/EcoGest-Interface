@@ -1,13 +1,13 @@
 import type { PersonBasicInfo } from "src/models/person";
+import type { ProductBasicInfo } from "src/models/product";
 import type { SalePayload, SaleProductPayload } from "src/models/sale";
 
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
+import { useForm, Controller } from "react-hook-form";
 
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Autocomplete from "@mui/material/Autocomplete";
 import {
   Box,
   Grid,
@@ -16,14 +16,15 @@ import {
   Dialog,
   TableRow,
   TextField,
-  TableHead,
-  TableCell,
   TableBody,
+  TableCell,
+  TableHead,
   Typography,
   IconButton,
   DialogTitle,
-  DialogContent,
+  Autocomplete,
   DialogActions,
+  DialogContent,
   CircularProgress,
 } from "@mui/material";
 
@@ -33,7 +34,6 @@ import { useCreateSale } from "src/hooks/useSales";
 import { useGetProductsBasicInfo } from "src/hooks/useProduct";
 import { useGetCustomersBasicInfo } from "src/hooks/useCustomer";
 
-import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
 
@@ -46,32 +46,42 @@ export default function CreateSalePage() {
     bgcolor: "background.paper",
   };
 
+  const router = useRouter();
+  const { addNotification } = useNotification();
+
   const {
     register,
     handleSubmit,
-    setValue,
+    control,
     formState: { errors },
   } = useForm<SalePayload>();
 
-  const createSale = useCreateSale();
   const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
   const { data: customers, isLoading: loadingCustomers } = useGetCustomersBasicInfo();
 
   const [productsList, setProductsList] = useState<SaleProductPayload[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalProduct, setModalProduct] = useState<SaleProductPayload>({
-    productId: 0,
-    quantity: 0,
-  });
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
 
-  const router = useRouter();
-  const { addNotification } = useNotification();
+  const {
+    control: modalControl,
+    handleSubmit: handleModalSubmit,
+    reset: resetModal,
+    formState: { errors: modalErrors },
+  } = useForm<SaleProductPayload>();
 
-  const handleAddProduct = () => {
-    setProductsList([...productsList, modalProduct]);
-    setModalProduct({ productId: 0, quantity: 0 });
+  const createSale = useCreateSale();
+
+  const handleAddProduct = (data: SaleProductPayload) => {
+    setProductsList([
+      ...productsList,
+      {
+        productId: data.productId,
+        quantity: Number(data.quantity),
+      },
+    ]);
+    resetModal();
     setModalOpen(false);
   };
 
@@ -87,6 +97,7 @@ export default function CreateSalePage() {
     const payload: SalePayload = {
       ...data,
       products: productsList,
+      date_time: data.date_time,
     };
 
     createSale.mutate(payload, {
@@ -94,7 +105,7 @@ export default function CreateSalePage() {
         addNotification("Venda criada com sucesso!", "success");
         router.push("/sales");
       },
-      onError: (error) => {
+      onError: (error: any) => {
         addNotification(`Erro ao criar venda: ${error.message}`, "error");
       },
     });
@@ -103,7 +114,7 @@ export default function CreateSalePage() {
   return (
     <>
       <Helmet>
-        <title>{`Criar Venda - ${CONFIG.appName}`}</title>
+        <title>Criar Venda</title>
       </Helmet>
 
       <DashboardContent maxWidth="lg">
@@ -119,25 +130,40 @@ export default function CreateSalePage() {
 
                 {/* Cliente */}
                 <Grid item xs={12}>
-                  <Autocomplete
-                    options={customers?.data || []}
-                    loading={loadingCustomers}
-                    getOptionLabel={(option: PersonBasicInfo) => option.name || ""}
-                    isOptionEqualToValue={(option, value) =>
-                      option.personId === value.personId
-                    }
-                    onChange={(_, newValue) =>
-                      setValue("personId", newValue ? newValue.personId : 0, {
-                        shouldValidate: true,
-                      })
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Cliente"
-                        variant="outlined"
-                        error={!!errors.personId}
-                        helperText={errors.personId?.message}
+                  <Controller
+                    name="personId"
+                    control={control}
+                    rules={{ required: "Cliente é obrigatório." }}
+                    render={({ field }) => (
+                      <Autocomplete
+                        options={customers?.data || []}
+                        loading={loadingCustomers}
+                        getOptionLabel={(option: PersonBasicInfo) => option.name || ""}
+                        isOptionEqualToValue={(option, value) => option.personId === value.personId}
+                        value={
+                          customers?.data.find((customer) => customer.personId === field.value) || null
+                        }
+                        onChange={(_, newValue) => {
+                          field.onChange(newValue ? newValue.personId : null);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Cliente"
+                            variant="outlined"
+                            error={!!errors.personId}
+                            helperText={errors.personId?.message}
+                            InputProps={{
+                              ...params.InputProps,
+                              endAdornment: (
+                                <>
+                                  {loadingCustomers ? <CircularProgress color="inherit" size={20} /> : null}
+                                  {params.InputProps.endAdornment}
+                                </>
+                              ),
+                            }}
+                          />
+                        )}
                       />
                     )}
                   />
@@ -145,16 +171,21 @@ export default function CreateSalePage() {
 
                 {/* Data da Venda */}
                 <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Data da Venda"
-                    type="date"
-                    InputLabelProps={{ shrink: true }}
-                    {...register("date_time", {
-                      required: "Selecione uma data de venda.",
-                    })}
-                    error={!!errors.date_time}
-                    helperText={errors.date_time?.message}
+                  <Controller
+                    name="date_time"
+                    control={control}
+                    rules={{ required: "Data da venda é obrigatória." }}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label="Data da Venda"
+                        type="date"
+                        InputLabelProps={{ shrink: true }}
+                        error={!!errors.date_time}
+                        helperText={errors.date_time?.message}
+                      />
+                    )}
                   />
                 </Grid>
 
@@ -183,23 +214,22 @@ export default function CreateSalePage() {
                     <Table size="small" sx={{ marginTop: 3, marginBottom: 3 }}>
                       <TableHead>
                         <TableRow>
-                          <TableCell>Produto</TableCell>
-                          <TableCell>Quantidade</TableCell>
-                          <TableCell>Ações</TableCell>
+                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Produto</TableCell>
+                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Quantidade</TableCell>
+                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Ações</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {productsList.map((product, index) => (
                           <TableRow key={index}>
-                            <TableCell>
-                              {
-                                products?.data.find(
-                                  (p) => p.productId === product.productId
-                                )?.name || "Produto não encontrado"
-                              }
+                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                              {products?.data.find((p) => p.productId === product.productId)?.name ||
+                                "Produto não encontrado"}
                             </TableCell>
-                            <TableCell>{product.quantity}</TableCell>
-                            <TableCell>
+                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                              {product.quantity}
+                            </TableCell>
+                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
                               <IconButton
                                 color="error"
                                 onClick={() => {
@@ -241,48 +271,75 @@ export default function CreateSalePage() {
         {/* Modal para adicionar produto */}
         <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
           <DialogTitle>Adicionar Produto</DialogTitle>
-          <DialogContent>
-            <Autocomplete
-              sx={{ margin: "10px 0" }}
-              options={products?.data || []}
-              loading={loadingProducts}
-              getOptionLabel={(option) => option.name || ""}
-              isOptionEqualToValue={(option, value) =>
-                option.productId === value.productId
-              }
-              onChange={(_, newValue) =>
-                setModalProduct((prev) => ({
-                  ...prev,
-                  productId: newValue ? newValue.productId : 0,
-                }))
-              }
-              renderInput={(params) => (
-                <TextField {...params} label="Produto" />
-              )}
-            />
-            <TextField
-              sx={{ margin: "10px 0" }}
-              fullWidth
-              label="Quantidade"
-              type="number"
-              value={modalProduct.quantity}
-              onChange={(e) =>
-                setModalProduct({
-                  ...modalProduct,
-                  quantity: +e.target.value,
-                })
-              }
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setModalOpen(false)}>Cancelar</Button>
-            <Button onClick={handleAddProduct} variant="contained">
-              Adicionar
-            </Button>
-          </DialogActions>
+          <form onSubmit={handleModalSubmit(handleAddProduct)}>
+            <DialogContent>
+              <Controller
+                name="productId"
+                control={modalControl}
+                rules={{ required: "Produto é obrigatório." }}
+                defaultValue={undefined}
+                render={({ field }) => (
+                  <Autocomplete
+                    options={products?.data || []}
+                    loading={loadingProducts}
+                    getOptionLabel={(option: ProductBasicInfo) => option.name}
+                    isOptionEqualToValue={(option, value) => option.productId === value.productId}
+                    value={
+                      products?.data.find((product) => product.productId === field.value) || null
+                    }
+                    onChange={(_, newValue) => {
+                      field.onChange(newValue ? newValue.productId : null);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Produto"
+                        placeholder="Selecione o produto"
+                        variant="outlined"
+                        error={!!modalErrors.productId}
+                        helperText={modalErrors.productId?.message}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {loadingProducts ? <CircularProgress color="inherit" size={20} /> : null}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                )}
+              />
+              <Controller
+                name="quantity"
+                control={modalControl}
+                rules={{ required: "Quantidade é obrigatória." }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Quantidade"
+                    type="number"
+                    variant="outlined"
+                    error={!!modalErrors.quantity}
+                    helperText={modalErrors.quantity?.message}
+                    sx={{ margin: "10px 0" }}
+                  />
+                )}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setModalOpen(false)}>Cancelar</Button>
+              <Button type="submit" variant="contained">
+                Adicionar
+              </Button>
+            </DialogActions>
+          </form>
         </Dialog>
 
-        {/* Confirm Dialog para Deletar Produto */}
+        {/* Dialog de confirmação para remover produto */}
         <Dialog
           open={confirmDialogOpen}
           onClose={() => setConfirmDialogOpen(false)}
@@ -293,7 +350,11 @@ export default function CreateSalePage() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setConfirmDialogOpen(false)}>Cancelar</Button>
-            <Button onClick={handleRemoveProduct} variant="contained" color="error">
+            <Button
+              onClick={handleRemoveProduct}
+              variant="contained"
+              color="error"
+            >
               Remover
             </Button>
           </DialogActions>

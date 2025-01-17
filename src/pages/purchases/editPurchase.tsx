@@ -2,10 +2,10 @@ import type { ProductBasicInfo } from "src/models/product";
 import type { SupplierBasicInfo } from "src/models/supplier";
 import type { PurchasePayload, PurchasePayloadProduct } from "src/models/purchase";
 
-import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
 
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -67,48 +67,55 @@ export default function EditPurchasePage() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
 
-  const [modalProduct, setModalProduct] = useState<PurchasePayloadProduct>({
-    productId: 0,
-    quantity: 0,
-    price: 0,
-  });
+  const {
+    control: modalControl,
+    handleSubmit: handleModalSubmit,
+    reset: resetModal,
+    formState: { errors: modalErrors },
+  } = useForm<PurchasePayloadProduct>();
 
   const updatePurchase = useUpdatePurchase();
   const { addNotification } = useNotification();
 
   useEffect(() => {
     if (purchase) {
-      // Configura os valores do formulário
+      // Set form values
       setValue("personId", purchase.supplier.personId);
       setValue("description", purchase.description);
       setValue("date_time", purchase.date_time ? purchase.date_time.split("T")[0] : "");
       setValue("discount", purchase.discount);
-  
-      // Cria a lista de produtos no formato esperado
+
+      // Set products list
       const list: PurchasePayloadProduct[] = purchase.products.map((product) => ({
-        price: product.price,
         productId: product.product.productId,
         quantity: product.quantity,
+        price: product.price,
       }));
-  
-      setProductsList(list); // Atualiza a lista de produtos com a lista criada
+
+      setProductsList(list);
     }
   }, [purchase, setValue]);
-  
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = e.target.files?.[0];
     if (uploadedFile && uploadedFile.size <= 5 * 1024 * 1024) {
-      // Limite de 5MB
+      // Limit of 5MB
       setFile(uploadedFile);
     } else {
       addNotification("Arquivo excede o limite de 5MB", "error");
     }
   };
 
-  const handleAddProduct = () => {
-    setProductsList([...productsList, modalProduct]);
-    setModalProduct({ productId: 0, quantity: 0, price: 0 });
+  const handleAddProduct = (data: PurchasePayloadProduct) => {
+    setProductsList([
+      ...productsList,
+      {
+        productId: data.productId,
+        quantity: Number(data.quantity),
+        price: Number(data.price),
+      },
+    ]);
+    resetModal();
     setModalOpen(false);
   };
 
@@ -143,8 +150,15 @@ export default function EditPurchasePage() {
   };
 
   if (loadingPurchase) {
-    return <CircularProgress />;
+    return (
+      <DashboardContent maxWidth="lg">
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
+          <CircularProgress />
+        </Box>
+      </DashboardContent>
+    );
   }
+  console.log(purchase);
   
   return (
     <>
@@ -168,12 +182,10 @@ export default function EditPurchasePage() {
                     options={suppliers?.data || []}
                     loading={loadingSuppliers}
                     getOptionLabel={(option: SupplierBasicInfo) => option.name}
-                    isOptionEqualToValue={(option, value) =>
-                      option.personId === value.personId
+                    isOptionEqualToValue={(option, value) => option.personId === value.personId}
+                    value={
+                      suppliers?.data.find((supplier) => supplier.personId === purchase?.supplier.personId) || null
                     }
-                    defaultValue={suppliers?.data?.find(
-                      (supplier) => supplier.personId === purchase?.supplier.personId
-                    )}
                     onChange={(_, newValue) =>
                       setValue("personId", newValue ? newValue.personId : -1, {
                         shouldValidate: true,
@@ -249,35 +261,32 @@ export default function EditPurchasePage() {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {productsList.map((product, index) => {
-                          const productPrice = parseFloat(product.price as any) || 0; // Força o valor a ser numérico
-                          return (
-                            <TableRow key={index}>
-                              <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
-                                {products?.data.find((p) => p.productId === product.productId)?.name ||
-                                  "Produto não encontrado"}
-                              </TableCell>
-                              <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
-                                {product.quantity}
-                              </TableCell>
-                              <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
-                                R$ {productPrice.toFixed(2)}
-                              </TableCell>
-                              <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
-                                <IconButton
-                                  color="error"
-                                  onClick={() => {
-                                    setSelectedProductIndex(index);
-                                    setConfirmDialogOpen(true);
-                                  }}
-                                  size="small"
-                                >
-                                  <DeleteIcon fontSize="small" />
-                                </IconButton>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
+                        {productsList.map((product, index) => (
+                          <TableRow key={index}>
+                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                              {products?.data.find((p) => p.productId === product.productId)?.name ||
+                                "Produto não encontrado"}
+                            </TableCell>
+                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                              {product.quantity}
+                            </TableCell>
+                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                              R$ {product.price}
+                            </TableCell>
+                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                              <IconButton
+                                color="error"
+                                onClick={() => {
+                                  setSelectedProductIndex(index);
+                                  setConfirmDialogOpen(true);
+                                }}
+                                size="small"
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                       </TableBody>
                     </Table>
                   )}
@@ -323,45 +332,86 @@ export default function EditPurchasePage() {
       {/* Modal para adicionar produto */}
       <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
         <DialogTitle>Adicionar Produto</DialogTitle>
-        <DialogContent>
-          <Autocomplete
-            options={products?.data || []}
-            loading={loadingProducts}
-            getOptionLabel={(option: ProductBasicInfo) => option.name}
-            isOptionEqualToValue={(option, value) => option.productId === value.productId}
-            onChange={(_, newValue) =>
-              setModalProduct((prev) => ({
-                ...prev,
-                productId: newValue ? newValue.productId : 0,
-              }))
-            }
-            renderInput={(params) => <TextField {...params} label="Produto" />}
-          />
-          <TextField
-            fullWidth
-            label="Quantidade"
-            type="number"
-            value={modalProduct.quantity}
-            onChange={(e) =>
-              setModalProduct({ ...modalProduct, quantity: +e.target.value })
-            }
-          />
-          <TextField
-            fullWidth
-            label="Preço"
-            type="number"
-            value={modalProduct.price}
-            onChange={(e) =>
-              setModalProduct({ ...modalProduct, price: +e.target.value })
-            }
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setModalOpen(false)}>Cancelar</Button>
-          <Button onClick={handleAddProduct} variant="contained">
-            Adicionar
-          </Button>
-        </DialogActions>
+        <form onSubmit={handleModalSubmit(handleAddProduct)}>
+          <DialogContent>
+            <Controller
+              name="productId"
+              control={modalControl}
+              rules={{ required: "Produto é obrigatório." }}
+              defaultValue={undefined}
+              render={({ field }) => (
+                <Autocomplete
+                  options={products?.data || []}
+                  loading={loadingProducts}
+                  getOptionLabel={(option: ProductBasicInfo) => option.name}
+                  isOptionEqualToValue={(option, value) => option.productId === value.productId}
+                  onChange={(_, newValue) => {
+                    field.onChange(newValue ? newValue.productId : null);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Produto"
+                      placeholder="Selecione o produto"
+                      variant="outlined"
+                      error={!!modalErrors.productId}
+                      helperText={modalErrors.productId?.message}
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {loadingProducts ? <CircularProgress color="inherit" size={20} /> : null}
+                            {params.InputProps.endAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+              )}
+            />
+            <Controller
+              name="quantity"
+              control={modalControl}
+              rules={{ required: "Quantidade é obrigatória." }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label="Quantidade"
+                  type="number"
+                  variant="outlined"
+                  error={!!modalErrors.quantity}
+                  helperText={modalErrors.quantity?.message}
+                  sx={{ margin: "10px 0" }}
+                />
+              )}
+            />
+            <Controller
+              name="price"
+              control={modalControl}
+              rules={{ required: "Preço é obrigatório." }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label="Preço"
+                  type="number"
+                  variant="outlined"
+                  error={!!modalErrors.price}
+                  helperText={modalErrors.price?.message}
+                  sx={{ margin: "10px 0" }}
+                />
+              )}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setModalOpen(false)}>Cancelar</Button>
+            <Button type="submit" variant="contained">
+              Adicionar
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
 
       {/* Dialog de confirmação para remover produto */}

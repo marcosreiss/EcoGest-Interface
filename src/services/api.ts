@@ -14,8 +14,8 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  console.log(import.meta.env.VITE_BASE_URL);
-
+  
+  // console.log(import.meta.env.VITE_BASE_URL);
   // console.log("Request Body:", config.data);
   // console.log("Request Params:", config.params);
   // console.log("Token:", config.headers.Authorization);
