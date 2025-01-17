@@ -47,13 +47,18 @@ export const useCreatePerson = () => {
 /**
  * Hook para atualizar uma pessoa existente.
  */
-export const useUpdatePerson = () =>
-  useMutation<PersonResponse, AxiosError, { id: number; data: Person }>({
+export const useUpdatePerson = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<PersonResponse, AxiosError, { id: number; data: Person }>({
     mutationFn: ({ id, data }) => updatePersonService(data, id),
-    onMutate: (variables) => {
-      console.log("Atualizando pessoa com os dados:", variables);
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['persons-list']});
+      queryClient.invalidateQueries({ queryKey: ['person', variables.id]});
     },
   });
+};
+
 
 /**
  * Hook para deletar uma pessoa.
@@ -63,9 +68,6 @@ export const useDeletePerson = () => {
 
   return useMutation<void, AxiosError, number>({
     mutationFn: (id) => deletePersonService(id),
-    onMutate: (variables) => {
-      console.log("Deletando pessoa com ID:", variables);
-    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['persons-list'],

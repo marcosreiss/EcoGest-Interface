@@ -14,7 +14,7 @@ export default function StockPage() {
     return `${price.toLocaleString("pt-BR", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    })}`;
+    })} Tons`;
   };
 
   return (

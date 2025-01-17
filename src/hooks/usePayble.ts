@@ -51,9 +51,6 @@ export const useDeletePayble = () => {
 
   return useMutation<void, AxiosError, number>({
     mutationFn: (id) => deletePaybleService(id),
-    onMutate: (variables) => {
-      console.log("Deletando pagável com ID:", variables);
-    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["paybles-list"],

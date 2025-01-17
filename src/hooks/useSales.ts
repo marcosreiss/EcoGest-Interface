@@ -44,9 +44,6 @@ export const useUpdateSale = () => {
     const queryClient = useQueryClient();
     return useMutation<SaleResponse, AxiosError, { id: number; data: Partial<SalePayload> }>({
         mutationFn: ({ id, data }) => updateSaleService(data, id),
-        onMutate: (variables) => {
-            console.log("Atualizando venda com os dados:", variables);
-        },
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['sales-list'],
@@ -62,9 +59,6 @@ export const useDeleteSale = () => {
 
     return useMutation<void, AxiosError, number>({
         mutationFn: (id) => deleteSaleService(id),
-        onMutate: (variables) => {
-            console.log("Deletando venda com ID:", variables);
-        },
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['sales-list'],

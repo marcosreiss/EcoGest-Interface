@@ -39,9 +39,6 @@ export const useUpdateProduct = () =>
 
   return useMutation<ProductResponse, AxiosError, { id: number; data: Product }>({
     mutationFn: ({ id, data }) => updateProductService(data, id),
-    onMutate: (variables) => {
-      console.log("Atualizando produto com os dados:", variables);
-    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products-list'] });
     }
@@ -54,9 +51,6 @@ export const useDeleteProduct = () => {
 
   return useMutation<void, AxiosError, number>({
     mutationFn: (id) => deleteProductService(id),
-    onMutate: (variables) => {
-      console.log("Deletando produto com ID:", variables);
-    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['products-list'],

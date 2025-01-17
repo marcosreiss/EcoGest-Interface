@@ -17,7 +17,6 @@ export const getEntryPaginatedService = async (skip: number, take: number): Prom
 // Criar uma nova despesa
 export const createEntryService = async (payload: EntryPayload): Promise<EntryResponse> => {
     console.log(payload);
-    
     const response = await api.post<EntryResponse>("/entry", payload);
     return response.data;
 };

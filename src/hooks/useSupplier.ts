@@ -41,9 +41,6 @@ export const useCreateSupplier = () => {
 export const useUpdateSupplier = () =>
     useMutation<SupplierResponse, AxiosError, { id: number; data: Supplier }>({
         mutationFn: ({ id, data }) => updateSupplierService(data, id),
-        onMutate: (variables) => {
-            console.log("Atualizando fornecedor com os dados:", variables);
-        },
         onSuccess: () => {
             // Invalida a lista caso seja necessário atualizar a tabela de fornecedores
             // queryClient.invalidateQueries({ queryKey: ['suppliers-list'] });
