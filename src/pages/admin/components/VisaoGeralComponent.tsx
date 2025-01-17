@@ -63,7 +63,7 @@ export default function VisaoGeralComponent() {
             <Card sx={{ boxShadow: 3 }}>
               <CardContent>
                 <Typography variant="h6" gutterBottom>
-                  Saldo Total
+                  Saldo Total Projetado
                 </Typography>
                 <Typography variant="h5">
                   {formatPrice(saldoProjetado?.profit.profit)}
