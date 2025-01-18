@@ -1,6 +1,7 @@
 import type { Customer } from "src/models/customers";
 
 import { useForm, Controller } from "react-hook-form"; // Import Controller
+import InputMask from "react-input-mask";
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
@@ -14,12 +15,12 @@ import {
   Typography,
   FormControlLabel,
   CircularProgress,
-} from "@mui/material";
-
-import InputMask from "react-input-mask"; // Import InputMask
+} from "@mui/material"; // Import InputMask
 
 import { useRouter } from "src/routes/hooks";
+
 import { useUpdateCustomer, useGetCustomerById } from "src/hooks/useCustomer";
+
 import { CONFIG } from "src/config-global";
 import { PersonType } from "src/models/customers";
 import { DashboardContent } from "src/layouts/dashboard";

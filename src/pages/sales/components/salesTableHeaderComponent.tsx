@@ -24,7 +24,7 @@ interface HeaderComponentProps {
 }
 
 interface CustomSaleReceiptInfo {
-  recebemosDe: string;
+  destinatario: string;
   valor: number;
   descricao: string;
 }
@@ -101,7 +101,7 @@ const SaleTableHeaderComponent: React.FC<HeaderComponentProps> = ({
                 <TextField
                   label="Recebemos de"
                   fullWidth
-                  {...register("recebemosDe", { required: "Este campo é obrigatório" })}
+                  {...register("destinatario", { required: "Este campo é obrigatório" })}
                 />
               </Grid>
               <Grid item xs={12}>

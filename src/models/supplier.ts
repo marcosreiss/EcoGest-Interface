@@ -26,7 +26,7 @@ export interface CreateSupplierPayload{
 }
 
 export interface SupplierBasicInfo{
-    supplierId: number;
+    personId: number;
     name: string;
 }
 

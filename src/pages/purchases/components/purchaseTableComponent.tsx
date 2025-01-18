@@ -5,26 +5,20 @@ import {
   Table,
   Checkbox,
   MenuItem,
+  TableRow,
   TableHead,
   TableCell,
   TableBody,
   IconButton,
   LinearProgress,
-  Button,
-  Select,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TableRow,
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
 
-import { useDeletePurchase, useUpdatePurchaseStatus } from "src/hooks/usePurchase";
+import { useDeletePurchase } from "src/hooks/usePurchase";
 
+import { type Purchase,  } from "src/models/purchase";
 import { useNotification } from "src/context/NotificationContext";
-import { type Purchase, PurchaseStatus, purchaseStatusMapping } from "src/models/purchase";
 
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
 
@@ -43,12 +37,9 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [statusModalOpen, setStatusModalOpen] = useState(false);
-  const [newStatus, setNewStatus] = useState<PurchaseStatus>(PurchaseStatus.processing);
 
   const navigate = useRouter();
   const deletePurchase = useDeletePurchase();
-  const updatePurchaseStatus = useUpdatePurchaseStatus();
   const notification = useNotification();
 
   // Função para formatar o valor em R$ (Real)
@@ -78,33 +69,6 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
     setSelectedItem(null);
   };
 
-  const handleOpenStatusModal = () => {
-    setStatusModalOpen(true);
-    setAnchorEl(null);
-  };
-
-  const handleCloseStatusModal = () => {
-    setStatusModalOpen(false);
-    setSelectedItem(null);
-  };
-
-  const handleConfirmStatusChange = () => {
-    if (selectedItem !== null) {
-      updatePurchaseStatus.mutate(
-        { id: selectedItem, purchaseStatus: newStatus },
-        {
-          onSuccess: () => {
-            notification.addNotification("Status da compra atualizado com sucesso", "success");
-            setStatusModalOpen(false);
-          },
-          onError: () => {
-            notification.addNotification("Erro ao atualizar o status da compra", "error");
-          },
-        }
-      );
-    }
-  };
-
   const handleDetailsClick = (purchaseId: number) => {
     navigate.push(`details/${purchaseId}`);
     handleCloseMenu();
@@ -115,12 +79,50 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
     handleCloseMenu();
   };
 
-  const handleViewDocumentClick = (paymentSlip: { data: number[] } | null) => {
-    if (paymentSlip) {
-      const blob = new Blob([new Uint8Array(paymentSlip.data)], { type: "application/pdf" });
-      const url = URL.createObjectURL(blob);
-      window.open(url, "_blank");
+  const handleViewDocumentClick = async (paymentSlip: { data: number[] } | null) => {
+    if (!paymentSlip) {
+      notification.addNotification("Nenhum documento disponível.", "error");
+      return;
     }
+  
+    const blob = new Blob([new Uint8Array(paymentSlip.data)]);
+    const fileReader = new FileReader();
+  
+    fileReader.onload = (event) => {
+      const arrayBuffer = event.target?.result as ArrayBuffer;
+      const uintArray = new Uint8Array(arrayBuffer);
+  
+      // Extrai os primeiros bytes para verificação do tipo
+      const header = uintArray.slice(0, 4);
+  
+      // Converte os primeiros bytes para uma string legível
+      const headerHex = Array.from(header).map((byte) => byte.toString(16).padStart(2, "0")).join(" ");
+  
+      if (headerHex.startsWith("25 50 44 46")) {
+        // PDF (%PDF)
+        const pdfBlob = new Blob([uintArray], { type: "application/pdf" });
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        window.open(pdfUrl, "_blank");
+      } else if (headerHex.startsWith("ff d8 ff")) {
+        // JPEG (FFD8FF)
+        const jpegBlob = new Blob([uintArray], { type: "image/jpeg" });
+        const jpegUrl = URL.createObjectURL(jpegBlob);
+        window.open(jpegUrl, "_blank");
+      } else if (headerHex.startsWith("89 50 4e 47")) {
+        // PNG (\x89PNG)
+        const pngBlob = new Blob([uintArray], { type: "image/png" });
+        const pngUrl = URL.createObjectURL(pngBlob);
+        window.open(pngUrl, "_blank");
+      } else {
+        notification.addNotification("Formato de arquivo não suportado.", "error");
+      }
+    };
+  
+    fileReader.onerror = () => {
+      notification.addNotification("Erro ao ler o arquivo.", "error");
+    };
+  
+    fileReader.readAsArrayBuffer(blob);
   };
 
   const handleDeleteClick = (purchaseId: number) => {
@@ -167,18 +169,18 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
       <Table stickyHeader aria-label="purchases table">
         <TableHead>
           <TableRow>
-            <TableCell sx={{ width: "5%" }}>
+            <TableCell sx={{ width: "8%" }}>
               <Checkbox
                 checked={purchases.length > 0 && selectedPurchaseIds.length === purchases.length}
                 indeterminate={selectedPurchaseIds.length > 0 && selectedPurchaseIds.length < purchases.length}
                 onChange={handleSelectAll}
               />
             </TableCell>
+            <TableCell>ID</TableCell>
             <TableCell>Fornecedor</TableCell>
-            <TableCell>Produto</TableCell>
+            <TableCell>Descrição</TableCell>
             <TableCell>Data</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Preço</TableCell>
+            <TableCell>Valor</TableCell>
             <TableCell>Ações</TableCell>
           </TableRow>
         </TableHead>
@@ -192,25 +194,29 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
           ) : purchases.length > 0 ? (
             purchases.map((purchase) => (
               <TableRow key={purchase.purchaseId}>
+
                 <TableCell>
                   <Checkbox
                     checked={selectedPurchaseIds.includes(purchase.purchaseId)}
                     onChange={(e) => handleSelectPurchase(e, purchase)}
                   />
                 </TableCell>
+
+                <TableCell>{purchase.purchaseId || "-"}</TableCell>
+
                 <TableCell>{purchase.supplier?.name || "-"}</TableCell>
-                <TableCell>{purchase.product?.name || "-"}</TableCell>
+
+                <TableCell>{purchase.description || "-"}</TableCell>
+
                 {/* Data formatada */}
                 <TableCell>
                   {purchase.date_time
                     ? formatDate(purchase.date_time)
                     : "-"}
                 </TableCell>
-                <TableCell>{purchaseStatusMapping[purchase.purchaseStatus]}</TableCell>
-                {/* Preço formatado em R$ */}
-                <TableCell>
-                  {purchase.totalPrice !== undefined ? formatPrice(purchase.totalPrice) : "-"}
-                </TableCell>
+
+                <TableCell>{formatPrice(purchase.totalPrice)}</TableCell>
+
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, purchase.purchaseId)}>︙</IconButton>
                   <Menu
@@ -219,20 +225,16 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                     onClose={handleCloseMenu}
                   >
                     <MenuItem onClick={() => handleDetailsClick(purchase.purchaseId)}>Detalhes</MenuItem>
-                    {purchase.purchaseStatus === PurchaseStatus.processing && (
-                      <MenuItem onClick={() => handleEditClick(purchase.purchaseId)}>Editar</MenuItem>
-                    )}
+                    <MenuItem onClick={() => handleEditClick(purchase.purchaseId)}>Editar</MenuItem>
                     {purchase.paymentSlip !== null && (
                       <MenuItem onClick={() => handleViewDocumentClick(purchase.paymentSlip)}>
                         Visualizar Documento
                       </MenuItem>
                     )}
                     <MenuItem onClick={() => handleDeleteClick(purchase.purchaseId)}>Deletar</MenuItem>
-                    {purchase.purchaseStatus === PurchaseStatus.processing && (
-                      <MenuItem onClick={handleOpenStatusModal}>Atualizar Status</MenuItem>
-                    )}
                   </Menu>
                 </TableCell>
+
               </TableRow>
             ))
           ) : (
@@ -252,30 +254,6 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
           )}
         </TableBody>
       </Table>
-
-      {/* Dialog para Atualizar Status */}
-      <Dialog open={statusModalOpen} onClose={handleCloseStatusModal}>
-        <DialogTitle>Atualizar Status</DialogTitle>
-        <DialogContent>
-          <Select
-            fullWidth
-            value={newStatus}
-            onChange={(e) => setNewStatus(e.target.value as PurchaseStatus)}
-          >
-            {Object.entries(purchaseStatusMapping).map(([value, label]) => (
-              <MenuItem key={value} value={value}>
-                {label}
-              </MenuItem>
-            ))}
-          </Select>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseStatusModal}>Cancelar</Button>
-          <Button onClick={handleConfirmStatusChange} variant="contained">
-            Confirmar
-          </Button>
-        </DialogActions>
-      </Dialog>
 
       {/* Dialog de Confirmação para Deletar */}
       <ConfirmationDialog

@@ -1,3 +1,5 @@
+import type { CustomEntryReceiptInfo } from "src/models/entry";
+
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -13,7 +15,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 
-import { useGenerateCustomExpenseReceipt } from "src/hooks/useExpense";
+import { useGenerateCustomExpenseReceipt } from "src/hooks/useEntry";
 
 import { useNotification } from "src/context/NotificationContext";
 
@@ -23,18 +25,12 @@ interface HeaderComponentProps {
   addButtonPath: string;
 }
 
-interface CustomExpenseReceiptInfo {
-  pagoA: string;
-  valor: number;
-  descricao: string;
-}
-
 const ExpensesTableHeaderComponent: React.FC<HeaderComponentProps> = ({
   title,
   addButtonName,
   addButtonPath,
 }) => {
-  const { register, handleSubmit, reset } = useForm<CustomExpenseReceiptInfo>();
+  const { register, handleSubmit, reset } = useForm<CustomEntryReceiptInfo>();
   const [open, setOpen] = useState(false);
   const generateReceipt = useGenerateCustomExpenseReceipt();
   const notification = useNotification();
@@ -48,7 +44,7 @@ const ExpensesTableHeaderComponent: React.FC<HeaderComponentProps> = ({
     reset();
   };
 
-  const onSubmit = async (data: CustomExpenseReceiptInfo) => {
+  const onSubmit = async (data: CustomEntryReceiptInfo) => {
     generateReceipt.mutate(data, {
       onSuccess: (receipt) => {
         const url = window.URL.createObjectURL(receipt);
@@ -102,7 +98,7 @@ const ExpensesTableHeaderComponent: React.FC<HeaderComponentProps> = ({
                 <TextField
                   label="Pago a"
                   fullWidth
-                  {...register("pagoA", { required: "Este campo é obrigatório" })}
+                  {...register("destinatario", { required: "Este campo é obrigatório" })}
                 />
               </Grid>
               <Grid item xs={12}>

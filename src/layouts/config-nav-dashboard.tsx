@@ -14,24 +14,19 @@ export const navData = [
     icon: icon('ic-home'),
   },
   {
-    title: 'Clientes',
-    path: '/customers',
+    title: 'Clientes/Fornecedores',
+    path: '/person',
     icon: icon('ic-people')
   },
   {
     title: 'Produtos',
     path: '/products',
     icon: icon('ic-soda'),
-    // info: (
-    //   <Label color="error" variant="inverted">
-    //     +3
-    //   </Label>
-    // ),
   },
   {
-    title: 'Fornecedores',
-    path: '/suppliers',
-    icon: icon('ic-truck')
+    title: 'Estoque',
+    path: '/Stock',
+    icon: icon('ic-stock'),
   },
   {
     title: 'Funcionarios',
@@ -49,9 +44,19 @@ export const navData = [
     icon: icon('ic-cart')
   },
   {
-    title: 'Despesas',
+    title: 'Lançamentos',
     path: '/expenses',
+    icon: icon('ic-entry')
+  },
+  {
+    title: 'Contas a Receber',
+    path: '/recive',
     icon: icon('ic-coins')
+  },
+  {
+    title: 'Contas a Pagar',
+    path: '/payable',
+    icon: icon('ic-bill')
   },
   // {
   //   title: 'Recibos',

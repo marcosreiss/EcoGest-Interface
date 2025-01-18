@@ -82,11 +82,17 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
   };
 
   // Função para formatar o peso em PT-BR
-  const formatWeight = (weightKg: number | undefined): string => {
-    if (weightKg === undefined) return "-";
+// Função para formatar o peso em PT-BR
+const formatWeight = (weightKg: number | string | undefined): string => {
+  if (weightKg === undefined || weightKg === null) return "-"; // Verifica se o peso é inválido
 
-    return `${weightKg.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} Ton`;
-  };
+  const weight = typeof weightKg === "string" ? parseFloat(weightKg) : weightKg; // Converte string para número, se necessário
+
+  const weightInTons = weight; // Converte para toneladas
+
+  return `${weightInTons.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
+
 
   // Função para formatar o preço em PT-BR
   const formatPrice = (price: number | undefined): string => {
@@ -135,10 +141,11 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
-            <TableCell sx={{ width: "40%", minWidth: "150px" }}>Nome</TableCell>
-            <TableCell sx={{ width: "30%", minWidth: "100px" }}>Quantidade</TableCell>
-            <TableCell sx={{ width: "20%", minWidth: "100px" }}>Preço</TableCell>
-            <TableCell sx={{ width: "5%" }}> </TableCell>
+            <TableCell >ID</TableCell>
+            <TableCell >Nome</TableCell>
+            <TableCell >Quantidade</TableCell>
+            <TableCell >Preço</TableCell>
+            <TableCell> </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -157,8 +164,9 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
                     onChange={(e) => handleSelectProduct(e, product)}
                   />
                 </TableCell>
+                <TableCell>{product.productId || "-"}</TableCell>
                 <TableCell>{product.name || "-"}</TableCell>
-                <TableCell>{formatWeight(Number(product.weightAmount))}</TableCell>
+                <TableCell>{formatWeight((product.weightAmount / 1000))} t</TableCell>
                 <TableCell>{formatPrice(Number(product.price))}</TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, product.productId)}>︙</IconButton>

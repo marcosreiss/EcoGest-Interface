@@ -30,13 +30,10 @@ export default function CustomersIndex() {
   const [debouncedSearchString, setDebouncedSearchString] = useState('');
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Busca paginada
   const { data, isLoading } = useGetCustomersPaginaded(page * rowsPerPage, rowsPerPage);
 
-  // Busca por nome (quando string >= 3 caracteres)
   const { data: searchResults, isLoading: isSearching } = useGetCustomerByName(debouncedSearchString);
 
-  // Função para lidar com debounce da busca
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value;
 
@@ -56,7 +53,6 @@ export default function CustomersIndex() {
   const deleteCustomer = useDeleteCustomer();
   const notification = useNotification();
 
-  // Deleta múltiplos clientes selecionados
   const handleDeleteCustomer = () => {
     selectedCustomers.forEach((customer) => {
       deleteCustomer.mutate(customer.customerId, {
@@ -71,14 +67,7 @@ export default function CustomersIndex() {
     });
   };
 
-  // Determina qual lista de clientes usar (busca ou dados paginados)
   const customers = (debouncedSearchString.length >= 3 ? searchResults : data?.data) ?? [];
-
-  // Ordena os clientes por createdAt (do mais antigo para o mais recente).
-  // Se quiser do mais recente para o mais antigo, inverta a subtração ou use reverse().
-  const orderedCustomers = [...customers].sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  );
 
   return (
     <>
@@ -117,7 +106,7 @@ export default function CustomersIndex() {
                 <TableComponet
                   setSelectedCustomers={setSelectedCustomers}
                   isSearching={isSearching}
-                  customers={orderedCustomers} // <--- usamos a lista ordenada
+                  customers={[]}
                   isLoading={isLoading}
                 />
               </Box>

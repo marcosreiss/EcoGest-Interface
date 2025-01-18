@@ -24,7 +24,7 @@ import ProductTableComponent from './components/productTableComponent';
 export default function ProductPage() {
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
 
-  const rowsPerPage = 5;
+  const rowsPerPage = 25;
   const [page, setPage] = useState(0);
 
   const [debouncedSearchString, setDebouncedSearchString] = useState('');
@@ -70,15 +70,15 @@ export default function ProductPage() {
     });
   };
 
-  const products = debouncedSearchString.length >= 3 ? searchResults : data?.data;
-
+  const products = debouncedSearchString.length >= 3 ? searchResults?.data : data?.data;
+  
   return (
     <>
       <Helmet>
         <title>{`Produtos - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth="md">
+      <DashboardContent maxWidth="lg">
         <Grid container>
           <TableHeaderComponent
             title='Produtos'

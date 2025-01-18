@@ -15,7 +15,6 @@ export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
-export const ReceiptsPage = lazy(() => import('src/pages/receipts/receipts'));
 export const AdminPage = lazy(() => import('src/pages/admin/admin'));
 
 // ---------- Costumer Components
@@ -29,6 +28,7 @@ export const ProductsPage = lazy(() => import('src/pages/products/productsIndex'
 export const CreateProduct = lazy(() => import('src/pages/products/createProduct'));
 export const EditProduct = lazy(() => import('src/pages/products/editProduct'));
 export const ProductDetails = lazy(() => import('src/pages/products/productDetails'));
+export const ProductsStock = lazy(() => import('src/pages/products/stock'));
 
 // ---------- Supplier Components
 export const SuppliersPage = lazy(() => import('src/pages/suppliers/suppliersIndex'));
@@ -55,13 +55,25 @@ export const EditEmployee = lazy(() => import('src/pages/employees/editEmployee'
 export const EmployeeDetails = lazy(() => import('src/pages/employees/employeeDetails'));
 
 
-// ---------- Expenses Components
 // ---------- Expense Components
-export const ExpensesPage = lazy(() => import('src/pages/expenses/expensesIndex'));
-export const CreateExpense = lazy(() => import('src/pages/expenses/createExpense'));
-export const EditExpense = lazy(() => import('src/pages/expenses/editExpense'));
-export const ExpenseDetails = lazy(() => import('src/pages/expenses/expenseDetails'));
+export const ExpensesPage = lazy(() => import('src/pages/entry/entryIndex'));
+export const CreateExpense = lazy(() => import('src/pages/entry/createEntry'));
+export const EditExpense = lazy(() => import('src/pages/entry/editEntry'));
+export const ExpenseDetails = lazy(() => import('src/pages/entry/entryDetails'));
 
+// ---------- Person Components
+export const PersonPage = lazy(() => import('src/pages/person/personIndex'));
+export const CreatePerson = lazy(() => import('src/pages/person/createPerson'));
+export const EditPerson = lazy(() => import('src/pages/person/editPerson'));
+export const PersonDetails = lazy(() => import('src/pages/person/personDetails'));
+
+// ---------- Recive Components
+export const ReceivePage = lazy(() => import('src/pages/recive/receiveIndex'));
+export const ReceiveDetails = lazy(() => import('src/pages/recive/receiveDetails'));
+
+// ---------- Payable Components
+export const PayablePage = lazy(() => import('src/pages/payble/payableIndex'));
+export const PayableDetails = lazy(() => import('src/pages/payble/payableDetais'));
 
 
 // ----------------------------------------------------------------------
@@ -96,7 +108,6 @@ export function PrivateRouter() {
         { path: 'sales', element: <SalesPage /> },
         { path: 'expenses', element: <ExpensesPage /> },
         { path: 'employees', element: <EmployeesPage /> },
-        { path: 'receipts', element: <ReceiptsPage /> },
         { path: 'admin', element: <AdminPage /> },
 
         { path: 'customers', element: <CustomersPage /> },
@@ -108,6 +119,7 @@ export function PrivateRouter() {
         { path: 'products/create', element: <CreateProduct /> },
         { path: 'products/edit/:id', element: <EditProduct /> },
         { path: 'products/details/:id', element: <ProductDetails /> },
+        { path: 'stock', element: <ProductsStock /> },
 
         { path: 'suppliers', element: <SuppliersPage /> },
         { path: 'suppliers/create', element: <CreateSupplier /> },
@@ -134,6 +146,16 @@ export function PrivateRouter() {
         { path: 'expenses/edit/:id', element: <EditExpense /> },
         { path: 'expenses/details/:id', element: <ExpenseDetails /> },
 
+        {path: 'person', element: <PersonPage />},
+        {path: 'person/create', element: <CreatePerson />},
+        {path: 'person/edit/:id', element: <EditPerson />},
+        {path: 'person/details/:id', element: <PersonDetails />},
+
+        {path: 'recive', element: <ReceivePage />},
+        {path: 'recive/details/:id', element: <ReceiveDetails />},
+
+        {path: 'payable', element: <PayablePage />},
+        {path: 'payable/details/:id', element: <PayableDetails />},
 
       ],
     },
@@ -151,6 +173,7 @@ export function PublicRouter() {
     { path: 'products/create', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'products/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'products/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'stock', element: <AuthLayout><SignInPage /></AuthLayout> },
 
     { path: 'blog', element: <AuthLayout><SignInPage /></AuthLayout> },
 
@@ -188,6 +211,17 @@ export function PublicRouter() {
     { path: 'expenses/create', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'expenses/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
     { path: 'expenses/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+
+    { path: 'person', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'person/create', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'person/details/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+    { path: 'person/edit/:id', element: <AuthLayout><SignInPage /></AuthLayout> },
+
+    {path: 'recive', element: <AuthLayout><SignInPage /></AuthLayout>},
+    {path: 'recive/details/:id', element: <AuthLayout><SignInPage /></AuthLayout>},
+
+    {path: 'payable', element: <AuthLayout><SignInPage /></AuthLayout>},
+    {path: 'payable/details/:id', element: <AuthLayout><SignInPage /></AuthLayout>},
 
 
     { path: '404', element: <Page404 />, },

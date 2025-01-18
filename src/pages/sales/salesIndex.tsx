@@ -23,7 +23,7 @@ import TableFooterComponent from '../../layouts/components/tableFooterComponent'
 
 export default function SalesIndex() {
     const [selectedSales, setSelectedSales] = useState<Sale[]>([]);
-    const rowsPerPage = 5;
+    const rowsPerPage = 25;
     const [page, setPage] = useState(0);
 
     // Estados para gerenciar os dados
@@ -69,7 +69,7 @@ export default function SalesIndex() {
                 <title>{`Vendas - ${CONFIG.appName}`}</title>
             </Helmet>
 
-            <DashboardContent maxWidth="md">
+            <DashboardContent maxWidth="lg">
                 <Grid container>
                     <SaleTableHeaderComponent title="Vendas" addButtonName="Cadastrar Venda" addButtonPath="/sales/create" />
                     <Grid item xs={12}>
@@ -96,8 +96,8 @@ export default function SalesIndex() {
                                 rowsPerPage={rowsPerPage}
                                 totalItems={
                                     searchByPeriodRequest.startDate && searchByPeriodRequest.endDate
-                                        ? filteredData?.meta?.totalItems || 0 // Se undefined, retorna 0
-                                        : pagedData?.meta?.totalItems || 0 // Se undefined, retorna 0
+                                        ? filteredData?.meta?.total || 0 // Se undefined, retorna 0
+                                        : pagedData?.meta?.total || 0 // Se undefined, retorna 0
                                 }
                             />
                         </TableContainer>

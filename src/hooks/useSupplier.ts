@@ -1,8 +1,8 @@
 import type { AxiosError } from "axios";
+import type { PersonListResponse } from "src/models/person";
 import type {
     Supplier,
     SupplierResponse,
-    SupplierListResponse,
     CreateSupplierPayload,
     SuppliersBasicInfoList
 } from "src/models/supplier";
@@ -20,7 +20,7 @@ import {
 } from "src/services/supplierService";
 
 export const useGetSuppliersPaginated = (skip: number, take: number) =>
-    useQuery<SupplierListResponse, AxiosError>({
+    useQuery<PersonListResponse, AxiosError>({
         queryKey: ['suppliers-list', { skip, take }],
         queryFn: () => getSuppliersPaginatedService(skip, take),
     });
@@ -41,9 +41,6 @@ export const useCreateSupplier = () => {
 export const useUpdateSupplier = () =>
     useMutation<SupplierResponse, AxiosError, { id: number; data: Supplier }>({
         mutationFn: ({ id, data }) => updateSupplierService(data, id),
-        onMutate: (variables) => {
-            console.log("Atualizando fornecedor com os dados:", variables);
-        },
         onSuccess: () => {
             // Invalida a lista caso seja necessário atualizar a tabela de fornecedores
             // queryClient.invalidateQueries({ queryKey: ['suppliers-list'] });

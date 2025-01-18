@@ -1,10 +1,9 @@
 import type { AxiosError } from "axios";
 import type {
     Purchase,
-    PurchaseStatus,
+    PurchasePayload,
     PurchaseResponse,
     PurchaseListResponse,
-    CreatePurchasePayload,
     SearchByPeriodRequest,
     TotalPushchasesInPeriodRequest,
     TotalPushchasesInPeriodResponse,
@@ -17,7 +16,6 @@ import {
     updatePurchaseService,
     deletePurchaseService,
     getPurchaseByIdService,
-    updatePurchaseStatusService,
     getPurchasesPaginatedService,
     getPurchasesByProductService,
     getPurchasesBySupplierService,
@@ -36,12 +34,11 @@ export const useGetPurchasesPaginated = (skip: number, take: number) =>
 export const useCreatePurchase = () => {
     const queryClient = useQueryClient();
 
-    return useMutation<PurchaseResponse, AxiosError, CreatePurchasePayload>({
+    return useMutation<PurchaseResponse, AxiosError, PurchasePayload>({
         mutationFn: (payload) => createPurchaseService(payload),
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["purchases-list"]
-            });
+            queryClient.invalidateQueries({queryKey: ["purchases-list"]});
+            queryClient.invalidateQueries({ queryKey: ['paybles-list'] });
         },
     });
 };
@@ -50,12 +47,13 @@ export const useCreatePurchase = () => {
 export const useUpdatePurchase = () => {
     const queryClient = useQueryClient();
 
-    return useMutation<PurchaseResponse, AxiosError, { id: number; data: CreatePurchasePayload }>({
+    return useMutation<PurchaseResponse, AxiosError, { id: number; data: PurchasePayload }>({
         mutationFn: ({ id, data }) => updatePurchaseService(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["purchases-list"]
             });
+            queryClient.invalidateQueries({ queryKey: ['paybles-list'] });
         },
     });
 };
@@ -70,6 +68,7 @@ export const useDeletePurchase = () => {
             queryClient.invalidateQueries({
                 queryKey: ["purchases-list"]
             });
+            queryClient.invalidateQueries({ queryKey: ['paybles-list'] });
         },
     });
 };
@@ -94,8 +93,6 @@ export const useSearchPurchasesByPeriod = (payload: SearchByPeriodRequest) =>
         enabled: !!payload?.startDate && !!payload?.endDate,
     });
 
-
-
 // Hook para buscar compras por fornecedor
 export const useGetPurchasesBySupplier = (supplierId: number) =>
     useQuery<PurchaseListResponse, AxiosError>({
@@ -112,18 +109,18 @@ export const useGetPurchasesByProduct = (productId: number) =>
         enabled: !!productId, // Evita chamadas desnecessárias se productId for inválido
     });
 
-export const useUpdatePurchaseStatus = () => {
-    const queryClient = useQueryClient();
+// export const useUpdatePurchaseStatus = () => {
+//     const queryClient = useQueryClient();
 
-    return useMutation<number, AxiosError, { id: number; purchaseStatus: PurchaseStatus }>({
-        mutationFn: ({ id, purchaseStatus }) => updatePurchaseStatusService(id, purchaseStatus),
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["purchases-list"]
-            });
-        },
-        onError: (error) => {
-            console.error("Erro ao atualizar o status da compra:", error);
-        },
-    });
-};
+//     return useMutation<number, AxiosError, { id: number; purchaseStatus: PurchaseStatus }>({
+//         mutationFn: ({ id, purchaseStatus }) => updatePurchaseStatusService(id, purchaseStatus),
+//         onSuccess: () => {
+//             queryClient.invalidateQueries({
+//                 queryKey: ["purchases-list"]
+//             });
+//         },
+//         onError: (error) => {
+//             console.error("Erro ao atualizar o status da compra:", error);
+//         },
+//     });
+// };

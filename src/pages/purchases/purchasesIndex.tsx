@@ -24,7 +24,7 @@ import PurchaseTableComponent from './components/purchaseTableComponent';
 export default function PurchasePage() {
   const [selectedPurchases, setSelectedPurchases] = useState<Purchase[]>([]);
 
-  const rowsPerPage = 5; 
+  const rowsPerPage = 25; 
   const [page, setPage] = useState(0);
 
   const { data, isLoading } = useGetPurchasesPaginated(page * rowsPerPage, rowsPerPage);
@@ -59,16 +59,13 @@ export default function PurchasePage() {
   
   const purchases = searchByPeriod.data ?? data?.data ?? [];
 
-  console.log(searchByPeriod.data);
-  
-
   return (
     <>
       <Helmet>
         <title>{`Compras - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth="md">
+      <DashboardContent maxWidth="lg">
         <Grid container>
           <TableHeaderComponent 
             title='Compras' 

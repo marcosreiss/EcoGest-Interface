@@ -1,5 +1,3 @@
-import type { ExpensePayload } from "src/models/expense";
-
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useForm, Controller } from "react-hook-form";
@@ -15,14 +13,28 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
-import { useCreateExpense } from "src/hooks/useExpense";
+import { useCreateEntry } from "src/hooks/useEntry";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
+import { EntryType, type EntryPayload } from "src/models/entry";
 import { useNotification } from "src/context/NotificationContext";
 
-// Opções predefinidas para o tipo de despesa
-const predefinedTypes = ["Transporte", "Material", "Serviço", "Outro"];
+// Opções predefinidas para o tipo e subtipo de despesa
+const predefinedTypes = ["Entrada", "Saída"];
+const predefinedSubtypes = [
+  "Peças e Serviços",
+  "Folha de pagamento",
+  "Diárias",
+  "MERCEDES 710 - HPP1C70",
+  "MERCEDES 709 - JKW6I19",
+  "MERCEDES 708 - LVR7727",
+  "IMPOSTO ICMS FRETE",
+  "PAG FRETE",
+  "VALE TRANSPORTE",
+  "IMPOSTOS FEDERAIS",
+  "Trabalhos Profissionais"
+];
 
 export default function CreateExpensePage() {
   const formStyle = {
@@ -37,31 +49,37 @@ export default function CreateExpensePage() {
     control,
     handleSubmit,
     register,
+    setValue,
     formState: { errors },
-  } = useForm<ExpensePayload>();
+  } = useForm<EntryPayload>();
 
-  const createExpense = useCreateExpense();
+  const createExpense = useCreateEntry();
   const router = useRouter();
   const { addNotification } = useNotification();
 
-  const onSubmit = (data: ExpensePayload) => {
-    // 1. Converte vírgula para ponto
-    const priceStr = String(data.price).replace(",", ".");
-    // 2. Converte o campo em número (double)
-    const formattedPrice = parseFloat(priceStr);
+  const setEntryType = (frontendType: string) => {
+    const entryType = frontendType === "Entrada" ? EntryType.ganho : EntryType.perda;
+    setValue("type", entryType);
+  };
 
-    const formattedData = {
+  const onSubmit = (data: EntryPayload) => {
+    // 1. Converte vírgula para ponto
+    const valueStr = String(data.value).replace(",", ".");
+    // 2. Converte o campo em número (double)
+    const formattedValue = parseFloat(valueStr);
+
+    const formattedData: EntryPayload = {
       ...data,
-      price: formattedPrice,
+      value: formattedValue,
     };
 
     createExpense.mutate(formattedData, {
       onSuccess: () => {
-        addNotification("Despesa cadastrada com sucesso!", "success");
+        addNotification("Lançamento cadastrado com sucesso!", "success");
         router.push("/expenses");
       },
       onError: (error: any) => {
-        addNotification(`Erro ao cadastrar despesa: ${error.message}`, "error");
+        addNotification(`Erro ao cadastrar Lançamento: ${error.message}`, "error");
       },
     });
   };
@@ -69,17 +87,17 @@ export default function CreateExpensePage() {
   return (
     <>
       <Helmet>
-        <title>{`Criar Despesa - ${CONFIG.appName}`}</title>
+        <title>{`Criar Lançamento - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth="md">
+      <DashboardContent maxWidth="lg">
         <Grid container justifyContent="center">
           <Grid item xs={12}>
             <Box sx={formStyle}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
-                    Criar Despesa
+                    Criar Lançamento
                   </Typography>
                 </Grid>
 
@@ -89,18 +107,15 @@ export default function CreateExpensePage() {
                     name="type"
                     control={control}
                     rules={{ required: "O tipo é obrigatório." }}
-                    defaultValue=""
+                    defaultValue={undefined}
                     render={({ field }) => (
                       <Autocomplete
                         {...field}
                         options={predefinedTypes}
-                        freeSolo
-                        value={field.value || ""}
-                        onChange={(_, newValue) => field.onChange(newValue)}
-                        inputValue={field.value || ""}
-                        onInputChange={(_, newInputValue) =>
-                          field.onChange(newInputValue)
-                        }
+                        onChange={(_, newValue) => {
+                          field.onChange(newValue);
+                          setEntryType(newValue || "");
+                        }}
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -115,12 +130,44 @@ export default function CreateExpensePage() {
                   />
                 </Grid>
 
+                {/* Campo Subtipo com Autocomplete */}
+                <Grid item xs={12}>
+                  <Controller
+                    name="subtype"
+                    control={control}
+                    rules={{ required: "O subtipo é obrigatório." }}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <Autocomplete
+                        {...field}
+                        options={predefinedSubtypes}
+                        freeSolo
+                        value={field.value || ""}
+                        onChange={(_, newValue) => field.onChange(newValue)}
+                        inputValue={field.value || ""}
+                        onInputChange={(_, newInputValue) =>
+                          field.onChange(newInputValue)
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Subtipo"
+                            placeholder="Selecione ou digite o subtipo"
+                            error={!!errors.subtype}
+                            helperText={errors.subtype?.message}
+                          />
+                        )}
+                      />
+                    )}
+                  />
+                </Grid>
+
                 {/* Campo Descrição */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Descrição"
-                    placeholder="Descrição da despesa (opcional)"
+                    placeholder="Descrição do Lançamento (opcional)"
                     {...register("description")}
                     error={!!errors.description}
                     helperText={errors.description?.message}
@@ -135,12 +182,27 @@ export default function CreateExpensePage() {
                     placeholder="Ex: 150,00"
                     type="text" // <-- texto para aceitar vírgula
                     inputProps={{ min: 0, step: "0.01" }}
-                    {...register("price", {
+                    {...register("value", {
                       required: "O valor é obrigatório.",
                       min: { value: 0, message: "O valor não pode ser negativo." },
                     })}
-                    error={!!errors.price}
-                    helperText={errors.price?.message}
+                    error={!!errors.value}
+                    helperText={errors.value?.message}
+                  />
+                </Grid>
+
+                {/* Campo Data e Hora */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Data e Hora"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    {...register("date_time", {
+                      required: "A data e hora são obrigatórias.",
+                    })}
+                    error={!!errors.date_time}
+                    helperText={errors.date_time?.message}
                   />
                 </Grid>
 

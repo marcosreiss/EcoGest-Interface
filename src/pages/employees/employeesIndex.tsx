@@ -24,7 +24,7 @@ import EmployeeTableComponent from './components/employeeTableComponent';
 export default function EmployeePage() {
   const [selectedEmployees, setSelectedEmployees] = useState<Employee[]>([]);
 
-  const rowsPerPage = 5;
+  const rowsPerPage = 25;
   const [page, setPage] = useState(0);
 
   const [debouncedSearchString, setDebouncedSearchString] = useState('');
@@ -78,7 +78,7 @@ export default function EmployeePage() {
         <title>{`Funcionários - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth="md">
+      <DashboardContent maxWidth="lg">
         <Grid container>
           <TableHeaderComponent
             title="Funcionários"

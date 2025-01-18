@@ -3,7 +3,8 @@ import type {
   ProductResponse,
   ProductListResponse,
   CreateProductPayload,
-  ProductBasicInfoList
+  ProductBasicInfoList,
+  TotalProductsInStock
 } from "src/models/product";
 
 import api from "./api";
@@ -35,8 +36,8 @@ export const getProductByIdService = async (id: number): Promise<Product> => {
 };
 
 // Buscar produto por nome
-export const getProductByNameService = async (name: string): Promise<Product[]> => {
-  const response = await api.get<Product[]>(`/products/search/by-name?name=${name}`);
+export const getProductByNameService = async (name: string): Promise<ProductListResponse> => {
+  const response = await api.get<ProductListResponse>(`/products/search/by-name?name=${name}`);
   return response.data;
 };
 
@@ -44,5 +45,10 @@ export const getProductsBasicInfoService = async (): Promise<ProductBasicInfoLis
   const response = await api.get<ProductBasicInfoList>("/products/basic-info");
   return response.data;
 };
+
+export const getTotalProductsInStock = async (): Promise<TotalProductsInStock> => {
+  const response = await api.get<TotalProductsInStock>("/products/totals/in-stock");
+  return response.data;
+}
 
 

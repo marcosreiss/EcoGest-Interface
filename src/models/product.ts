@@ -23,8 +23,19 @@ export interface CreateProductPayload{
 export interface ProductBasicInfo{
     productId: number;
     name: string;
+    weightAmount: number;
+    price: number;
 }
 
 export interface ProductBasicInfoList{
     data: ProductBasicInfo[];
+}
+
+export interface TotalProductsInStock{
+    totalProductsInStock: StrockProduct[];
+}
+
+export interface StrockProduct {
+    name: string;
+    totalWeight: number;
 }

@@ -127,7 +127,7 @@ export default function EditProductPage() {
         <title>{`Editar Produto - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth="md">
+      <DashboardContent maxWidth="lg">
         <Grid container>
           <Grid item xs={12}>
             <Box sx={formStyle}>
@@ -151,7 +151,7 @@ export default function EditProductPage() {
                 </Grid>
 
                 {/* Quantidade (Toneladas) */}
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Quantidade (Toneladas)"
@@ -163,7 +163,7 @@ export default function EditProductPage() {
                     error={!!errors.weightAmount}
                     helperText={errors.weightAmount?.message}
                   />
-                </Grid>
+                </Grid> */}
 
                 {/* Preço (R$) */}
                 <Grid item xs={12}>

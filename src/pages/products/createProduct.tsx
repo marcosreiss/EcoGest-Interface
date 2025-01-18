@@ -58,7 +58,7 @@ export default function CreateProductPage() {
         <title>{`Criar Produto - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <DashboardContent maxWidth='md'>
+      <DashboardContent maxWidth='lg'>
         <Grid container justifyContent="center">
           <Grid item xs={12}>
             <Box sx={formStyle}>
@@ -82,10 +82,10 @@ export default function CreateProductPage() {
                 </Grid>
 
                 {/* Quantidade (Toneladas) */}
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   <TextField
                     fullWidth
-                    label="Quantidade (Toneladas)"
+                    label="Quantidade (Quilos)"
                     placeholder="Ex: 1,5"
                     type="text"
                     inputProps={{ min: 0, step: "any" }}
@@ -95,7 +95,7 @@ export default function CreateProductPage() {
                     error={!!errors.weightAmount}
                     helperText={errors.weightAmount?.message}
                   />
-                </Grid>
+                </Grid> */}
 
                 {/* Preço (R$) */}
                 <Grid item xs={12}>

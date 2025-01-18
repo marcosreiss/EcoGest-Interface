@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { Sale, SaleResponse, SaleListResponse, CreateSalePayload, SearchByPeriodRequest, CustomSaleReceiptInfo } from "src/models/sale";
+import type { Sale, SalePayload, SaleResponse, SaleListResponse, SearchByPeriodRequest, CustomSaleReceiptInfo } from "src/models/sale";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -28,12 +28,13 @@ export const useGetSalesPaged = (skip: number, take: number, debouncedSearchStri
 export const useCreateSale = () => {
     const queryClient = useQueryClient();
 
-    return useMutation<SaleResponse, AxiosError, CreateSalePayload>({
+    return useMutation<SaleResponse, AxiosError, SalePayload>({
         mutationFn: (payload) => createSaleService(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['sales-list'],
             });
+            queryClient.invalidateQueries({queryKey: ["recives-list"],});
         }
     });
 };
@@ -41,15 +42,13 @@ export const useCreateSale = () => {
 // Hook para atualizar uma venda
 export const useUpdateSale = () => {
     const queryClient = useQueryClient();
-    return useMutation<SaleResponse, AxiosError, { id: number; data: Partial<CreateSalePayload> }>({
+    return useMutation<SaleResponse, AxiosError, { id: number; data: Partial<SalePayload> }>({
         mutationFn: ({ id, data }) => updateSaleService(data, id),
-        onMutate: (variables) => {
-            console.log("Atualizando venda com os dados:", variables);
-        },
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['sales-list'],
             });
+            queryClient.invalidateQueries({queryKey: ["recives-list"],});
         }
     });
 }
@@ -60,13 +59,11 @@ export const useDeleteSale = () => {
 
     return useMutation<void, AxiosError, number>({
         mutationFn: (id) => deleteSaleService(id),
-        onMutate: (variables) => {
-            console.log("Deletando venda com ID:", variables);
-        },
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['sales-list'],
             });
+            queryClient.invalidateQueries({queryKey: ["recives-list"],});
         }
     });
 };

@@ -1,9 +1,8 @@
-import type { KpiParams } from 'src/models/kpiParamsModel';
-import type { TotalExpensesData } from 'src/models/ExpensesKpiRespnse';
-import type { TotalSalesApprovedData } from 'src/models/salesKpiResponse';
+import type { KpiParams } from 'src/models/kpiModel';
+// import type { TotalExpensesData } from 'src/models/ExpensesKpiRespnse';
+// import type { TotalSalesApprovedData } from 'src/models/salesKpiResponse';
 
-import React, { useMemo, useState } from 'react';
-import { Line, XAxis, YAxis, LineChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
+import React, { useState } from 'react';
 
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -13,13 +12,12 @@ import {
   Card,
   Grid,
   Stack,
-  Button,
   Tooltip,
   Typography,
   CardContent,
 } from '@mui/material';
 
-import { TimeGranularity } from 'src/models/kpiParamsModel';
+// import { TimeGranularity } from 'src/models/kpiModel';
 
 interface FinancialOverviewCardProps {
   totalBalance: number;
@@ -27,8 +25,8 @@ interface FinancialOverviewCardProps {
   incomeChangePercentage: number;
   expenses: number;
   expenseChangePercentage: number;
-  salesData: TotalSalesApprovedData[];
-  expensesData: TotalExpensesData[];
+  // salesData: TotalSalesApprovedData[];
+  // expensesData: TotalExpensesData[];
   setSalesKpiParams: React.Dispatch<React.SetStateAction<KpiParams>>;
 }
 
@@ -38,39 +36,39 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
   incomeChangePercentage,
   expenses,
   expenseChangePercentage,
-  salesData,
-  expensesData,
+  // salesData,
+  // expensesData,
   setSalesKpiParams
 }) => {
 
-  const [selectedPeriod, setSelectedPeriod] = useState<TimeGranularity>(TimeGranularity.Month);
+  // const [selectedPeriod, setSelectedPeriod] = useState<TimeGranularity>(TimeGranularity.Month);
   const [dataType, setDataType] = useState<'Income' | 'Expenses'>('Income');
 
-  const handlePeriodChange = (period: TimeGranularity) => {
-    setSelectedPeriod(period);
-    setSalesKpiParams((prevParams) => ({ ...prevParams, period }));
-  };
+  // const handlePeriodChange = (period: TimeGranularity) => {
+  //   setSelectedPeriod(period);
+  //   setSalesKpiParams((prevParams) => ({ ...prevParams, period }));
+  // };
 
 
   const handleDataTypeClick = (type: 'Income' | 'Expenses') => {
     setDataType(type);
   };
 
-  const filteredData = useMemo(() => {
-    const data = (dataType === 'Income' ? salesData : expensesData).map((item) => {
-      const periodKey = selectedPeriod.toLowerCase() as keyof TotalSalesApprovedData;
+  // const filteredData = useMemo(() => {
+  //   const data = (dataType === 'Income' ? salesData : expensesData).map((item) => {
+  //     const periodKey = selectedPeriod.toLowerCase() as keyof TotalSalesApprovedData;
 
-      return {
-        month: (item as any)[periodKey]?.toString() || '', // Garantir string vazia
-        valor: parseFloat(
-          dataType === 'Income'
-            ? (item as TotalSalesApprovedData).totalSalesApproved
-            : (item as TotalExpensesData).totalExpenses
-        ) || 0, // Garantir que o valor seja 0 se não existir
-      };
-    });
-    return data.length > 0 ? data : [{ month: '', valor: 0 }]; // Retorno padrão se vazio
-  }, [dataType, salesData, expensesData, selectedPeriod]);
+  //     return {
+  //       month: (item as any)[periodKey]?.toString() || '', // Garantir string vazia
+  //       valor: parseFloat(
+  //         dataType === 'Income'
+  //           ? (item as TotalSalesApprovedData).totalSalesApproved
+  //           : (item as TotalExpensesData).totalExpenses
+  //       ) || 0, // Garantir que o valor seja 0 se não existir
+  //     };
+  //   });
+  //   return data.length > 0 ? data : [{ month: '', valor: 0 }]; // Retorno padrão se vazio
+  // }, [dataType, salesData, expensesData, selectedPeriod]);
 
 
 
@@ -112,13 +110,13 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
           <Grid item>
             <Stack direction="row" spacing={1} alignItems="center">
               <Stack direction="row" spacing={1}>
-                <Button
+                {/* <Button
                   variant={selectedPeriod === TimeGranularity.Day ? 'contained' : 'text'}
                   onClick={() => handlePeriodChange(TimeGranularity.Day)}
                   sx={{ textTransform: 'none' }}
                 >
                   Dia
-                </Button>
+                </Button> */}
                 {/* <Button
                   variant={selectedPeriod === TimeGranularity.Week ? 'contained' : 'text'}
                   onClick={() => handlePeriodChange(TimeGranularity.Week)}
@@ -126,20 +124,20 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
                 >
                   Semana
                 </Button> */}
-                <Button
+                {/* <Button
                   variant={selectedPeriod === TimeGranularity.Month ? 'contained' : 'text'}
                   onClick={() => handlePeriodChange(TimeGranularity.Month)}
                   sx={{ textTransform: 'none' }}
                 >
                   Mês
-                </Button>
-                <Button
+                </Button> */}
+                {/* <Button
                   variant={selectedPeriod === TimeGranularity.Year ? 'contained' : 'text'}
                   onClick={() => handlePeriodChange(TimeGranularity.Year)}
                   sx={{ textTransform: 'none' }}
                 >
                   Ano
-                </Button>
+                </Button> */}
               </Stack>
             </Stack>
           </Grid>
@@ -246,7 +244,7 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
         </Grid>
 
         <Box sx={{ width: '100%', height: 250 }}>
-          <ResponsiveContainer>
+          {/* <ResponsiveContainer>
             <LineChart data={filteredData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
               <XAxis dataKey="month" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
@@ -272,7 +270,7 @@ const FinancialOverviewCard: React.FC<FinancialOverviewCardProps> = ({
                 dot={false}
               />
             </LineChart>
-          </ResponsiveContainer>
+          </ResponsiveContainer> */}
         </Box>
       </CardContent>
     </Card>

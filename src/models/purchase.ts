@@ -1,45 +1,38 @@
+import type { Person } from "./person";
 import type { Product } from "./product";
-import type { Supplier } from "./supplier";
-
-export enum PurchaseStatus {
-    processing = "processing",
-    approved = "approved",
-    canceled = "canceled"
-}
-export const purchaseStatusMapping: Record<string, string> = {
-    processing: "Processando",
-    approved: "Aprovado",
-    canceled: "Cancelado",
-};
-
 
 export interface Purchase {
     purchaseId: number;
-    supplierId: number;
-    supplier: Supplier | null;
-    productId: number;
-    product: Product | null;
+    supplier: Person;
+    products: PurchaseProduct[];
     description?: string | null;
-    date_time: Date;
+    date_time: string;
     paymentSlip: { data: number[] } | null;
-    purchaseStatus: PurchaseStatus;
-    weightAmount: number; // Novo atributo
-    price: number; // Novo atributo
+    discount: number;
     totalPrice: number;
 }
 
-export interface CreatePurchasePayload {
-    supplierId: number;
-    productId: number;
+export interface PurchasePayload {
+    personId: number;
+    products: PurchasePayloadProduct[];
     description?: string | null;
-    date_time: Date;
-    status: PurchaseStatus;
+    date_time: string;
     paymentSlip: Blob | null;
-    weightAmount: number; // Novo atributo
-    price: number; // Novo atributo
+    discount: number | null;
 }
 
+export interface PurchaseProduct {
+    productId: number;
+    quantity: number;
+    price: number;
+    product: Product;
+}
 
+export interface PurchasePayloadProduct {
+    productId: number;
+    quantity: number;
+    price: number;
+}
 
 export interface PurchaseListResponse {
     data: Purchase[];

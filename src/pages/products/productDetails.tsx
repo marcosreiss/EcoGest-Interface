@@ -12,10 +12,15 @@ import { DashboardContent } from "src/layouts/dashboard";
 
 // Função para formatar o peso em PT-BR
 const formatWeight = (weightKg: number | string | undefined): string => {
-    if (weightKg === undefined || weightKg === null) return "-";
-    const weight = typeof weightKg === "string" ? parseFloat(weightKg) : weightKg;
-    return `${weight.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} Toneladas`;
+    if (weightKg === undefined || weightKg === null) return "-"; // Verifica se o peso é inválido
+
+    const weight = typeof weightKg === "string" ? parseFloat(weightKg) : weightKg; // Converte string para número, se necessário
+
+    const weightInTons = weight / 1000; // Converte para toneladas
+
+    return `${weightInTons.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Toneladas`;
 };
+
 
 // Função para formatar o preço em PT-BR
 const formatPrice = (price: number | string | undefined): string => {
@@ -52,7 +57,7 @@ export default function ProductDetailsPage() {
             <Helmet>
                 <title>{`Detalhes do Produto - ${CONFIG.appName}`}</title>
             </Helmet>
-            <DashboardContent maxWidth="md">
+            <DashboardContent maxWidth="lg">
                 {isLoading ? (
                     <LinearProgress />
                 ) : (

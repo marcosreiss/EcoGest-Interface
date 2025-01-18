@@ -87,7 +87,7 @@ export default function SuppliersIndex() {
                         <TableContainer component={Paper} sx={{ height: '65vh', display: 'flex', flexDirection: 'column', }}>
 
                             <Box component="div" sx={{ flex: 1, overflow: 'auto', }}>
-                                <SupplierTableComponent setSelectedSuppliers={setSelectedSuppliers} isSearching={isSearching} suppliers={suppliers || []} isLoading={isLoading} />
+                                <SupplierTableComponent setSelectedSuppliers={setSelectedSuppliers} isSearching={isSearching} suppliers={[]} isLoading={isLoading} />
                             </Box>
 
                             <TableFooterComponent setPage={setPage} page={page} rowsPerPage={rowsPerPage} totalItems={data?.meta.totalItems} />

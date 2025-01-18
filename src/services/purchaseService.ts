@@ -1,9 +1,8 @@
 import type {
     Purchase,
-    PurchaseStatus,
+    PurchasePayload,
     PurchaseResponse,
     PurchaseListResponse,
-    CreatePurchasePayload,
     TotalPushchasesInPeriodRequest,
     TotalPushchasesInPeriodResponse,
 } from "src/models/purchase";
@@ -17,26 +16,25 @@ export const getPurchasesPaginatedService = async (skip: number, take: number): 
 };
 
 // Criar uma nova compra
-export const createPurchaseService = async (payload: CreatePurchasePayload): Promise<PurchaseResponse> => {
+export const createPurchaseService = async (payload: PurchasePayload): Promise<PurchaseResponse> => {
     const formData = new FormData();
 
     if (payload.paymentSlip) {
         formData.append("paymentSlip", payload.paymentSlip);
     }
 
-    
     const response = await api.post<PurchaseResponse>("/purchases", payload, {
         headers: {
             "Content-Type": "multipart/form-data",
         },
         data: formData,
     });
-
+    
     return response.data;
 };
 
 // Atualizar uma compra
-export const updatePurchaseService = async (id: number, payload: CreatePurchasePayload): Promise<PurchaseResponse> => {
+export const updatePurchaseService = async (id: number, payload: PurchasePayload): Promise<PurchaseResponse> => {
     const formData = new FormData();
 
     if (payload.paymentSlip) {
@@ -72,7 +70,6 @@ export const getTotalPurchasesInPeriodService = async (
     return response.data;
 };
 
-
 // Buscar todas as compras por período
 export const searchPurchasesByPeriodService = async (startDate: string, endDate: string): Promise<Purchase[]> => {
     try {
@@ -84,8 +81,6 @@ export const searchPurchasesByPeriodService = async (startDate: string, endDate:
     }
 };
 
-
-
 export const getPurchasesBySupplierService = async (supplierId: number): Promise<PurchaseListResponse> => {
     const response = await api.get<PurchaseListResponse>(`/purchases/supplier?supplierId=${supplierId}`);
     return response.data;
@@ -96,7 +91,7 @@ export const getPurchasesByProductService = async (productId: number): Promise<P
     return response.data;
 };
 
-export const updatePurchaseStatusService = async (purchaseId: number, purchaseStatus: PurchaseStatus): Promise<number> => {
-    const response = await api.put(`/purchases/status?id=${purchaseId}`, { purchaseStatus });
-    return response.status;
-};
+// export const updatePurchaseStatusService = async (purchaseId: number, purchaseStatus: PurchaseStatus): Promise<number> => {
+//     const response = await api.put(`/purchases/status?id=${purchaseId}`, { purchaseStatus });
+//     return response.status;
+// };

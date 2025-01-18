@@ -1,15 +1,15 @@
+import type { PersonListResponse } from "src/models/person";
 import type {
     Supplier,
     SupplierResponse,
-    SupplierListResponse,
     CreateSupplierPayload,
     SuppliersBasicInfoList
 } from "src/models/supplier";
 
 import api from "./api";
 
-export const getSuppliersPaginatedService = async (skip: number, take: number): Promise<SupplierListResponse> => {
-    const response = await api.get<SupplierListResponse>("/suppliers", { params: { skip, take } });
+export const getSuppliersPaginatedService = async (skip: number, take: number): Promise<PersonListResponse> => {
+    const response = await api.get<PersonListResponse>("/person/suppliers", { params: { skip, take } });
     return response.data;
 };
 
@@ -45,6 +45,6 @@ export const getSupplierByNameService = async (name: string): Promise<Supplier[]
 //--------------------------
 
 export const getSuppliersBasicInfoService = async (): Promise<SuppliersBasicInfoList> => {
-    const response = await api.get<SuppliersBasicInfoList>("/suppliers/basic-info");
+    const response = await api.get<SuppliersBasicInfoList>("/person/suppliers/basic-info");
     return response.data;
 };

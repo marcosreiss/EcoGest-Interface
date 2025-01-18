@@ -1,39 +1,40 @@
 import type { AxiosError } from "axios";
 import type { SearchByPeriodRequest } from "src/models/purchase";
 import type {
-    Expense,
-    ExpensePayload,
-    ExpenseResponse,
-    ExpenseListResponse,
-    CustomExpenseReceiptInfo,
-} from "src/models/expense";
+    Entry,
+    EntryPayload,
+    EntryResponse,
+    EntryListResponse,
+    EntryPaginatedParams,
+    CustomEntryReceiptInfo,
+} from "src/models/entry";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
-    createExpenseService,
-    updateExpenseService,
-    deleteExpenseService,
-    getExpenseByIdService,
+    createEntryService,
+    updateEntryService,
+    deleteEntryService,
+    getEntryByIdService,
     getExpenseReceiptService,
-    getExpensesPaginatedService,
+    getEntryPaginatedService,
     searchExpensesByPeriodService,
     getCustomExpenseReceiptService,
-} from "src/services/expenseService";
+} from "src/services/entryService";
 
 // Hook para listar despesas paginadas
-export const useGetExpensesPaginated = (skip: number, take: number) =>
-    useQuery<ExpenseListResponse, AxiosError>({
-        queryKey: ["expenses-list", { skip, take }],
-        queryFn: () => getExpensesPaginatedService(skip, take),
+export const useGetEntriesPaginated = (params: EntryPaginatedParams) =>
+    useQuery<EntryListResponse, AxiosError>({
+        queryKey: ["expenses-list", { params }],
+        queryFn: () => getEntryPaginatedService(params),
     });
 
 // Hook para criar uma nova despesa
-export const useCreateExpense = () => {
+export const useCreateEntry = () => {
     const queryClient = useQueryClient();
 
-    return useMutation<ExpenseResponse, AxiosError, ExpensePayload>({
-        mutationFn: (payload) => createExpenseService(payload),
+    return useMutation<EntryResponse, AxiosError, EntryPayload>({
+        mutationFn: (payload) => createEntryService(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["expenses-list"]
@@ -43,11 +44,11 @@ export const useCreateExpense = () => {
 };
 
 // Hook para atualizar uma despesa
-export const useUpdateExpense = () => {
+export const useUpdateEntry = () => {
     const queryClient = useQueryClient();
 
-    return useMutation<ExpenseResponse, AxiosError, { id: number; data: ExpensePayload }>({
-        mutationFn: ({ id, data }) => updateExpenseService(id, data),
+    return useMutation<EntryResponse, AxiosError, { id: number; data: EntryPayload }>({
+        mutationFn: ({ id, data }) => updateEntryService(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["expenses-list"]
@@ -57,11 +58,11 @@ export const useUpdateExpense = () => {
 };
 
 // Hook para deletar uma despesa
-export const useDeleteExpense = () => {
+export const useDeleteEntry = () => {
     const queryClient = useQueryClient();
 
     return useMutation<void, AxiosError, number>({
-        mutationFn: (id) => deleteExpenseService(id),
+        mutationFn: (id) => deleteEntryService(id),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["expenses-list"]
@@ -71,10 +72,10 @@ export const useDeleteExpense = () => {
 };
 
 // Hook para buscar uma despesa por ID
-export const useGetExpenseById = (id: number) =>
-    useQuery<Expense, AxiosError>({
+export const useGetEntryById = (id: number) =>
+    useQuery<Entry, AxiosError>({
         queryKey: ["expense", id],
-        queryFn: () => getExpenseByIdService(id),
+        queryFn: () => getEntryByIdService(id),
     });
 
 // Hook para obter recibo de despesa
@@ -86,12 +87,12 @@ export const useGetExpenseReceipt = (expenseId: number) =>
     });
 
 export const useGenerateCustomExpenseReceipt = () =>
-    useMutation<Blob, AxiosError, CustomExpenseReceiptInfo>({
+    useMutation<Blob, AxiosError, CustomEntryReceiptInfo>({
         mutationFn: (info) => getCustomExpenseReceiptService(info),
     });
 
 export const useSearchExpensesByPeriod = (payload: SearchByPeriodRequest) =>
-    useQuery<Expense[], AxiosError>({
+    useQuery<Entry[], AxiosError>({
         queryKey: ['expensesByPeriod', payload],
         queryFn: () => searchExpensesByPeriodService(payload.startDate!, payload.endDate!),
         enabled: !!payload?.startDate && !!payload?.endDate,

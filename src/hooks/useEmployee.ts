@@ -7,7 +7,6 @@ import {
     createEmployeeService,
     updateEmployeeService,
     deleteEmployeeService,
-    advancePaymentService,
     getEmployeeByIdService,
     getEmployeesPagedService,
     getEmployeeByNameService,
@@ -35,13 +34,17 @@ export const useCreateEmployee = () => {
 };
 
 // Hook para atualizar um funcionário
-export const useUpdateEmployee = () =>
-    useMutation<EmployeeResponse, AxiosError, { id: number; data: EmployeePayload }>({
+export const useUpdateEmployee = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation<EmployeeResponse, AxiosError, { id: number; data: EmployeePayload }>({
         mutationFn: ({ id, data }) => updateEmployeeService(data, id),
-        onMutate: (variables) => {
-            console.log("Atualizando funcionário com os dados:", variables);
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({queryKey: ['employees-list']}); // Atualiza a lista de funcionários
+            queryClient.invalidateQueries({queryKey: ['employee', variables.id]}); // Atualiza detalhes do funcionário específico
         },
     });
+};
 
 // Hook para deletar um funcionário
 export const useDeleteEmployee = () => {
@@ -49,9 +52,6 @@ export const useDeleteEmployee = () => {
 
     return useMutation<void, AxiosError, number>({
         mutationFn: (id) => deleteEmployeeService(id),
-        onMutate: (variables) => {
-            console.log("Deletando funcionário com ID:", variables);
-        },
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['employees-list'],
@@ -74,24 +74,24 @@ export const useGetEmployeeByName = (name: string) =>
         enabled: name.length >= 3
     });
 
-export const useAdvancePayment = () => {
-    const queryClient = useQueryClient();
+// export const useAdvancePayment = () => {
+//     const queryClient = useQueryClient();
 
-    return useMutation<number, AxiosError, number>({
-        mutationFn: (id) => advancePaymentService(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["expenses-list"]
-            });
-        },
-        onMutate: (id) => {
-            console.log("Iniciando adiantamento de pagamento para o funcionário com ID:", id);
-        },
-        onError: (error) => {
-            console.error("Erro ao realizar o adiantamento de pagamento:", error);
-        },
-    });
-};
+//     return useMutation<number, AxiosError, number>({
+//         mutationFn: (id) => advancePaymentService(id),
+//         onSuccess: () => {
+//             queryClient.invalidateQueries({
+//                 queryKey: ["expenses-list"]
+//             });
+//         },
+//         onMutate: (id) => {
+//             console.log("Iniciando adiantamento de pagamento para o funcionário com ID:", id);
+//         },
+//         onError: (error) => {
+//             console.error("Erro ao realizar o adiantamento de pagamento:", error);
+//         },
+//     });
+// };
 
 
 
