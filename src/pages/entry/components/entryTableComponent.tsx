@@ -53,9 +53,17 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
     }).format(value);
   };
 
-  // Formata a data (createdAt) em pt-BR
-  const formatDate = (date?: string) => (date ? new Date(date).toLocaleDateString("pt-BR") : "-");
-
+  const formatDate = (date?: string) => {
+    if (!date) return "-";
+    const localDate = new Date(date);
+  
+    // Adicionar 1 dia
+    localDate.setDate(localDate.getDate() + 1);
+  
+    return localDate.toLocaleDateString("pt-BR");
+  };
+  
+  
   const handleClick = (event: React.MouseEvent<HTMLElement>, expenseId: number) => {
     setAnchorEl(event.currentTarget);
     setSelectedItem(expenseId);
@@ -180,7 +188,7 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
 
                 {/* Data formatada (createdAt) */}
                 <TableCell>
-                  {expense.createdAt ? formatDate(expense.createdAt) : "-"}
+                  {expense.date_time ? formatDate(expense.date_time) : "-"}
                 </TableCell>
 
                 {/* Valor formatado em R$ */}

@@ -37,6 +37,7 @@ export interface SalePayload {
 export interface SaleProductPayload{
     productId: number;
     quantity: number;
+    price: number;
 }
 
 export interface SearchByPeriodRequest {
