@@ -1,7 +1,5 @@
-import type { AxiosError } from "axios";
-import type { PersonBasicInfo } from "src/models/person";
 import type { ProductBasicInfo } from "src/models/product";
-import type { ApiErrorResponse } from "src/models/errorResponse";
+import type { PersonBasicInfo } from "src/models/person";
 import type { SalePayload, SaleProductPayload } from "src/models/sale";
 
 import React, { useState } from "react";
@@ -114,26 +112,20 @@ export default function CreateSalePage() {
 
   const onSubmit = (data: SalePayload) => {
     const payload: SalePayload = {
-        ...data,
-        products: productsList,
-        date_time: data.date_time,
+      ...data,
+      products: productsList,
+      date_time: data.date_time,
     };
 
     createSale.mutate(payload, {
-        onSuccess: () => {
-            addNotification("Venda criada com sucesso!", "success");
-            router.push("/sales");
-        },
-        onError: (error: AxiosError<ApiErrorResponse>) => {
-            // Verifica se o erro contém uma mensagem customizada
-            const errorMessage = error.response?.data?.message || "Ocorreu um erro ao criar a venda.";
-            
-            // Mostra a mensagem personalizada
-            addNotification(`Erro ao criar venda: ${errorMessage}`, "error");
-        },
+      onSuccess: () => {
+        addNotification("Venda criada com sucesso!", "success");
+        router.push("/sales");
+      },
+      onError: (error: any) => {
+        addNotification(`Erro ao criar venda: ${error.message}`, "error");
+      },
     });
-};
-
   };
 
   const total = calculateTotal();
