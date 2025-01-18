@@ -169,7 +169,7 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
       <Table stickyHeader aria-label="purchases table">
         <TableHead>
           <TableRow>
-            <TableCell sx={{ width: "5%" }}>
+            <TableCell sx={{ width: "8%" }}>
               <Checkbox
                 checked={purchases.length > 0 && selectedPurchaseIds.length === purchases.length}
                 indeterminate={selectedPurchaseIds.length > 0 && selectedPurchaseIds.length < purchases.length}

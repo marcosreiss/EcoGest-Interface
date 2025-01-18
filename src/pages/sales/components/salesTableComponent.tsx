@@ -195,6 +195,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
               />
             </TableCell>
             <TableCell>ID</TableCell>
+            <TableCell>Cliente</TableCell> {/* Nova coluna para o cliente */}
             <TableCell>Descrição</TableCell>
             <TableCell>Data</TableCell>
             <TableCell>Valor</TableCell>
@@ -218,16 +219,15 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                   />
                 </TableCell>
                 <TableCell>{sale.saleId}</TableCell>
+                <TableCell>{sale.customer?.name || "Cliente não informado"}</TableCell> {/* Exibindo o cliente vinculado */}
                 <TableCell>{sale.description}</TableCell>
-                {/* Data formatada */}
                 <TableCell>
-                  {sale.date_time
-                    ? formatDate(sale.date_time)
-                    : "N/A"}
+                  {sale.date_time ? formatDate(sale.date_time) : "N/A"}
                 </TableCell>
-                {/* Preço formatado em R$ */}
                 <TableCell>
-                  {sale.totalPrice !== undefined ? formatPrice(sale.totalPrice) : "N/A"}
+                  {sale.totalPrice !== undefined
+                    ? formatPrice(sale.totalPrice)
+                    : "N/A"}
                 </TableCell>
                 <TableCell>
                   <IconButton onClick={(event) => handleClick(event, sale.saleId)}>
@@ -260,16 +260,14 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                     </MenuItem>
                   </Menu>
                 </TableCell>
-
               </TableRow>
             ))
           ) : (
             <TableRow>
-              {/* Ajuste colSpan para 7 colunas */}
               <TableCell colSpan={7} align="center">
                 <div style={{ textAlign: "center", padding: "20px" }}>
                   <img
-                    src="/assets/icons/ic-content.svg" // Ajustado para usar forward slashes
+                    src="/assets/icons/ic-content.svg"
                     alt="Sem dados"
                     style={{ maxWidth: "150px", marginBottom: "10px" }}
                   />
@@ -280,6 +278,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
           )}
         </TableBody>
       </Table>
+
 
       {/* Dialog para Atualizar Status */}
       <Dialog open={statusModalOpen} onClose={handleCloseStatusModal}>

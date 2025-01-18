@@ -101,11 +101,11 @@ export default function EditExpensePage() {
       { id: expenseId, data: updatedData },
       {
         onSuccess: () => {
-          addNotification("Despesa atualizada com sucesso!", "success");
+          addNotification("Lançamento atualizado com sucesso!", "success");
           router.push("/expenses");
         },
         onError: (err: any) => {
-          addNotification(`Erro ao atualizar despesa: ${err.message}`, "error");
+          addNotification(`Erro ao atualizar Lançamento: ${err.message}`, "error");
         },
       }
     );
@@ -131,7 +131,7 @@ export default function EditExpensePage() {
       <DashboardContent>
         <Box sx={formStyle}>
           <Typography variant="h6" color="error">
-            Erro ao carregar a despesa: {error?.message}
+            Erro ao carregar o Lançamento: {error?.message}
           </Typography>
         </Box>
       </DashboardContent>
@@ -218,7 +218,7 @@ export default function EditExpensePage() {
                   <TextField
                     fullWidth
                     label="Descrição"
-                    placeholder="Descrição da despesa (opcional)"
+                    placeholder="Descrição do Lançamento (opcional)"
                     {...register("description")}
                     error={!!errors.description}
                     helperText={errors.description?.message}

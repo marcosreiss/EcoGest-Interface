@@ -51,11 +51,11 @@ export default function ExpensePage() {
     selectedExpenses.forEach((expense) => {
       deleteExpense.mutate(expense.entryId, {
         onSuccess: () => {
-          notification.addNotification("Despesa deletada com sucesso", "success");
+          notification.addNotification("Lançamento deletada com sucesso", "success");
           setSelectedExpenses([]);
         },
         onError: () => {
-          notification.addNotification("Erro ao deletar despesa, tente novamente mais tarde", "error");
+          notification.addNotification("Erro ao deletar Lançamento, tente novamente mais tarde", "error");
         },
       });
     });
@@ -64,7 +64,7 @@ export default function ExpensePage() {
   return (
     <>
       <Helmet>
-        <title>{`Despesas - ${CONFIG.appName}`}</title>
+        <title>{`Lançamentos - ${CONFIG.appName}`}</title>
       </Helmet>
 
       <DashboardContent maxWidth="lg">

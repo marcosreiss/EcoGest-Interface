@@ -52,8 +52,14 @@ export default function CreatePurchasePage() {
     register,
     handleSubmit,
     setValue,
+    watch, // Aqui é onde o watch é desestruturado
     formState: { errors },
-  } = useForm<PurchasePayload>();
+  } = useForm<PurchasePayload>({
+    defaultValues: {
+      discount: 0, // Default discount to 0 if não configurado
+    },
+  });
+  
 
   const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
   const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
@@ -76,26 +82,33 @@ export default function CreatePurchasePage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = e.target.files?.[0];
-  
+
     if (!uploadedFile) {
       return;
     }
-  
-    // Verifica o tipo do arquivo
+
     const allowedExtensions = ["application/pdf", "image/jpeg", "image/png"];
     if (!allowedExtensions.includes(uploadedFile.type)) {
       addNotification("Formato de arquivo inválido. Apenas .pdf, .jpg e .png são permitidos.", "error");
       return;
     }
-  
-    // Verifica o tamanho do arquivo
+
     if (uploadedFile.size > 5 * 1024 * 1024) {
       addNotification("Arquivo excede o limite de 5MB.", "error");
       return;
     }
-  
-    // Se todas as condições forem atendidas
+
     setFile(uploadedFile);
+  };
+
+
+  const calculateTotal = (): number => {
+    const total = productsList.reduce(
+      (acc, product) => acc + product.price * product.quantity,
+      0
+    );
+    const discount = parseFloat(String(watch("discount")) || "0"); // Força o valor para string
+    return Math.max(total - discount, 0); // Evita valores negativos no total
   };
   
 
@@ -127,7 +140,7 @@ export default function CreatePurchasePage() {
       paymentSlip: file,
       date_time: data.date_time,
     };
-    
+
     createPurchase.mutate(payload, {
       onSuccess: () => {
         addNotification("Compra criada com sucesso!", "success");
@@ -138,6 +151,9 @@ export default function CreatePurchasePage() {
       },
     });
   };
+
+  const total: number = calculateTotal();
+
 
   return (
     <>
@@ -215,7 +231,7 @@ export default function CreatePurchasePage() {
                     InputProps={{
                       startAdornment: <InputAdornment position="end">R$</InputAdornment>,
                     }}
-                    {...register("discount", {setValueAs: (v)=> (v === "" ? "0" : parseFloat(v))})}
+                    {...register("discount", { setValueAs: (v) => (v === "" ? 0 : parseFloat(v)) })}
                   />
                 </Grid>
 
@@ -268,6 +284,19 @@ export default function CreatePurchasePage() {
                       </TableBody>
                     </Table>
                   )}
+                </Grid>
+
+                {/* Total da Compra */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Total da Compra"
+                    value={`R$ ${total.toFixed(2)}`}
+                    variant="outlined"
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
                 </Grid>
 
                 {/* Upload do arquivo */}
@@ -394,7 +423,6 @@ export default function CreatePurchasePage() {
           </DialogActions>
         </form>
       </Dialog>
-
 
       {/* Dialog de confirmação para remover produto */}
       <Dialog

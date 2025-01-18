@@ -45,7 +45,7 @@ export interface SearchByPeriodRequest {
 }
 
 export interface CustomSaleReceiptInfo{
-    recebemosDe: string;
+    destinatario: string;
     valor: number;
     descricao: string;
 }

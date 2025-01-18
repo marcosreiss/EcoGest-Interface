@@ -33,6 +33,7 @@ const predefinedSubtypes = [
   "PAG FRETE",
   "VALE TRANSPORTE",
   "IMPOSTOS FEDERAIS",
+  "Trabalhos Profissionais"
 ];
 
 const EntryTableSearch: React.FC<TableSearchProps> = ({

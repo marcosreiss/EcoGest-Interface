@@ -26,6 +26,7 @@ import {
   DialogActions,
   DialogContent,
   CircularProgress,
+  InputAdornment,
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
@@ -53,6 +54,7 @@ export default function CreateSalePage() {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors },
   } = useForm<SalePayload>();
 
@@ -93,6 +95,18 @@ export default function CreateSalePage() {
     }
   };
 
+  const calculateTotal = (): number => {
+    const total = productsList.reduce((acc, product) => {
+      const productInfo = products?.data.find((p) => p.productId === product.productId);
+      const productPrice = Number(productInfo?.price) || 0; // Garante que seja numérico
+      return acc + productPrice * product.quantity;
+    }, 0);
+    const discount = watch("discount") || 0;
+    return total - discount;
+  };
+
+  const total = calculateTotal();
+
   const onSubmit = (data: SalePayload) => {
     const payload: SalePayload = {
       ...data,
@@ -128,7 +142,6 @@ export default function CreateSalePage() {
                   </Typography>
                 </Grid>
 
-                {/* Cliente */}
                 <Grid item xs={12}>
                   <Controller
                     name="personId"
@@ -141,7 +154,8 @@ export default function CreateSalePage() {
                         getOptionLabel={(option: PersonBasicInfo) => option.name || ""}
                         isOptionEqualToValue={(option, value) => option.personId === value.personId}
                         value={
-                          customers?.data.find((customer) => customer.personId === field.value) || null
+                          customers?.data.find((customer) => customer.personId === field.value) ||
+                          null
                         }
                         onChange={(_, newValue) => {
                           field.onChange(newValue ? newValue.personId : null);
@@ -157,7 +171,9 @@ export default function CreateSalePage() {
                               ...params.InputProps,
                               endAdornment: (
                                 <>
-                                  {loadingCustomers ? <CircularProgress color="inherit" size={20} /> : null}
+                                  {loadingCustomers ? (
+                                    <CircularProgress color="inherit" size={20} />
+                                  ) : null}
                                   {params.InputProps.endAdornment}
                                 </>
                               ),
@@ -169,7 +185,6 @@ export default function CreateSalePage() {
                   />
                 </Grid>
 
-                {/* Data da Venda */}
                 <Grid item xs={12}>
                   <Controller
                     name="date_time"
@@ -189,7 +204,6 @@ export default function CreateSalePage() {
                   />
                 </Grid>
 
-                {/* Descrição */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -201,7 +215,19 @@ export default function CreateSalePage() {
                   />
                 </Grid>
 
-                {/* Produtos Adicionados */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Desconto"
+                    placeholder="Desconto aplicado"
+                    type="number"
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+                    }}
+                    {...register("discount", { valueAsNumber: true })}
+                  />
+                </Grid>
+
                 <Grid item xs={12}>
                   <Button
                     startIcon={<AddIcon />}
@@ -216,39 +242,64 @@ export default function CreateSalePage() {
                         <TableRow>
                           <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Produto</TableCell>
                           <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Quantidade</TableCell>
+                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Preço Unitário</TableCell>
+                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Subtotal</TableCell>
                           <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Ações</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {productsList.map((product, index) => (
-                          <TableRow key={index}>
-                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
-                              {products?.data.find((p) => p.productId === product.productId)?.name ||
-                                "Produto não encontrado"}
-                            </TableCell>
-                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
-                              {product.quantity} Kg
-                            </TableCell>
-                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
-                              <IconButton
-                                color="error"
-                                onClick={() => {
-                                  setSelectedProductIndex(index);
-                                  setConfirmDialogOpen(true);
-                                }}
-                                size="small"
-                              >
-                                <DeleteIcon fontSize="small" />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {productsList.map((product, index) => {
+                          const productInfo = products?.data.find(
+                            (p) => p.productId === product.productId
+                          );
+                          const productPrice = Number(productInfo?.price) || 0;
+                          const subtotal = productPrice * product.quantity;
+                          return (
+                            <TableRow key={index}>
+                              <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                                {productInfo?.name || "Produto não encontrado"}
+                              </TableCell>
+                              <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                                {product.quantity} Kg
+                              </TableCell>
+                              <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                                R$ {productPrice.toFixed(2)}
+                              </TableCell>
+                              <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                                R$ {subtotal.toFixed(2)}
+                              </TableCell>
+                              <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                                <IconButton
+                                  color="error"
+                                  onClick={() => {
+                                    setSelectedProductIndex(index);
+                                    setConfirmDialogOpen(true);
+                                  }}
+                                  size="small"
+                                >
+                                  <DeleteIcon fontSize="small" />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                   )}
                 </Grid>
 
-                {/* Botão Enviar */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Total da Venda"
+                    value={`R$ ${total.toFixed(2)}`}
+                    variant="outlined"
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                </Grid>
+
                 <Grid item xs={12}>
                   <Button
                     type="submit"
@@ -268,7 +319,6 @@ export default function CreateSalePage() {
           </Grid>
         </Grid>
 
-        {/* Modal para adicionar produto */}
         <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
           <DialogTitle>Adicionar Produto</DialogTitle>
           <form onSubmit={handleModalSubmit(handleAddProduct)}>
@@ -339,7 +389,6 @@ export default function CreateSalePage() {
           </form>
         </Dialog>
 
-        {/* Dialog de confirmação para remover produto */}
         <Dialog
           open={confirmDialogOpen}
           onClose={() => setConfirmDialogOpen(false)}
