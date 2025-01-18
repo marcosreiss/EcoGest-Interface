@@ -35,3 +35,11 @@ export interface CustomEntryReceiptInfo{
     descricao: string;
     tipo: string;
 };
+
+export interface EntryPaginatedParams {
+    skip: number;
+    take: number;
+    startDate: string | null;
+    endDate: string | null;
+    subtype: string | null;
+}

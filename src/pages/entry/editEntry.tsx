@@ -15,7 +15,7 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
-import { useUpdateEntry, useGetEntryById } from "src/hooks/useExpense";
+import { useUpdateEntry, useGetEntryById } from "src/hooks/useEntry";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";

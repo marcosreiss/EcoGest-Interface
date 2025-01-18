@@ -13,7 +13,7 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
-import { useCreateEntry } from "src/hooks/useExpense";
+import { useCreateEntry } from "src/hooks/useEntry";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";

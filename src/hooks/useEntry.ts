@@ -5,6 +5,7 @@ import type {
     EntryPayload,
     EntryResponse,
     EntryListResponse,
+    EntryPaginatedParams,
     CustomEntryReceiptInfo,
 } from "src/models/entry";
 
@@ -22,10 +23,10 @@ import {
 } from "src/services/entryService";
 
 // Hook para listar despesas paginadas
-export const useGetEntriesPaginated = (skip: number, take: number) =>
+export const useGetEntriesPaginated = (params: EntryPaginatedParams) =>
     useQuery<EntryListResponse, AxiosError>({
-        queryKey: ["expenses-list", { skip, take }],
-        queryFn: () => getEntryPaginatedService(skip, take),
+        queryKey: ["expenses-list", { params }],
+        queryFn: () => getEntryPaginatedService(params),
     });
 
 // Hook para criar uma nova despesa

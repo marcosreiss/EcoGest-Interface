@@ -1,5 +1,4 @@
-import type { Entry } from "src/models/entry";
-import type { SearchByPeriodRequest } from "src/models/sale";
+import type { Entry, EntryPaginatedParams } from "src/models/entry";
 
 import * as React from "react";
 import { useState } from "react";
@@ -9,14 +8,14 @@ import Paper from "@mui/material/Paper";
 import { Box, Grid } from "@mui/material";
 import TableContainer from "@mui/material/TableContainer";
 
-import { useDeleteEntry, useGetEntriesPaginated, useSearchExpensesByPeriod } from "src/hooks/useExpense";
+import { useDeleteEntry, useGetEntriesPaginated } from "src/hooks/useEntry";
 
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
 import TableFooterComponent from "src/layouts/components/tableFooterComponent";
 
-import SalesTableSearch from "../sales/components/salesTableSearch";
+import EntryTableSearch from "./components/entryTableSearch";
 import ExpenseTableComponent from "./components/entryTableComponent";
 import ExpensesTableHeaderComponent from "./components/entryTableHeaderComponent";
 
@@ -28,22 +27,22 @@ export default function ExpensePage() {
   const [page, setPage] = useState(0);
 
   // Estados para filtro por período
-  const [searchByPeriodRequest, setSearchByPeriod] = useState<SearchByPeriodRequest>({
+  const [getAllParams, setGetAllParams] = useState<EntryPaginatedParams>({
     startDate: null,
     endDate: null,
+    subtype: null,
+    skip: page * rowsPerPage,
+    take: rowsPerPage
   });
 
   // Dados paginados e filtrados
-  const { data: pagedData, isLoading: isPagedLoading } = useGetEntriesPaginated(page * rowsPerPage, rowsPerPage);
-  const { data: filteredData, isLoading: isFilteredLoading } = useSearchExpensesByPeriod(searchByPeriodRequest);
+  const { data: pagedData, isLoading: isPagedLoading } = useGetEntriesPaginated(getAllParams);
 
   // Determina os dados a exibir (gerais ou filtrados)
-  const expenses = searchByPeriodRequest.startDate && searchByPeriodRequest.endDate
-    ? filteredData ?? []
-    : pagedData?.data ?? [];
+  const expenses = pagedData?.data ?? [];
 
   // Define o estado de carregamento
-  const isLoading = isFilteredLoading || isPagedLoading;
+  const isLoading = isPagedLoading;
 
   const deleteExpense = useDeleteEntry();
   const notification = useNotification();
@@ -76,12 +75,10 @@ export default function ExpensePage() {
             addButtonPath="/expenses/create"
           />
           <Grid item xs={12}>
-            <SalesTableSearch
+            <EntryTableSearch
               handleDelete={handleDeleteExpense}
               selectedRows={selectedExpenses}
-              setSearchByPeriod={setSearchByPeriod}
-              isSearchDisabled={false}
-              handleSearchChange={() => null} // Não utilizado no novo componente
+              setSearchByPeriod={setGetAllParams}
             />
 
             <TableContainer component={Paper} sx={{ height: "65vh", display: "flex", flexDirection: "column" }}>
@@ -93,14 +90,12 @@ export default function ExpensePage() {
                 />
               </Box>
 
-              {filteredData === undefined && (
                 <TableFooterComponent
                   setPage={setPage}
                   page={page}
                   rowsPerPage={rowsPerPage}
                   totalItems={pagedData?.meta?.totalItems || 0}
                 />
-              )}
             </TableContainer>
           </Grid>
         </Grid>

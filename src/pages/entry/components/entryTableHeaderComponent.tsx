@@ -15,7 +15,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 
-import { useGenerateCustomExpenseReceipt } from "src/hooks/useExpense";
+import { useGenerateCustomExpenseReceipt } from "src/hooks/useEntry";
 
 import { useNotification } from "src/context/NotificationContext";
 

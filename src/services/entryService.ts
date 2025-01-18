@@ -3,14 +3,15 @@ import type {
     EntryPayload,
     EntryResponse,
     EntryListResponse,
+    EntryPaginatedParams,
     CustomEntryReceiptInfo,
 } from "src/models/entry";
 
 import api from "./api";
 
 // Listar despesas paginadas
-export const getEntryPaginatedService = async (skip: number, take: number): Promise<EntryListResponse> => {
-    const response = await api.get<EntryListResponse>("/entry", { params: { skip, take } });
+export const getEntryPaginatedService = async (params: EntryPaginatedParams): Promise<EntryListResponse> => {
+    const response = await api.get<EntryListResponse>("/entry", { params });
     return response.data;
 };
 

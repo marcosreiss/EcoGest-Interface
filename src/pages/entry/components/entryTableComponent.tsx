@@ -15,7 +15,7 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
-import { useDeleteEntry, useGetExpenseReceipt } from "src/hooks/useExpense";
+import { useDeleteEntry, useGetExpenseReceipt } from "src/hooks/useEntry";
 
 import { EntryType, type Entry } from "src/models/entry";
 import { useNotification } from "src/context/NotificationContext";

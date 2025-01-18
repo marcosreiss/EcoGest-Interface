@@ -11,7 +11,7 @@ import {
 
 import { useRouter } from "src/routes/hooks";
 
-import { useGetEntryById } from "src/hooks/useExpense";
+import { useGetEntryById } from "src/hooks/useEntry";
 
 import { CONFIG } from "src/config-global";
 import { EntryType } from "src/models/entry";
