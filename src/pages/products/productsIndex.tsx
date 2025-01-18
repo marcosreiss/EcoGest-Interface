@@ -24,7 +24,7 @@ import ProductTableComponent from './components/productTableComponent';
 export default function ProductPage() {
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
 
-  const rowsPerPage = 5;
+  const rowsPerPage = 25;
   const [page, setPage] = useState(0);
 
   const [debouncedSearchString, setDebouncedSearchString] = useState('');

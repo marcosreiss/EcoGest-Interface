@@ -23,7 +23,7 @@ import TableFooterComponent from '../../layouts/components/tableFooterComponent'
 
 export default function SalesIndex() {
     const [selectedSales, setSelectedSales] = useState<Sale[]>([]);
-    const rowsPerPage = 5;
+    const rowsPerPage = 25;
     const [page, setPage] = useState(0);
 
     // Estados para gerenciar os dados

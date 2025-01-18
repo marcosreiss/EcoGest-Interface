@@ -22,7 +22,7 @@ import TableFooterComponent from "../../layouts/components/tableFooterComponent"
 
 export default function PayableIndex() {
   const [selectedPaybles, setSelectedPaybles] = useState<Payble[]>([]);
-  const rowsPerPage = 5;
+  const rowsPerPage = 25;
   const [page, setPage] = useState(0);
   const [searchByPeriod, setSearchByPeriod] = useState<PayableParams>({
     skip: page * rowsPerPage,

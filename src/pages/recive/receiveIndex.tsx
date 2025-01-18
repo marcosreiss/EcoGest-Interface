@@ -22,7 +22,7 @@ import ReciveTableComponent from "./components/reciveTableComponent";
 
 export default function RecivePage() {
   const [selectedRecives, setSelectedRecives] = useState<Receive[]>([]);
-  const rowsPerPage = 5;
+  const rowsPerPage = 25;
   const [page, setPage] = useState(0);
   const [searchByPeriod, setSearchByPeriod] = useState<ReceiveParams>(
     { skip: page * rowsPerPage,

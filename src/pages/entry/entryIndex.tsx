@@ -13,17 +13,17 @@ import { useDeleteEntry, useGetEntriesPaginated } from "src/hooks/useEntry";
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
-import TableFooterComponent from "src/layouts/components/tableFooterComponent";
 
 import EntryTableSearch from "./components/entryTableSearch";
 import ExpenseTableComponent from "./components/entryTableComponent";
+import EntryTableFooterComponent from "./components/entryTableFooter";
 import ExpensesTableHeaderComponent from "./components/entryTableHeaderComponent";
 
 // ----------------------------------------------------------------------
 
 export default function ExpensePage() {
   const [selectedExpenses, setSelectedExpenses] = useState<Entry[]>([]);
-  const rowsPerPage = 5;
+  const rowsPerPage = 25;
   const [page, setPage] = useState(0);
 
   // Estados para filtro por período
@@ -90,8 +90,9 @@ export default function ExpensePage() {
                 />
               </Box>
 
-                <TableFooterComponent
+                <EntryTableFooterComponent
                   setPage={setPage}
+                  setParams={setGetAllParams}
                   page={page}
                   rowsPerPage={rowsPerPage}
                   totalItems={pagedData?.meta?.totalItems || 0}
