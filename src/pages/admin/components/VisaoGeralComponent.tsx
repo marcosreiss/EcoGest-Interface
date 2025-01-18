@@ -5,8 +5,12 @@ import {
   Typography,
   CardContent,
   LinearProgress,
+  Avatar,
 } from "@mui/material";
-
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import WarningIcon from "@mui/icons-material/Warning";
 import { useGetSaldoProjetado, useGetPaybleRecibleAmount } from "src/hooks/useKpi";
 
 export default function VisaoGeralComponent() {
@@ -31,44 +35,62 @@ export default function VisaoGeralComponent() {
   };
 
   return (
-    <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: "background.default", minHeight: "100vh" }}>
-      <Grid container spacing={3}>
-        {/* Título e Relatório Diário */}
+    <Box
+      sx={{
+        p: { xs: 2, md: 4 },
+        bgcolor: "background.default",
+        minHeight: "100vh",
+      }}
+    >
+      <Grid container spacing={4}>
+        {/* Título */}
         <Grid item xs={12}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
-              justifyContent: "space-between",
-              alignItems: { xs: "flex-start", sm: "center" },
-              mb: 3,
-            }}
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{ mb: 2, fontWeight: "bold" }}
           >
-            <Typography variant="h4" component="h1">
-              Visão Geral
-            </Typography>
-          </Box>
+            Visão Geral
+          </Typography>
         </Grid>
 
-        {/* Exibe LinearProgress enquanto os dados estão sendo carregados */}
+        {/* Loading Indicator */}
         {isLoading && (
           <Grid item xs={12}>
             <LinearProgress />
           </Grid>
         )}
 
-        {/* Saldo Total */}
+        {/* Saldo Total Projetado */}
         {!isLoading && (
           <Grid item xs={12}>
-            <Card sx={{ boxShadow: 3 }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Saldo Total Projetado
-                </Typography>
-                <Typography variant="h5">
+            <Card
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                p: 3,
+                borderRadius: 3,
+                boxShadow: 5,
+                bgcolor: "primary.light",
+                color: "white",
+              }}
+            >
+              <Avatar
+                sx={{
+                  bgcolor: "primary.dark",
+                  width: 56,
+                  height: 56,
+                  mr: 3,
+                }}
+              >
+                <AttachMoneyIcon fontSize="large" />
+              </Avatar>
+              <Box>
+                <Typography variant="h6">Saldo Total Projetado</Typography>
+                <Typography variant="h4" sx={{ fontWeight: "bold" }}>
                   {formatPrice(saldoProjetado?.profit.profit)}
                 </Typography>
-              </CardContent>
+              </Box>
             </Card>
           </Grid>
         )}
@@ -76,27 +98,40 @@ export default function VisaoGeralComponent() {
         {/* Indicadores */}
         {!isLoading && (
           <Grid item xs={12}>
-            <Grid container spacing={3}>
+            <Grid container spacing={4}>
               {/* Contas a Receber */}
               <Grid item xs={12} sm={6} md={3}>
                 <Card
                   sx={{
-                    height: "100%",
-                    boxShadow: 3,
-                    transition: "transform 0.3s",
+                    p: 3,
+                    boxShadow: 4,
+                    borderRadius: 3,
+                    transition: "transform 0.3s, box-shadow 0.3s",
                     "&:hover": {
-                      transform: "scale(1.05)",
+                      transform: "translateY(-5px)",
+                      boxShadow: 6,
                     },
                   }}
                 >
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Contas a Receber
-                    </Typography>
-                    <Typography variant="h5">
-                      {paybleRecibleAmount?.data.receivables.open || 0}
-                    </Typography>
-                  </CardContent>
+                  <Box display="flex" alignItems="center">
+                    <Avatar
+                      sx={{
+                        bgcolor: "success.main",
+                        width: 48,
+                        height: 48,
+                        mr: 2,
+                      }}
+                    >
+                      <TrendingUpIcon />
+                    </Avatar>
+                    <Typography variant="h6">Contas a Receber</Typography>
+                  </Box>
+                  <Typography
+                    variant="h5"
+                    sx={{ mt: 2, fontWeight: "bold", color: "success.dark" }}
+                  >
+                    {formatPrice(paybleRecibleAmount?.data.receivables.open)}
+                  </Typography>
                 </Card>
               </Grid>
 
@@ -104,22 +139,35 @@ export default function VisaoGeralComponent() {
               <Grid item xs={12} sm={6} md={3}>
                 <Card
                   sx={{
-                    height: "100%",
-                    boxShadow: 3,
-                    transition: "transform 0.3s",
+                    p: 3,
+                    boxShadow: 4,
+                    borderRadius: 3,
+                    transition: "transform 0.3s, box-shadow 0.3s",
                     "&:hover": {
-                      transform: "scale(1.05)",
+                      transform: "translateY(-5px)",
+                      boxShadow: 6,
                     },
                   }}
                 >
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Contas a Pagar
-                    </Typography>
-                    <Typography variant="h5">
-                      {paybleRecibleAmount?.data.payables.open || 0}
-                    </Typography>
-                  </CardContent>
+                  <Box display="flex" alignItems="center">
+                    <Avatar
+                      sx={{
+                        bgcolor: "error.main",
+                        width: 48,
+                        height: 48,
+                        mr: 2,
+                      }}
+                    >
+                      <TrendingDownIcon />
+                    </Avatar>
+                    <Typography variant="h6">Contas a Pagar</Typography>
+                  </Box>
+                  <Typography
+                    variant="h5"
+                    sx={{ mt: 2, fontWeight: "bold", color: "error.dark" }}
+                  >
+                    {formatPrice(paybleRecibleAmount?.data.payables.open)}
+                  </Typography>
                 </Card>
               </Grid>
 
@@ -127,22 +175,35 @@ export default function VisaoGeralComponent() {
               <Grid item xs={12} sm={6} md={3}>
                 <Card
                   sx={{
-                    height: "100%",
-                    boxShadow: 3,
-                    transition: "transform 0.3s",
+                    p: 3,
+                    boxShadow: 4,
+                    borderRadius: 3,
+                    transition: "transform 0.3s, box-shadow 0.3s",
                     "&:hover": {
-                      transform: "scale(1.05)",
+                      transform: "translateY(-5px)",
+                      boxShadow: 6,
                     },
                   }}
                 >
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Contas Receber Atrasadas
-                    </Typography>
-                    <Typography variant="h5">
-                      {paybleRecibleAmount?.data.receivables.overdue || 0}
-                    </Typography>
-                  </CardContent>
+                  <Box display="flex" alignItems="center">
+                    <Avatar
+                      sx={{
+                        bgcolor: "warning.main",
+                        width: 48,
+                        height: 48,
+                        mr: 2,
+                      }}
+                    >
+                      <WarningIcon />
+                    </Avatar>
+                    <Typography variant="h6">Contas Receber Atrasadas</Typography>
+                  </Box>
+                  <Typography
+                    variant="h5"
+                    sx={{ mt: 2, fontWeight: "bold", color: "warning.dark" }}
+                  >
+                    {formatPrice(paybleRecibleAmount?.data.receivables.overdue)}
+                  </Typography>
                 </Card>
               </Grid>
 
@@ -150,22 +211,35 @@ export default function VisaoGeralComponent() {
               <Grid item xs={12} sm={6} md={3}>
                 <Card
                   sx={{
-                    height: "100%",
-                    boxShadow: 3,
-                    transition: "transform 0.3s",
+                    p: 3,
+                    boxShadow: 4,
+                    borderRadius: 3,
+                    transition: "transform 0.3s, box-shadow 0.3s",
                     "&:hover": {
-                      transform: "scale(1.05)",
+                      transform: "translateY(-5px)",
+                      boxShadow: 6,
                     },
                   }}
                 >
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Contas Pagar Atrasadas
-                    </Typography>
-                    <Typography variant="h5">
-                      {paybleRecibleAmount?.data.payables.overdue || 0}
-                    </Typography>
-                  </CardContent>
+                  <Box display="flex" alignItems="center">
+                    <Avatar
+                      sx={{
+                        bgcolor: "error.main",
+                        width: 48,
+                        height: 48,
+                        mr: 2,
+                      }}
+                    >
+                      <WarningIcon />
+                    </Avatar>
+                    <Typography variant="h6">Contas Pagar Atrasadas</Typography>
+                  </Box>
+                  <Typography
+                    variant="h5"
+                    sx={{ mt: 2, fontWeight: "bold", color: "error.dark" }}
+                  >
+                    {formatPrice(paybleRecibleAmount?.data.payables.overdue)}
+                  </Typography>
                 </Card>
               </Grid>
             </Grid>

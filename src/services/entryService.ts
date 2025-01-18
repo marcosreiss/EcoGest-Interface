@@ -39,14 +39,14 @@ export const getEntryByIdService = async (id: number): Promise<Entry> => {
     return response.data;
 };
 
-// Obter recibo de Despesa
-export const getExpenseReceiptService = async (expenseId: number): Promise<Blob> => {
-    const response = await api.get(`/expenses/receipt`, {
-        params: { id: expenseId },
+// Obter recibo de Despesa por ID
+export const getExpenseReceiptService = async (id: number): Promise<Blob> => {
+    const response = await api.get<Blob>(`/entry/receipt?id=${id}`, {
         responseType: "blob",
     });
     return response.data;
 };
+
 
 // Obter recibo de despesa Customizado
 export const getCustomExpenseReceiptService = async (info: CustomEntryReceiptInfo): Promise<Blob> => {

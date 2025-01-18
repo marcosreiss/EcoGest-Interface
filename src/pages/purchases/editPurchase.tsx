@@ -54,8 +54,14 @@ export default function EditPurchasePage() {
     register,
     handleSubmit,
     setValue,
+    control,
+    watch,
     formState: { errors },
-  } = useForm<PurchasePayload>();
+  } = useForm<PurchasePayload>({
+    defaultValues: {
+      discount: 0, // Default discount to 0 if not set
+    },
+  });
 
   const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
   const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
@@ -79,13 +85,11 @@ export default function EditPurchasePage() {
 
   useEffect(() => {
     if (purchase) {
-      // Set form values
       setValue("personId", purchase.supplier.personId);
       setValue("description", purchase.description);
       setValue("date_time", purchase.date_time ? purchase.date_time.split("T")[0] : "");
-      setValue("discount", purchase.discount);
+      setValue("discount", purchase.discount ?? 0);
 
-      // Set products list
       const list: PurchasePayloadProduct[] = purchase.products.map((product) => ({
         productId: product.product.productId,
         quantity: product.quantity,
@@ -98,28 +102,19 @@ export default function EditPurchasePage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = e.target.files?.[0];
-  
-    if (!uploadedFile) {
-      return;
-    }
-  
-    // Verifica o tipo do arquivo
+    if (!uploadedFile) return;
+
     const allowedExtensions = ["application/pdf", "image/jpeg", "image/png"];
     if (!allowedExtensions.includes(uploadedFile.type)) {
       addNotification("Formato de arquivo inválido. Apenas .pdf, .jpg e .png são permitidos.", "error");
       return;
     }
-  
-    // Verifica o tamanho do arquivo
     if (uploadedFile.size > 5 * 1024 * 1024) {
       addNotification("Arquivo excede o limite de 5MB.", "error");
       return;
     }
-  
-    // Se todas as condições forem atendidas
     setFile(uploadedFile);
   };
-  
 
   const handleAddProduct = (data: PurchasePayloadProduct) => {
     setProductsList([
@@ -142,9 +137,21 @@ export default function EditPurchasePage() {
     }
   };
 
+  const calculateTotal = (): number => {
+    const total = productsList.reduce(
+      (acc, product) => acc + product.price * product.quantity,
+      0
+    );
+    const discount = watch("discount") || 0;
+    return total - discount;
+  };
+
+  const total = calculateTotal();
+
   const onSubmit = (data: PurchasePayload) => {
     const payload: PurchasePayload = {
       ...data,
+      discount: data.discount || 0, // Ensure discount is sent as 0 if cleared
       products: productsList,
       paymentSlip: file,
       date_time: data.date_time,
@@ -164,17 +171,6 @@ export default function EditPurchasePage() {
     );
   };
 
-  if (loadingPurchase) {
-    return (
-      <DashboardContent maxWidth="lg">
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
-          <CircularProgress />
-        </Box>
-      </DashboardContent>
-    );
-  }
-  console.log(purchase);
-  
   return (
     <>
       <Helmet>
@@ -190,8 +186,6 @@ export default function EditPurchasePage() {
                     Editar Compra
                   </Typography>
                 </Grid>
-
-                {/* Fornecedor */}
                 <Grid item xs={12}>
                   <Autocomplete
                     options={suppliers?.data || []}
@@ -217,8 +211,6 @@ export default function EditPurchasePage() {
                     )}
                   />
                 </Grid>
-
-                {/* Descrição */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -229,8 +221,6 @@ export default function EditPurchasePage() {
                     {...register("description")}
                   />
                 </Grid>
-
-                {/* Data da Compra */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -242,21 +232,17 @@ export default function EditPurchasePage() {
                     helperText={errors.date_time?.message}
                   />
                 </Grid>
-
-                {/* Desconto */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Desconto (R$)"
                     type="number"
                     InputProps={{
-                      startAdornment: <InputAdornment position="end">R$</InputAdornment>,
+                      startAdornment: <InputAdornment position="start">R$</InputAdornment>,
                     }}
                     {...register("discount")}
                   />
                 </Grid>
-
-                {/* Produtos Adicionados */}
                 <Grid item xs={12}>
                   <Button
                     startIcon={<AddIcon />}
@@ -269,26 +255,22 @@ export default function EditPurchasePage() {
                     <Table size="small" sx={{ marginTop: 3, marginBottom: 3 }}>
                       <TableHead>
                         <TableRow>
-                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Produto</TableCell>
-                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Qtd</TableCell>
-                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Preço</TableCell>
-                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Ações</TableCell>
+                          <TableCell>Produto</TableCell>
+                          <TableCell>Qtd</TableCell>
+                          <TableCell>Preço</TableCell>
+                          <TableCell>Ações</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {productsList.map((product, index) => (
                           <TableRow key={index}>
-                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                            <TableCell>
                               {products?.data.find((p) => p.productId === product.productId)?.name ||
                                 "Produto não encontrado"}
                             </TableCell>
-                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
-                              {product.quantity} Kg
-                            </TableCell>
-                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
-                              R$ {product.price}
-                            </TableCell>
-                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                            <TableCell>{product.quantity} Kg</TableCell>
+                            <TableCell>R$ {product.price}</TableCell>
+                            <TableCell>
                               <IconButton
                                 color="error"
                                 onClick={() => {
@@ -306,24 +288,16 @@ export default function EditPurchasePage() {
                     </Table>
                   )}
                 </Grid>
-
-                {/* Upload do arquivo */}
                 <Grid item xs={12}>
-                  <Button variant="contained" component="label" fullWidth>
-                    Upload Nota Fiscal
-                    <input
-                      type="file"
-                      hidden
-                      accept=".pdf,.png,.jpg,.jpeg"
-                      onChange={handleFileChange}
-                    />
-                  </Button>
-                  {file && file instanceof File && (
-                    <Typography variant="body2">Arquivo: {file.name}</Typography>
-                  )}
+                  <TextField
+                    fullWidth
+                    label="Total da Compra"
+                    value={`R$ ${total.toFixed(2)}`}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
                 </Grid>
-
-                {/* Botão de Enviar */}
                 <Grid item xs={12}>
                   <Button
                     type="submit"
@@ -333,9 +307,6 @@ export default function EditPurchasePage() {
                     onClick={handleSubmit(onSubmit)}
                   >
                     Atualizar Compra
-                    {updatePurchase.isPending && (
-                      <CircularProgress size={20} sx={{ marginLeft: 2 }} />
-                    )}
                   </Button>
                 </Grid>
               </Grid>

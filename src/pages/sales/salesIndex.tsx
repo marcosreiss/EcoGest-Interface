@@ -96,8 +96,8 @@ export default function SalesIndex() {
                                 rowsPerPage={rowsPerPage}
                                 totalItems={
                                     searchByPeriodRequest.startDate && searchByPeriodRequest.endDate
-                                        ? filteredData?.meta?.totalItems || 0 // Se undefined, retorna 0
-                                        : pagedData?.meta?.totalItems || 0 // Se undefined, retorna 0
+                                        ? filteredData?.meta?.total || 0 // Se undefined, retorna 0
+                                        : pagedData?.meta?.total || 0 // Se undefined, retorna 0
                                 }
                             />
                         </TableContainer>

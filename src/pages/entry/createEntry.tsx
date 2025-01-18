@@ -33,6 +33,7 @@ const predefinedSubtypes = [
   "PAG FRETE",
   "VALE TRANSPORTE",
   "IMPOSTOS FEDERAIS",
+  "Trabalhos Profissionais"
 ];
 
 export default function CreateExpensePage() {
@@ -74,11 +75,11 @@ export default function CreateExpensePage() {
 
     createExpense.mutate(formattedData, {
       onSuccess: () => {
-        addNotification("Despesa cadastrada com sucesso!", "success");
+        addNotification("Lançamento cadastrado com sucesso!", "success");
         router.push("/expenses");
       },
       onError: (error: any) => {
-        addNotification(`Erro ao cadastrar despesa: ${error.message}`, "error");
+        addNotification(`Erro ao cadastrar Lançamento: ${error.message}`, "error");
       },
     });
   };
@@ -166,7 +167,7 @@ export default function CreateExpensePage() {
                   <TextField
                     fullWidth
                     label="Descrição"
-                    placeholder="Descrição da despesa (opcional)"
+                    placeholder="Descrição do Lançamento (opcional)"
                     {...register("description")}
                     error={!!errors.description}
                     helperText={errors.description?.message}

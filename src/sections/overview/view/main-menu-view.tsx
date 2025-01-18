@@ -57,7 +57,7 @@ export function OverviewMenuView() {
         }}
       >
         <img
-          src="public/assets/logo/logo.png"
+          src="/assets/logo/logo.png"
           alt="logo ecogest"
           style={{
             maxWidth: '140px', // Define um tamanho máximo para a imagem

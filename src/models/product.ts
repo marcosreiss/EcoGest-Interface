@@ -23,6 +23,8 @@ export interface CreateProductPayload{
 export interface ProductBasicInfo{
     productId: number;
     name: string;
+    weightAmount: number;
+    price: number;
 }
 
 export interface ProductBasicInfoList{

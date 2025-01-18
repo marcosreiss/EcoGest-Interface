@@ -56,6 +56,7 @@ export default function EditSalePage() {
     handleSubmit,
     setValue,
     control,
+    watch,
     formState: { errors },
   } = useForm<SalePayload>();
 
@@ -115,13 +116,24 @@ export default function EditSalePage() {
     }
   };
 
+  const calculateTotal = (): number => {
+    const total = productsList.reduce((acc, product) => {
+      const productInfo = products?.data.find((p) => p.productId === product.productId);
+      const productPrice = Number(productInfo?.price) || 0;
+      return acc + productPrice * product.quantity;
+    }, 0);
+    const discount = watch("discount") || 0;
+    return total - discount;
+  };
+
+  const total = calculateTotal();
+
   const onSubmit = (data: SalePayload) => {
     const payload: SalePayload = {
       ...data,
       products: productsList,
     };
-    console.log(payload);
-    
+
     updateSale.mutate(
       { id: saleId, data: payload },
       {
@@ -145,7 +157,7 @@ export default function EditSalePage() {
       </DashboardContent>
     );
   }
-  
+
   return (
     <>
       <Helmet>
@@ -163,7 +175,6 @@ export default function EditSalePage() {
                   </Typography>
                 </Grid>
 
-                {/* Cliente */}
                 <Grid item xs={12}>
                   <Controller
                     name="personId"
@@ -176,7 +187,8 @@ export default function EditSalePage() {
                         getOptionLabel={(option: PersonBasicInfo) => option.name || ""}
                         isOptionEqualToValue={(option, value) => option.personId === value.personId}
                         value={
-                          customers?.data.find((customer) => customer.personId === field.value) || null
+                          customers?.data.find((customer) => customer.personId === field.value) ||
+                          null
                         }
                         onChange={(_, newValue) => {
                           field.onChange(newValue ? newValue.personId : null);
@@ -192,7 +204,9 @@ export default function EditSalePage() {
                               ...params.InputProps,
                               endAdornment: (
                                 <>
-                                  {loadingCustomers ? <CircularProgress color="inherit" size={20} /> : null}
+                                  {loadingCustomers ? (
+                                    <CircularProgress color="inherit" size={20} />
+                                  ) : null}
                                   {params.InputProps.endAdornment}
                                 </>
                               ),
@@ -204,7 +218,6 @@ export default function EditSalePage() {
                   />
                 </Grid>
 
-                {/* Data da Venda */}
                 <Grid item xs={12}>
                   <Controller
                     name="date_time"
@@ -224,7 +237,6 @@ export default function EditSalePage() {
                   />
                 </Grid>
 
-                {/* Descrição */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -236,7 +248,6 @@ export default function EditSalePage() {
                   />
                 </Grid>
 
-                {/* Desconto */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -245,11 +256,10 @@ export default function EditSalePage() {
                     InputProps={{
                       startAdornment: <InputAdornment position="end">R$</InputAdornment>,
                     }}
-                    {...register("discount")}
+                    {...register("discount", { valueAsNumber: true })}
                   />
                 </Grid>
 
-                {/* Produtos Adicionados */}
                 <Grid item xs={12}>
                   <Button
                     startIcon={<AddIcon />}
@@ -296,7 +306,18 @@ export default function EditSalePage() {
                   )}
                 </Grid>
 
-                {/* Botão Atualizar */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Total da Venda"
+                    value={`R$ ${total.toFixed(2)}`}
+                    variant="outlined"
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                </Grid>
+
                 <Grid item xs={12}>
                   <Button
                     type="submit"
@@ -317,7 +338,6 @@ export default function EditSalePage() {
           </Grid>
         </Grid>
 
-        {/* Modal para adicionar produto */}
         <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
           <DialogTitle>Adicionar Produto</DialogTitle>
           <form onSubmit={handleModalSubmit(handleAddProduct)}>
@@ -387,7 +407,6 @@ export default function EditSalePage() {
           </form>
         </Dialog>
 
-        {/* Dialog de confirmação para remover produto */}
         <Dialog
           open={confirmDialogOpen}
           onClose={() => setConfirmDialogOpen(false)}
