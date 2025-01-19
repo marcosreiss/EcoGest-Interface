@@ -23,17 +23,23 @@ interface TableSearchProps {
 }
 
 const predefinedSubtypes = [
-  "Peças e Serviços",
-  "Folha de pagamento",
-  "Diárias",
-  "MERCEDES 710 - HPP1C70",
-  "MERCEDES 709 - JKW6I19",
-  "MERCEDES 708 - LVR7727",
-  "IMPOSTO ICMS FRETE",
-  "PAG FRETE",
-  "VALE TRANSPORTE",
-  "IMPOSTOS FEDERAIS",
-  "Trabalhos Profissionais"
+"Peças e Serviços",
+"Folha de pagamento",
+"Diárias",
+"Mercedes 710 - HPP1C70",
+"Mercedes 709 - JKW6I19",
+"Mercedes 708 - LVR7727",
+"Imposto ICMS Frete",
+"Pag Frete",
+"Vale Transporte",
+"Impostos Federais",
+"Trabalhos Profissionais",
+"Suprimentos",
+"EPIs",
+"Manutenção Prensa",
+"Manutenção Empilhadeira",
+"Pagamento a fornecedores",
+"Gastos com energia e internet",
 ];
 
 const EntryTableSearch: React.FC<TableSearchProps> = ({
