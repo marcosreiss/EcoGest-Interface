@@ -1,5 +1,7 @@
+import type { AxiosError } from "axios";
 import type { PersonBasicInfo } from "src/models/person";
 import type { ProductBasicInfo } from "src/models/product";
+import type { ApiErrorResponse } from "src/models/errorResponse";
 import type { SalePayload, SaleProductPayload } from "src/models/sale";
 
 import { Helmet } from "react-helmet-async";
@@ -90,6 +92,7 @@ export default function EditSalePage() {
       const list: SaleProductPayload[] = sale.products.map((product) => ({
         productId: product.product.productId,
         quantity: product.quantity,
+        price: product.product.price || 0, // Certifique-se de que o preço é atribuído
       }));
 
       setProductsList(list);
@@ -102,6 +105,7 @@ export default function EditSalePage() {
       {
         productId: data.productId,
         quantity: Number(data.quantity),
+        price: Number(data.price), // Certifique-se de incluir o preço
       },
     ]);
     resetModal();
@@ -117,11 +121,7 @@ export default function EditSalePage() {
   };
 
   const calculateTotal = (): number => {
-    const total = productsList.reduce((acc, product) => {
-      const productInfo = products?.data.find((p) => p.productId === product.productId);
-      const productPrice = Number(productInfo?.price) || 0;
-      return acc + productPrice * product.quantity;
-    }, 0);
+    const total = productsList.reduce((acc, product) => acc + product.price * product.quantity, 0);
     const discount = watch("discount") || 0;
     return total - discount;
   };
@@ -141,8 +141,12 @@ export default function EditSalePage() {
           addNotification("Venda atualizada com sucesso!", "success");
           router.push("/sales");
         },
-        onError: (error: any) => {
-          addNotification(`Erro ao atualizar venda: ${error.message}`, "error");
+        onError: (error: AxiosError<ApiErrorResponse>) => {
+          // Verifica se o erro contém uma mensagem customizada
+          const errorMessage = error.response?.data?.message || "Ocorreu um erro ao criar a venda.";
+
+          // Mostra a mensagem personalizada
+          addNotification(`Erro ao criar venda: ${errorMessage}`, "error");
         },
       }
     );
@@ -200,17 +204,6 @@ export default function EditSalePage() {
                             variant="outlined"
                             error={!!errors.personId}
                             helperText={errors.personId?.message}
-                            InputProps={{
-                              ...params.InputProps,
-                              endAdornment: (
-                                <>
-                                  {loadingCustomers ? (
-                                    <CircularProgress color="inherit" size={20} />
-                                  ) : null}
-                                  {params.InputProps.endAdornment}
-                                </>
-                              ),
-                            }}
                           />
                         )}
                       />
@@ -272,29 +265,30 @@ export default function EditSalePage() {
                     <Table size="small" sx={{ marginTop: 3, marginBottom: 3 }}>
                       <TableHead>
                         <TableRow>
-                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Produto</TableCell>
-                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Quantidade</TableCell>
-                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Ações</TableCell>
+                          <TableCell>Produto</TableCell>
+                          <TableCell>Quantidade</TableCell>
+                          <TableCell>Preço Unitário</TableCell>
+                          <TableCell>Subtotal</TableCell>
+                          <TableCell>Ações</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {productsList.map((product, index) => (
                           <TableRow key={index}>
-                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                            <TableCell>
                               {products?.data.find((p) => p.productId === product.productId)?.name ||
                                 "Produto não encontrado"}
                             </TableCell>
-                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
-                              {product.quantity} Kg
-                            </TableCell>
-                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                            <TableCell>{product.quantity}</TableCell>
+                            <TableCell>R$ {Number(product.price || 0).toFixed(2)}</TableCell>
+                            <TableCell>R$ {(Number(product.price || 0) * product.quantity).toFixed(2)}</TableCell>
+                            <TableCell>
                               <IconButton
                                 color="error"
                                 onClick={() => {
                                   setSelectedProductIndex(index);
                                   setConfirmDialogOpen(true);
                                 }}
-                                size="small"
                               >
                                 <DeleteIcon fontSize="small" />
                               </IconButton>
@@ -325,7 +319,6 @@ export default function EditSalePage() {
                     color="primary"
                     fullWidth
                     onClick={handleSubmit(onSubmit)}
-                    disabled={updateSale.isPending}
                   >
                     Atualizar Venda
                     {updateSale.isPending && (
@@ -338,6 +331,7 @@ export default function EditSalePage() {
           </Grid>
         </Grid>
 
+        {/* Modal de Adicionar Produto */}
         <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
           <DialogTitle>Adicionar Produto</DialogTitle>
           <form onSubmit={handleModalSubmit(handleAddProduct)}>
@@ -352,29 +346,17 @@ export default function EditSalePage() {
                     loading={loadingProducts}
                     getOptionLabel={(option: ProductBasicInfo) => option.name || ""}
                     isOptionEqualToValue={(option, value) => option.productId === value.productId}
-                    value={
-                      products?.data.find((product) => product.productId === field.value) || null
-                    }
                     onChange={(_, newValue) => {
                       field.onChange(newValue ? newValue.productId : null);
                     }}
                     renderInput={(params) => (
                       <TextField
+                        sx={{ mb: 2 }}
                         {...params}
                         label="Produto"
                         placeholder="Selecione o produto"
-                        variant="outlined"
                         error={!!modalErrors.productId}
                         helperText={modalErrors.productId?.message}
-                        InputProps={{
-                          ...params.InputProps,
-                          endAdornment: (
-                            <>
-                              {loadingProducts ? <CircularProgress color="inherit" size={20} /> : null}
-                              {params.InputProps.endAdornment}
-                            </>
-                          ),
-                        }}
                       />
                     )}
                   />
@@ -387,13 +369,28 @@ export default function EditSalePage() {
                 render={({ field }) => (
                   <TextField
                     {...field}
+                    sx={{ mb: 2 }}
                     fullWidth
                     label="Quantidade"
                     type="number"
-                    variant="outlined"
                     error={!!modalErrors.quantity}
                     helperText={modalErrors.quantity?.message}
-                    sx={{ margin: "10px 0" }}
+                  />
+                )}
+              />
+              <Controller
+                name="price"
+                control={modalControl}
+                rules={{ required: "Preço é obrigatório." }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    sx={{ mb: 2 }}
+                    fullWidth
+                    label="Preço"
+                    type="number"
+                    error={!!modalErrors.price}
+                    helperText={modalErrors.price?.message}
                   />
                 )}
               />
@@ -407,6 +404,7 @@ export default function EditSalePage() {
           </form>
         </Dialog>
 
+        {/* Modal de Confirmar Remoção */}
         <Dialog
           open={confirmDialogOpen}
           onClose={() => setConfirmDialogOpen(false)}

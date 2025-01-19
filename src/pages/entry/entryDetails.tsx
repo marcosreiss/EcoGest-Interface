@@ -46,6 +46,17 @@ export default function EntryDetailsPage() {
     }).format(value);
   };
 
+  const formatDate = (date?: string) => {
+    if (!date) return "-";
+    const localDate = new Date(date);
+  
+    // Adicionar 1 dia
+    localDate.setDate(localDate.getDate() + 1);
+  
+    return localDate.toLocaleDateString("pt-BR");
+  };
+  
+
   return (
     <>
       <Helmet>
@@ -107,16 +118,7 @@ export default function EntryDetailsPage() {
                     {entry?.date_time && (
                       <Grid item xs={12}>
                         <Typography variant="body1" gutterBottom>
-                          Data e Hora: {new Date(entry.date_time).toLocaleString("pt-BR")}
-                        </Typography>
-                      </Grid>
-                    )}
-
-                    {/* Data de Criação (createdAt) */}
-                    {entry?.createdAt && (
-                      <Grid item xs={12}>
-                        <Typography variant="body1" gutterBottom>
-                          Data de Criação: {new Date(entry.createdAt).toLocaleDateString("pt-BR")}
+                          Data: {formatDate(entry.date_time)}
                         </Typography>
                       </Grid>
                     )}
