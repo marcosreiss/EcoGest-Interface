@@ -211,6 +211,7 @@ export default function EditPurchasePage() {
                     )}
                   />
                 </Grid>
+
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -219,8 +220,11 @@ export default function EditPurchasePage() {
                     multiline
                     rows={3}
                     {...register("description")}
+                    value={watch("description") || ""} // Garanta que o valor inicial está definido
+                    onChange={(e) => setValue("description", e.target.value)} // Atualize com `setValue`
                   />
                 </Grid>
+
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
