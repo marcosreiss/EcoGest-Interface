@@ -1,5 +1,7 @@
-import type { ProductBasicInfo } from "src/models/product";
+import type { AxiosError } from "axios";
 import type { PersonBasicInfo } from "src/models/person";
+import type { ProductBasicInfo } from "src/models/product";
+import type { ApiErrorResponse } from "src/models/errorResponse";
 import type { SalePayload, SaleProductPayload } from "src/models/sale";
 
 import React, { useState } from "react";
@@ -22,17 +24,19 @@ import {
   Typography,
   IconButton,
   DialogTitle,
+  Autocomplete,
   DialogActions,
   DialogContent,
   InputAdornment,
   CircularProgress,
-  Autocomplete,
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
+
 import { useCreateSale } from "src/hooks/useSales";
 import { useGetProductsBasicInfo } from "src/hooks/useProduct";
 import { useGetCustomersBasicInfo } from "src/hooks/useCustomer";
+
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
 
@@ -52,7 +56,6 @@ export default function CreateSalePage() {
   const {
     register,
     handleSubmit,
-    setValue,
     watch,
     control,
     formState: { errors },
@@ -122,8 +125,11 @@ export default function CreateSalePage() {
         addNotification("Venda criada com sucesso!", "success");
         router.push("/sales");
       },
-      onError: (error: any) => {
-        addNotification(`Erro ao criar venda: ${error.message}`, "error");
+      onError: (error: AxiosError<ApiErrorResponse>) => {
+        // Verifica se o erro contém uma mensagem customizada
+        const errorMessage = error.response?.data?.message || "Ocorreu um erro ao criar a venda.";
+        // Mostra a mensagem personalizada
+        addNotification(`Erro ao criar venda: ${errorMessage}`, "error");
       },
     });
   };

@@ -43,7 +43,7 @@ export const useCreateSale = () => {
 // Hook para atualizar uma venda
 export const useUpdateSale = () => {
     const queryClient = useQueryClient();
-    return useMutation<SaleResponse, AxiosError, { id: number; data: Partial<SalePayload> }>({
+    return useMutation<SaleResponse, AxiosError<ApiErrorResponse>, { id: number; data: Partial<SalePayload> }>({
         mutationFn: ({ id, data }) => updateSaleService(data, id),
         onSuccess: () => {
             queryClient.invalidateQueries({

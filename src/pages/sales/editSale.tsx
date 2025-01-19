@@ -1,5 +1,7 @@
+import type { AxiosError } from "axios";
 import type { PersonBasicInfo } from "src/models/person";
 import type { ProductBasicInfo } from "src/models/product";
+import type { ApiErrorResponse } from "src/models/errorResponse";
 import type { SalePayload, SaleProductPayload } from "src/models/sale";
 
 import { Helmet } from "react-helmet-async";
@@ -139,8 +141,12 @@ export default function EditSalePage() {
           addNotification("Venda atualizada com sucesso!", "success");
           router.push("/sales");
         },
-        onError: (error: any) => {
-          addNotification(`Erro ao atualizar venda: ${error.message}`, "error");
+        onError: (error: AxiosError<ApiErrorResponse>) => {
+          // Verifica se o erro contém uma mensagem customizada
+          const errorMessage = error.response?.data?.message || "Ocorreu um erro ao criar a venda.";
+
+          // Mostra a mensagem personalizada
+          addNotification(`Erro ao criar venda: ${errorMessage}`, "error");
         },
       }
     );
@@ -345,7 +351,7 @@ export default function EditSalePage() {
                     }}
                     renderInput={(params) => (
                       <TextField
-                      sx={{mb: 2}}
+                        sx={{ mb: 2 }}
                         {...params}
                         label="Produto"
                         placeholder="Selecione o produto"
@@ -363,7 +369,7 @@ export default function EditSalePage() {
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    sx={{mb: 2}}
+                    sx={{ mb: 2 }}
                     fullWidth
                     label="Quantidade"
                     type="number"
@@ -379,7 +385,7 @@ export default function EditSalePage() {
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    sx={{mb: 2}}
+                    sx={{ mb: 2 }}
                     fullWidth
                     label="Preço"
                     type="number"
