@@ -11,6 +11,7 @@ import {
   TableBody,
   IconButton,
   LinearProgress,
+  Box
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
@@ -62,6 +63,11 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
   
     return localDate.toLocaleDateString("pt-BR");
   };
+
+    // Função para determinar a cor com base no tipo
+ // Função para determinar a cor com base no tipo
+const getTypeColor = (type: EntryType) => (type === EntryType.ganho ? "#2fba54" : "#f72d2d");
+
   
   
   const handleClick = (event: React.MouseEvent<HTMLElement>, expenseId: number) => {
@@ -152,7 +158,16 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
               <Checkbox
                 checked={expenses.length > 0 && selectedExpenseIds.length === expenses.length}
                 indeterminate={selectedExpenseIds.length > 0 && selectedExpenseIds.length < expenses.length}
-                onChange={handleSelectAll}
+                onChange={(event) => {
+                  if (event.target.checked) {
+                    const allIds = expenses.map((e) => e.entryId);
+                    setSelectedExpenseIds(allIds);
+                    setSelectedExpenses(expenses);
+                  } else {
+                    setSelectedExpenseIds([]);
+                    setSelectedExpenses([]);
+                  }
+                }}
               />
             </TableCell>
             <TableCell>ID</TableCell>
@@ -176,17 +191,45 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
                 <TableCell>
                   <Checkbox
                     checked={selectedExpenseIds.includes(expense.entryId)}
-                    onChange={(e) => handleSelectExpense(e, expense)}
+                    onChange={(event) => {
+                      if (event.target.checked) {
+                        setSelectedExpenseIds((prev) => [...prev, expense.entryId]);
+                        setSelectedExpenses((prev) => [...prev, expense]);
+                      } else {
+                        setSelectedExpenseIds((prev) =>
+                          prev.filter((id) => id !== expense.entryId)
+                        );
+                        setSelectedExpenses((prev) =>
+                          prev.filter((e) => e.entryId !== expense.entryId)
+                        );
+                      }
+                    }}
                   />
                 </TableCell>
 
                 <TableCell>{expense.entryId || "-"}</TableCell>
 
-                <TableCell>{expense.type === EntryType.ganho ? "Entrada" : "Saída"}</TableCell>
+                {/* Shape colorido para Tipo */}
+                <TableCell>
+                  <Box
+                    sx={{
+                      display: "inline-block",
+                      px: 2,
+                      py: 0.5,
+                      borderRadius: 8,
+                      backgroundColor: getTypeColor(expense.type),
+                      color: "white",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                    }}
+                  >
+                    {expense.type === EntryType.ganho ? "Entrada" : "Saída"}
+                  </Box>
+                </TableCell>
 
-                <TableCell>{expense.subtype || "-" }</TableCell>
+                <TableCell>{expense.subtype || "-"}</TableCell>
 
-                {/* Data formatada (createdAt) */}
+                {/* Data formatada */}
                 <TableCell>
                   {expense.date_time ? formatDate(expense.date_time) : "-"}
                 </TableCell>
@@ -214,7 +257,6 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
             ))
           ) : (
             <TableRow>
-              {/* Ajuste colSpan para 6 colunas agora */}
               <TableCell colSpan={6} align="center">
                 <div style={{ textAlign: "center", padding: "20px" }}>
                   <img

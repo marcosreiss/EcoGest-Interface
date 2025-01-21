@@ -152,7 +152,13 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
     }
   };
 
-  const formatDate = (date?: string) => (date ? new Date(date).toLocaleDateString("pt-BR") : "-");
+  // Função para formatar a data no formato pt-BR
+  const formatDate = (dateStr?: string | Date) => {
+    if (!dateStr) return "-";
+    const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
+    dateObj.setDate(dateObj.getDate() + 1);
+    return dateObj.toLocaleDateString("pt-BR");
+  };
 
   const formatPrice = (price: number | undefined): string => {
     if (price === undefined) return "-";
@@ -275,7 +281,7 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
           )}
         </TableBody>
       </Table>
-      
+
       {/* Modais permanecem os mesmos */}
       <ConfirmationDialog
         open={statusModalOpen}
