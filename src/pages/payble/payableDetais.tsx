@@ -19,11 +19,16 @@ const formatPrice = (price: number | string | undefined): string => {
 };
 
 // Função para formatar datas em PT-BR
-const formatDate = (date?: string | Date): string => {
-    if (!date) return "";
-    return new Date(date).toLocaleDateString("pt-BR");
-};
 
+const formatDate = (date?: string) => {
+    if (!date) return "-";
+    const localDate = new Date(date);
+  
+    // Adicionar 1 dia
+    localDate.setDate(localDate.getDate() + 1);
+  
+    return localDate.toLocaleDateString("pt-BR");
+  };
 export default function PayableDetailsPage() {
     const { id } = useParams<{ id: string }>();
     const paybleId = parseInt(id!, 10);

@@ -13,6 +13,7 @@ import {
   TableBody,
   IconButton,
   LinearProgress,
+  Box
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
@@ -48,6 +49,20 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
   const deleteRecive = useDeleteRecive();
   const notification = useNotification();
   const updateReceiveStatus = useUpdateReceiveStatus();
+
+    // Função para determinar a cor com base no status
+    const getStatusColor = (status: string | undefined) => {
+      switch (status) {
+        case "Pago":
+          return "#4287f5";
+        case "Atrasado":
+          return "#f72d2d";
+        case "Aberto":
+          return "#2fba54";
+        default:
+          return "gray"; // Caso o status seja indefinido ou desconhecido
+      }
+    };
 
   // Função para formatar o valor em R$ (Real)
   const formatPrice = (value?: number) => {
@@ -167,14 +182,23 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                   selectedReciveIds.length > 0 &&
                   selectedReciveIds.length < recives.length
                 }
-                onChange={handleSelectAll}
+                onChange={(event) => {
+                  if (event.target.checked) {
+                    const allIds = recives.map((r) => r.receiveId);
+                    setSelectedReciveIds(allIds);
+                    setSelectedRecives(recives);
+                  } else {
+                    setSelectedReciveIds([]);
+                    setSelectedRecives([]);
+                  }
+                }}
               />
             </TableCell>
-            <TableCell >ID</TableCell>
-            <TableCell >Status</TableCell>
-            <TableCell >Data de Emissão</TableCell>
-            <TableCell >Data do Vencimento</TableCell>
-            <TableCell >Valor Total</TableCell>
+            <TableCell>ID</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell>Data de Emissão</TableCell>
+            <TableCell>Data do Vencimento</TableCell>
+            <TableCell>Valor Total</TableCell>
             <TableCell>Ações</TableCell>
           </TableRow>
         </TableHead>
@@ -191,17 +215,48 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                 <TableCell>
                   <Checkbox
                     checked={selectedReciveIds.includes(recive.receiveId)}
-                    onChange={(e) => handleSelectRecive(e, recive)}
+                    onChange={(event) => {
+                      if (event.target.checked) {
+                        setSelectedReciveIds((prev) => [...prev, recive.receiveId]);
+                        setSelectedRecives((prev) => [...prev, recive]);
+                      } else {
+                        setSelectedReciveIds((prev) =>
+                          prev.filter((id) => id !== recive.receiveId)
+                        );
+                        setSelectedRecives((prev) =>
+                          prev.filter((r) => r.receiveId !== recive.receiveId)
+                        );
+                      }
+                    }}
                   />
                 </TableCell>
                 <TableCell>{recive.receiveId || "-"}</TableCell>
-                <TableCell>{recive.status || "-"}</TableCell>
+                <TableCell>
+                  {/* Shape colorido atrás do status */}
+                  <Box
+                    sx={{
+                      display: "inline-block",
+                      px: 2,
+                      py: 0.5,
+                      borderRadius: 8,
+                      backgroundColor: getStatusColor(recive.status),
+                      color: "white",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                    }}
+                  >
+                    {recive.status || "-"}
+                  </Box>
+                </TableCell>
                 <TableCell>{formatDate(recive.dataEmissao) || "-"}</TableCell>
                 <TableCell>{formatDate(recive.dataVencimento) || "-"}</TableCell>
                 <TableCell>{formatPrice(recive.totalValue) || "-"}</TableCell>
                 <TableCell>
                   <IconButton
-                    onClick={(event) => handleClick(event, recive.receiveId)}
+                    onClick={(event) => {
+                      setAnchorEl(event.currentTarget);
+                      setSelectedItem(recive.receiveId);
+                    }}
                   >
                     ︙
                   </IconButton>
@@ -210,7 +265,10 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                     open={Boolean(
                       anchorEl && selectedItem === recive.receiveId
                     )}
-                    onClose={handleClose}
+                    onClose={() => {
+                      setAnchorEl(null);
+                      setSelectedItem(null);
+                    }}
                     anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
                     transformOrigin={{
                       vertical: "top",
@@ -218,7 +276,11 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                     }}
                   >
                     <MenuItem
-                      onClick={() => handleDetailsClick(recive.receiveId)}
+                      onClick={() => {
+                        navigate.push(`details/${recive.receiveId}`);
+                        setAnchorEl(null);
+                        setSelectedItem(null);
+                      }}
                     >
                       Detalhes
                     </MenuItem>
@@ -226,7 +288,10 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                       <MenuItem onClick={() => setStatusModalOpen(true)}>Dar Baixa</MenuItem>
                     )}
                     <MenuItem
-                      onClick={() => handleDeleteClick(recive.receiveId)}
+                      onClick={() => {
+                        setDeleteModalOpen(true);
+                        setSelectedItem(recive.receiveId);
+                      }}
                     >
                       Deletar
                     </MenuItem>
@@ -243,7 +308,7 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                     alt="Sem dados"
                     style={{ maxWidth: "150px", marginBottom: "10px" }}
                   />
-                  <p>Nenhuma conta a pagar registrada</p>
+                  <p>Nenhuma conta a receber registrada</p>
                 </div>
               </TableCell>
             </TableRow>
@@ -255,19 +320,20 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
       <ConfirmationDialog
         open={statusModalOpen}
         confirmButtonText="Confirmar"
-        description="Tem certeza que deseja dar baixa neste pagável?"
+        description="Tem certeza que deseja dar baixa neste recebível?"
         onClose={() => setStatusModalOpen(false)}
         onConfirm={handleConfirmStatusChange}
         title="Dar Baixa"
       />
 
+      {/* Modal de Confirmação para Deletar */}
       <ConfirmationDialog
         open={deleteModalOpen}
         confirmButtonText="Deletar"
         description="Tem certeza que você quer deletar este recebível?"
         onClose={() => {
           setDeleteModalOpen(false);
-          handleClose();
+          setAnchorEl(null);
         }}
         onConfirm={() => selectedItem && handleDeleteRecive(selectedItem)}
         title="Deletar Recebível"
