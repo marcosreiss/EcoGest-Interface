@@ -13,6 +13,7 @@ import {
   TableBody,
   IconButton,
   LinearProgress,
+  Box
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
@@ -50,6 +51,20 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
   const deletePayble = useDeletePayble();
   const updatePaybleStatus = useUpdatePaybleStatus();
   const notification = useNotification();
+
+  // Função para determinar a cor com base no status
+  const getStatusColor = (status: string | undefined) => {
+    switch (status) {
+      case "Pago":
+        return "#4287f5";
+      case "Atrasado":
+        return "#f72d2d";
+      case "Aberto":
+        return "#2fba54";
+      default:
+        return "gray"; // Caso o status seja indefinido ou desconhecido
+    }
+  };
 
   const handleClick = (
     event: React.MouseEvent<HTMLElement>,
@@ -137,7 +152,13 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
     }
   };
 
-  const formatDate = (date?: string) => (date ? new Date(date).toLocaleDateString("pt-BR") : "-");
+  // Função para formatar a data no formato pt-BR
+  const formatDate = (dateStr?: string | Date) => {
+    if (!dateStr) return "-";
+    const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
+    dateObj.setDate(dateObj.getDate() + 1);
+    return dateObj.toLocaleDateString("pt-BR");
+  };
 
   const formatPrice = (price: number | undefined): string => {
     if (price === undefined) return "-";
@@ -165,12 +186,12 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
-            <TableCell >ID</TableCell>
-            <TableCell >Status</TableCell>
-            <TableCell >Data de Emissão</TableCell>
-            <TableCell >Data do Vencimento</TableCell>
-            <TableCell >Descrição</TableCell>
-            <TableCell >Valor Total</TableCell>
+            <TableCell>ID</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell>Data de Emissão</TableCell>
+            <TableCell>Data do Vencimento</TableCell>
+            <TableCell>Descrição</TableCell>
+            <TableCell>Valor Total</TableCell>
             <TableCell>Ações</TableCell>
           </TableRow>
         </TableHead>
@@ -191,10 +212,31 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
                   />
                 </TableCell>
                 <TableCell>{payble.payableId}</TableCell>
-                <TableCell>{payble.status || "-"}</TableCell>
+                <TableCell>
+                  {/* Shape colorido atrás do texto */}
+                  <Box
+                    sx={{
+                      position: "relative",
+                      display: "inline-block",
+                      px: 2, // Padding horizontal para espaçamento do texto
+                      py: 0.5, // Padding vertical para altura do "botão"
+                      borderRadius: 8, // Arredondamento do "botão"
+                      color: "white", // Cor do texto
+                      fontWeight: "bold",
+                      textAlign: "center",
+                      overflow: "hidden",
+                      whiteSpace: "nowrap",
+                      backgroundColor: getStatusColor(payble.status), // Cor de fundo baseada no status
+                    }}
+                  >
+                    {payble.status || "-"}
+                  </Box>
+                </TableCell>
                 <TableCell>{formatDate(payble.dataEmissao)}</TableCell>
                 <TableCell>{formatDate(payble.dataVencimento)}</TableCell>
-                <TableCell>{payble.entry?.description || payble.purchase?.description || "-"}</TableCell>
+                <TableCell>
+                  {payble.entry?.description || payble.purchase?.description || "-"}
+                </TableCell>
                 <TableCell>{formatPrice(payble.totalValue)}</TableCell>
                 <TableCell>
                   <IconButton
@@ -240,7 +282,7 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
         </TableBody>
       </Table>
 
-      {/* Modal de Confirmação para Dar Baixa */}
+      {/* Modais permanecem os mesmos */}
       <ConfirmationDialog
         open={statusModalOpen}
         confirmButtonText="Confirmar"
@@ -250,7 +292,6 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
         title="Dar Baixa"
       />
 
-      {/* Modal de Confirmação para Deletar */}
       <ConfirmationDialog
         open={deleteModalOpen}
         confirmButtonText="Deletar"

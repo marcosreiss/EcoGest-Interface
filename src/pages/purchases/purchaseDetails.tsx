@@ -79,14 +79,12 @@ export default function PurchaseDetailsPage() {
   };
   
 
+  // Função para formatar a data no formato pt-BR
   const formatDate = (dateStr?: string | Date) => {
     if (!dateStr) return "-";
     const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
-    return dateObj.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
+    dateObj.setDate(dateObj.getDate() + 1);
+    return dateObj.toLocaleDateString("pt-BR");
   };
 
   const formatPrice = (value?: number) => {

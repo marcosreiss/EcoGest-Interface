@@ -1,7 +1,7 @@
 import type { Payble, PayableParams } from "src/models/payable";
 
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 
 import Paper from "@mui/material/Paper";
@@ -24,20 +24,29 @@ export default function PayableIndex() {
   const [selectedPaybles, setSelectedPaybles] = useState<Payble[]>([]);
   const rowsPerPage = 25;
   const [page, setPage] = useState(0);
+
+  // Sincroniza parâmetros de pesquisa
   const [searchByPeriod, setSearchByPeriod] = useState<PayableParams>({
-    skip: page * rowsPerPage,
+    skip: 0,
     take: rowsPerPage,
     startDate: null,
     endDate: null,
     status: null,
   });
 
+  // Atualiza `searchByPeriod` sempre que a página mudar
+  useEffect(() => {
+    setSearchByPeriod((prev) => ({
+      ...prev,
+      skip: page * rowsPerPage, // Recalcula o `skip` baseado na página
+    }));
+  }, [page, rowsPerPage]);
+
   // Dados paginados
-  const { data: pagedData, isLoading: isPagedLoading } = useGetPayblesPaged(searchByPeriod);
+  const { data: pagedData, isLoading: isPagedLoading } =
+    useGetPayblesPaged(searchByPeriod);
 
   const paybles = pagedData?.data ?? [];
-
-  // Define o estado de carregamento
   const isLoading = isPagedLoading;
 
   const deletePayble = useDeletePayble();

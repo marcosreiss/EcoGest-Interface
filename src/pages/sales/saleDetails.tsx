@@ -41,16 +41,17 @@ export default function SaleDetailsPage() {
     navigate.replace(`/sales/edit/${id}`);
   };
 
+
   const formatDate = (date?: string) => {
     if (!date) return "-";
     const localDate = new Date(date);
-  
+
     // Adicionar 1 dia
     localDate.setDate(localDate.getDate() + 1);
-  
+
     return localDate.toLocaleDateString("pt-BR");
   };
-  
+
   const formatPrice = (value?: number) => {
     if (value === undefined || value === null) return "-";
     return new Intl.NumberFormat("pt-BR", {

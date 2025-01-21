@@ -21,9 +21,15 @@ const formatPrice = (price: number | string | undefined): string => {
 };
 
 // Função para formatar datas em PT-BR
-const formatDate = (date?: string | Date): string => {
+
+const formatDate = (date?: string) => {
     if (!date) return "-";
-    return new Date(date).toLocaleDateString("pt-BR");
+    const localDate = new Date(date);
+
+    // Adicionar 1 dia
+    localDate.setDate(localDate.getDate() + 1);
+
+    return localDate.toLocaleDateString("pt-BR");
 };
 
 export default function ReceiveDetailsPage() {

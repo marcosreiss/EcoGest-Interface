@@ -6,7 +6,10 @@ import {
   CardContent,
   LinearProgress,
   Avatar,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
@@ -86,7 +89,14 @@ export default function VisaoGeralComponent() {
                 <AttachMoneyIcon fontSize="large" />
               </Avatar>
               <Box>
-                <Typography variant="h6">Saldo Total Projetado</Typography>
+                <Typography variant="h6">
+                  Saldo Total Projetado
+                  <Tooltip title="O saldo total projetado inclui todas as compras, vendas e lançamentos registrados." arrow>
+                    <IconButton sx={{ color: "white", ml: 1 }}>
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Typography>
                 <Typography variant="h4" sx={{ fontWeight: "bold" }}>
                   {formatPrice(saldoProjetado?.profit.profit)}
                 </Typography>
@@ -124,13 +134,20 @@ export default function VisaoGeralComponent() {
                     >
                       <TrendingUpIcon />
                     </Avatar>
-                    <Typography variant="h6">Contas a Receber</Typography>
+                    <Typography variant="h6">
+                      Contas a Receber
+                      <Tooltip title="Total de contas a receber ainda em aberto." arrow>
+                        <IconButton sx={{ ml: 1 }}>
+                          <InfoIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Typography>
                   </Box>
                   <Typography
                     variant="h5"
                     sx={{ mt: 2, fontWeight: "bold", color: "success.dark" }}
                   >
-                    {formatPrice(paybleRecibleAmount?.data.receivables.open)}
+                    {paybleRecibleAmount?.data.receivables.open}
                   </Typography>
                 </Card>
               </Grid>
@@ -160,13 +177,20 @@ export default function VisaoGeralComponent() {
                     >
                       <TrendingDownIcon />
                     </Avatar>
-                    <Typography variant="h6">Contas a Pagar</Typography>
+                    <Typography variant="h6">
+                      Contas a Pagar
+                      <Tooltip title="Total de contas a pagar ainda em aberto." arrow>
+                        <IconButton sx={{ ml: 1 }}>
+                          <InfoIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Typography>
                   </Box>
                   <Typography
                     variant="h5"
                     sx={{ mt: 2, fontWeight: "bold", color: "error.dark" }}
                   >
-                    {formatPrice(paybleRecibleAmount?.data.payables.open)}
+                    {paybleRecibleAmount?.data.payables.open}
                   </Typography>
                 </Card>
               </Grid>
@@ -196,13 +220,20 @@ export default function VisaoGeralComponent() {
                     >
                       <WarningIcon />
                     </Avatar>
-                    <Typography variant="h6">Contas Receber Atrasadas</Typography>
+                    <Typography variant="h6">
+                      Contas A Receber Atrasadas
+                      <Tooltip title="Total de contas a receber com prazo de vencimento expirado." arrow>
+                        <IconButton sx={{ ml: 1 }}>
+                          <InfoIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Typography>
                   </Box>
                   <Typography
                     variant="h5"
                     sx={{ mt: 2, fontWeight: "bold", color: "warning.dark" }}
                   >
-                    {formatPrice(paybleRecibleAmount?.data.receivables.overdue)}
+                    {paybleRecibleAmount?.data.receivables.overdue}
                   </Typography>
                 </Card>
               </Grid>
@@ -232,13 +263,20 @@ export default function VisaoGeralComponent() {
                     >
                       <WarningIcon />
                     </Avatar>
-                    <Typography variant="h6">Contas Pagar Atrasadas</Typography>
+                    <Typography variant="h6">
+                      Contas A Pagar Atrasadas
+                      <Tooltip title="Total de contas a pagar com prazo de vencimento expirado." arrow>
+                        <IconButton sx={{ml: 1 }}>
+                          <InfoIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Typography>
                   </Box>
                   <Typography
                     variant="h5"
                     sx={{ mt: 2, fontWeight: "bold", color: "error.dark" }}
                   >
-                    {formatPrice(paybleRecibleAmount?.data.payables.overdue)}
+                    {paybleRecibleAmount?.data.payables.overdue}
                   </Typography>
                 </Card>
               </Grid>

@@ -84,7 +84,7 @@ export default function GenerateDailyReport() {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `RELATORIO-${params.month}/${params.year}.pdf`;
+        link.download = `RELATORIO-${params.month}-${params.year}-${params.personId}.pdf`;
         link.click();
         window.URL.revokeObjectURL(url);
 
