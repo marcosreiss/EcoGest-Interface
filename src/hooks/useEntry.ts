@@ -16,10 +16,10 @@ import {
     updateEntryService,
     deleteEntryService,
     getEntryByIdService,
-    getExpenseReceiptService,
+    getEntryReceiptService,
     getEntryPaginatedService,
+    getCustomEntryReceiptService,
     searchExpensesByPeriodService,
-    getCustomExpenseReceiptService,
 } from "src/services/entryService";
 
 // Hook para listar despesas paginadas
@@ -82,13 +82,13 @@ export const useGetEntryById = (id: number) =>
 export const useGetExpenseReceipt = (expenseId: number) =>
     useQuery<Blob, AxiosError>({
         queryKey: ['expense-receipt', expenseId],
-        queryFn: () => getExpenseReceiptService(expenseId),
+        queryFn: () => getEntryReceiptService(expenseId),
         enabled: !!expenseId,
     });
 
 export const useGenerateCustomExpenseReceipt = () =>
     useMutation<Blob, AxiosError, CustomEntryReceiptInfo>({
-        mutationFn: (info) => getCustomExpenseReceiptService(info),
+        mutationFn: (info) => getCustomEntryReceiptService(info),
     });
 
 export const useSearchExpensesByPeriod = (payload: SearchByPeriodRequest) =>
