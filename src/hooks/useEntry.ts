@@ -7,6 +7,7 @@ import type {
     EntryListResponse,
     EntryPaginatedParams,
     CustomEntryReceiptInfo,
+    EntryRelatoryRequestParams,
 } from "src/models/entry";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -17,6 +18,7 @@ import {
     deleteEntryService,
     getEntryByIdService,
     getEntryReceiptService,
+    getEntryRelatoryService,
     getEntryPaginatedService,
     getCustomEntryReceiptService,
     searchExpensesByPeriodService,
@@ -96,4 +98,12 @@ export const useSearchExpensesByPeriod = (payload: SearchByPeriodRequest) =>
         queryKey: ['expensesByPeriod', payload],
         queryFn: () => searchExpensesByPeriodService(payload.startDate!, payload.endDate!),
         enabled: !!payload?.startDate && !!payload?.endDate,
+    });
+
+// Hook para obter relatório de despesas
+export const useGetEntryRelatory = (params: EntryRelatoryRequestParams) =>
+    useQuery<Blob, AxiosError>({
+        queryKey: ["entry-relatory", params],
+        queryFn: () => getEntryRelatoryService(params),
+        enabled: !!params, // Habilita a query apenas se os parâmetros estiverem definidos
     });
