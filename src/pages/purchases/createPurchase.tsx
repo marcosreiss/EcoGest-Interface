@@ -7,6 +7,7 @@ import { Helmet } from "react-helmet-async";
 import { useForm, Controller } from "react-hook-form";
 
 import AddIcon from "@mui/icons-material/Add";
+import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Box,
@@ -52,14 +53,14 @@ export default function CreatePurchasePage() {
     register,
     handleSubmit,
     setValue,
-    watch, // Aqui é onde o watch é desestruturado
+    watch,
     formState: { errors },
   } = useForm<PurchasePayload>({
     defaultValues: {
-      discount: 0, // Default discount to 0 if não configurado
+      discount: 0,
     },
   });
-  
+
 
   const { data: products, isLoading: loadingProducts } = useGetProductsBasicInfo();
   const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
@@ -69,12 +70,14 @@ export default function CreatePurchasePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
+  const [isEditingProduct, setIsEditingProduct] = useState<boolean>(false);
 
   const {
     control,
     handleSubmit: handleModalSubmit,
     reset,
     formState: { errors: modalErrors },
+    setValue: setProductValue
   } = useForm<PurchasePayloadProduct>();
 
   const createPurchase = useCreatePurchase();
@@ -101,7 +104,6 @@ export default function CreatePurchasePage() {
     setFile(uploadedFile);
   };
 
-
   const calculateTotal = (): number => {
     const total = productsList.reduce(
       (acc, product) => acc + product.price * product.quantity,
@@ -110,20 +112,61 @@ export default function CreatePurchasePage() {
     const discount = parseFloat(String(watch("discount")) || "0"); // Força o valor para string
     return Math.max(total - discount, 0); // Evita valores negativos no total
   };
-  
 
   const handleAddProduct = (data: PurchasePayloadProduct) => {
-    setProductsList([
-      ...productsList,
-      {
+    if (isEditingProduct && selectedProductIndex !== null) {
+      // Atualiza o produto existente no índice selecionado
+      const updatedProducts = [...productsList];
+      updatedProducts[selectedProductIndex] = {
         productId: data.productId,
         quantity: Number(data.quantity),
         price: Number(data.price),
-      },
-    ]);
+      };
+      setProductsList(updatedProducts);
+      setIsEditingProduct(false);
+      setSelectedProductIndex(null);
+    } else {
+      // Verifica se o produto já foi adicionado
+      const existingProduct = productsList.find(
+        (product) => product.productId === data.productId
+      );
+
+      if (existingProduct) {
+        // Exibe a notificação de erro
+        addNotification(
+          "Produto já adicionado, edite para alterar a quantidade ou preço.",
+          "error"
+        );
+        // Fecha o modal e reseta o formulário
+        setModalOpen(false);
+        reset();
+        return;
+      }
+
+      // Adiciona um novo produto
+      setProductsList([
+        ...productsList,
+        {
+          productId: data.productId,
+          quantity: Number(data.quantity),
+          price: Number(data.price),
+        },
+      ]);
+    }
+
+    // Reseta o formulário e fecha o modal após adicionar ou editar
     reset();
     setModalOpen(false);
   };
+
+  const handleEditProductClick = (product: PurchasePayloadProduct, index: number) => {
+    setProductValue("productId", product.productId);
+    setProductValue("price", product.price);
+    setProductValue("quantity", product.quantity);
+    setIsEditingProduct(true);
+    setSelectedProductIndex(index); // Define o índice do produto a ser editado
+    setModalOpen(true);
+  }
 
   const handleRemoveProduct = () => {
     if (selectedProductIndex !== null) {
@@ -153,7 +196,6 @@ export default function CreatePurchasePage() {
   };
 
   const total: number = calculateTotal();
-
 
   return (
     <>
@@ -240,7 +282,12 @@ export default function CreatePurchasePage() {
                   <Button
                     startIcon={<AddIcon />}
                     variant="contained"
-                    onClick={() => setModalOpen(true)}
+                    onClick={() => {
+                      setModalOpen(true);
+                      setIsEditingProduct(false); // Garantir que não está em modo de edição ao adicionar
+                      setSelectedProductIndex(null);
+                      reset(); // Resetar o formulário ao abrir o modal para adicionar
+                    }}
                   >
                     Adicionar Produto
                   </Button>
@@ -277,6 +324,12 @@ export default function CreatePurchasePage() {
                                 size="small"
                               >
                                 <DeleteIcon fontSize="small" />
+                              </IconButton>
+                              <IconButton
+                                color="info"
+                                onClick={() => handleEditProductClick(product, index)} // Passar o índice do produto
+                              >
+                                <EditIcon fontSize="small" />
                               </IconButton>
                             </TableCell>
                           </TableRow>
@@ -336,11 +389,19 @@ export default function CreatePurchasePage() {
         </Grid>
       </DashboardContent>
 
-      {/* Modal para adicionar produto */}
-      <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
-        <DialogTitle>Adicionar Produto</DialogTitle>
+      {/* Modal para adicionar/editar produto */}
+      <Dialog open={modalOpen} onClose={() => {
+        setModalOpen(false);
+        setIsEditingProduct(false);
+        setSelectedProductIndex(null);
+        reset(); // Resetar o formulário ao fechar o modal
+      }}>
+        <DialogTitle>
+          {isEditingProduct ? "Editar Produto" : "Adicionar Produto"}
+        </DialogTitle>
         <form onSubmit={handleModalSubmit(handleAddProduct)}>
           <DialogContent>
+            {/* produto */}
             <Controller
               name="productId"
               control={control}
@@ -358,6 +419,7 @@ export default function CreatePurchasePage() {
                   onChange={(_, newValue) => {
                     field.onChange(newValue ? newValue.productId : null);
                   }}
+                  disabled={isEditingProduct}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -366,6 +428,7 @@ export default function CreatePurchasePage() {
                       variant="outlined"
                       error={!!modalErrors.productId}
                       helperText={modalErrors.productId?.message}
+                      disabled={isEditingProduct}
                       InputProps={{
                         ...params.InputProps,
                         endAdornment: (
@@ -380,6 +443,7 @@ export default function CreatePurchasePage() {
                 />
               )}
             />
+            {/* Quantidade  */}
             <Controller
               name="quantity"
               control={control}
@@ -388,7 +452,7 @@ export default function CreatePurchasePage() {
                 <TextField
                   {...field}
                   fullWidth
-                  label="Quantidade"
+                  label="Quantidade (Kg)"
                   type="number"
                   variant="outlined"
                   error={!!modalErrors.quantity}
@@ -397,6 +461,7 @@ export default function CreatePurchasePage() {
                 />
               )}
             />
+            {/* Preço */}
             <Controller
               name="price"
               control={control}
@@ -416,9 +481,16 @@ export default function CreatePurchasePage() {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setModalOpen(false)}>Cancelar</Button>
+            <Button onClick={() => {
+              setModalOpen(false);
+              setIsEditingProduct(false);
+              setSelectedProductIndex(null);
+              reset(); // Resetar o formulário ao cancelar
+            }}>
+              Cancelar
+            </Button>
             <Button type="submit" variant="contained">
-              Adicionar
+              {isEditingProduct ? "Editar" : "Adicionar"}
             </Button>
           </DialogActions>
         </form>
