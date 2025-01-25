@@ -3,6 +3,7 @@ import type { CustomEntryReceiptInfo } from "src/models/entry";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
+import DownloadIcon from "@mui/icons-material/Download";
 import {
   Grid,
   Button,
@@ -18,6 +19,8 @@ import {
 import { useGenerateCustomExpenseReceipt } from "src/hooks/useEntry";
 
 import { useNotification } from "src/context/NotificationContext";
+
+import GenerateEntryRelatory from "./generateEntryRelatory";
 
 interface HeaderComponentProps {
   title: string;
@@ -50,7 +53,7 @@ const ExpensesTableHeaderComponent: React.FC<HeaderComponentProps> = ({
         const url = window.URL.createObjectURL(receipt);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `RECIBO-DE-CAIXA-CUSTOMIZADO.pdf`;
+        link.download = `RECIBO-DE-LANÇAMENTO-CUSTOMIZADO.pdf`;
         link.click();
         window.URL.revokeObjectURL(url);
 
@@ -65,15 +68,18 @@ const ExpensesTableHeaderComponent: React.FC<HeaderComponentProps> = ({
 
   return (
     <>
-      <Grid container spacing={2} alignItems="center">
-        <Grid item xs={6}>
+      <Grid container spacing={2} marginBottom={2} alignItems="center">
+        <Grid item xs={4}>
           <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>
             {title}
           </Typography>
         </Grid>
-        <Grid item xs={6} container justifyContent="flex-end" spacing={2}>
+        <Grid item xs={8} container justifyContent="flex-end" spacing={2}>
           <Grid item>
-            <Button variant="contained" color="primary" onClick={handleOpen}>
+            <GenerateEntryRelatory />
+          </Grid>
+          <Grid item>
+            <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleOpen}>
               Gerar Recibo Personalizado
             </Button>
           </Grid>

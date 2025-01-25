@@ -101,9 +101,6 @@ export const useSearchExpensesByPeriod = (payload: SearchByPeriodRequest) =>
     });
 
 // Hook para obter relatório de despesas
-export const useGetEntryRelatory = (params: EntryRelatoryRequestParams) =>
-    useQuery<Blob, AxiosError>({
-        queryKey: ["entry-relatory", params],
-        queryFn: () => getEntryRelatoryService(params),
-        enabled: !!params, // Habilita a query apenas se os parâmetros estiverem definidos
+export const useGetEntryRelatory = () => useMutation<Blob, AxiosError, EntryRelatoryRequestParams>({
+      mutationFn: (params) => getEntryRelatoryService(params),
     });
