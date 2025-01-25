@@ -50,10 +50,8 @@ export const getEntryReceiptService = async (id: number): Promise<Blob> => {
 
 // Obter recibo de despesa Customizado
 export const getCustomEntryReceiptService = async (info: CustomEntryReceiptInfo): Promise<Blob> => {
-    info.tipo = "perda"
-    
     const response = await api.post(`/entry/receipt/custom`, info, {
-        responseType: "blob", 
+        responseType: "blob",
     });
     return response.data;
 };
@@ -70,6 +68,9 @@ export const searchExpensesByPeriodService = async (startDate: string, endDate: 
 };
 
 export const getEntryRelatoryService = async (params: EntryRelatoryRequestParams): Promise<Blob> => {
-    const response = await api.get<Blob>("/entry/relatory", {params});
+    const response = await api.get("/entry/relatory", {
+        params,
+        responseType: "blob",
+    });
     return response.data;
-}
+};
