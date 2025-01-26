@@ -3,6 +3,7 @@ import type { Payble } from "src/models/payable";
 import React, { useState } from "react";
 
 import {
+  Box,
   Menu,
   Table,
   TableRow,
@@ -12,8 +13,7 @@ import {
   TableCell,
   TableBody,
   IconButton,
-  LinearProgress,
-  Box
+  LinearProgress
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
@@ -188,6 +188,8 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
             </TableCell>
             <TableCell>ID</TableCell>
             <TableCell>Status</TableCell>
+            <TableCell>Fornecedor</TableCell>
+            <TableCell>NF-e</TableCell>
             <TableCell>Data de Emissão</TableCell>
             <TableCell>Data do Vencimento</TableCell>
             <TableCell>Descrição</TableCell>
@@ -232,6 +234,8 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
                     {payble.status || "-"}
                   </Box>
                 </TableCell>
+                <TableCell>{payble.purchase?.supplier?.name || "-"}</TableCell>
+                <TableCell>{payble.purchase?.nfe || "-"}</TableCell>
                 <TableCell>{formatDate(payble.dataEmissao)}</TableCell>
                 <TableCell>{formatDate(payble.dataVencimento)}</TableCell>
                 <TableCell>
