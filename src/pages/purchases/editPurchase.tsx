@@ -92,7 +92,7 @@ export default function EditPurchasePage() {
       setValue("date_time", purchase.date_time ? purchase.date_time.split("T")[0] : "");
       setValue("discount", purchase.discount ?? 0);
       setValue("nfe", purchase.nfe);
-      setValue("dataVencimento", purchase.dataVencimento ? purchase.dataVencimento.split("T")[0] : "");
+      setValue("dataVencimento", purchase.payable.dataVencimento ? purchase.payable.dataVencimento.split("T")[0] : "");
 
       const list: PurchasePayloadProduct[] = purchase.products.map((product) => ({
         productId: product.product.productId,

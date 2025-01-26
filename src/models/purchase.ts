@@ -11,7 +11,9 @@ export interface Purchase {
     discount: number;
     totalPrice: number;
     nfe: string;
-    dataVencimento: string;
+    payable:{
+        dataVencimento: string;
+    }
 }
 
 export interface PurchasePayload {

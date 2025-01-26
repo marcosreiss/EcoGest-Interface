@@ -11,7 +11,9 @@ export interface Sale {
     totalPrice: number;
     products: SaleProduct[];
     nfe: string;
-    dataVencimento: string;
+    receive: {
+        dataVencimento: string;
+    }
 }
 export interface SaleProduct {
     product: Product;

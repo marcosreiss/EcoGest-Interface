@@ -97,6 +97,7 @@ export default function EditSalePage() {
       setValue("date_time", sale.date_time ? sale.date_time.split("T")[0] : "");
       setValue("discount", sale.discount);
       setValue("nfe", sale.nfe);
+      setValue("dataVencimento", sale.receive.dataVencimento ? sale.receive.dataVencimento.split("T")[0] : "");
 
       const list: SaleProductPayload[] = sale.products.map((product) => ({
         productId: product.product.productId,
