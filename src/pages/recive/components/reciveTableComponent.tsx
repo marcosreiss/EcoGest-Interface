@@ -196,6 +196,7 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
             </TableCell>
             <TableCell>ID</TableCell>
             <TableCell>Status</TableCell>
+            <TableCell>Cliente</TableCell>
             <TableCell>NF-e</TableCell>
             <TableCell>Data de Emissão</TableCell>
             <TableCell>Data do Vencimento</TableCell>
@@ -249,6 +250,7 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                     {recive.status || "-"}
                   </Box>
                 </TableCell>
+                <TableCell>{recive.sale?.customer?.name || "-"}</TableCell>
                 <TableCell>{recive.sale?.nfe || "-"}</TableCell>
                 <TableCell>{formatDate(recive.dataEmissao) || "-"}</TableCell>
                 <TableCell>{formatDate(recive.dataVencimento) || "-"}</TableCell>
