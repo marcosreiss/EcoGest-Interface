@@ -121,7 +121,7 @@ export default function GenerateEntryRelatory() {
                         <Grid container spacing={2}>
 
                             {/* Campo de Tipo (Subtipo) */}
-                            <Grid item xs={12}>
+                            <Grid item xs={12} sx={{marginTop: 1}}>
                                 <Controller
                                     name="subtype"
                                     control={control}
