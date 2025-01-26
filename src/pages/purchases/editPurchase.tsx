@@ -56,6 +56,7 @@ export default function EditPurchasePage() {
     handleSubmit,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm<PurchasePayload>({
     defaultValues: {
@@ -75,7 +76,7 @@ export default function EditPurchasePage() {
   const [isEditingProduct, setIsEditingProduct] = useState<boolean>(false);
 
   const {
-    control,
+    control: productControl,
     handleSubmit: handleModalSubmit,
     reset: resetModal,
     formState: { errors: modalErrors },
@@ -92,7 +93,12 @@ export default function EditPurchasePage() {
       setValue("date_time", purchase.date_time ? purchase.date_time.split("T")[0] : "");
       setValue("discount", purchase.discount ?? 0);
       setValue("nfe", purchase.nfe);
-      setValue("dataVencimento", purchase.payable.dataVencimento ? purchase.payable.dataVencimento.split("T")[0] : "");
+      setValue(
+        "dataVencimento",
+        purchase.payable.dataVencimento
+          ? purchase.payable.dataVencimento.split("T")[0]
+          : ""
+      );
 
       const list: PurchasePayloadProduct[] = purchase.products.map((product) => ({
         productId: product.product.productId,
@@ -110,7 +116,10 @@ export default function EditPurchasePage() {
 
     const allowedExtensions = ["application/pdf", "image/jpeg", "image/png"];
     if (!allowedExtensions.includes(uploadedFile.type)) {
-      addNotification("Formato de arquivo inválido. Apenas .pdf, .jpg e .png são permitidos.", "error");
+      addNotification(
+        "Formato de arquivo inválido. Apenas .pdf, .jpg e .png são permitidos.",
+        "error"
+      );
       return;
     }
     if (uploadedFile.size > 5 * 1024 * 1024) {
@@ -177,8 +186,8 @@ export default function EditPurchasePage() {
 
   const handleEditProductClick = (product: PurchasePayloadProduct, index: number) => {
     setProductValue("productId", product.productId);
-    setProductValue("price", product.price);
     setProductValue("quantity", product.quantity);
+    setProductValue("price", product.price);
     setIsEditingProduct(true);
     setSelectedProductIndex(index); // Define o índice do produto a ser editado
     setModalOpen(true);
@@ -240,32 +249,50 @@ export default function EditPurchasePage() {
                     Editar Compra
                   </Typography>
                 </Grid>
+
                 {/* Fornecedor */}
                 <Grid item xs={12}>
-                  <Autocomplete
-                    options={suppliers?.data || []}
-                    loading={loadingSuppliers}
-                    getOptionLabel={(option: SupplierBasicInfo) => option.name}
-                    isOptionEqualToValue={(option, value) =>
-                      option.personId === value?.personId
-                    }
-                    value={
-                      suppliers?.data.find(
-                        (supplier) => supplier.personId === purchase?.supplier.personId
-                      ) || null
-                    }
-                    onChange={(_, newValue) =>
-                      setValue("personId", newValue ? newValue.personId : -1, {
-                        shouldValidate: true,
-                      })
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Fornecedor"
-                        variant="outlined"
-                        error={!!errors.personId}
-                        helperText={errors.personId?.message}
+                  <Controller
+                    name="personId"
+                    control={control}
+                    rules={{ required: "Fornecedor é obrigatório." }}
+                    render={({ field }) => (
+                      <Autocomplete
+                        {...field}
+                        options={suppliers?.data || []}
+                        loading={loadingSuppliers}
+                        getOptionLabel={(option: SupplierBasicInfo) => option.name}
+                        isOptionEqualToValue={(option, value) =>
+                          option.personId === value?.personId
+                        }
+                        value={
+                          suppliers?.data.find(
+                            (supplier) => supplier.personId === field.value
+                          ) || null
+                        }
+                        onChange={(_, newValue) => {
+                          field.onChange(newValue ? newValue.personId : null);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Fornecedor"
+                            variant="outlined"
+                            error={!!errors.personId}
+                            helperText={errors.personId?.message}
+                            InputProps={{
+                              ...params.InputProps,
+                              endAdornment: (
+                                <>
+                                  {loadingSuppliers ? (
+                                    <CircularProgress color="inherit" size={20} />
+                                  ) : null}
+                                  {params.InputProps.endAdornment}
+                                </>
+                              ),
+                            }}
+                          />
+                        )}
                       />
                     )}
                   />
@@ -285,7 +312,7 @@ export default function EditPurchasePage() {
                   />
                 </Grid>
 
-                {/* Nota Fiscal  */}
+                {/* Nota Fiscal */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -293,7 +320,7 @@ export default function EditPurchasePage() {
                     placeholder="Nota Fiscal Eletrônica"
                     {...register("nfe", { maxLength: 15 })}
                     value={watch("nfe") || ""}
-                    onChange={(e)=> setValue("nfe", e.target.value)}
+                    onChange={(e) => setValue("nfe", e.target.value)}
                   />
                   {errors.nfe && (
                     <Typography
@@ -484,17 +511,21 @@ export default function EditPurchasePage() {
             {/* Produto */}
             <Controller
               name="productId"
-              control={control}
+              control={productControl}
               rules={{ required: "Produto é obrigatório." }}
               defaultValue={undefined}
               render={({ field }) => (
                 <Autocomplete
+                  {...field}
                   options={products?.data || []}
                   loading={loadingProducts}
                   getOptionLabel={(option: ProductBasicInfo) => option.name}
-                  isOptionEqualToValue={(option, value) => option.productId === value.productId}
+                  isOptionEqualToValue={(option, value) =>
+                    option.productId === value.productId
+                  }
                   value={
-                    products?.data.find((product) => product.productId === field.value) || null
+                    products?.data.find((product) => product.productId === field.value) ||
+                    null
                   }
                   onChange={(_, newValue) => {
                     field.onChange(newValue ? newValue.productId : null);
@@ -513,7 +544,9 @@ export default function EditPurchasePage() {
                         ...params.InputProps,
                         endAdornment: (
                           <>
-                            {loadingProducts ? <CircularProgress color="inherit" size={20} /> : null}
+                            {loadingProducts ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : null}
                             {params.InputProps.endAdornment}
                           </>
                         ),
@@ -526,7 +559,7 @@ export default function EditPurchasePage() {
             {/* Quantidade */}
             <Controller
               name="quantity"
-              control={control}
+              control={productControl}
               rules={{ required: "Quantidade é obrigatória." }}
               render={({ field }) => (
                 <TextField
@@ -544,8 +577,8 @@ export default function EditPurchasePage() {
             {/* Preço */}
             <Controller
               name="price"
-              control={control}
-              rules={{ required: "Preço é obrigatória." }}
+              control={productControl}
+              rules={{ required: "Preço é obrigatório." }}
               render={({ field }) => (
                 <TextField
                   {...field}
