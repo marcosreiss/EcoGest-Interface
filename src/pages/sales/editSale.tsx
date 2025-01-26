@@ -96,6 +96,7 @@ export default function EditSalePage() {
       setValue("description", sale.description);
       setValue("date_time", sale.date_time ? sale.date_time.split("T")[0] : "");
       setValue("discount", sale.discount);
+      setValue("nfe", sale.nfe);
 
       const list: SaleProductPayload[] = sale.products.map((product) => ({
         productId: product.product.productId,
@@ -284,6 +285,18 @@ export default function EditSalePage() {
                   />
                 </Grid>
 
+                {/* Descrição */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Descrição"
+                    placeholder="Descrição da venda"
+                    multiline
+                    rows={3}
+                    {...register("description")}
+                  />
+                </Grid>
+
                 {/* Data da Venda */}
                 <Grid item xs={12}>
                   <Controller
@@ -304,15 +317,16 @@ export default function EditSalePage() {
                   />
                 </Grid>
 
-                {/* Descrição */}
+                {/* Data do Vencimento */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
-                    label="Descrição"
-                    placeholder="Descrição da venda"
-                    multiline
-                    rows={3}
-                    {...register("description")}
+                    label="Data do Vencimento"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    {...register("dataVencimento", { required: "Data é obrigatória." })}
+                    error={!!errors.dataVencimento}
+                    helperText={errors.dataVencimento?.message}
                   />
                 </Grid>
 

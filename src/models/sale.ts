@@ -10,6 +10,8 @@ export interface Sale {
     discount: number;
     totalPrice: number;
     products: SaleProduct[];
+    nfe: string;
+    dataVencimento: string;
 }
 export interface SaleProduct {
     product: Product;
@@ -32,6 +34,8 @@ export interface SalePayload {
     description: string;
     products: SaleProductPayload[];
     discount: number;
+    nfe: string;
+    dataVencimento: string;
 }
 
 export interface SaleProductPayload{
