@@ -21,6 +21,11 @@ export const updatePaybleStatusService = async (
   return response.status;
 };
 
+export const updatePayabledataPagamentoService = async (dataPagamento: string, payableId: number): Promise<Payble> => {
+  const response = await api.put<Payble>(`/payables?id=${payableId}`, {dataPagamento});
+  return response.data;
+};
+
 export const deletePaybleService = async (id: number): Promise<void> => {
   await api.delete(`/payables/${id}`);
 };

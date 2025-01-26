@@ -27,3 +27,14 @@ export const updateReceiveStatusService = async (
   const response = await api.put(`/receives/status?id=${paybleId}`);
   return response.status;
 };
+
+export const updateReceiveDataPagamentoService = async (
+  dataPagamento: string,
+  receiveId: number
+): Promise<Receive> => {
+  const response = await api.put<Receive>(`/receives?id=${receiveId}`, {
+    dataPagamento,
+  });
+  return response.data;
+};
+

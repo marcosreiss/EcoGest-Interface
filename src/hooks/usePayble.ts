@@ -8,6 +8,7 @@ import {
   getPaybleByIdService,
   getPayblesPagedService,
   updatePaybleStatusService,
+  updatePayabledataPagamentoService,
 } from "src/services/paybleService";
 
 /**
@@ -42,6 +43,22 @@ export const useUpdatePaybleStatus = () => {
     },
   });
 };
+
+export const useUpdateDataPagamentoPayable = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation< Payble, AxiosError, { dataPagamento: string; payableId: number }>({
+    mutationFn: ({ dataPagamento, payableId }) =>
+      updatePayabledataPagamentoService(dataPagamento, payableId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["paybles-list"] });
+    },
+    onError: (error) => {
+      console.error("Erro ao atualizar a data de pagamento da conta a pagar:", error);
+    },
+  });
+};
+
 
 /**
  * Hook para deletar um pagável.
