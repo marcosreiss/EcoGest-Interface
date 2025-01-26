@@ -91,6 +91,8 @@ export default function EditPurchasePage() {
       setValue("description", purchase.description);
       setValue("date_time", purchase.date_time ? purchase.date_time.split("T")[0] : "");
       setValue("discount", purchase.discount ?? 0);
+      setValue("nfe", purchase.nfe);
+      setValue("dataVencimento", purchase.dataVencimento ? purchase.dataVencimento.split("T")[0] : "");
 
       const list: PurchasePayloadProduct[] = purchase.products.map((product) => ({
         productId: product.product.productId,
@@ -283,6 +285,33 @@ export default function EditPurchasePage() {
                   />
                 </Grid>
 
+                {/* Nota Fiscal  */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="NF-e"
+                    placeholder="Nota Fiscal Eletrônica"
+                    {...register("nfe", { maxLength: 15 })}
+                    value={watch("nfe") || ""}
+                    onChange={(e)=> setValue("nfe", e.target.value)}
+                  />
+                  {errors.nfe && (
+                    <Typography
+                      variant="body2"
+                      color="error"
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: "0.775rem",
+                        display: "flex",
+                        alignItems: "center",
+                        mt: 1,
+                      }}
+                    >
+                      Máximo de 15 caracteres
+                    </Typography>
+                  )}
+                </Grid>
+
                 {/* Data da Compra */}
                 <Grid item xs={12}>
                   <TextField
@@ -293,6 +322,19 @@ export default function EditPurchasePage() {
                     {...register("date_time", { required: "Data é obrigatória." })}
                     error={!!errors.date_time}
                     helperText={errors.date_time?.message}
+                  />
+                </Grid>
+
+                {/* Data do Vencimento */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Data do Vencimento"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    {...register("dataVencimento", { required: "Data é obrigatória." })}
+                    error={!!errors.dataVencimento}
+                    helperText={errors.dataVencimento?.message}
                   />
                 </Grid>
 

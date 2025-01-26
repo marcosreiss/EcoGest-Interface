@@ -251,6 +251,31 @@ export default function CreatePurchasePage() {
                   />
                 </Grid>
 
+                {/* Nota Fiscal  */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="NF-e"
+                    placeholder="Nota Fiscal Eletrônica"
+                    {...register("nfe", { maxLength: 15 })}
+                  />
+                  {errors.nfe && (
+                    <Typography
+                      variant="body2"
+                      color="error"
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: "0.775rem",
+                        display: "flex",
+                        alignItems: "center",
+                        mt: 1,
+                      }}
+                    >
+                      Máximo de 15 caracteres
+                    </Typography>
+                  )}
+                </Grid>
+
                 {/* Data da Compra */}
                 <Grid item xs={12}>
                   <TextField
@@ -261,6 +286,19 @@ export default function CreatePurchasePage() {
                     {...register("date_time", { required: "Data é obrigatória." })}
                     error={!!errors.date_time}
                     helperText={errors.date_time?.message}
+                  />
+                </Grid>
+
+                {/* Data do Vencimento */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Data do Vencimento"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    {...register("dataVencimento", { required: "Data é obrigatória." })}
+                    error={!!errors.dataVencimento}
+                    helperText={errors.dataVencimento?.message}
                   />
                 </Grid>
 
