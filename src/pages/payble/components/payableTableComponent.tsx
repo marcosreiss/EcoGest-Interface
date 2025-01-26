@@ -1,19 +1,26 @@
 import type { Payble } from "src/models/payable";
 
 import React, { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 
 import {
   Box,
   Menu,
   Table,
+  Button,
+  Dialog,
   TableRow,
   Checkbox,
   MenuItem,
   TableHead,
   TableCell,
   TableBody,
+  TextField,
   IconButton,
-  LinearProgress
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  LinearProgress,
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
@@ -21,6 +28,7 @@ import { useRouter } from "src/routes/hooks";
 import {
   useDeletePayble,
   useUpdatePaybleStatus,
+  useUpdateDataPagamentoPayable,
 } from "src/hooks/usePayble";
 
 import { useNotification } from "src/context/NotificationContext";
@@ -44,13 +52,27 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [editPaymentModalOpen, setEditPaymentModalOpen] = useState(false);
 
   const [selectedPaybleIds, setSelectedPaybleIds] = useState<number[]>([]);
 
   const router = useRouter();
   const deletePayble = useDeletePayble();
   const updatePaybleStatus = useUpdatePaybleStatus();
+  const updateDataPagamentoPayable = useUpdateDataPagamentoPayable();
   const notification = useNotification();
+
+  const {
+    handleSubmit,
+    setValue,
+    control,
+    formState: { errors },
+    reset,
+  } = useForm<{ dataPagamento: string }>({
+    defaultValues: {
+      dataPagamento: "",
+    },
+  });
 
   // Função para determinar a cor com base no status
   const getStatusColor = (status: string | undefined) => {
@@ -152,6 +174,31 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
     }
   };
 
+  const handleEditDataPagamentoClick = (payable: Payble) => {
+    setValue("dataPagamento", payable.dataPagamento?.split("T")[0] || "");
+    setSelectedItem(payable.payableId);
+    setEditPaymentModalOpen(true);
+  };
+
+  const onSubmitEditPayment = (data: { dataPagamento: string }) => {
+    if (selectedItem !== null) {
+      updateDataPagamentoPayable.mutate(
+        { dataPagamento: data.dataPagamento, payableId: selectedItem },
+        {
+          onSuccess: () => {
+            notification.addNotification("Data de pagamento atualizada com sucesso!", "success");
+            setEditPaymentModalOpen(false);
+            // Opcional: atualizar a lista de paybles após a alteração
+            reset();
+          },
+          onError: () => {
+            notification.addNotification("Erro ao atualizar a data de pagamento", "error");
+          },
+        }
+      );
+    }
+  };
+
   // Função para formatar a data no formato pt-BR
   const formatDate = (dateStr?: string | Date) => {
     if (!dateStr) return "-";
@@ -200,7 +247,7 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
         <TableBody>
           {isLoading || isSearching ? (
             <TableRow>
-              <TableCell colSpan={7} sx={{ padding: 0 }}>
+              <TableCell colSpan={10} sx={{ padding: 0 }}>
                 <LinearProgress sx={{ width: "100%" }} />
               </TableCell>
             </TableRow>
@@ -264,6 +311,7 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
                     {payble.status !== "Pago" && (
                       <MenuItem onClick={() => setStatusModalOpen(true)}>Dar Baixa</MenuItem>
                     )}
+                    <MenuItem onClick={() => handleEditDataPagamentoClick(payble)}>Editar Data do Pagamento</MenuItem>
                     <MenuItem onClick={() => handleDeleteClick(payble.payableId)}>Deletar</MenuItem>
                   </Menu>
                 </TableCell>
@@ -271,7 +319,7 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={7} align="center">
+              <TableCell colSpan={10} align="center">
                 <div style={{ textAlign: "center", padding: "20px" }}>
                   <img
                     src="/assets/icons/ic-content.svg"
@@ -286,7 +334,51 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
         </TableBody>
       </Table>
 
-      {/* Modais permanecem os mesmos */}
+      {/* Modal para editar a data de pagamento */}
+      <Dialog
+        open={editPaymentModalOpen}
+        onClose={() => {
+          setEditPaymentModalOpen(false);
+          reset();
+        }}
+      >
+        <DialogTitle>Editar Data do Pagamento</DialogTitle>
+        <form onSubmit={handleSubmit(onSubmitEditPayment)}>
+          <DialogContent>
+            <Controller
+              name="dataPagamento"
+              control={control}
+              rules={{ required: "Data de pagamento é obrigatória." }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Data de Pagamento"
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                  fullWidth
+                  error={!!errors.dataPagamento}
+                  helperText={errors.dataPagamento?.message}
+                />
+              )}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => {
+                setEditPaymentModalOpen(false);
+                reset();
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button type="submit" variant="contained" color="primary">
+              Atualizar
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      {/* Modais de confirmação permanecem os mesmos */}
       <ConfirmationDialog
         open={statusModalOpen}
         confirmButtonText="Confirmar"
