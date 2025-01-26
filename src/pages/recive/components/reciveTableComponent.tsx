@@ -3,6 +3,7 @@ import type { Receive } from "src/models/receive";
 import React, { useState } from "react";
 
 import {
+  Box,
   Menu,
   Table,
   TableRow,
@@ -12,8 +13,7 @@ import {
   TableCell,
   TableBody,
   IconButton,
-  LinearProgress,
-  Box
+  LinearProgress
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
@@ -196,6 +196,7 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
             </TableCell>
             <TableCell>ID</TableCell>
             <TableCell>Status</TableCell>
+            <TableCell>NF-e</TableCell>
             <TableCell>Data de Emissão</TableCell>
             <TableCell>Data do Vencimento</TableCell>
             <TableCell>Valor Total</TableCell>
@@ -248,6 +249,7 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                     {recive.status || "-"}
                   </Box>
                 </TableCell>
+                <TableCell>{recive.sale?.nfe || "-"}</TableCell>
                 <TableCell>{formatDate(recive.dataEmissao) || "-"}</TableCell>
                 <TableCell>{formatDate(recive.dataVencimento) || "-"}</TableCell>
                 <TableCell>{formatPrice(recive.totalValue) || "-"}</TableCell>
