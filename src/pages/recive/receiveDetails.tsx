@@ -173,7 +173,7 @@ export default function ReceiveDetailsPage() {
                                                 </Grid>
                                                 <Grid item xs={12}>
                                                     <Typography variant="body1" gutterBottom>
-                                                        ID da Pessoa: {receive.sale.personId || "-"}
+                                                        Cliente: {receive.sale.customer?.name || "-"}
                                                     </Typography>
                                                 </Grid>
                                                 <Grid item xs={12}>

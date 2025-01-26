@@ -144,6 +144,16 @@ export default function PayableDetailsPage() {
                                                 </Grid>
                                                 <Grid item xs={12}>
                                                     <Typography variant="body1" gutterBottom>
+                                                        Fornecedor: {payble.purchase.supplier?.name || "-"}
+                                                    </Typography>
+                                                </Grid>
+                                                <Grid item xs={12}>
+                                                    <Typography variant="body1" gutterBottom>
+                                                        NF-e: {payble.purchase.nfe || "-"}
+                                                    </Typography>
+                                                </Grid>
+                                                <Grid item xs={12}>
+                                                    <Typography variant="body1" gutterBottom>
                                                         Data da Compra: {formatDate(payble.purchase.date_time)}
                                                     </Typography>
                                                 </Grid>
