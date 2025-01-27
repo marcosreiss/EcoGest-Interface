@@ -54,6 +54,7 @@ export const useUpdateReceiveStatus = () => {
     mutationFn: ({ id }) => updateReceiveStatusService(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recives-list'] });
+      queryClient.invalidateQueries({ queryKey: ['recive'] });
     },
     onError: (error) => {
       console.error("Erro ao atualizar o status da conta a receber:", error);
@@ -73,6 +74,7 @@ export const useUpdateDataPagamentoReceive = () => {
       updateReceiveDataPagamentoService(dataPagamento, receiveId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["recives-list"] });
+      queryClient.invalidateQueries({ queryKey: ['recive'] });
     },
     onError: (error) => {
       console.error("Erro ao atualizar a data de pagamento do recebível:", error);

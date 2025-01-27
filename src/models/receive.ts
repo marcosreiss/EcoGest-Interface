@@ -12,6 +12,7 @@ export interface Receive {
     totalValue: number;
     sale: Sale;
     entry: Entry;
+    dataPagamento: string;
 }
 
 export interface ReceiveList {

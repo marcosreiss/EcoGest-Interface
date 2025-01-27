@@ -37,6 +37,7 @@ export const useUpdatePaybleStatus = () => {
     mutationFn: ({ id }) => updatePaybleStatusService(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['paybles-list'] });
+      queryClient.invalidateQueries({ queryKey: ["payble"] });
     },
     onError: (error) => {
       console.error("Erro ao atualizar o status do pagável:", error);
@@ -52,6 +53,7 @@ export const useUpdateDataPagamentoPayable = () => {
       updatePayabledataPagamentoService(dataPagamento, payableId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["paybles-list"] });
+      queryClient.invalidateQueries({ queryKey: ["payble"] });
     },
     onError: (error) => {
       console.error("Erro ao atualizar a data de pagamento da conta a pagar:", error);

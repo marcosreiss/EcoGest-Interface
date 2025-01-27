@@ -106,6 +106,13 @@ export default function ReceiveDetailsPage() {
                                             </Typography>
                                         </Grid>
 
+                                        {/* Data do Pagamento */}
+                                        <Grid item xs={12}>
+                                            <Typography variant="body1" gutterBottom>
+                                            Data do Pagamento: {formatDate(receive?.dataPagamento)}
+                                            </Typography>
+                                        </Grid>
+
                                         {/* Valor Pago */}
                                         <Grid item xs={12}>
                                             <Typography variant="body1" gutterBottom>
