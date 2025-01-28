@@ -1,10 +1,10 @@
 import type { AxiosError } from "axios";
+import type { FilterParams } from "src/models/filterParams";
 import type {
     Purchase,
     PurchasePayload,
     PurchaseResponse,
     PurchaseListResponse,
-    SearchByPeriodRequest,
     TotalPushchasesInPeriodRequest,
     TotalPushchasesInPeriodResponse,
 } from "src/models/purchase";
@@ -86,7 +86,7 @@ export const useGetTotalPurchasesInPeriod = () =>
         mutationFn: (payload) => getTotalPurchasesInPeriodService(payload),
     });
 
-export const useSearchPurchasesByPeriod = (payload: SearchByPeriodRequest) =>
+export const useSearchPurchasesByPeriod = (payload: FilterParams) =>
     useQuery<Purchase[], AxiosError>({
         queryKey: ['purchasesByPeriod', payload],
         queryFn: () => searchPurchasesByPeriodService(payload.startDate!, payload.endDate!),

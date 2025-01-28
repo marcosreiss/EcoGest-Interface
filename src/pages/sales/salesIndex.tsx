@@ -1,4 +1,5 @@
-import type { Sale, SearchByPeriodRequest } from 'src/models/sale';
+import type { Sale } from 'src/models/sale';
+import type { FilterParams } from 'src/models/filterParams';
 
 import * as React from 'react';
 import { useState } from 'react';
@@ -16,6 +17,7 @@ import { useNotification } from 'src/context/NotificationContext';
 
 import SalesTableSearch from './components/salesTableSearch';
 import TableComponent from './components/salesTableComponent'; // Importando a nova table
+
 import SaleTableHeaderComponent from './components/salesTableHeaderComponent';
 import TableFooterComponent from '../../layouts/components/tableFooterComponent';
 
@@ -30,9 +32,9 @@ export default function SalesIndex() {
     const { data: pagedData, isLoading: isPagedLoading } = useGetSalesPaged(page * rowsPerPage, rowsPerPage);
 
     // Estados para filtro por período
-    const [searchByPeriodRequest, setSearchByPeriod] = useState<SearchByPeriodRequest>({
-        startDate: null,
-        endDate: null,
+    const [searchByPeriodRequest, setSearchByPeriod] = useState<FilterParams>({
+        startDate: '',
+        endDate: '',
     });
 
     const { data: filteredData, isLoading: isFilteredLoading } = useSearchSalesByPeriod(searchByPeriodRequest);

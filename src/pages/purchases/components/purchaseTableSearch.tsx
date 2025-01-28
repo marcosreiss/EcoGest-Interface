@@ -1,7 +1,7 @@
 
 
 import type { Dispatch, SetStateAction} from 'react';
-import type { SearchByPeriodRequest } from 'src/models/purchase';
+import type { FilterParams } from 'src/models/filterParams';
 
 import React, { useState } from 'react';
 
@@ -16,7 +16,7 @@ interface TableSearchProps {
     selectedRows: any[];
     isSearchDisabled: boolean;
     handleDelete: () => void;
-    setSearchByPeriod: Dispatch<SetStateAction<SearchByPeriodRequest | undefined>>;
+    setSearchByPeriod: Dispatch<SetStateAction<FilterParams>>;
 }
 
 const PurchaseTableSearch: React.FC<TableSearchProps> = ({ handleSearchChange, selectedRows, isSearchDisabled, handleDelete, setSearchByPeriod }) => {

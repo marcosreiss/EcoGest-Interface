@@ -46,11 +46,6 @@ export interface SaleProductPayload{
     price: number;
 }
 
-export interface SearchByPeriodRequest {
-    startDate: string | null; 
-    endDate: string | null;   
-}
-
 export interface CustomSaleReceiptInfo{
     destinatario: string;
     valor: number;

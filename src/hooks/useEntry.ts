@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { SearchByPeriodRequest } from "src/models/purchase";
+import type { FilterParams } from "src/models/filterParams";
 import type {
     Entry,
     EntryPayload,
@@ -93,7 +93,7 @@ export const useGenerateCustomExpenseReceipt = () =>
         mutationFn: (info) => getCustomEntryReceiptService(info),
     });
 
-export const useSearchExpensesByPeriod = (payload: SearchByPeriodRequest) =>
+export const useSearchExpensesByPeriod = (payload: FilterParams) =>
     useQuery<Entry[], AxiosError>({
         queryKey: ['expensesByPeriod', payload],
         queryFn: () => searchExpensesByPeriodService(payload.startDate!, payload.endDate!),

@@ -1,4 +1,5 @@
-import type { Purchase, SearchByPeriodRequest } from 'src/models/purchase';
+import type { Purchase } from 'src/models/purchase';
+import type { FilterParams } from 'src/models/filterParams';
 
 import * as React from 'react';
 import { useState, useEffect } from 'react';
@@ -9,10 +10,10 @@ import { Box, Grid } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 
 import { useDeletePurchase, useGetPurchasesPaginated, useSearchPurchasesByPeriod } from 'src/hooks/usePurchase';
-
-import { CONFIG } from 'src/config-global'; 
-import { DashboardContent } from 'src/layouts/dashboard';
-import { useNotification } from 'src/context/NotificationContext'; 
+ 
+import { CONFIG } from 'src/config-global';
+import { DashboardContent } from 'src/layouts/dashboard'; 
+import { useNotification } from 'src/context/NotificationContext';
 import TableFooterComponent from 'src/layouts/components/tableFooterComponent';
 import TableHeaderComponent from 'src/layouts/components/tableHeaderComponent';
 import PurchaseTableSearch from 'src/pages/purchases/components/purchaseTableSearch';
@@ -46,8 +47,8 @@ export default function PurchasePage() {
     });
   };
 
-  const [searchByPeriodRequest, setSearchByPeriod] = useState<SearchByPeriodRequest>();
-  const [payload, setPayload] = useState<SearchByPeriodRequest>({startDate: null, endDate: null});
+  const [searchByPeriodRequest, setSearchByPeriod] = useState<FilterParams>({startDate: '', endDate: ''});
+  const [payload, setPayload] = useState<FilterParams>({startDate: '', endDate: ''});
   const searchByPeriod = useSearchPurchasesByPeriod(payload);
   
   
