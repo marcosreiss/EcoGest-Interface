@@ -57,8 +57,6 @@ export default function PurchasePage() {
     });
   };
 
-
-
   const purchases = data?.data ?? [];
 
   return (
@@ -77,10 +75,8 @@ export default function PurchasePage() {
           <Grid item xs={12}>
             <PurchaseTableSearch
               handleDelete={handleDeletePurchase}
-              handleSearchChange={() => null}
-              isSearchDisabled
               selectedRows={selectedPurchases}
-              setSearchByPeriod={setPurchaseParams}
+              setPurchaseParams={setPurchaseParams}
             />
             <TableContainer component={Paper} sx={{ height: '65vh', display: 'flex', flexDirection: 'column' }}>
               <Box component="div" sx={{ flex: 1, overflow: 'auto' }}>

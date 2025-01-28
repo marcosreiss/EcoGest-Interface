@@ -5,6 +5,7 @@ import api from "./api";
 
 // Obter vendas paginadas
 export const getSalesPagedService = async (params: FilterParams): Promise<SaleListResponse> => {
+    console.log(params);
     const response = await api.get<SaleListResponse>("/sales", { params });
     return response.data;
 };

@@ -12,6 +12,7 @@ import api from "./api";
 
 // Listar compras paginadas
 export const getPurchasesPaginatedService = async (params: FilterParams): Promise<PurchaseListResponse> => {
+    console.log(params);
     const response = await api.get<PurchaseListResponse>("/purchases", { params });
     return response.data;
 };
