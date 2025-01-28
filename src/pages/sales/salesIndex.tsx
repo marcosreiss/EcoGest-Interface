@@ -36,7 +36,8 @@ export default function SalesIndex() {
             id: null,
             personId: null,
             nfe: null,
-            order: "desc"
+            order: "desc",
+            dataVencimento: null,
           });
 
     // Estados para gerenciar os dados

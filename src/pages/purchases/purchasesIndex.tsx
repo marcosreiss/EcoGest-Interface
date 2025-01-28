@@ -36,6 +36,7 @@ export default function PurchasePage() {
     personId: null,
     nfe: null,
     order: "desc",
+    dataVencimento: null,
   });
 
   const { data, isLoading } = useGetPurchasesPaginated(purchaseParams);
