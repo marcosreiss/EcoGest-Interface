@@ -28,20 +28,28 @@ export default function PurchasePage() {
   const rowsPerPage = 25;
   const [page, setPage] = useState(0);
   const [purchaseParams, setPurchaseParams] = useState<FilterParams>({
-    skip: page * rowsPerPage,
+    skip: 0, // Início padrão
     take: rowsPerPage,
     startDate: null,
     endDate: null,
     id: null,
     personId: null,
     nfe: null,
-    order: "desc"
+    order: "desc",
   });
 
   const { data, isLoading } = useGetPurchasesPaginated(purchaseParams);
 
   const notification = useNotification();
   const deletePurchase = useDeletePurchase();
+
+  // Atualizar `skip` sempre que `page` mudar
+  React.useEffect(() => {
+    setPurchaseParams((prev) => ({
+      ...prev,
+      skip: page * rowsPerPage, // Recalcula o ponto de início com base na página
+    }));
+  }, [page, rowsPerPage]);
 
   const handleDeletePurchase = () => {
     selectedPurchases.forEach((purchase) => {
@@ -68,9 +76,9 @@ export default function PurchasePage() {
       <DashboardContent maxWidth="lg">
         <Grid container>
           <TableHeaderComponent
-            title='Compras'
-            addButtonName='Cadastrar Compra'
-            addButtonPath='/purchases/create'
+            title="Compras"
+            addButtonName="Cadastrar Compra"
+            addButtonPath="/purchases/create"
           />
           <Grid item xs={12}>
             <PurchaseTableSearch
@@ -78,7 +86,10 @@ export default function PurchasePage() {
               selectedRows={selectedPurchases}
               setPurchaseParams={setPurchaseParams}
             />
-            <TableContainer component={Paper} sx={{ height: '65vh', display: 'flex', flexDirection: 'column' }}>
+            <TableContainer
+              component={Paper}
+              sx={{ height: '65vh', display: 'flex', flexDirection: 'column' }}
+            >
               <Box component="div" sx={{ flex: 1, overflow: 'auto' }}>
                 <PurchaseTableComponent
                   setSelectedPurchases={setSelectedPurchases}
@@ -100,3 +111,4 @@ export default function PurchasePage() {
     </>
   );
 }
+
