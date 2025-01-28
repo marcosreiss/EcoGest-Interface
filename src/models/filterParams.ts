@@ -1,4 +1,10 @@
 export interface FilterParams{
-    startDate:string;
-    endDate:string;
+    skip: number;
+    take: number;
+    nfe: string | null;
+    order: "asc" | "desc" | null;
+    personId: number | null;
+    id: number | null;
+    startDate:string | null;
+    endDate:string | null;
 }

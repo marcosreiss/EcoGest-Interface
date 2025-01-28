@@ -33,9 +33,15 @@ export default function SalesIndex() {
 
     // Estados para filtro por período
     const [searchByPeriodRequest, setSearchByPeriod] = useState<FilterParams>({
-        startDate: '',
-        endDate: '',
-    });
+        skip: page * rowsPerPage,
+        take: rowsPerPage,
+        startDate: null,
+        endDate: null,
+        id: null,
+        personId: null,
+        nfe: null,
+        order: "desc"
+      });
 
     const { data: filteredData, isLoading: isFilteredLoading } = useSearchSalesByPeriod(searchByPeriodRequest);
 
