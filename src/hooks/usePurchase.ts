@@ -24,10 +24,10 @@ import {
 } from "src/services/purchaseService";
 
 // Hook para listar compras paginadas
-export const useGetPurchasesPaginated = (skip: number, take: number) =>
+export const useGetPurchasesPaginated = (params: FilterParams) =>
     useQuery<PurchaseListResponse, AxiosError>({
-        queryKey: ["purchases-list", { skip, take }],
-        queryFn: () => getPurchasesPaginatedService(skip, take),
+        queryKey: ["purchases-list", { params }],
+        queryFn: () => getPurchasesPaginatedService(params),
     });
 
 // Hook para criar uma nova compra

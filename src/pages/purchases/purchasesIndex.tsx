@@ -2,14 +2,14 @@ import type { Purchase } from 'src/models/purchase';
 import type { FilterParams } from 'src/models/filterParams';
 
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 import Paper from '@mui/material/Paper';
 import { Box, Grid } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 
-import { useDeletePurchase, useGetPurchasesPaginated, useSearchPurchasesByPeriod } from 'src/hooks/usePurchase';
+import { useDeletePurchase, useGetPurchasesPaginated } from 'src/hooks/usePurchase';
 
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -27,8 +27,18 @@ export default function PurchasePage() {
 
   const rowsPerPage = 25;
   const [page, setPage] = useState(0);
+  const [purchaseParams, setPurchaseParams] = useState<FilterParams>({
+    skip: page * rowsPerPage,
+    take: rowsPerPage,
+    startDate: null,
+    endDate: null,
+    id: null,
+    personId: null,
+    nfe: null,
+    order: "desc"
+  });
 
-  const { data, isLoading } = useGetPurchasesPaginated(page * rowsPerPage, rowsPerPage);
+  const { data, isLoading } = useGetPurchasesPaginated(purchaseParams);
 
   const notification = useNotification();
   const deletePurchase = useDeletePurchase();
@@ -47,36 +57,9 @@ export default function PurchasePage() {
     });
   };
 
-  const [searchByPeriodRequest, setSearchByPeriod] = useState<FilterParams>({
-    skip: page * rowsPerPage,
-    take: rowsPerPage,
-    startDate: null,
-    endDate: null,
-    id: null,
-    personId: null,
-    nfe: null,
-    order: "desc"
-  });
-  const [payload, setPayload] = useState<FilterParams>({
-    skip: page * rowsPerPage,
-    take: rowsPerPage,
-    startDate: null,
-    endDate: null,
-    id: null,
-    personId: null,
-    nfe: null,
-    order: "desc"
-  });
-  const searchByPeriod = useSearchPurchasesByPeriod(payload);
 
 
-  useEffect(() => {
-    if (searchByPeriodRequest?.startDate && searchByPeriodRequest?.endDate) {
-      setPayload(searchByPeriodRequest);
-    }
-  }, [searchByPeriodRequest]);
-
-  const purchases = searchByPeriod.data ?? data?.data ?? [];
+  const purchases = data?.data ?? [];
 
   return (
     <>
@@ -97,7 +80,7 @@ export default function PurchasePage() {
               handleSearchChange={() => null}
               isSearchDisabled
               selectedRows={selectedPurchases}
-              setSearchByPeriod={setSearchByPeriod}
+              setSearchByPeriod={setPurchaseParams}
             />
             <TableContainer component={Paper} sx={{ height: '65vh', display: 'flex', flexDirection: 'column' }}>
               <Box component="div" sx={{ flex: 1, overflow: 'auto' }}>

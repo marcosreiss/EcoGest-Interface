@@ -1,10 +1,11 @@
+import type { FilterParams } from "src/models/filterParams";
 import type { Sale, SalePayload, SaleResponse, SaleListResponse, CustomSaleReceiptInfo } from "src/models/sale";
 
 import api from "./api";
 
 // Obter vendas paginadas
-export const getSalesPagedService = async (skip: number, take: number): Promise<SaleListResponse> => {
-    const response = await api.get<SaleListResponse>("/sales", { params: { skip, take } });
+export const getSalesPagedService = async (params: FilterParams): Promise<SaleListResponse> => {
+    const response = await api.get<SaleListResponse>("/sales", { params });
     return response.data;
 };
 

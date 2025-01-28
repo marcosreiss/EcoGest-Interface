@@ -20,10 +20,10 @@ import {
 } from "src/services/saleService";
 
 // Hook para obter vendas paginadas
-export const useGetSalesPaged = (skip: number, take: number, debouncedSearchString?: string) =>
+export const useGetSalesPaged = (params: FilterParams) =>
     useQuery<SaleListResponse, AxiosError>({
-        queryKey: ['sales-list', { skip, take }],
-        queryFn: () => getSalesPagedService(skip, take),
+        queryKey: ['sales-list', { params }],
+        queryFn: () => getSalesPagedService(params),
     });
 
 // Hook para criar uma venda
