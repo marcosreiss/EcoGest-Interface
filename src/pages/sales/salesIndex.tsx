@@ -1,4 +1,5 @@
-import type { Sale, SearchByPeriodRequest } from 'src/models/sale';
+import type { Sale } from 'src/models/sale';
+import type { FilterParams } from 'src/models/filterParams';
 
 import * as React from 'react';
 import { useState } from 'react';
@@ -8,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import { Box, Grid } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 
-import { useDeleteSale, useGetSalesPaged, useSearchSalesByPeriod } from 'src/hooks/useSales';
+import { useDeleteSale, useGetSalesPaged } from 'src/hooks/useSales';
 
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -16,6 +17,7 @@ import { useNotification } from 'src/context/NotificationContext';
 
 import SalesTableSearch from './components/salesTableSearch';
 import TableComponent from './components/salesTableComponent'; // Importando a nova table
+
 import SaleTableHeaderComponent from './components/salesTableHeaderComponent';
 import TableFooterComponent from '../../layouts/components/tableFooterComponent';
 
@@ -25,27 +27,23 @@ export default function SalesIndex() {
     const [selectedSales, setSelectedSales] = useState<Sale[]>([]);
     const rowsPerPage = 25;
     const [page, setPage] = useState(0);
+        // Estados para filtro por período
+        const [salesParams, setSalesParams] = useState<FilterParams>({
+            skip: page * rowsPerPage,
+            take: rowsPerPage,
+            startDate: null,
+            endDate: null,
+            id: null,
+            personId: null,
+            nfe: null,
+            order: "desc"
+          });
 
     // Estados para gerenciar os dados
-    const { data: pagedData, isLoading: isPagedLoading } = useGetSalesPaged(page * rowsPerPage, rowsPerPage);
+    const { data, isLoading } = useGetSalesPaged(salesParams);
 
-    // Estados para filtro por período
-    const [searchByPeriodRequest, setSearchByPeriod] = useState<SearchByPeriodRequest>({
-        startDate: null,
-        endDate: null,
-    });
+    const sales =  data?.data ?? [];
 
-    const { data: filteredData, isLoading: isFilteredLoading } = useSearchSalesByPeriod(searchByPeriodRequest);
-
-    // Define os dados para exibição (filtro ou geral)
-    const sales = searchByPeriodRequest.startDate && searchByPeriodRequest.endDate
-        ? filteredData?.data ?? []
-        : pagedData?.data ?? [];
-
-    // Define o estado de carregamento com base no contexto
-    const isLoading = isFilteredLoading || isPagedLoading;
-
-    // Gerenciar exclusão de vendas
     const deleteSale = useDeleteSale();
     const notification = useNotification();
 
@@ -76,7 +74,7 @@ export default function SalesIndex() {
                         <SalesTableSearch
                             handleDelete={handleDeleteSale}
                             selectedRows={selectedSales}
-                            setSearchByPeriod={setSearchByPeriod}
+                            setSearchByPeriod={setSalesParams}
                             isSearchDisabled={false}
                             handleSearchChange={() => null} // Não utilizado no novo componente
                         />
@@ -94,11 +92,7 @@ export default function SalesIndex() {
                                 setPage={setPage}
                                 page={page}
                                 rowsPerPage={rowsPerPage}
-                                totalItems={
-                                    searchByPeriodRequest.startDate && searchByPeriodRequest.endDate
-                                        ? filteredData?.meta?.total || 0 // Se undefined, retorna 0
-                                        : pagedData?.meta?.total || 0 // Se undefined, retorna 0
-                                }
+                                totalItems={data?.meta?.totalItems || 0}
                             />
                         </TableContainer>
                     </Grid>

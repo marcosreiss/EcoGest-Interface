@@ -1,10 +1,10 @@
 import type { AxiosError } from "axios";
+import type { FilterParams } from "src/models/filterParams";
 import type {
     Purchase,
     PurchasePayload,
     PurchaseResponse,
     PurchaseListResponse,
-    SearchByPeriodRequest,
     TotalPushchasesInPeriodRequest,
     TotalPushchasesInPeriodResponse,
 } from "src/models/purchase";
@@ -24,10 +24,10 @@ import {
 } from "src/services/purchaseService";
 
 // Hook para listar compras paginadas
-export const useGetPurchasesPaginated = (skip: number, take: number) =>
+export const useGetPurchasesPaginated = (params: FilterParams) =>
     useQuery<PurchaseListResponse, AxiosError>({
-        queryKey: ["purchases-list", { skip, take }],
-        queryFn: () => getPurchasesPaginatedService(skip, take),
+        queryKey: ["purchases-list", { params }],
+        queryFn: () => getPurchasesPaginatedService(params),
     });
 
 // Hook para criar uma nova compra
@@ -86,7 +86,7 @@ export const useGetTotalPurchasesInPeriod = () =>
         mutationFn: (payload) => getTotalPurchasesInPeriodService(payload),
     });
 
-export const useSearchPurchasesByPeriod = (payload: SearchByPeriodRequest) =>
+export const useSearchPurchasesByPeriod = (payload: FilterParams) =>
     useQuery<Purchase[], AxiosError>({
         queryKey: ['purchasesByPeriod', payload],
         queryFn: () => searchPurchasesByPeriodService(payload.startDate!, payload.endDate!),

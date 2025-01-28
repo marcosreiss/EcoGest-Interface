@@ -10,6 +10,10 @@ export interface Purchase {
     paymentSlip: { data: number[] } | null;
     discount: number;
     totalPrice: number;
+    nfe: string;
+    payable:{
+        dataVencimento: string;
+    }
 }
 
 export interface PurchasePayload {
@@ -19,6 +23,8 @@ export interface PurchasePayload {
     date_time: string;
     paymentSlip: Blob | null;
     discount: number | null;
+    nfe: string;
+    dataVencimento: string;
 }
 
 export interface PurchaseProduct {
@@ -49,9 +55,4 @@ export interface TotalPushchasesInPeriodRequest {
 }
 export interface TotalPushchasesInPeriodResponse {
     totalPurchasesValue: number;
-}
-
-export interface SearchByPeriodRequest {
-    startDate?: string | null; // Formato ISO
-    endDate?: string | null;   // Formato ISO
 }

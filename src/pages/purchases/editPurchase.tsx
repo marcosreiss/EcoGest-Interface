@@ -8,6 +8,7 @@ import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 
 import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Box,
@@ -54,8 +55,8 @@ export default function EditPurchasePage() {
     register,
     handleSubmit,
     setValue,
-    control,
     watch,
+    control,
     formState: { errors },
   } = useForm<PurchasePayload>({
     defaultValues: {
@@ -72,12 +73,14 @@ export default function EditPurchasePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
+  const [isEditingProduct, setIsEditingProduct] = useState<boolean>(false);
 
   const {
-    control: modalControl,
+    control: productControl,
     handleSubmit: handleModalSubmit,
     reset: resetModal,
     formState: { errors: modalErrors },
+    setValue: setProductValue,
   } = useForm<PurchasePayloadProduct>();
 
   const updatePurchase = useUpdatePurchase();
@@ -89,6 +92,13 @@ export default function EditPurchasePage() {
       setValue("description", purchase.description);
       setValue("date_time", purchase.date_time ? purchase.date_time.split("T")[0] : "");
       setValue("discount", purchase.discount ?? 0);
+      setValue("nfe", purchase.nfe);
+      setValue(
+        "dataVencimento",
+        purchase.payable.dataVencimento
+          ? purchase.payable.dataVencimento.split("T")[0]
+          : ""
+      );
 
       const list: PurchasePayloadProduct[] = purchase.products.map((product) => ({
         productId: product.product.productId,
@@ -106,7 +116,10 @@ export default function EditPurchasePage() {
 
     const allowedExtensions = ["application/pdf", "image/jpeg", "image/png"];
     if (!allowedExtensions.includes(uploadedFile.type)) {
-      addNotification("Formato de arquivo inválido. Apenas .pdf, .jpg e .png são permitidos.", "error");
+      addNotification(
+        "Formato de arquivo inválido. Apenas .pdf, .jpg e .png são permitidos.",
+        "error"
+      );
       return;
     }
     if (uploadedFile.size > 5 * 1024 * 1024) {
@@ -116,17 +129,68 @@ export default function EditPurchasePage() {
     setFile(uploadedFile);
   };
 
+  const calculateTotal = (): number => {
+    const total = productsList.reduce(
+      (acc, product) => acc + product.price * product.quantity,
+      0
+    );
+    const discount = parseFloat(String(watch("discount")) || "0"); // Força o valor para string
+    return Math.max(total - discount, 0); // Evita valores negativos no total
+  };
+
   const handleAddProduct = (data: PurchasePayloadProduct) => {
-    setProductsList([
-      ...productsList,
-      {
+    if (isEditingProduct && selectedProductIndex !== null) {
+      // Atualiza o produto existente no índice selecionado
+      const updatedProducts = [...productsList];
+      updatedProducts[selectedProductIndex] = {
         productId: data.productId,
         quantity: Number(data.quantity),
         price: Number(data.price),
-      },
-    ]);
+      };
+      setProductsList(updatedProducts);
+      setIsEditingProduct(false);
+      setSelectedProductIndex(null);
+    } else {
+      // Verifica se o produto já foi adicionado
+      const existingProduct = productsList.find(
+        (product) => product.productId === data.productId
+      );
+
+      if (existingProduct) {
+        // Exibe a notificação de erro
+        addNotification(
+          "Produto já adicionado, edite para alterar a quantidade ou preço.",
+          "error"
+        );
+        // Fecha o modal e reseta o formulário
+        setModalOpen(false);
+        resetModal();
+        return;
+      }
+
+      // Adiciona um novo produto
+      setProductsList([
+        ...productsList,
+        {
+          productId: data.productId,
+          quantity: Number(data.quantity),
+          price: Number(data.price),
+        },
+      ]);
+    }
+
+    // Reseta o formulário e fecha o modal após adicionar ou editar
     resetModal();
     setModalOpen(false);
+  };
+
+  const handleEditProductClick = (product: PurchasePayloadProduct, index: number) => {
+    setProductValue("productId", product.productId);
+    setProductValue("quantity", product.quantity);
+    setProductValue("price", product.price);
+    setIsEditingProduct(true);
+    setSelectedProductIndex(index); // Define o índice do produto a ser editado
+    setModalOpen(true);
   };
 
   const handleRemoveProduct = () => {
@@ -136,17 +200,6 @@ export default function EditPurchasePage() {
       setConfirmDialogOpen(false);
     }
   };
-
-  const calculateTotal = (): number => {
-    const total = productsList.reduce(
-      (acc, product) => acc + product.price * product.quantity,
-      0
-    );
-    const discount = watch("discount") || 0;
-    return total - discount;
-  };
-
-  const total = calculateTotal();
 
   const onSubmit = (data: PurchasePayload) => {
     const payload: PurchasePayload = {
@@ -171,6 +224,16 @@ export default function EditPurchasePage() {
     );
   };
 
+  const total: number = calculateTotal();
+
+  if (loadingPurchase) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", marginTop: 5 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <>
       <Helmet>
@@ -186,32 +249,56 @@ export default function EditPurchasePage() {
                     Editar Compra
                   </Typography>
                 </Grid>
+
+                {/* Fornecedor */}
                 <Grid item xs={12}>
-                  <Autocomplete
-                    options={suppliers?.data || []}
-                    loading={loadingSuppliers}
-                    getOptionLabel={(option: SupplierBasicInfo) => option.name}
-                    isOptionEqualToValue={(option, value) => option.personId === value.personId}
-                    value={
-                      suppliers?.data.find((supplier) => supplier.personId === purchase?.supplier.personId) || null
-                    }
-                    onChange={(_, newValue) =>
-                      setValue("personId", newValue ? newValue.personId : -1, {
-                        shouldValidate: true,
-                      })
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Fornecedor"
-                        variant="outlined"
-                        error={!!errors.personId}
-                        helperText={errors.personId?.message}
+                  <Controller
+                    name="personId"
+                    control={control}
+                    rules={{ required: "Fornecedor é obrigatório." }}
+                    render={({ field }) => (
+                      <Autocomplete
+                        {...field}
+                        options={suppliers?.data || []}
+                        loading={loadingSuppliers}
+                        getOptionLabel={(option: SupplierBasicInfo) => option.name}
+                        isOptionEqualToValue={(option, value) =>
+                          option.personId === value?.personId
+                        }
+                        value={
+                          suppliers?.data.find(
+                            (supplier) => supplier.personId === field.value
+                          ) || null
+                        }
+                        onChange={(_, newValue) => {
+                          field.onChange(newValue ? newValue.personId : null);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Fornecedor"
+                            variant="outlined"
+                            error={!!errors.personId}
+                            helperText={errors.personId?.message}
+                            InputProps={{
+                              ...params.InputProps,
+                              endAdornment: (
+                                <>
+                                  {loadingSuppliers ? (
+                                    <CircularProgress color="inherit" size={20} />
+                                  ) : null}
+                                  {params.InputProps.endAdornment}
+                                </>
+                              ),
+                            }}
+                          />
+                        )}
                       />
                     )}
                   />
                 </Grid>
 
+                {/* Descrição */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -225,6 +312,34 @@ export default function EditPurchasePage() {
                   />
                 </Grid>
 
+                {/* Nota Fiscal */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="NF-e"
+                    placeholder="Nota Fiscal Eletrônica"
+                    {...register("nfe", { maxLength: 15 })}
+                    value={watch("nfe") || ""}
+                    onChange={(e) => setValue("nfe", e.target.value)}
+                  />
+                  {errors.nfe && (
+                    <Typography
+                      variant="body2"
+                      color="error"
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: "0.775rem",
+                        display: "flex",
+                        alignItems: "center",
+                        mt: 1,
+                      }}
+                    >
+                      Máximo de 15 caracteres
+                    </Typography>
+                  )}
+                </Grid>
+
+                {/* Data da Compra */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -236,6 +351,21 @@ export default function EditPurchasePage() {
                     helperText={errors.date_time?.message}
                   />
                 </Grid>
+
+                {/* Data do Vencimento */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Data do Vencimento"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    {...register("dataVencimento", { required: "Data é obrigatória." })}
+                    error={!!errors.dataVencimento}
+                    helperText={errors.dataVencimento?.message}
+                  />
+                </Grid>
+
+                {/* Desconto */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -244,14 +374,23 @@ export default function EditPurchasePage() {
                     InputProps={{
                       startAdornment: <InputAdornment position="start">R$</InputAdornment>,
                     }}
-                    {...register("discount")}
+                    {...register("discount", {
+                      setValueAs: (v) => (v === "" ? 0 : parseFloat(v)),
+                    })}
                   />
                 </Grid>
+
+                {/* Produtos Adicionados */}
                 <Grid item xs={12}>
                   <Button
                     startIcon={<AddIcon />}
                     variant="contained"
-                    onClick={() => setModalOpen(true)}
+                    onClick={() => {
+                      setModalOpen(true);
+                      setIsEditingProduct(false); // Garantir que não está em modo de edição ao adicionar
+                      setSelectedProductIndex(null);
+                      resetModal(); // Resetar o formulário ao abrir o modal para adicionar
+                    }}
                   >
                     Adicionar Produto
                   </Button>
@@ -259,22 +398,26 @@ export default function EditPurchasePage() {
                     <Table size="small" sx={{ marginTop: 3, marginBottom: 3 }}>
                       <TableHead>
                         <TableRow>
-                          <TableCell>Produto</TableCell>
-                          <TableCell>Qtd</TableCell>
-                          <TableCell>Preço</TableCell>
-                          <TableCell>Ações</TableCell>
+                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Produto</TableCell>
+                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Qtd</TableCell>
+                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Preço</TableCell>
+                          <TableCell style={{ padding: "6px", fontSize: "0.9rem" }}>Ações</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {productsList.map((product, index) => (
                           <TableRow key={index}>
-                            <TableCell>
+                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
                               {products?.data.find((p) => p.productId === product.productId)?.name ||
                                 "Produto não encontrado"}
                             </TableCell>
-                            <TableCell>{product.quantity} Kg</TableCell>
-                            <TableCell>R$ {product.price}</TableCell>
-                            <TableCell>
+                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                              {product.quantity} Kg
+                            </TableCell>
+                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
+                              R$ {product.price}
+                            </TableCell>
+                            <TableCell style={{ padding: "6px", fontSize: "0.85rem" }}>
                               <IconButton
                                 color="error"
                                 onClick={() => {
@@ -285,6 +428,13 @@ export default function EditPurchasePage() {
                               >
                                 <DeleteIcon fontSize="small" />
                               </IconButton>
+                              <IconButton
+                                color="info"
+                                onClick={() => handleEditProductClick(product, index)} // Passar o índice do produto
+                                size="small"
+                              >
+                                <EditIcon fontSize="small" />
+                              </IconButton>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -292,16 +442,37 @@ export default function EditPurchasePage() {
                     </Table>
                   )}
                 </Grid>
+
+                {/* Total da Compra */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     label="Total da Compra"
                     value={`R$ ${total.toFixed(2)}`}
+                    variant="outlined"
                     InputProps={{
                       readOnly: true,
                     }}
                   />
                 </Grid>
+
+                {/* Upload do arquivo */}
+                <Grid item xs={12}>
+                  <Button variant="contained" component="label" fullWidth>
+                    Upload Nota Fiscal
+                    <input
+                      type="file"
+                      hidden
+                      accept=".pdf,.png,.jpg,.jpeg"
+                      onChange={handleFileChange}
+                    />
+                  </Button>
+                  {file && file instanceof File && (
+                    <Typography variant="body2">Arquivo: {file.name}</Typography>
+                  )}
+                </Grid>
+
+                {/* Botão de Enviar */}
                 <Grid item xs={12}>
                   <Button
                     type="submit"
@@ -311,6 +482,9 @@ export default function EditPurchasePage() {
                     onClick={handleSubmit(onSubmit)}
                   >
                     Atualizar Compra
+                    {updatePurchase.isPending && (
+                      <CircularProgress size={20} sx={{ marginLeft: 2 }} />
+                    )}
                   </Button>
                 </Grid>
               </Grid>
@@ -319,25 +493,44 @@ export default function EditPurchasePage() {
         </Grid>
       </DashboardContent>
 
-      {/* Modal para adicionar produto */}
-      <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
-        <DialogTitle>Adicionar Produto</DialogTitle>
+      {/* Modal para adicionar/editar produto */}
+      <Dialog
+        open={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          setIsEditingProduct(false);
+          setSelectedProductIndex(null);
+          resetModal(); // Resetar o formulário ao fechar o modal
+        }}
+      >
+        <DialogTitle>
+          {isEditingProduct ? "Editar Produto" : "Adicionar Produto"}
+        </DialogTitle>
         <form onSubmit={handleModalSubmit(handleAddProduct)}>
           <DialogContent>
+            {/* Produto */}
             <Controller
               name="productId"
-              control={modalControl}
+              control={productControl}
               rules={{ required: "Produto é obrigatório." }}
               defaultValue={undefined}
               render={({ field }) => (
                 <Autocomplete
+                  {...field}
                   options={products?.data || []}
                   loading={loadingProducts}
                   getOptionLabel={(option: ProductBasicInfo) => option.name}
-                  isOptionEqualToValue={(option, value) => option.productId === value.productId}
+                  isOptionEqualToValue={(option, value) =>
+                    option.productId === value.productId
+                  }
+                  value={
+                    products?.data.find((product) => product.productId === field.value) ||
+                    null
+                  }
                   onChange={(_, newValue) => {
                     field.onChange(newValue ? newValue.productId : null);
                   }}
+                  disabled={isEditingProduct}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -346,11 +539,14 @@ export default function EditPurchasePage() {
                       variant="outlined"
                       error={!!modalErrors.productId}
                       helperText={modalErrors.productId?.message}
+                      disabled={isEditingProduct}
                       InputProps={{
                         ...params.InputProps,
                         endAdornment: (
                           <>
-                            {loadingProducts ? <CircularProgress color="inherit" size={20} /> : null}
+                            {loadingProducts ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : null}
                             {params.InputProps.endAdornment}
                           </>
                         ),
@@ -360,15 +556,16 @@ export default function EditPurchasePage() {
                 />
               )}
             />
+            {/* Quantidade */}
             <Controller
               name="quantity"
-              control={modalControl}
+              control={productControl}
               rules={{ required: "Quantidade é obrigatória." }}
               render={({ field }) => (
                 <TextField
                   {...field}
                   fullWidth
-                  label="Quantidade"
+                  label="Quantidade (Kg)"
                   type="number"
                   variant="outlined"
                   error={!!modalErrors.quantity}
@@ -377,9 +574,10 @@ export default function EditPurchasePage() {
                 />
               )}
             />
+            {/* Preço */}
             <Controller
               name="price"
-              control={modalControl}
+              control={productControl}
               rules={{ required: "Preço é obrigatório." }}
               render={({ field }) => (
                 <TextField
@@ -396,9 +594,18 @@ export default function EditPurchasePage() {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setModalOpen(false)}>Cancelar</Button>
+            <Button
+              onClick={() => {
+                setModalOpen(false);
+                setIsEditingProduct(false);
+                setSelectedProductIndex(null);
+                resetModal(); // Resetar o formulário ao cancelar
+              }}
+            >
+              Cancelar
+            </Button>
             <Button type="submit" variant="contained">
-              Adicionar
+              {isEditingProduct ? "Editar" : "Adicionar"}
             </Button>
           </DialogActions>
         </form>

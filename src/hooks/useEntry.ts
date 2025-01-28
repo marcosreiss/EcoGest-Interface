@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import type { SearchByPeriodRequest } from "src/models/purchase";
+import type { FilterParams } from "src/models/filterParams";
 import type {
     Entry,
     EntryPayload,
@@ -7,6 +7,7 @@ import type {
     EntryListResponse,
     EntryPaginatedParams,
     CustomEntryReceiptInfo,
+    EntryRelatoryRequestParams,
 } from "src/models/entry";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,10 +17,11 @@ import {
     updateEntryService,
     deleteEntryService,
     getEntryByIdService,
-    getExpenseReceiptService,
+    getEntryReceiptService,
+    getEntryRelatoryService,
     getEntryPaginatedService,
+    getCustomEntryReceiptService,
     searchExpensesByPeriodService,
-    getCustomExpenseReceiptService,
 } from "src/services/entryService";
 
 // Hook para listar despesas paginadas
@@ -82,18 +84,23 @@ export const useGetEntryById = (id: number) =>
 export const useGetExpenseReceipt = (expenseId: number) =>
     useQuery<Blob, AxiosError>({
         queryKey: ['expense-receipt', expenseId],
-        queryFn: () => getExpenseReceiptService(expenseId),
+        queryFn: () => getEntryReceiptService(expenseId),
         enabled: !!expenseId,
     });
 
 export const useGenerateCustomExpenseReceipt = () =>
     useMutation<Blob, AxiosError, CustomEntryReceiptInfo>({
-        mutationFn: (info) => getCustomExpenseReceiptService(info),
+        mutationFn: (info) => getCustomEntryReceiptService(info),
     });
 
-export const useSearchExpensesByPeriod = (payload: SearchByPeriodRequest) =>
+export const useSearchExpensesByPeriod = (payload: FilterParams) =>
     useQuery<Entry[], AxiosError>({
         queryKey: ['expensesByPeriod', payload],
         queryFn: () => searchExpensesByPeriodService(payload.startDate!, payload.endDate!),
         enabled: !!payload?.startDate && !!payload?.endDate,
+    });
+
+// Hook para obter relatório de despesas
+export const useGetEntryRelatory = () => useMutation<Blob, AxiosError, EntryRelatoryRequestParams>({
+      mutationFn: (params) => getEntryRelatoryService(params),
     });

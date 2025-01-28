@@ -77,6 +77,7 @@ export default function ReceiveDetailsPage() {
                                                 ID: {receive?.receiveId || "-"}
                                             </Typography>
                                         </Grid>
+
                                         {/* Botão de Editar */}
                                         <Grid item xs={6}>
                                             <IconButton onClick={handleEditClick}>
@@ -102,6 +103,13 @@ export default function ReceiveDetailsPage() {
                                         <Grid item xs={12}>
                                             <Typography variant="body1" gutterBottom>
                                                 Data de Vencimento: {formatDate(receive?.dataVencimento)}
+                                            </Typography>
+                                        </Grid>
+
+                                        {/* Data do Pagamento */}
+                                        <Grid item xs={12}>
+                                            <Typography variant="body1" gutterBottom>
+                                            Data do Pagamento: {formatDate(receive?.dataPagamento)}
                                             </Typography>
                                         </Grid>
 
@@ -172,7 +180,7 @@ export default function ReceiveDetailsPage() {
                                                 </Grid>
                                                 <Grid item xs={12}>
                                                     <Typography variant="body1" gutterBottom>
-                                                        ID da Pessoa: {receive.sale.personId || "-"}
+                                                        Cliente: {receive.sale.customer?.name || "-"}
                                                     </Typography>
                                                 </Grid>
                                                 <Grid item xs={12}>
@@ -183,6 +191,11 @@ export default function ReceiveDetailsPage() {
                                                 <Grid item xs={12}>
                                                     <Typography variant="body1" gutterBottom>
                                                         Descrição: {receive.sale.description || "-"}
+                                                    </Typography>
+                                                </Grid>
+                                                <Grid item xs={12}>
+                                                    <Typography variant="body1" gutterBottom>
+                                                        NF-e: {receive.sale.nfe || "-"}
                                                     </Typography>
                                                 </Grid>
                                                 <Grid item xs={12}>

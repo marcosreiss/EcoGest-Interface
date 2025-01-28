@@ -10,11 +10,16 @@ export interface Sale {
     discount: number;
     totalPrice: number;
     products: SaleProduct[];
+    nfe: string;
+    receive: {
+        dataVencimento: string;
+    }
 }
 export interface SaleProduct {
     product: Product;
     quantity: number;
     totalPrice: number;
+    price: number;
 }
 
 export interface SaleListResponse {
@@ -32,17 +37,14 @@ export interface SalePayload {
     description: string;
     products: SaleProductPayload[];
     discount: number;
+    nfe: string;
+    dataVencimento: string;
 }
 
 export interface SaleProductPayload{
     productId: number;
     quantity: number;
     price: number;
-}
-
-export interface SearchByPeriodRequest {
-    startDate: string | null; 
-    endDate: string | null;   
 }
 
 export interface CustomSaleReceiptInfo{

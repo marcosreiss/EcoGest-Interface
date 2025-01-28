@@ -40,6 +40,7 @@ const predefinedSubtypes = [
 "Manutenção Empilhadeira",
 "Pagamento a fornecedores",
 "Gastos com energia e internet",
+"Outro",
 ];
 
 export default function CreateExpensePage() {

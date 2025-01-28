@@ -1,3 +1,4 @@
+import type { FilterParams } from "src/models/filterParams";
 import type {
     Purchase,
     PurchasePayload,
@@ -10,8 +11,9 @@ import type {
 import api from "./api";
 
 // Listar compras paginadas
-export const getPurchasesPaginatedService = async (skip: number, take: number): Promise<PurchaseListResponse> => {
-    const response = await api.get<PurchaseListResponse>("/purchases", { params: { skip, take } });
+export const getPurchasesPaginatedService = async (params: FilterParams): Promise<PurchaseListResponse> => {
+    console.log(params);
+    const response = await api.get<PurchaseListResponse>("/purchases", { params });
     return response.data;
 };
 

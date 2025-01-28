@@ -5,6 +5,7 @@ import type {
     EntryListResponse,
     EntryPaginatedParams,
     CustomEntryReceiptInfo,
+    EntryRelatoryRequestParams,
 } from "src/models/entry";
 
 import api from "./api";
@@ -40,20 +41,17 @@ export const getEntryByIdService = async (id: number): Promise<Entry> => {
 };
 
 // Obter recibo de Despesa por ID
-export const getExpenseReceiptService = async (id: number): Promise<Blob> => {
+export const getEntryReceiptService = async (id: number): Promise<Blob> => {
     const response = await api.get<Blob>(`/entry/receipt?id=${id}`, {
         responseType: "blob",
     });
     return response.data;
 };
 
-
 // Obter recibo de despesa Customizado
-export const getCustomExpenseReceiptService = async (info: CustomEntryReceiptInfo): Promise<Blob> => {
-    info.tipo = "perda"
-    
+export const getCustomEntryReceiptService = async (info: CustomEntryReceiptInfo): Promise<Blob> => {
     const response = await api.post(`/entry/receipt/custom`, info, {
-        responseType: "blob", 
+        responseType: "blob",
     });
     return response.data;
 };
@@ -69,3 +67,10 @@ export const searchExpensesByPeriodService = async (startDate: string, endDate: 
     }
 };
 
+export const getEntryRelatoryService = async (params: EntryRelatoryRequestParams): Promise<Blob> => {
+    const response = await api.get("/entry/relatory", {
+        params,
+        responseType: "blob",
+    });
+    return response.data;
+};

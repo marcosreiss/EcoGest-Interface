@@ -41,14 +41,10 @@ export default function SaleDetailsPage() {
     navigate.replace(`/sales/edit/${id}`);
   };
 
-
   const formatDate = (date?: string) => {
     if (!date) return "-";
     const localDate = new Date(date);
-
-    // Adicionar 1 dia
-    localDate.setDate(localDate.getDate() + 1);
-
+    localDate.setDate(localDate.getDate() + 1); // Adiciona 1 dia
     return localDate.toLocaleDateString("pt-BR");
   };
 
@@ -67,6 +63,15 @@ export default function SaleDetailsPage() {
       maximumFractionDigits: 2,
     });
   };
+
+  // Mapear a lista de produtos no formato utilizado no EditSalePage
+  const productsList = sale?.products.map((product) => ({
+    name: product.product.name, // Acessa diretamente o nome do produto
+    productId: product.product.productId,
+    quantity: product.quantity,
+    price: product.price || 0, // Certifique-se de que o preço existe
+  })) || [];
+
 
   return (
     <>
@@ -131,23 +136,23 @@ export default function SaleDetailsPage() {
                     <TableHead>
                       <TableRow>
                         <TableCell>Produto</TableCell>
-                        <TableCell>Quantidade</TableCell>
-                        <TableCell>Preço Unitário</TableCell>
-                        <TableCell>Total</TableCell>
+                        <TableCell>Qtd</TableCell>
+                        <TableCell>Preço</TableCell>
+                        <TableCell>Subtotal</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {sale?.products.map((saleProduct) => (
-                        <TableRow key={saleProduct.product.productId}>
-                          <TableCell>{saleProduct.product.name}</TableCell>
+                      {productsList.map((product, index) => (
+                        <TableRow key={index}>
                           <TableCell>
-                            {formatNumber(Number(saleProduct.quantity / 1000))} Tons
+                            {product.name}
                           </TableCell>
                           <TableCell>
-                            {formatPrice(saleProduct.product.price)}
+                            {formatNumber(product.quantity)}
                           </TableCell>
+                          <TableCell>{formatPrice(product.price)}</TableCell>
                           <TableCell>
-                            {formatPrice(saleProduct.totalPrice)}
+                            {formatPrice(product.price * product.quantity)}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -157,7 +162,11 @@ export default function SaleDetailsPage() {
 
                 {/* Botão para Editar */}
                 <Grid item xs={12}>
-                  <Button variant="contained" color="primary" onClick={handleEditClick}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleEditClick}
+                  >
                     Editar Venda
                   </Button>
                 </Grid>
