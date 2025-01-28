@@ -19,6 +19,7 @@ export interface SaleProduct {
     product: Product;
     quantity: number;
     totalPrice: number;
+    price: number;
 }
 
 export interface SaleListResponse {

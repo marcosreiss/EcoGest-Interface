@@ -100,9 +100,10 @@ export default function EditSalePage() {
       setValue("dataVencimento", sale.receive.dataVencimento ? sale.receive.dataVencimento.split("T")[0] : "");
 
       const list: SaleProductPayload[] = sale.products.map((product) => ({
+        name: product.product.name, // Acessa diretamente o nome do produto
         productId: product.product.productId,
         quantity: product.quantity,
-        price: product.product.price || 0, // Certifique-se de que o preço é atribuído
+        price: product.price || 0, // Certifique-se de que o preço existe
       }));
 
       setProductsList(list);
