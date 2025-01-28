@@ -62,7 +62,7 @@ export default function RecivePage() {
   return (
     <>
       <Helmet>
-        <title>{`Recebíveis - ${CONFIG.appName}`}</title>
+        <title>{`Contas a receber - ${CONFIG.appName}`}</title>
       </Helmet>
 
       <DashboardContent maxWidth="lg">
