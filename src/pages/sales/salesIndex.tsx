@@ -15,10 +15,10 @@ import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useNotification } from 'src/context/NotificationContext';
 
-import SalesTableSearch from './components/salesTableSearch';
 import TableComponent from './components/salesTableComponent'; // Importando a nova table
 
 import SaleTableHeaderComponent from './components/salesTableHeaderComponent';
+import PurchaseTableSearch from '../purchases/components/purchaseTableSearch';
 import TableFooterComponent from '../../layouts/components/tableFooterComponent';
 
 // ----------------------------------------------------------------------
@@ -72,12 +72,10 @@ export default function SalesIndex() {
                 <Grid container>
                     <SaleTableHeaderComponent title="Vendas" addButtonName="Cadastrar Venda" addButtonPath="/sales/create" />
                     <Grid item xs={12}>
-                        <SalesTableSearch
+                        <PurchaseTableSearch
                             handleDelete={handleDeleteSale}
                             selectedRows={selectedSales}
-                            setSearchByPeriod={setSalesParams}
-                            isSearchDisabled={false}
-                            handleSearchChange={() => null} // Não utilizado no novo componente
+                            setPurchaseParams={setSalesParams}
                         />
 
                         <TableContainer component={Paper} sx={{ height: '65vh', display: 'flex', flexDirection: 'column' }}>
