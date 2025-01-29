@@ -12,6 +12,7 @@ import {
   TextField,
   InputLabel,
   FormControl,
+  Autocomplete,
 } from '@mui/material';
 
 import ConfirmationDialog from 'src/components/confirmation-dialog/confirmationDialog';
@@ -23,23 +24,25 @@ interface TableSearchProps {
 }
 
 const predefinedSubtypes = [
-"Peças e Serviços",
-"Folha de pagamento",
-"Diárias",
-"Mercedes 710 - HPP1C70",
-"Mercedes 709 - JKW6I19",
-"Mercedes 708 - LVR7727",
-"Imposto ICMS Frete",
-"Pag Frete",
-"Vale Transporte",
-"Impostos Federais",
-"Trabalhos Profissionais",
-"Suprimentos",
-"EPIs",
-"Manutenção Prensa",
-"Manutenção Empilhadeira",
-"Pagamento a fornecedores",
-"Gastos com energia e internet",
+  "Peças e Serviços",
+  "Folha de pagamento",
+  "Diárias",
+  "Mercedes 710 - HPP1C70",
+  "Mercedes 709 - JKW6I19",
+  "Mercedes 708 - LVR7727",
+  "Imposto ICMS Frete",
+  "Pag Frete",
+  "Vale Transporte",
+  "Impostos Federais",
+  "Trabalhos Profissionais",
+  "Suprimentos",
+  "EPIs",
+  "Manutenção Prensa",
+  "Manutenção Empilhadeira",
+  "Pagamento a fornecedores",
+  "Gastos com energia e internet",
+  "Sócios",
+  "Outro"
 ];
 
 const EntryTableSearch: React.FC<TableSearchProps> = ({
@@ -59,16 +62,14 @@ const EntryTableSearch: React.FC<TableSearchProps> = ({
     handleClose();
     handleDelete();
   };
-
-  const handleSubtypeChange = (event: SelectChangeEvent<string>) => {
-    const selectedSubtype = event.target.value;
-    setSubtype(selectedSubtype);
+  const handleSubtypeChange = (newSubtype: string) => {
+    setSubtype(newSubtype);
     setSearchByPeriod((prevState) => ({
       ...prevState,
-      subtype: selectedSubtype === "Todos" ? null : selectedSubtype,
+      subtype: newSubtype === "Todos" ? null : newSubtype,
     }));
   };
-
+  
   const clearFilters = () => {
     setSubtype("Todos");
     setStartDate(null);
@@ -87,16 +88,16 @@ const EntryTableSearch: React.FC<TableSearchProps> = ({
     <>
       <Box
         sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "16px",
-            backgroundColor: "#f9fafb",
-            borderBottom: "1px solid #e0e0e0",
-            borderRadius: "8px 8px 0 0",
-            minHeight: "70px",
-            gap: "16px",
-          }}
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "16px",
+          backgroundColor: "#f9fafb",
+          borderBottom: "1px solid #e0e0e0",
+          borderRadius: "8px 8px 0 0",
+          minHeight: "70px",
+          gap: "16px",
+        }}
       >
         {/* Campo para Data Inicial */}
         <TextField
@@ -132,24 +133,19 @@ const EntryTableSearch: React.FC<TableSearchProps> = ({
           }}
         />
 
-        {/* Select de Tipo (Subtype) */}
         <FormControl fullWidth size="small">
-          <InputLabel id="subtype-label">Tipo</InputLabel>
-          <Select
-            labelId="subtype-label"
-            id="subtype-select"
+          <Autocomplete
+            freeSolo // Permite inserção manual de texto
+            options={predefinedSubtypes} // Sugestões pré-definidas
             value={subtype}
-            label="Tipo"
-            onChange={handleSubtypeChange}
-          >
-            <MenuItem value="Todos">Todos</MenuItem>
-            {predefinedSubtypes.map((subtypeOption) => (
-              <MenuItem key={subtypeOption} value={subtypeOption}>
-                {subtypeOption}
-              </MenuItem>
-            ))}
-          </Select>
+            onChange={(_, newValue) => handleSubtypeChange(newValue || "")} // Passa o valor diretamente
+            renderInput={(params) => (
+              <TextField {...params} label="Tipo" variant="outlined" />
+            )}
+          />
         </FormControl>
+
+
 
         {/* Botão para limpar filtros */}
         {isFilterActive && (

@@ -38,7 +38,8 @@ const predefinedSubtypes = [
     "Manutenção Empilhadeira",
     "Pagamento a fornecedores",
     "Gastos com energia e internet",
-    "Outro",
+    "Sócios",
+    "Outro"
 ];
 
 const meses = [
@@ -85,7 +86,7 @@ export default function GenerateEntryRelatory() {
 
     const onSubmit = (params: EntryRelatoryRequestParams) => {
         getEntryRelatory.mutate(params, {
-            onSuccess: (file) => {  
+            onSuccess: (file) => {
                 const url = window.URL.createObjectURL(file);
                 const link = document.createElement("a");
                 link.href = url;
@@ -109,7 +110,7 @@ export default function GenerateEntryRelatory() {
                 color="primary"
                 onClick={handleOpenModal}
                 startIcon={<DownloadIcon />}
-                // sx={{ mt: { xs: 2, sm: 2 } }}
+            // sx={{ mt: { xs: 2, sm: 2 } }}
             >
                 Gerar Relatório de Lançamento
             </Button>
@@ -121,19 +122,20 @@ export default function GenerateEntryRelatory() {
                         <Grid container spacing={2}>
 
                             {/* Campo de Tipo (Subtipo) */}
-                            <Grid item xs={12} sx={{marginTop: 1}}>
+                            <Grid item xs={12} sx={{ marginTop: 1 }}>
                                 <Controller
                                     name="subtype"
                                     control={control}
-                                    rules={{ required: "Selecione um Tipo" }}
+                                    rules={{ required: "Selecione ou digite um Tipo" }}
                                     render={({ field }) => (
                                         <Autocomplete
+                                            freeSolo // Permite inserir texto manualmente
                                             options={predefinedSubtypes}
                                             getOptionLabel={(option) => option}
                                             onChange={(_, newValue) => {
                                                 field.onChange(newValue || "");
                                             }}
-                                            value={field.value || null}
+                                            value={field.value || ""}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
