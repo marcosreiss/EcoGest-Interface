@@ -16,7 +16,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { useNotification } from 'src/context/NotificationContext';
 import TableFooterComponent from 'src/layouts/components/tableFooterComponent';
 import TableHeaderComponent from 'src/layouts/components/tableHeaderComponent';
-import PurchaseTableSearch from 'src/pages/purchases/components/purchaseTableSearch';
+import SalePurchaseTableSearch from 'src/pages/purchases/components/purchaseTableSearch';
 
 import PurchaseTableComponent from './components/purchaseTableComponent';
 
@@ -82,7 +82,7 @@ export default function PurchasePage() {
             addButtonPath="/purchases/create"
           />
           <Grid item xs={12}>
-            <PurchaseTableSearch
+            <SalePurchaseTableSearch
               handleDelete={handleDeletePurchase}
               selectedRows={selectedPurchases}
               setPurchaseParams={setPurchaseParams}

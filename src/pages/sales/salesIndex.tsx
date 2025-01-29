@@ -18,7 +18,7 @@ import { useNotification } from 'src/context/NotificationContext';
 import TableComponent from './components/salesTableComponent'; // Importando a nova table
 
 import SaleTableHeaderComponent from './components/salesTableHeaderComponent';
-import PurchaseTableSearch from '../purchases/components/purchaseTableSearch';
+import SalePurchaseTableSearch from '../purchases/components/purchaseTableSearch';
 import TableFooterComponent from '../../layouts/components/tableFooterComponent';
 
 // ----------------------------------------------------------------------
@@ -72,7 +72,7 @@ export default function SalesIndex() {
                 <Grid container>
                     <SaleTableHeaderComponent title="Vendas" addButtonName="Cadastrar Venda" addButtonPath="/sales/create" />
                     <Grid item xs={12}>
-                        <PurchaseTableSearch
+                        <SalePurchaseTableSearch
                             handleDelete={handleDeleteSale}
                             selectedRows={selectedSales}
                             setPurchaseParams={setSalesParams}

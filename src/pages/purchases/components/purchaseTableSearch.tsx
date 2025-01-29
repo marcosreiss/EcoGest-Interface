@@ -25,7 +25,7 @@ enum FilterOptions {
     purchase,
 }
 
-const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleDelete, setPurchaseParams }) => {
+const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleDelete, setPurchaseParams }) => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [filterOption, setFilterOption] = useState<FilterOptions[]>([]);
@@ -333,5 +333,5 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
     )
 }
 
-export default PurchaseTableSearch;
+export default SalePurchaseTableSearch;
 
