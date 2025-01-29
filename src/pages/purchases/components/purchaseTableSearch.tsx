@@ -3,10 +3,10 @@ import type { SelectChangeEvent } from '@mui/material';
 import type { FilterParams } from 'src/models/filterParams';
 import type { SupplierBasicInfo } from 'src/models/supplier';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import { Box, Menu, Button, Select, MenuItem, TextField, IconButton, InputLabel, FormControl, Autocomplete } from '@mui/material';
+import { Box, Menu, Button, Select, MenuItem, TextField, InputLabel, FormControl, Autocomplete } from '@mui/material';
 
 import { useGetSuppliersBasicInfo } from 'src/hooks/useSupplier';
 
@@ -32,6 +32,18 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [filterOption, setFilterOption] = useState<FilterOptions>(FilterOptions.none);
     const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
+    const [startDateValue, setStartDate] = useState('');
+    const [endDateValue, setEndDate] = useState('');
+
+    useEffect(()=>{
+        if(startDateValue && endDateValue){
+            setPurchaseParams((prevState)=>({
+                ...prevState,
+                startDate: startDateValue,
+                endDate: endDateValue
+            }))
+        }
+    }, [endDateValue, setPurchaseParams, startDateValue])
 
     // Local states for NF-e and Purchase ID inputs
     const [nfeInput, setNfeInput] = useState<string>('');
@@ -60,6 +72,8 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
         }));
         setNfeInput('');
         setPurchaseIdInput('');
+        setStartDate("");
+        setEndDate("");
     };
 
     // Handlers for applying NF-e and Purchase ID filters
@@ -80,7 +94,7 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
 
     // Handler for order selection
     const handleOrderChange = (event: SelectChangeEvent<string>) => {
-        const {value} = event.target;
+        const { value } = event.target;
         setPurchaseParams((prev) => ({
             ...prev,
             order: value === 'asc' ? 'asc' : value === 'desc' ? 'desc' : null,
@@ -96,16 +110,20 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
                     justifyContent: 'space-between',
                     padding: '16px',
                     backgroundColor: '#f9fafb',
-                    borderBottom: '1px solid #e0e0e0',
                     borderRadius: '8px 8px 0 0',
                     minHeight: '70px',
                     flexWrap: 'wrap',
                     gap: '16px'
                 }}
             >
-                <IconButton onClick={handleFilterClick}>
-                    <FilterAltIcon />
-                </IconButton>
+                <Button
+                    variant="text"
+                    startIcon={<FilterAltIcon />}
+                    onClick={handleFilterClick}
+                    color='inherit'
+                >
+                    Filtros
+                </Button>
                 <Menu
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
@@ -126,19 +144,13 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
                             type="date"
                             InputLabelProps={{ shrink: true }}
                             // value={setPurchaseParams ? undefined : ''}
-                            onChange={(e) => setPurchaseParams((prevState) => ({
-                                ...prevState,
-                                startDate: e.target.value,
-                            }))}
+                            onChange={(e) => setStartDate(e.target.value)}
                         />
                         <TextField
                             label="Data Final"
                             type="date"
                             InputLabelProps={{ shrink: true }}
-                            onChange={(e) => setPurchaseParams((prevState) => ({
-                                ...prevState,
-                                endDate: e.target.value,
-                            }))}
+                            onChange={(e) => setEndDate(e.target.value)}
                         />
                     </Box>
                 )}
@@ -258,6 +270,7 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
                 title="Deletar Clientes"
             />
         </>
-    )}
+    )
+}
 
-    export default PurchaseTableSearch;
+export default PurchaseTableSearch;
