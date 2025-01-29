@@ -18,8 +18,8 @@ import { useNotification } from 'src/context/NotificationContext';
 import TableComponent from './components/salesTableComponent'; // Importando a nova table
 
 import SaleTableHeaderComponent from './components/salesTableHeaderComponent';
-import SalePurchaseTableSearch from '../purchases/components/purchaseTableSearch';
 import TableFooterComponent from '../../layouts/components/tableFooterComponent';
+import SalePurchaseTableSearch from '../purchases/components/purchaseTableSearch';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +38,7 @@ export default function SalesIndex() {
             nfe: null,
             order: "desc",
             dataVencimento: null,
+            status: null,
           });
 
     // Estados para gerenciar os dados
