@@ -7,4 +7,6 @@ export interface FilterParams{
     id: number | null;
     startDate:string | null;
     endDate:string | null;
+    dataVencimento: string | null;
+    status: "Pago" | "Atrasado" | "Aberto" | null;
 }

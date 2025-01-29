@@ -15,11 +15,11 @@ import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useNotification } from 'src/context/NotificationContext';
 
-import SalesTableSearch from './components/salesTableSearch';
 import TableComponent from './components/salesTableComponent'; // Importando a nova table
 
 import SaleTableHeaderComponent from './components/salesTableHeaderComponent';
 import TableFooterComponent from '../../layouts/components/tableFooterComponent';
+import SalePurchaseTableSearch from '../purchases/components/purchaseTableSearch';
 
 // ----------------------------------------------------------------------
 
@@ -36,7 +36,9 @@ export default function SalesIndex() {
             id: null,
             personId: null,
             nfe: null,
-            order: "desc"
+            order: "desc",
+            dataVencimento: null,
+            status: null,
           });
 
     // Estados para gerenciar os dados
@@ -71,12 +73,10 @@ export default function SalesIndex() {
                 <Grid container>
                     <SaleTableHeaderComponent title="Vendas" addButtonName="Cadastrar Venda" addButtonPath="/sales/create" />
                     <Grid item xs={12}>
-                        <SalesTableSearch
+                        <SalePurchaseTableSearch
                             handleDelete={handleDeleteSale}
                             selectedRows={selectedSales}
-                            setSearchByPeriod={setSalesParams}
-                            isSearchDisabled={false}
-                            handleSearchChange={() => null} // Não utilizado no novo componente
+                            setPurchaseParams={setSalesParams}
                         />
 
                         <TableContainer component={Paper} sx={{ height: '65vh', display: 'flex', flexDirection: 'column' }}>

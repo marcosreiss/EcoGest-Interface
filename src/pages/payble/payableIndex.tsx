@@ -1,4 +1,5 @@
-import type { Payble, PayableParams } from "src/models/payable";
+import type { Payble } from "src/models/payable";
+import type { FilterParams } from "src/models/filterParams";
 
 import * as React from "react";
 import { useState, useEffect } from "react";
@@ -26,17 +27,22 @@ export default function PayableIndex() {
   const [page, setPage] = useState(0);
 
   // Sincroniza parâmetros de pesquisa
-  const [searchByPeriod, setSearchByPeriod] = useState<PayableParams>({
+  const [payablesParams, setPayableParams] = useState<FilterParams>({
     skip: 0,
     take: rowsPerPage,
     startDate: null,
     endDate: null,
     status: null,
+    dataVencimento: null,
+    id: null,
+    nfe: null,
+    order: null,
+    personId: null,
   });
 
   // Atualiza `searchByPeriod` sempre que a página mudar
   useEffect(() => {
-    setSearchByPeriod((prev) => ({
+    setPayableParams((prev) => ({
       ...prev,
       skip: page * rowsPerPage, // Recalcula o `skip` baseado na página
     }));
@@ -44,7 +50,7 @@ export default function PayableIndex() {
 
   // Dados paginados
   const { data: pagedData, isLoading: isPagedLoading } =
-    useGetPayblesPaged(searchByPeriod);
+    useGetPayblesPaged(payablesParams);
 
   const paybles = pagedData?.data ?? [];
   const isLoading = isPagedLoading;
@@ -86,9 +92,7 @@ export default function PayableIndex() {
             <PaybleTableSearch
               handleDelete={handleDeletePayble}
               selectedRows={selectedPaybles}
-              setSearchByPeriod={setSearchByPeriod}
-              isSearchDisabled={false}
-              handleSearchChange={() => null} // Não utilizado no componente
+              setParams={setPayableParams}
             />
 
             <TableContainer

@@ -3,10 +3,10 @@ import type { SelectChangeEvent } from '@mui/material';
 import type { FilterParams } from 'src/models/filterParams';
 import type { SupplierBasicInfo } from 'src/models/supplier';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import { Box, Menu, Button, Select, MenuItem, TextField, IconButton, InputLabel, FormControl, Autocomplete } from '@mui/material';
+import { Box, Menu, Button, Select, MenuItem, Checkbox, TextField, InputLabel, FormControl, Autocomplete, ListItemText } from '@mui/material';
 
 import { useGetSuppliersBasicInfo } from 'src/hooks/useSupplier';
 
@@ -19,23 +19,40 @@ interface TableSearchProps {
 }
 
 enum FilterOptions {
-    none,
     period,
     supplier,
     nfe,
     purchase,
-    order
 }
 
-const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleDelete, setPurchaseParams }) => {
+const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleDelete, setPurchaseParams }) => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [filterOption, setFilterOption] = useState<FilterOptions>(FilterOptions.none);
+    const [filterOption, setFilterOption] = useState<FilterOptions[]>([]);
     const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
+    const [startDateValue, setStartDate] = useState('');
+    const [endDateValue, setEndDate] = useState('');
+
+    useEffect(() => {
+        if (startDateValue && endDateValue) {
+            setPurchaseParams((prevState) => ({
+                ...prevState,
+                startDate: startDateValue,
+                endDate: endDateValue
+            }));
+        } else {
+            setPurchaseParams((prevState) => ({
+                ...prevState,
+                startDate: null,
+                endDate: null
+            }));
+        }
+    }, [endDateValue, setPurchaseParams, startDateValue]);
 
     // Local states for NF-e and Purchase ID inputs
     const [nfeInput, setNfeInput] = useState<string>('');
     const [purchaseIdInput, setPurchaseIdInput] = useState<string>('');
+    const [orderValue, setOrderValue] = useState<string>('');
 
     const handleOpen = () => setDeleteModalOpen(true);
     const handleClose = () => setDeleteModalOpen(false);
@@ -44,22 +61,29 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
         handleClose();
         handleDelete();
     };
+
     const handleFilterClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
+
     const handleClearFilters = () => {
-        setFilterOption(FilterOptions.none);
-        setPurchaseParams((prev) => ({
-            ...prev,
-            startDate: null,
-            endDate: null,
-            personId: null,
-            id: null,
-            nfe: null,
-            order: null,
-        }));
+        setFilterOption([]);
+        setPurchaseParams((prev) => (
+            {
+                ...prev,
+                nfe: null,
+                order: null,
+                personId: null,
+                id: null,
+                startDate: null,
+                endDate: null,
+            }
+        ));
         setNfeInput('');
         setPurchaseIdInput('');
+        setStartDate("");
+        setEndDate("");
+        setOrderValue("");
     };
 
     // Handlers for applying NF-e and Purchase ID filters
@@ -80,11 +104,21 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
 
     // Handler for order selection
     const handleOrderChange = (event: SelectChangeEvent<string>) => {
-        const {value} = event.target;
+        const { value } = event.target;
+        setOrderValue(value);
         setPurchaseParams((prev) => ({
             ...prev,
             order: value === 'asc' ? 'asc' : value === 'desc' ? 'desc' : null,
         }));
+    };
+
+    // Toggle filter option
+    const toggleFilter = (option: FilterOptions) => {
+        setFilterOption((prev) =>
+            prev.includes(option)
+                ? prev.filter(o => o !== option)
+                : [...prev, option]
+        );
     };
 
     return (
@@ -96,55 +130,91 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
                     justifyContent: 'space-between',
                     padding: '16px',
                     backgroundColor: '#f9fafb',
-                    borderBottom: '1px solid #e0e0e0',
                     borderRadius: '8px 8px 0 0',
                     minHeight: '70px',
                     flexWrap: 'wrap',
                     gap: '16px'
                 }}
             >
-                <IconButton onClick={handleFilterClick}>
-                    <FilterAltIcon />
-                </IconButton>
+                <Button
+                    variant="text"
+                    startIcon={<FilterAltIcon />}
+                    onClick={handleFilterClick}
+                    color='inherit'
+                >
+                    Filtros
+                </Button>
                 <Menu
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
                     onClose={() => setAnchorEl(null)}
                 >
-                    <MenuItem onClick={() => { setFilterOption(FilterOptions.period); setAnchorEl(null); }}>Filtrar por Período</MenuItem>
-                    <MenuItem onClick={() => { setFilterOption(FilterOptions.supplier); setAnchorEl(null); }}>Filtrar por Fornecedor</MenuItem>
-                    <MenuItem onClick={() => { setFilterOption(FilterOptions.nfe); setAnchorEl(null); }}>Filtrar por NF-e</MenuItem>
-                    <MenuItem onClick={() => { setFilterOption(FilterOptions.purchase); setAnchorEl(null); }}>Filtrar por Código da Compra</MenuItem>
-                    <MenuItem onClick={() => { setFilterOption(FilterOptions.order); setAnchorEl(null); }}>Ordenação</MenuItem>
+                    <MenuItem
+                        onClick={() => toggleFilter(FilterOptions.period)}
+                        disabled={filterOption.includes(FilterOptions.purchase) || filterOption.includes(FilterOptions.nfe)}
+                    >
+                        <Checkbox
+                            checked={filterOption.includes(FilterOptions.period)}
+
+                        />
+                        <ListItemText primary="Filtrar por Período" />
+                    </MenuItem>
+
+                    <MenuItem
+                        onClick={() => toggleFilter(FilterOptions.supplier)}
+                        disabled={filterOption.includes(FilterOptions.purchase) || filterOption.includes(FilterOptions.nfe)}
+                    >
+                        <Checkbox checked={filterOption.includes(FilterOptions.supplier)} />
+                        <ListItemText primary="Filtrar por Fornecedor" />
+                    </MenuItem>
+
+                    <MenuItem
+                        onClick={() => toggleFilter(FilterOptions.nfe)}
+                        disabled={
+                            filterOption.includes(FilterOptions.period) ||
+                            filterOption.includes(FilterOptions.purchase) ||
+                            filterOption.includes(FilterOptions.supplier)
+                        }
+                    >
+                        <Checkbox checked={filterOption.includes(FilterOptions.nfe)} />
+                        <ListItemText primary="Filtrar por NF-e" />
+                    </MenuItem>
+
+                    <MenuItem
+                        onClick={() => toggleFilter(FilterOptions.purchase)}
+                        disabled={
+                            filterOption.includes(FilterOptions.period) ||
+                            filterOption.includes(FilterOptions.nfe) ||
+                            filterOption.includes(FilterOptions.supplier)
+                        }
+                    >
+                        <Checkbox checked={filterOption.includes(FilterOptions.purchase)} />
+                        <ListItemText primary="Filtrar por Código da Compra" />
+                    </MenuItem>
                 </Menu>
 
                 {/* Filtrar por Período */}
-                {filterOption === FilterOptions.period && (
+                {filterOption.includes(FilterOptions.period) && (
                     <Box sx={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                         <TextField
                             label="Data Inicial"
                             type="date"
                             InputLabelProps={{ shrink: true }}
-                            // value={setPurchaseParams ? undefined : ''}
-                            onChange={(e) => setPurchaseParams((prevState) => ({
-                                ...prevState,
-                                startDate: e.target.value,
-                            }))}
+                            value={startDateValue}
+                            onChange={(e) => setStartDate(e.target.value)}
                         />
                         <TextField
                             label="Data Final"
                             type="date"
                             InputLabelProps={{ shrink: true }}
-                            onChange={(e) => setPurchaseParams((prevState) => ({
-                                ...prevState,
-                                endDate: e.target.value,
-                            }))}
+                            value={endDateValue}
+                            onChange={(e) => setEndDate(e.target.value)}
                         />
                     </Box>
                 )}
 
                 {/* Filtrar por Fornecedor */}
-                {filterOption === FilterOptions.supplier && (
+                {filterOption.includes(FilterOptions.supplier) && (
                     <Box sx={{ flex: 1, minWidth: '200px' }}>
                         <Autocomplete
                             options={suppliers?.data || []}
@@ -169,7 +239,7 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
                 )}
 
                 {/* Filtrar por NF-e */}
-                {filterOption === FilterOptions.nfe && (
+                {filterOption.includes(FilterOptions.nfe) && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                         <TextField
                             label="NF-e"
@@ -184,7 +254,7 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
                 )}
 
                 {/* Filtrar por Código da Compra (ID) */}
-                {filterOption === FilterOptions.purchase && (
+                {filterOption.includes(FilterOptions.purchase) && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                         <TextField
                             label="Código da Compra"
@@ -199,14 +269,14 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
                     </Box>
                 )}
 
-                {/* Ordenação */}
-                {filterOption === FilterOptions.order && (
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    {/* Ordenação */}
                     <Box sx={{ minWidth: '200px' }}>
                         <FormControl fullWidth>
                             <InputLabel id="order-select-label">Ordenação</InputLabel>
                             <Select
                                 labelId="order-select-label"
-                                value={undefined} // You can manage the selected value if needed
+                                value={orderValue}
                                 label="Ordenação"
                                 onChange={handleOrderChange}
                             >
@@ -215,10 +285,10 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
                             </Select>
                         </FormControl>
                     </Box>
-                )}
 
-                {/* Botão Limpar Filtros */}
-                {filterOption !== FilterOptions.none && (
+
+
+                    {/* Botão Limpar Filtros */}
                     <Button
                         onClick={handleClearFilters}
                         variant="contained"
@@ -228,10 +298,12 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
                             padding: '6px 16px',
                             borderRadius: '8px',
                         }}
+                        disabled={filterOption.length === 0}
                     >
                         Limpar Filtros
                     </Button>
-                )}
+                </Box>
+
 
                 {/* Botão de Deletar */}
                 {selectedRows.length > 0 && (
@@ -258,6 +330,8 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
                 title="Deletar Clientes"
             />
         </>
-    )}
+    )
+}
 
-    export default PurchaseTableSearch;
+export default SalePurchaseTableSearch;
+
