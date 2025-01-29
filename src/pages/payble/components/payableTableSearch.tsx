@@ -280,8 +280,8 @@ const ReceivePayableTableSearch: React.FC<TableSearchProps> = ({ selectedRows, h
                                 label="Ordenação"
                                 onChange={handleOrderChange}
                             >
-                                <MenuItem value="asc">Mais Recente</MenuItem>
-                                <MenuItem value="desc">Mais Antigo</MenuItem>
+                                <MenuItem value="asc">Mais Antigo</MenuItem>
+                                <MenuItem value="desc">Mais Recente</MenuItem>
                             </Select>
                         </FormControl>
                     </Box>
