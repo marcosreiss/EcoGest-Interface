@@ -210,8 +210,8 @@ const PurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleD
                                 label="Ordenação"
                                 onChange={handleOrderChange}
                             >
-                                <MenuItem value="asc">Mais Antigo</MenuItem>
-                                <MenuItem value="desc">Mais Recente</MenuItem>
+                                <MenuItem value="asc">Mais Recente</MenuItem>
+                                <MenuItem value="desc">Mais Antigo</MenuItem>
                             </Select>
                         </FormControl>
                     </Box>
