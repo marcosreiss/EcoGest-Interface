@@ -42,7 +42,25 @@ const predefinedSubtypes = [
 "Manutenção Empilhadeira",
 "Pagamento a fornecedores",
 "Gastos com energia e internet",
-"Outro",
+"Peças e Serviços",
+"Folha de pagamento",
+"Diárias",
+"Mercedes 710 - HPP1C70",
+"Mercedes 709 - JKW6I19",
+"Mercedes 708 - LVR7727",
+"Imposto ICMS Frete",
+"Pag Frete",
+"Vale Transporte",
+"Impostos Federais",
+"Trabalhos Profissionais",
+"Suprimentos",
+"EPIs",
+"Manutenção Prensa",
+"Manutenção Empilhadeira",
+"Pagamento a fornecedores",
+"Gastos com energia e internet",
+"Sócios",
+"Outro"
 ];
 
 export default function EditExpensePage() {
