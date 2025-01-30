@@ -4,13 +4,17 @@ import { useParams } from "react-router-dom";
 import {
   Box,
   Grid,
+  Card,
   Table,
   Button,
+  Divider,
   TableRow,
   TableHead,
   TableCell,
   TableBody,
   Typography,
+  CardHeader,
+  CardContent,
   LinearProgress,
 } from "@mui/material";
 
@@ -27,14 +31,6 @@ export default function SaleDetailsPage() {
 
   const { data: sale, isLoading } = useGetSaleById(saleId);
 
-  const formStyle = {
-    mx: "auto",
-    p: 3,
-    boxShadow: 3,
-    borderRadius: 2,
-    bgcolor: "background.paper",
-  };
-
   const navigate = useRouter();
 
   const handleEditClick = () => {
@@ -44,7 +40,7 @@ export default function SaleDetailsPage() {
   const formatDate = (date?: string) => {
     if (!date) return "-";
     const localDate = new Date(date);
-    localDate.setDate(localDate.getDate() + 1); // Adiciona 1 dia
+    localDate.setDate(localDate.getDate() + 1);
     return localDate.toLocaleDateString("pt-BR");
   };
 
@@ -64,114 +60,125 @@ export default function SaleDetailsPage() {
     });
   };
 
-  // Mapear a lista de produtos no formato utilizado no EditSalePage
-  const productsList = sale?.products.map((product) => ({
-    name: product.product.name, // Acessa diretamente o nome do produto
-    productId: product.product.productId,
-    quantity: product.quantity,
-    price: product.price || 0, // Certifique-se de que o preço existe
-  })) || [];
-
+  const productsList =
+    sale?.products.map((product) => ({
+      name: product.product.name,
+      productId: product.product.productId,
+      quantity: product.quantity,
+      price: product.price || 0,
+    })) || [];
 
   return (
     <>
       <Helmet>
         <title>{`Detalhes da Venda - ${CONFIG.appName}`}</title>
       </Helmet>
+
       <DashboardContent maxWidth="lg">
         {isLoading ? (
           <LinearProgress />
         ) : (
           <>
-            <Typography variant="h4" sx={{ mb: 3 }}>
-              Detalhes da Venda
-            </Typography>
-            <Box sx={formStyle}>
-              <Grid container spacing={2}>
-                {/* Nome e CPF/CNPJ do Cliente */}
-                <Grid item xs={12}>
-                  <Typography variant="h6">Cliente</Typography>
-                  <Typography>
-                    <strong>Nome:</strong> {sale?.customer?.name || "-"}
-                  </Typography>
-                  <Typography>
-                    <strong>CPF/CNPJ:</strong> {sale?.customer?.cpfCnpj || "-"}
-                  </Typography>
-                </Grid>
-
-                {/* Descrição */}
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    <strong>Descrição:</strong> {sale?.description || "-"}
-                  </Typography>
-                </Grid>
-
-                {/* Data da Venda */}
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    <strong>Data da Venda:</strong> {formatDate(sale?.date_time)}
-                  </Typography>
-                </Grid>
-
-                {/* Desconto */}
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    <strong>Desconto:</strong> {formatPrice(sale?.discount)}
-                  </Typography>
-                </Grid>
-
-                {/* Preço Total */}
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    <strong>Preço Total:</strong> {formatPrice(sale?.totalPrice)}
-                  </Typography>
-                </Grid>
-
-                {/* Lista de Produtos */}
-                <Grid item xs={12}>
-                  <Typography variant="h6" gutterBottom>
-                    Produtos
-                  </Typography>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Produto</TableCell>
-                        <TableCell>Qtd</TableCell>
-                        <TableCell>Preço</TableCell>
-                        <TableCell>Subtotal</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {productsList.map((product, index) => (
-                        <TableRow key={index}>
-                          <TableCell>
-                            {product.name}
-                          </TableCell>
-                          <TableCell>
-                            {formatNumber(product.quantity)}
-                          </TableCell>
-                          <TableCell>{formatPrice(product.price)}</TableCell>
-                          <TableCell>
-                            {formatPrice(product.price * product.quantity)}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </Grid>
-
-                {/* Botão para Editar */}
-                <Grid item xs={12}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleEditClick}
-                  >
-                    Editar Venda
-                  </Button>
-                </Grid>
-              </Grid>
+            <Box sx={{display: "flex", alignItems: 'center', justifyContent: 'space-between'}}>
+              <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
+                Detalhes da Venda
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleEditClick}
+                sx={{ fontSize: 15 }}
+              >
+                Editar Venda
+              </Button>
             </Box>
+
+            {/* Card Principal */}
+            <Card sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+              <CardContent>
+                <Grid container spacing={3}>
+                  {/* Nome e CPF/CNPJ do Cliente */}
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6">
+                      Cliente
+                    </Typography>
+                    <Typography paddingLeft={2}>
+                      <strong>Nome:</strong> {sale?.customer?.name || "-"}
+                    </Typography>
+                    <Typography paddingLeft={2}>
+                      <strong>CPF/CNPJ:</strong> {sale?.customer?.cpfCnpj || "-"}
+                    </Typography>
+                  </Grid>
+
+                  {/* Data da Venda */}
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6">
+                      Detalhes
+                    </Typography>
+                    <Typography paddingLeft={2}>
+                      <strong>Data:</strong> {formatDate(sale?.date_time)}
+                    </Typography>
+                    <Typography paddingLeft={2}>
+                      <strong>Descrição:</strong> {sale?.description || "-"}
+                    </Typography>
+                  </Grid>
+
+
+                </Grid>
+              </CardContent>
+            </Card>
+
+            {/* Lista de Produtos */}
+            <Card sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+              <CardHeader title="Produtos" titleTypographyProps={{ variant: "h6" }} />
+              <Divider />
+              <CardContent>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell><strong>Produto</strong></TableCell>
+                      <TableCell><strong>Qtd</strong></TableCell>
+                      <TableCell><strong>Preço</strong></TableCell>
+                      <TableCell><strong>Subtotal</strong></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {productsList.length > 0 ? (
+                      productsList.map((product, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{product.name}</TableCell>
+                          <TableCell>{formatNumber(product.quantity)}</TableCell>
+                          <TableCell>{formatPrice(product.price)}</TableCell>
+                          <TableCell>{formatPrice(product.price * product.quantity)}</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={4} align="center">
+                          Nenhum produto encontrado.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+                {/* Preço e desconto */}
+                <Grid item xs={12}>
+                  <Divider sx={{ my: 2 }} />
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} sm={4}>
+                      <Typography>
+                        <strong>Desconto:</strong> {formatPrice(sale?.discount)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <Typography>
+                        <strong>Preço Total:</strong> {formatPrice(sale?.totalPrice)}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
           </>
         )}
       </DashboardContent>
