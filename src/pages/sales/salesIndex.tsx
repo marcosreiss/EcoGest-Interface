@@ -18,7 +18,7 @@ import { EntityType, type FilterParams } from 'src/models/filterParams';
 import TableComponent from './components/salesTableComponent'; // Importando a nova table
 
 import SaleTableHeaderComponent from './components/salesTableHeaderComponent';
-import FilterTableComponent from '../purchases/components/purchaseTableSearch';
+import FilterTableComponent from '../../components/table/filterTableComponent';
 import TableFooterComponent from '../../components/table/tableFooterComponent';
 
 // ----------------------------------------------------------------------
