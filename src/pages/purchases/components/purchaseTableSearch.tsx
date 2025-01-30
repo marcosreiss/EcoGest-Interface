@@ -35,9 +35,12 @@ enum FilterOptions {
     nfe,
     purchase,
     sale,
+    payable,
+    receive,
+    status,
 }
 
-const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleDelete, setPurchaseParams, entityType }) => {
+const FilterTableComponent: React.FC<TableSearchProps> = ({ selectedRows, handleDelete, setPurchaseParams, entityType }) => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [filterOption, setFilterOption] = useState<FilterOptions[]>([]);
@@ -86,7 +89,7 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
                 ...prev,
                 nfe: null,
                 order: null,
-                personId: null, // Dependendo da implementação, pode ser necessário limpar 'customerId' e 'supplierId' separadamente
+                personId: null,
                 id: null,
                 startDate: null,
                 endDate: null,
@@ -166,16 +169,21 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
                 >
                     <MenuItem
                         onClick={() => toggleFilter(FilterOptions.period)}
-                        disabled={filterOption.includes(FilterOptions.purchase) || filterOption.includes(FilterOptions.nfe)}
+                        disabled={
+                            filterOption.includes(FilterOptions.purchase) || 
+                            filterOption.includes(FilterOptions.sale) || 
+                            filterOption.includes(FilterOptions.payable) || 
+                            filterOption.includes(FilterOptions.receive) || 
+                            filterOption.includes(FilterOptions.nfe)
+                        }
                     >
                         <Checkbox
                             checked={filterOption.includes(FilterOptions.period)}
-
                         />
                         <ListItemText primary="Filtrar por Período" />
                     </MenuItem>
 
-                    {entityType === EntityType.purchase && (
+                    {(entityType === EntityType.purchase || EntityType.payable) && (
                         <MenuItem
                             onClick={() => toggleFilter(FilterOptions.supplier)}
                             disabled={filterOption.includes(FilterOptions.purchase) || filterOption.includes(FilterOptions.nfe)}
@@ -184,10 +192,14 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
                             <ListItemText primary="Filtrar por Fornecedor" />
                         </MenuItem>
                     )}
-                    {entityType === EntityType.sale && (
+
+                    {(entityType === EntityType.sale || entityType === EntityType.receive) && (
                         <MenuItem
                             onClick={() => toggleFilter(FilterOptions.customer)}
-                            disabled={filterOption.includes(FilterOptions.sale) || filterOption.includes(FilterOptions.nfe)}
+                            disabled={
+                                filterOption.includes(FilterOptions.sale) ||
+                                filterOption.includes(FilterOptions.nfe)
+                            }
                         >
                             <Checkbox checked={filterOption.includes(FilterOptions.customer)} />
                             <ListItemText primary="Filtrar por Cliente" />
@@ -211,7 +223,24 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
 
 
                     <MenuItem
-                        onClick={() => toggleFilter(FilterOptions.purchase)}
+                        onClick={() => {
+                            switch(entityType){
+                                case EntityType.purchase:
+                                    toggleFilter(FilterOptions.purchase)
+                                    break;
+                                case EntityType.sale:
+                                    toggleFilter(FilterOptions.sale);
+                                    break;
+                                case EntityType.payable:
+                                    toggleFilter(FilterOptions.payable)
+                                    break;
+                                case EntityType.receive:
+                                    toggleFilter(FilterOptions.receive)
+                                    break;
+                                default:
+                                    console.log("erro na filtragem");
+                            }
+                        }}
                         disabled={
                             filterOption.includes(FilterOptions.period) ||
                             filterOption.includes(FilterOptions.nfe) ||
@@ -219,9 +248,16 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
                             filterOption.includes(FilterOptions.customer)
                         }
                     >
-                        <Checkbox checked={filterOption.includes(FilterOptions.purchase)} />
-                        <ListItemText primary="Filtrar por Código da Compra" />
+                        <Checkbox checked={
+                            filterOption.includes(FilterOptions.purchase) ||
+                            filterOption.includes(FilterOptions.sale) ||
+                            filterOption.includes(FilterOptions.payable) ||
+                            filterOption.includes(FilterOptions.receive) 
+                        } />
+                        <ListItemText primary="Filtrar por Código" />
                     </MenuItem>
+
+
                 </Menu>
 
                 {/* Filtrar por Período */}
@@ -386,4 +422,4 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
     )
 }
 
-export default SalePurchaseTableSearch;
+export default FilterTableComponent;

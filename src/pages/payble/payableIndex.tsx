@@ -92,7 +92,7 @@ export default function PayableIndex() {
             <PaybleTableSearch
               handleDelete={handleDeletePayble}
               selectedRows={selectedPaybles}
-              setParams={setPayableParams}
+              setSearchByPeriod={setPayableParams}
             />
 
             <TableContainer

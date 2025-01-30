@@ -19,7 +19,7 @@ import TableComponent from './components/salesTableComponent'; // Importando a n
 
 import SaleTableHeaderComponent from './components/salesTableHeaderComponent';
 import TableFooterComponent from '../../layouts/components/tableFooterComponent';
-import SalePurchaseTableSearch, { EntityType } from '../purchases/components/purchaseTableSearch';
+import FilterTableComponent, { EntityType } from '../purchases/components/purchaseTableSearch';
 
 // ----------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ export default function SalesIndex() {
                 <Grid container>
                     <SaleTableHeaderComponent title="Vendas" addButtonName="Cadastrar Venda" addButtonPath="/sales/create" />
                     <Grid item xs={12}>
-                        <SalePurchaseTableSearch
+                        <FilterTableComponent
                             handleDelete={handleDeleteSale}
                             selectedRows={selectedSales}
                             setPurchaseParams={setSalesParams}
