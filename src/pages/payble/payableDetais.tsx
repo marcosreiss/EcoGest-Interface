@@ -1,7 +1,14 @@
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 
-import { Box, Grid, Typography,  LinearProgress } from "@mui/material";
+import {
+    Box,
+    Grid,
+    Card,
+    Typography,
+    CardContent,
+    LinearProgress,
+} from "@mui/material";
 
 import { useGetPaybleById } from "src/hooks/usePayble";
 
@@ -19,31 +26,23 @@ const formatPrice = (price: number | string | undefined): string => {
 };
 
 // Função para formatar datas em PT-BR
-
-const formatDate = (date?: string) => {
+const formatDate = (date?: string): string => {
     if (!date) return "-";
     const localDate = new Date(date);
-  
+
     // Adicionar 1 dia
     localDate.setDate(localDate.getDate() + 1);
-  
+
     return localDate.toLocaleDateString("pt-BR");
-  };
+};
+
 export default function PayableDetailsPage() {
     const { id } = useParams<{ id: string }>();
     const paybleId = parseInt(id!, 10);
 
-    const response = useGetPaybleById(paybleId);
-    const payble = response.data;
-    const { isLoading } = response;
+    const { data: payble, isLoading } = useGetPaybleById(paybleId);
 
-    const formStyle = {
-        mx: "auto",
-        p: 3,
-        boxShadow: 3,
-        borderRadius: 2,
-        bgcolor: "background.paper",
-    };
+    
 
     return (
         <>
@@ -52,136 +51,218 @@ export default function PayableDetailsPage() {
             </Helmet>
             <DashboardContent maxWidth="lg">
                 {isLoading ? (
-                    <LinearProgress />
+                    <Box sx={{ py: 4, display: "flex", justifyContent: "center" }}>
+                        <LinearProgress sx={{ width: "50%" }} />
+                    </Box>
                 ) : (
                     <>
-                        <Grid item xs={6}>
-                            <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                mb: 3,
+                            }}
+                        >
+                            <Typography variant="h4" fontWeight="bold">
                                 Detalhes da Conta a Pagar
                             </Typography>
-                        </Grid>
-                        <Grid container>
-                            <Grid item xs={12}>
-                                <Box sx={formStyle}>
-                                    <Grid container spacing={2}>
-                                        {/* ID */}
-                                        <Grid item xs={6}>
-                                            <Typography variant="body1" gutterBottom>
-                                                ID: {payble?.payableId || "-"}
+                        </Box>
+                        <Card elevation={3} sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+                            <CardContent>
+                                <Grid container spacing={3}>
+                                    {/* ID */}
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            ID
+                                        </Typography>
+                                        <Box sx={{ ml: 1 }}>
+                                            <Typography variant="body1">
+                                                {payble?.payableId || "-"}
                                             </Typography>
-                                        </Grid>
+                                        </Box>
+                                    </Grid>
 
-                                        {/* Status */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Status: {payble?.status || "-"}
+                                    {/* Status */}
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            Status
+                                        </Typography>
+                                        <Box sx={{ ml: 1 }}>
+                                            <Typography variant="body1">
+                                                {payble?.status || "-"}
                                             </Typography>
-                                        </Grid>
+                                        </Box>
+                                    </Grid>
 
-                                        {/* Data de Emissão */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Data de Emissão: {formatDate(payble?.dataEmissao)}
+                                    {/* Data de Emissão */}
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            Data de Emissão
+                                        </Typography>
+                                        <Box sx={{ ml: 1 }}>
+                                            <Typography variant="body1">
+                                                {formatDate(payble?.dataEmissao)}
                                             </Typography>
-                                        </Grid>
+                                        </Box>
+                                    </Grid>
 
-                                        {/* Data de Emissão */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Data do Pagamento: {formatDate(payble?.dataPagamento)}
+                                    {/* Data do Pagamento */}
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            Data do Pagamento
+                                        </Typography>
+                                        <Box sx={{ ml: 1 }}>
+                                            <Typography variant="body1">
+                                                {formatDate(payble?.dataPagamento)}
                                             </Typography>
-                                        </Grid>
+                                        </Box>
+                                    </Grid>
 
-                                        {/* Data de Vencimento */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Data de Vencimento: {formatDate(payble?.dataVencimento)}
+                                    {/* Data de Vencimento */}
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            Data de Vencimento
+                                        </Typography>
+                                        <Box sx={{ ml: 1 }}>
+                                            <Typography variant="body1">
+                                                {formatDate(payble?.dataVencimento)}
                                             </Typography>
-                                        </Grid>
+                                        </Box>
+                                    </Grid>
 
-                                        {/* Valor Total */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Valor Total: {formatPrice(payble?.totalValue)}
+                                    {/* Valor Total */}
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            Valor Total
+                                        </Typography>
+                                        <Box sx={{ ml: 1 }}>
+                                            <Typography variant="body1">
+                                                {formatPrice(payble?.totalValue)}
                                             </Typography>
-                                        </Grid>
+                                        </Box>
+                                    </Grid>
 
-                                        {/* Pagável relacionado a Entry ou Purchase */}
-                                        {payble?.entry ? (
-                                            <>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="h6" gutterBottom>
-                                                        Lançamento
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Tipo de Entrada: {payble.entry.type}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Descrição: {payble.entry.description || "-"}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Valor: {formatPrice(payble.entry.value)}
-                                                    </Typography>
-                                                </Grid>
-                                            </>
-                                        ) : payble?.purchase ? (
-                                            <>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="h6" gutterBottom>
-                                                        Compra
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Descrição da Compra: {payble.purchase.description || "-"}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Fornecedor: {payble.purchase.supplier?.name || "-"}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        NF-e: {payble.purchase.nfe || "-"}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Data da Compra: {formatDate(payble.purchase.date_time)}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Desconto: {formatPrice(payble.purchase.discount)}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Valor Total da Compra: {formatPrice(payble.purchase.totalPrice)}
-                                                    </Typography>
-                                                </Grid>
-                                            </>
-                                        ) : (
+                                    {/* Pagável relacionado a Entry ou Purchase */}
+                                    {payble?.entry ? (
+                                        <>
                                             <Grid item xs={12}>
-                                                <Typography variant="body1" gutterBottom>
-                                                    Nenhuma entrada ou compra associada.
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Lançamento
                                                 </Typography>
                                             </Grid>
-                                        )}
-                                    </Grid>
-                                </Box>
-                            </Grid>
-                        </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Tipo de Entrada
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {payble.entry.type}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Descrição
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {payble.entry.description || "-"}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Valor
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {formatPrice(payble.entry.value)}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                        </>
+                                    ) : payble?.purchase ? (
+                                        <>
+                                            <Grid item xs={12}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Compra
+                                                </Typography>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Descrição da Compra
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {payble.purchase.description || "-"}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Fornecedor
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {payble.purchase.supplier?.name || "-"}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    NF-e
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {payble.purchase.nfe || "-"}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Data da Compra
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {formatDate(payble.purchase.date_time)}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Desconto
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {formatPrice(payble.purchase.discount)}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Valor Total da Compra
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {formatPrice(payble.purchase.totalPrice)}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                        </>
+                                    ) : (
+                                        <Grid item xs={12}>
+                                            <Typography variant="body1" gutterBottom>
+                                                Nenhuma entrada ou compra associada.
+                                            </Typography>
+                                        </Grid>
+                                    )}
+                                </Grid>
+                            </CardContent>
+                        </Card>
                     </>
                 )}
-            </DashboardContent>
+            </DashboardContent >
         </>
     );
 }

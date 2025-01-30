@@ -1,5 +1,4 @@
 import type { Sale } from 'src/models/sale';
-import type { FilterParams } from 'src/models/filterParams';
 
 import * as React from 'react';
 import { useState } from 'react';
@@ -14,12 +13,13 @@ import { useDeleteSale, useGetSalesPaged } from 'src/hooks/useSales';
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useNotification } from 'src/context/NotificationContext';
+import { EntityType, type FilterParams } from 'src/models/filterParams';
 
 import TableComponent from './components/salesTableComponent'; // Importando a nova table
 
 import SaleTableHeaderComponent from './components/salesTableHeaderComponent';
-import TableFooterComponent from '../../layouts/components/tableFooterComponent';
-import SalePurchaseTableSearch from '../purchases/components/purchaseTableSearch';
+import FilterTableComponent from '../../components/table/filterTableComponent';
+import TableFooterComponent from '../../components/table/tableFooterComponent';
 
 // ----------------------------------------------------------------------
 
@@ -73,10 +73,11 @@ export default function SalesIndex() {
                 <Grid container>
                     <SaleTableHeaderComponent title="Vendas" addButtonName="Cadastrar Venda" addButtonPath="/sales/create" />
                     <Grid item xs={12}>
-                        <SalePurchaseTableSearch
+                        <FilterTableComponent
                             handleDelete={handleDeleteSale}
                             selectedRows={selectedSales}
-                            setPurchaseParams={setSalesParams}
+                            setParams={setSalesParams}
+                            entityType={EntityType.sale}
                         />
 
                         <TableContainer component={Paper} sx={{ height: '65vh', display: 'flex', flexDirection: 'column' }}>

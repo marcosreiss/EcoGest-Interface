@@ -1,5 +1,4 @@
 import type { Purchase } from 'src/models/purchase';
-import type { FilterParams } from 'src/models/filterParams';
 
 import * as React from 'react';
 import { useState } from 'react';
@@ -14,11 +13,13 @@ import { useDeletePurchase, useGetPurchasesPaginated } from 'src/hooks/usePurcha
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useNotification } from 'src/context/NotificationContext';
-import TableFooterComponent from 'src/layouts/components/tableFooterComponent';
-import TableHeaderComponent from 'src/layouts/components/tableHeaderComponent';
-import SalePurchaseTableSearch from 'src/pages/purchases/components/purchaseTableSearch';
+import { EntityType, type FilterParams } from 'src/models/filterParams';
+
+import TableFooterComponent from 'src/components/table/tableFooterComponent';
+import TableHeaderComponent from 'src/components/table/tableHeaderComponent';
 
 import PurchaseTableComponent from './components/purchaseTableComponent';
+import FilterTableComponent from '../../components/table/filterTableComponent';
 
 // ----------------------------------------------------------------------
 
@@ -83,10 +84,11 @@ export default function PurchasePage() {
             addButtonPath="/purchases/create"
           />
           <Grid item xs={12}>
-            <SalePurchaseTableSearch
+            <FilterTableComponent
               handleDelete={handleDeletePurchase}
               selectedRows={selectedPurchases}
-              setPurchaseParams={setPurchaseParams}
+              setParams={setPurchaseParams}
+              entityType={EntityType.purchase}
             />
             <TableContainer
               component={Paper}

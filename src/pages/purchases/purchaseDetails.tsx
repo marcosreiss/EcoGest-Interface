@@ -4,13 +4,18 @@ import { useParams } from "react-router-dom";
 import {
   Box,
   Grid,
+  Card,
   Table,
+  Paper,
   Button,
+  Divider,
   TableRow,
   TableHead,
   TableCell,
   TableBody,
   Typography,
+  CardHeader,
+  CardContent,
   LinearProgress,
 } from "@mui/material";
 
@@ -27,14 +32,6 @@ export default function PurchaseDetailsPage() {
 
   const { data: purchase, isLoading } = useGetPurchaseById(purchaseId);
 
-  const formStyle = {
-    mx: "auto",
-    p: 3,
-    boxShadow: 3,
-    borderRadius: 2,
-    bgcolor: "background.paper",
-  };
-
   const navigate = useRouter();
 
   const handleEditClick = () => {
@@ -45,41 +42,35 @@ export default function PurchaseDetailsPage() {
     if (purchase?.paymentSlip?.data) {
       const blob = new Blob([new Uint8Array(purchase.paymentSlip.data)]);
       const fileReader = new FileReader();
-  
+
       fileReader.onload = (event) => {
         const arrayBuffer = event.target?.result as ArrayBuffer;
         const uintArray = new Uint8Array(arrayBuffer);
-  
-        // Extrai os primeiros bytes para verificação do tipo
+
         const header = uintArray.slice(0, 4);
-  
-        // Converte os primeiros bytes para uma string legível
-        const headerHex = Array.from(header).map((byte) => byte.toString(16).padStart(2, "0")).join(" ");
-  
+        const headerHex = Array.from(header)
+          .map((byte) => byte.toString(16).padStart(2, "0"))
+          .join(" ");
+
         if (headerHex.startsWith("25 50 44 46")) {
-          // PDF (%PDF)
           const pdfBlob = new Blob([uintArray], { type: "application/pdf" });
           const pdfUrl = URL.createObjectURL(pdfBlob);
           window.open(pdfUrl, "_blank");
         } else if (headerHex.startsWith("ff d8 ff")) {
-          // JPEG (FFD8FF)
           const jpegBlob = new Blob([uintArray], { type: "image/jpeg" });
           const jpegUrl = URL.createObjectURL(jpegBlob);
           window.open(jpegUrl, "_blank");
         } else if (headerHex.startsWith("89 50 4e 47")) {
-          // PNG (\x89PNG)
           const pngBlob = new Blob([uintArray], { type: "image/png" });
           const pngUrl = URL.createObjectURL(pngBlob);
           window.open(pngUrl, "_blank");
-        } 
+        }
       };
-      
+
       fileReader.readAsArrayBuffer(blob);
     }
   };
-  
 
-  // Função para formatar a data no formato pt-BR
   const formatDate = (dateStr?: string | Date) => {
     if (!dateStr) return "-";
     const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
@@ -103,6 +94,13 @@ export default function PurchaseDetailsPage() {
     });
   };
 
+  const productsList = purchase?.products.map((product) => ({
+    name: product.product.name,
+    productId: product.product.productId,
+    quantity: product.quantity,
+    price: product.price || 0,
+  })) || [];
+
   return (
     <>
       <Helmet>
@@ -110,95 +108,124 @@ export default function PurchaseDetailsPage() {
       </Helmet>
       <DashboardContent maxWidth="lg">
         {isLoading ? (
-          <LinearProgress />
+          <Box sx={{ py: 4, display: "flex", justifyContent: "center" }}>
+            <LinearProgress sx={{ width: "50%" }} />
+          </Box>
         ) : (
           <>
-            <Typography variant="h4" sx={{ mb: 3 }}>
-              Detalhes da Compra
-            </Typography>
-            <Box sx={formStyle}>
-              <Grid container spacing={2}>
-                {/* Nome do Fornecedor */}
-                <Grid item xs={12}>
-                  <Typography variant="h6">Fornecedor</Typography>
-                  <Typography>
-                    <strong>Nome:</strong> {purchase?.supplier.name || "-"}
-                  </Typography>
-                  <Typography>
-                    <strong>CPF/CNPJ:</strong> {purchase?.supplier.cpfCnpj || "-"}
-                  </Typography>
-                </Grid>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 3,
+              }}
+            >
+              <Typography variant="h4" fontWeight="bold">
+                Detalhes da Compra
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleEditClick}
+                sx={{ fontSize: 15 }}
+              >
+                Editar Compra
+              </Button>
+            </Box>
 
-                {/* Descrição */}
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    <strong>Descrição:</strong> {purchase?.description || "-"}
-                  </Typography>
-                </Grid>
+            <Card elevation={3} sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+              <CardContent>
+                <Grid container spacing={3}>
+                  {/* Fornecedor */}
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                      Fornecedor
+                    </Typography>
+                    <Box sx={{ ml: 1 }}>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>Nome:</strong> {purchase?.supplier.name || "-"}
+                      </Typography>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>CPF/CNPJ:</strong> {purchase?.supplier.cpfCnpj || "-"}
+                      </Typography>
+                    </Box>
+                  </Grid>
 
-                {/* Data da Compra */}
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    <strong>Data da Compra:</strong> {formatDate(purchase?.date_time)}
-                  </Typography>
+                  {/* Detalhes da Compra */}
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                      Detalhes
+                    </Typography>
+                    <Box sx={{ ml: 1 }}>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>Data da Compra:</strong> {formatDate(purchase?.date_time)}
+                      </Typography>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>Descrição:</strong> {purchase?.description || "-"}
+                      </Typography>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>Desconto:</strong> {formatPrice(purchase?.discount)}
+                      </Typography>
+                      <Typography variant="body1">
+                        <strong>Preço Total:</strong> {formatPrice(purchase?.totalPrice)}
+                      </Typography>
+                    </Box>
+                  </Grid>
                 </Grid>
+              </CardContent>
+            </Card>
 
-                {/* Desconto */}
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    <strong>Desconto:</strong> {formatPrice(purchase?.discount)}
-                  </Typography>
-                </Grid>
-
-                {/* Lista de Produtos */}
-                <Grid item xs={12}>
-                  <Typography variant="h6" gutterBottom>
-                    Produtos
-                  </Typography>
+            <Card elevation={3} sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+              <CardHeader
+                title="Produtos"
+                titleTypographyProps={{ variant: "h6", fontWeight: "bold" }}
+              />
+              <CardContent>
+                <Paper variant="outlined" sx={{ overflow: "hidden" }}>
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell>Produto</TableCell>
-                        <TableCell>Quantidade</TableCell>
-                        <TableCell>Preço Unitário</TableCell>
-                        <TableCell>Total</TableCell>
+                        <TableCell><strong>Produto</strong></TableCell>
+                        <TableCell><strong>Quantidade</strong></TableCell>
+                        <TableCell><strong>Preço Unitário</strong></TableCell>
+                        <TableCell><strong>Total</strong></TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {purchase?.products.map((product) => (
-                        <TableRow key={product.productId}>
-                          <TableCell>{product.product.name}</TableCell>
-                          <TableCell>{formatNumber(product.quantity / 1000)} Tons</TableCell>
-                          <TableCell>{formatPrice(product.price)}</TableCell>
-                          <TableCell>{formatPrice(product.quantity * product.price)}</TableCell>
+                      {productsList.length > 0 ? (
+                        productsList.map((product, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{product.name}</TableCell>
+                            <TableCell>{formatNumber(product.quantity / 1000)} Tons</TableCell>
+                            <TableCell>{formatPrice(product.price)}</TableCell>
+                            <TableCell>{formatPrice(product.price * product.quantity)}</TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={4} align="center">
+                            Nenhum produto encontrado.
+                          </TableCell>
                         </TableRow>
-                      ))}
+                      )}
                     </TableBody>
                   </Table>
-                </Grid>
-
-                {/* Botão para Editar */}
-                <Grid item xs={12}>
-                  <Button variant="contained" color="primary" onClick={handleEditClick}>
-                    Editar Compra
-                  </Button>
-                </Grid>
-
-                {/* Nota Fiscal */}
+                </Paper>
+                <Divider sx={{ my: 3 }} />
                 {purchase?.paymentSlip?.data && (
-                  <Grid item xs={12}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleViewFile}
-                      fullWidth
-                    >
-                      Visualizar Nota Fiscal
-                    </Button>
-                  </Grid>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleViewFile}
+                    fullWidth
+                    sx={{ mt: 2 }}
+                  >
+                    Visualizar Nota Fiscal
+                  </Button>
                 )}
-              </Grid>
-            </Box>
+              </CardContent>
+            </Card>
           </>
         )}
       </DashboardContent>

@@ -4,13 +4,18 @@ import { useParams } from "react-router-dom";
 import {
   Box,
   Grid,
+  Card,
   Table,
+  Paper,
   Button,
+  Divider,
   TableRow,
   TableHead,
   TableCell,
   TableBody,
   Typography,
+  CardHeader,
+  CardContent,
   LinearProgress,
 } from "@mui/material";
 
@@ -24,17 +29,7 @@ import { DashboardContent } from "src/layouts/dashboard";
 export default function SaleDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const saleId = parseInt(id!, 10);
-
   const { data: sale, isLoading } = useGetSaleById(saleId);
-
-  const formStyle = {
-    mx: "auto",
-    p: 3,
-    boxShadow: 3,
-    borderRadius: 2,
-    bgcolor: "background.paper",
-  };
-
   const navigate = useRouter();
 
   const handleEditClick = () => {
@@ -43,9 +38,7 @@ export default function SaleDetailsPage() {
 
   const formatDate = (date?: string) => {
     if (!date) return "-";
-    const localDate = new Date(date);
-    localDate.setDate(localDate.getDate() + 1); // Adiciona 1 dia
-    return localDate.toLocaleDateString("pt-BR");
+    return new Date(date).toLocaleDateString("pt-BR");
   };
 
   const formatPrice = (value?: number) => {
@@ -64,14 +57,12 @@ export default function SaleDetailsPage() {
     });
   };
 
-  // Mapear a lista de produtos no formato utilizado no EditSalePage
   const productsList = sale?.products.map((product) => ({
-    name: product.product.name, // Acessa diretamente o nome do produto
+    name: product.product.name,
     productId: product.product.productId,
     quantity: product.quantity,
-    price: product.price || 0, // Certifique-se de que o preço existe
+    price: product.price || 0,
   })) || [];
-
 
   return (
     <>
@@ -83,95 +74,78 @@ export default function SaleDetailsPage() {
           <LinearProgress />
         ) : (
           <>
-            <Typography variant="h4" sx={{ mb: 3 }}>
-              Detalhes da Venda
-            </Typography>
-            <Box sx={formStyle}>
-              <Grid container spacing={2}>
-                {/* Nome e CPF/CNPJ do Cliente */}
-                <Grid item xs={12}>
-                  <Typography variant="h6">Cliente</Typography>
-                  <Typography>
-                    <strong>Nome:</strong> {sale?.customer?.name || "-"}
-                  </Typography>
-                  <Typography>
-                    <strong>CPF/CNPJ:</strong> {sale?.customer?.cpfCnpj || "-"}
-                  </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
+              <Typography variant="h4" fontWeight="bold">
+                Detalhes da Venda
+              </Typography>
+              <Button variant="contained" color="primary" onClick={handleEditClick} sx={{ fontSize: 15 }}>
+                Editar Venda
+              </Button>
+            </Box>
+            <Card elevation={3} sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+              <CardContent>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6" gutterBottom>
+                      Cliente
+                    </Typography>
+                    <Typography><strong>Nome:</strong> {sale?.customer?.name || "-"}</Typography>
+                    <Typography><strong>CPF/CNPJ:</strong> {sale?.customer?.cpfCnpj || "-"}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6" gutterBottom>
+                      Detalhes
+                    </Typography>
+                    <Typography><strong>Data:</strong> {formatDate(sale?.date_time)}</Typography>
+                    <Typography><strong>Descrição:</strong> {sale?.description || "-"}</Typography>
+                  </Grid>
                 </Grid>
-
-                {/* Descrição */}
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    <strong>Descrição:</strong> {sale?.description || "-"}
-                  </Typography>
-                </Grid>
-
-                {/* Data da Venda */}
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    <strong>Data da Venda:</strong> {formatDate(sale?.date_time)}
-                  </Typography>
-                </Grid>
-
-                {/* Desconto */}
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    <strong>Desconto:</strong> {formatPrice(sale?.discount)}
-                  </Typography>
-                </Grid>
-
-                {/* Preço Total */}
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    <strong>Preço Total:</strong> {formatPrice(sale?.totalPrice)}
-                  </Typography>
-                </Grid>
-
-                {/* Lista de Produtos */}
-                <Grid item xs={12}>
-                  <Typography variant="h6" gutterBottom>
-                    Produtos
-                  </Typography>
+              </CardContent>
+            </Card>
+            <Card elevation={3} sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+              <CardHeader title="Produtos" titleTypographyProps={{ variant: "h6", fontWeight: "bold" }} />
+              <CardContent>
+                <Paper variant="outlined" sx={{ overflow: "hidden" }}>
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell>Produto</TableCell>
-                        <TableCell>Qtd</TableCell>
-                        <TableCell>Preço</TableCell>
-                        <TableCell>Subtotal</TableCell>
+                        <TableCell><strong>Produto</strong></TableCell>
+                        <TableCell><strong>Qtd</strong></TableCell>
+                        <TableCell><strong>Preço</strong></TableCell>
+                        <TableCell><strong>Subtotal</strong></TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {productsList.map((product, index) => (
-                        <TableRow key={index}>
-                          <TableCell>
-                            {product.name}
-                          </TableCell>
-                          <TableCell>
-                            {formatNumber(product.quantity)}
-                          </TableCell>
-                          <TableCell>{formatPrice(product.price)}</TableCell>
-                          <TableCell>
-                            {formatPrice(product.price * product.quantity)}
+                      {productsList.length > 0 ? (
+                        productsList.map((product, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{product.name}</TableCell>
+                            <TableCell>{formatNumber(product.quantity)}</TableCell>
+                            <TableCell>{formatPrice(product.price)}</TableCell>
+                            <TableCell>{formatPrice(product.price * product.quantity)}</TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={4} align="center">
+                            Nenhum produto encontrado.
                           </TableCell>
                         </TableRow>
-                      ))}
+                      )}
                     </TableBody>
                   </Table>
+                </Paper>
+                <Divider sx={{ my: 2 }} />
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={4}>
+                    <Typography><strong>Desconto:</strong> {formatPrice(sale?.discount)}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <Typography><strong>Preço Total:</strong> {formatPrice(sale?.totalPrice)}</Typography>
+                  </Grid>
                 </Grid>
-
-                {/* Botão para Editar */}
-                <Grid item xs={12}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleEditClick}
-                  >
-                    Editar Venda
-                  </Button>
-                </Grid>
-              </Grid>
-            </Box>
+              </CardContent>
+            </Card>
           </>
         )}
       </DashboardContent>

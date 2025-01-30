@@ -1,7 +1,16 @@
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 
-import { Box, Grid, Typography, IconButton, LinearProgress } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Card,
+  Button,
+  Divider,
+  Typography,
+  CardContent,
+  LinearProgress,
+} from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
 
@@ -12,142 +21,120 @@ import { PersonType } from "src/models/person";
 import { DashboardContent } from "src/layouts/dashboard";
 
 export default function PersonDetails() {
-    const { id } = useParams<{ id: string }>();
-    const personId = parseInt(id!, 10);
+  const { id } = useParams<{ id: string }>();
+  const personId = parseInt(id!, 10);
+  const { data: person, isLoading } = useGetPersonById(personId);
+  const navigate = useRouter();
 
-    const response = useGetPersonById(personId);
-    const person = response.data;
-    const { isLoading } = response;
+  const handleEditClick = () => {
+    navigate.replace(`/person/edit/${id}`);
+  };
 
-    const formStyle = {
-        mx: "auto",
-        p: 3,
-        boxShadow: 3,
-        borderRadius: 2,
-        bgcolor: "background.paper",
-    };
+  return (
+    <>
+      <Helmet>
+        <title>{`Detalhes da Pessoa - ${CONFIG.appName}`}</title>
+      </Helmet>
+      <DashboardContent maxWidth="lg">
+        {isLoading ? (
+          <Box sx={{ py: 4, display: "flex", justifyContent: "center" }}>
+            <LinearProgress sx={{ width: "50%" }} />
+          </Box>
+        ) : (
+          <>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 3,
+              }}
+            >
+              <Typography variant="h4" fontWeight="bold">
+                Detalhes do{" "}
+                {person?.type === PersonType.cliente ? "Cliente" : "Fornecedor"}
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleEditClick}
+                sx={{ fontSize: 15 }}
+              >
+                Editar
+              </Button>
+            </Box>
 
-    const navigate = useRouter();
-    const handleEditClick = () => {
-        navigate.replace(`/person/edit/${id}`);
-    };
+            <Card elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+              <CardContent>
+                <Grid container spacing={2}>
+                  {/* Informações Básicas */}
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                      Informações Básicas
+                    </Typography>
+                    <Box sx={{ ml: 1 }}>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>Nome:</strong> {person?.name || "-"}
+                      </Typography>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>
+                          {person?.type === "fornecedor" ? "CNPJ" : "CPF"}:
+                        </strong>{" "}
+                        {person?.cpfCnpj || "-"}
+                      </Typography>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>Contato:</strong> {person?.contact || "-"}
+                      </Typography>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>Email:</strong> {person?.email || "-"}
+                      </Typography>
+                      <Typography variant="body1">
+                        <strong>Observação:</strong>{" "}
+                        {person?.obs || "Não informado"}
+                      </Typography>
+                    </Box>
+                  </Grid>
 
-    return (
-        <>
-            <Helmet>
-                <title>{`Detalhes da Pessoa - ${CONFIG.appName}`}</title>
-            </Helmet>
-            <DashboardContent maxWidth="lg">
-                {isLoading ? (
-                    <LinearProgress />
-                ) : (
-                    <>
-                        <Grid item xs={6}>
-                            <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>
-                                Detalhes do {person?.type === PersonType.cliente ? "Cliente" : "Fornecedor"}
-                            </Typography>
-                        </Grid>
-                        <Grid container>
-                            <Grid item xs={12}>
-                                <Box sx={formStyle}>
-                                    <Grid container spacing={2}>
-                                        {/* Nome */}
-                                        <Grid item xs={6}>
-                                            <Typography variant="h6" gutterBottom>
-                                                Nome: {person?.name}
-                                            </Typography>
-                                        </Grid>
+                  {/* Endereço */}
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                      Endereço
+                    </Typography>
+                    <Box sx={{ ml: 1 }}>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>CEP:</strong> {person?.address?.cep || "-"}
+                      </Typography>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>Cidade:</strong>{" "}
+                        {person?.address?.cidade || "-"}
+                      </Typography>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>UF:</strong> {person?.address?.uf || "-"}
+                      </Typography>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>Bairro:</strong> {person?.address?.bairro || "-"}
+                      </Typography>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>Endereço:</strong>{" "}
+                        {person?.address?.endereco || "-"}
+                      </Typography>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>Número:</strong> {person?.address?.numero || "-"}
+                      </Typography>
+                      <Typography variant="body1">
+                        <strong>Complemento:</strong>{" "}
+                        {person?.address?.complemento || "Não informado"}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
 
-                                        {/* Botão de Editar */}
-                                        <Grid item xs={6}>
-                                            <IconButton onClick={handleEditClick}>
-                                                <img alt="icon" src="/assets/icons/ic-edit.svg" />
-                                            </IconButton>
-                                        </Grid>
-
-                                        {/* Tipo de Pessoa */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Tipo:{" "}
-                                                {person?.type === PersonType.cliente
-                                                    ? "Cliente"
-                                                    : "Fornecedor"}
-                                            </Typography>
-                                        </Grid>
-
-                                        {/* CPF/CNPJ */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                {person?.cpfCnpj?.length && person.cpfCnpj.length > 14 ? "CNPJ" : "CPF"}:{" "}
-                                                {person?.cpfCnpj}
-                                            </Typography>
-                                        </Grid>
-
-                                        {/* Contato */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Contato: {person?.contact}
-                                            </Typography>
-                                        </Grid>
-
-                                        {/* Email */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Email: {person?.email}
-                                            </Typography>
-                                        </Grid>
-
-                                        {/* Observação */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Observação: {person?.obs || "Não informado"}
-                                            </Typography>
-                                        </Grid>
-
-                                        {/* Endereço */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="h6" gutterBottom>
-                                                Endereço
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <Typography variant="body1" gutterBottom>
-                                                CEP: {person?.address.cep}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Cidade: {person?.address.cidade}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <Typography variant="body1" gutterBottom>
-                                                UF: {person?.address.uf}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Bairro: {person?.address.bairro}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Endereço: {person?.address.endereco}, Número: {person?.address.numero}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Complemento: {person?.address.complemento || "Não informado"}
-                                            </Typography>
-                                        </Grid>
-
-                                    </Grid>
-                                </Box>
-                            </Grid>
-                        </Grid>
-                    </>
-                )}
-            </DashboardContent>
-        </>
-    );
+                <Divider sx={{ my: 3 }} />
+              </CardContent>
+            </Card>
+          </>
+        )}
+      </DashboardContent>
+    </>
+  );
 }
