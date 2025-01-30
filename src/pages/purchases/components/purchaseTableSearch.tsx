@@ -2,6 +2,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import type { SelectChangeEvent } from '@mui/material';
 import type { FilterParams } from 'src/models/filterParams';
 import type { SupplierBasicInfo } from 'src/models/supplier';
+import type { CustomerBasicInfo } from 'src/models/customers';
 
 import React, { useState, useEffect } from 'react';
 
@@ -41,7 +42,7 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [filterOption, setFilterOption] = useState<FilterOptions[]>([]);
     const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
-    const {data: customer, isLoading: loadingCustomers} = useGetCustomersBasicInfo();
+    const { data: customers, isLoading: loadingCustomers } = useGetCustomersBasicInfo();
     const [startDateValue, setStartDate] = useState('');
     const [endDateValue, setEndDate] = useState('');
 
@@ -85,7 +86,7 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
                 ...prev,
                 nfe: null,
                 order: null,
-                personId: null,
+                personId: null, // Dependendo da implementação, pode ser necessário limpar 'customerId' e 'supplierId' separadamente
                 id: null,
                 startDate: null,
                 endDate: null,
@@ -185,7 +186,7 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
                     )}
                     {entityType === EntityType.sale && (
                         <MenuItem
-                            onClick={() => toggleFilter(FilterOptions.supplier)}
+                            onClick={() => toggleFilter(FilterOptions.customer)}
                             disabled={filterOption.includes(FilterOptions.sale) || filterOption.includes(FilterOptions.nfe)}
                         >
                             <Checkbox checked={filterOption.includes(FilterOptions.customer)} />
@@ -193,24 +194,29 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
                         </MenuItem>
                     )}
 
-                    <MenuItem
-                        onClick={() => toggleFilter(FilterOptions.nfe)}
-                        disabled={
-                            filterOption.includes(FilterOptions.period) ||
-                            filterOption.includes(FilterOptions.purchase) ||
-                            filterOption.includes(FilterOptions.supplier)
-                        }
-                    >
-                        <Checkbox checked={filterOption.includes(FilterOptions.nfe)} />
-                        <ListItemText primary="Filtrar por NF-e" />
-                    </MenuItem>
+                    {entityType === EntityType.purchase && (
+                        <MenuItem
+                            onClick={() => toggleFilter(FilterOptions.nfe)}
+                            disabled={
+                                filterOption.includes(FilterOptions.period) ||
+                                filterOption.includes(FilterOptions.purchase) ||
+                                filterOption.includes(FilterOptions.supplier) ||
+                                filterOption.includes(FilterOptions.customer)
+                            }
+                        >
+                            <Checkbox checked={filterOption.includes(FilterOptions.nfe)} />
+                            <ListItemText primary="Filtrar por NF-e" />
+                        </MenuItem>
+                    )}
+
 
                     <MenuItem
                         onClick={() => toggleFilter(FilterOptions.purchase)}
                         disabled={
                             filterOption.includes(FilterOptions.period) ||
                             filterOption.includes(FilterOptions.nfe) ||
-                            filterOption.includes(FilterOptions.supplier)
+                            filterOption.includes(FilterOptions.supplier) ||
+                            filterOption.includes(FilterOptions.customer)
                         }
                     >
                         <Checkbox checked={filterOption.includes(FilterOptions.purchase)} />
@@ -256,6 +262,31 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
                                 <TextField
                                     {...params}
                                     label="Fornecedor"
+                                    variant="outlined"
+                                />
+                            )}
+                        />
+                    </Box>
+                )}
+
+                {/* Filtrar por Cliente */}
+                {filterOption.includes(FilterOptions.customer) && (
+                    <Box sx={{ flex: 1, minWidth: '200px' }}>
+                        <Autocomplete
+                            options={customers?.data || []}
+                            loading={loadingCustomers}
+                            getOptionLabel={(option: CustomerBasicInfo) => option.name}
+                            isOptionEqualToValue={(option, value) =>
+                                option.personId === value?.personId
+                            }
+                            onChange={(_, newValue) => setPurchaseParams((prev) => ({
+                                ...prev,
+                                customerId: newValue?.personId || null
+                            }))}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Cliente"
                                     variant="outlined"
                                 />
                             )}
@@ -311,8 +342,6 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
                         </FormControl>
                     </Box>
 
-
-
                     {/* Botão Limpar Filtros */}
                     <Button
                         onClick={handleClearFilters}
@@ -328,7 +357,6 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
                         Limpar Filtros
                     </Button>
                 </Box>
-
 
                 {/* Botão de Deletar */}
                 {selectedRows.length > 0 && (
@@ -349,14 +377,13 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
             <ConfirmationDialog
                 open={deleteModalOpen}
                 confirmButtonText="Deletar"
-                description="Tem certeza que você quer deletar os clientes selecionados?"
+                description={`Tem certeza que você quer deletar os ${entityType === EntityType.purchase ? 'fornecedores' : 'clientes'} selecionados?`}
                 onClose={handleClose}
                 onConfirm={handleDeleteRows}
-                title="Deletar Clientes"
+                title={`Deletar ${entityType === EntityType.purchase ? 'Fornecedores' : 'Clientes'}`}
             />
         </>
     )
 }
 
 export default SalePurchaseTableSearch;
-
