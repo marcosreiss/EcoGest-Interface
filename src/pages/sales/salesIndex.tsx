@@ -1,5 +1,4 @@
 import type { Sale } from 'src/models/sale';
-import type { FilterParams } from 'src/models/filterParams';
 
 import * as React from 'react';
 import { useState } from 'react';
@@ -14,12 +13,13 @@ import { useDeleteSale, useGetSalesPaged } from 'src/hooks/useSales';
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useNotification } from 'src/context/NotificationContext';
+import { EntityType, type FilterParams } from 'src/models/filterParams';
 
 import TableComponent from './components/salesTableComponent'; // Importando a nova table
 
 import SaleTableHeaderComponent from './components/salesTableHeaderComponent';
+import FilterTableComponent from '../purchases/components/purchaseTableSearch';
 import TableFooterComponent from '../../layouts/components/tableFooterComponent';
-import FilterTableComponent, { EntityType } from '../purchases/components/purchaseTableSearch';
 
 // ----------------------------------------------------------------------
 
@@ -76,7 +76,7 @@ export default function SalesIndex() {
                         <FilterTableComponent
                             handleDelete={handleDeleteSale}
                             selectedRows={selectedSales}
-                            setPurchaseParams={setSalesParams}
+                            setParams={setSalesParams}
                             entityType={EntityType.sale}
                         />
 

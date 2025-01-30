@@ -1,6 +1,5 @@
 import type { Dispatch, SetStateAction } from 'react';
 import type { SelectChangeEvent } from '@mui/material';
-import type { FilterParams } from 'src/models/filterParams';
 import type { SupplierBasicInfo } from 'src/models/supplier';
 import type { CustomerBasicInfo } from 'src/models/customers';
 
@@ -12,35 +11,22 @@ import { Box, Menu, Button, Select, MenuItem, Checkbox, TextField, InputLabel, F
 import { useGetSuppliersBasicInfo } from 'src/hooks/useSupplier';
 import { useGetCustomersBasicInfo } from 'src/hooks/useCustomer';
 
+import { EntityType, FilterOptions, type FilterParams } from 'src/models/filterParams';
+
 import ConfirmationDialog from 'src/components/confirmation-dialog/confirmationDialog';
 
-export enum EntityType {
-    purchase,
-    sale,
-    payable,
-    receive
-}
 
-interface TableSearchProps {
+
+interface FilterTableProps {
     selectedRows: any[];
     handleDelete: () => void;
-    setPurchaseParams: Dispatch<SetStateAction<FilterParams>>;
+    setParams: Dispatch<SetStateAction<FilterParams>>;
     entityType: EntityType;
 }
 
-enum FilterOptions {
-    period,
-    supplier,
-    customer,
-    nfe,
-    purchase,
-    sale,
-    payable,
-    receive,
-    status,
-}
 
-const FilterTableComponent: React.FC<TableSearchProps> = ({ selectedRows, handleDelete, setPurchaseParams, entityType }) => {
+
+const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handleDelete, setParams, entityType }) => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [filterOption, setFilterOption] = useState<FilterOptions[]>([]);
@@ -51,19 +37,19 @@ const FilterTableComponent: React.FC<TableSearchProps> = ({ selectedRows, handle
 
     useEffect(() => {
         if (startDateValue && endDateValue) {
-            setPurchaseParams((prevState) => ({
+            setParams((prevState) => ({
                 ...prevState,
                 startDate: startDateValue,
                 endDate: endDateValue
             }));
         } else {
-            setPurchaseParams((prevState) => ({
+            setParams((prevState) => ({
                 ...prevState,
                 startDate: null,
                 endDate: null
             }));
         }
-    }, [endDateValue, setPurchaseParams, startDateValue]);
+    }, [endDateValue, setParams, startDateValue]);
 
     // Local states for NF-e and Purchase ID inputs
     const [nfeInput, setNfeInput] = useState<string>('');
@@ -84,7 +70,7 @@ const FilterTableComponent: React.FC<TableSearchProps> = ({ selectedRows, handle
 
     const handleClearFilters = () => {
         setFilterOption([]);
-        setPurchaseParams((prev) => (
+        setParams((prev) => (
             {
                 ...prev,
                 nfe: null,
@@ -106,7 +92,7 @@ const FilterTableComponent: React.FC<TableSearchProps> = ({ selectedRows, handle
 
     // Handlers for applying NF-e and Purchase ID filters
     const applyNfeFilter = () => {
-        setPurchaseParams((prev) => ({
+        setParams((prev) => ({
             ...prev,
             nfe: nfeInput.trim() || null,
         }));
@@ -114,7 +100,7 @@ const FilterTableComponent: React.FC<TableSearchProps> = ({ selectedRows, handle
 
     const applyPurchaseIdFilter = () => {
         const id = parseInt(purchaseIdInput, 10);
-        setPurchaseParams((prev) => ({
+        setParams((prev) => ({
             ...prev,
             id: Number.isNaN(id) ? null : id,
         }));
@@ -124,7 +110,7 @@ const FilterTableComponent: React.FC<TableSearchProps> = ({ selectedRows, handle
     const handleOrderChange = (event: SelectChangeEvent<string>) => {
         const { value } = event.target;
         setOrderValue(value);
-        setPurchaseParams((prev) => ({
+        setParams((prev) => ({
             ...prev,
             order: value === 'asc' ? 'asc' : value === 'desc' ? 'desc' : null,
         }));
@@ -170,10 +156,10 @@ const FilterTableComponent: React.FC<TableSearchProps> = ({ selectedRows, handle
                     <MenuItem
                         onClick={() => toggleFilter(FilterOptions.period)}
                         disabled={
-                            filterOption.includes(FilterOptions.purchase) || 
-                            filterOption.includes(FilterOptions.sale) || 
-                            filterOption.includes(FilterOptions.payable) || 
-                            filterOption.includes(FilterOptions.receive) || 
+                            filterOption.includes(FilterOptions.purchase) ||
+                            filterOption.includes(FilterOptions.sale) ||
+                            filterOption.includes(FilterOptions.payable) ||
+                            filterOption.includes(FilterOptions.receive) ||
                             filterOption.includes(FilterOptions.nfe)
                         }
                     >
@@ -182,6 +168,19 @@ const FilterTableComponent: React.FC<TableSearchProps> = ({ selectedRows, handle
                         />
                         <ListItemText primary="Filtrar por Período" />
                     </MenuItem>
+
+                    {(entityType === EntityType.receive || entityType === EntityType.payable) && (
+                        <MenuItem
+                            onClick={() => toggleFilter(FilterOptions.dataVencimento)}
+                            disabled={
+                                filterOption.includes(FilterOptions.purchase) ||
+                                filterOption.includes(FilterOptions.nfe)
+                            }
+                        >
+                            <Checkbox checked={filterOption.includes(FilterOptions.supplier)} />
+                            <ListItemText primary="Filtrar por Data de Vencimento" />
+                        </MenuItem>
+                    )}
 
                     {(entityType === EntityType.purchase || EntityType.payable) && (
                         <MenuItem
@@ -221,10 +220,23 @@ const FilterTableComponent: React.FC<TableSearchProps> = ({ selectedRows, handle
                         </MenuItem>
                     )}
 
+                    {(entityType === EntityType.receive || entityType === EntityType.payable) && (
+                        <MenuItem
+                            onClick={() => toggleFilter(FilterOptions.status)}
+                            disabled={
+                                filterOption.includes(FilterOptions.purchase) ||
+                                filterOption.includes(FilterOptions.supplier) ||
+                                filterOption.includes(FilterOptions.customer)
+                            }
+                        >
+                            <Checkbox checked={filterOption.includes(FilterOptions.nfe)} />
+                            <ListItemText primary="Filtrar por Status" />
+                        </MenuItem>
+                    )}
 
                     <MenuItem
                         onClick={() => {
-                            switch(entityType){
+                            switch (entityType) {
                                 case EntityType.purchase:
                                     toggleFilter(FilterOptions.purchase)
                                     break;
@@ -252,7 +264,7 @@ const FilterTableComponent: React.FC<TableSearchProps> = ({ selectedRows, handle
                             filterOption.includes(FilterOptions.purchase) ||
                             filterOption.includes(FilterOptions.sale) ||
                             filterOption.includes(FilterOptions.payable) ||
-                            filterOption.includes(FilterOptions.receive) 
+                            filterOption.includes(FilterOptions.receive)
                         } />
                         <ListItemText primary="Filtrar por Código" />
                     </MenuItem>
@@ -280,6 +292,21 @@ const FilterTableComponent: React.FC<TableSearchProps> = ({ selectedRows, handle
                     </Box>
                 )}
 
+                {filterOption.includes(FilterOptions.dataVencimento) && (
+                    <Box sx={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                        <TextField
+                            label="Data de Vencimento"
+                            type="date"
+                            InputLabelProps={{ shrink: true }}
+                            value={startDateValue}
+                            onChange={(e) => setParams((prev)=> ({
+                                ...prev,
+                                dataVencimento: e.target.value
+                            }))}
+                        />
+                    </Box>
+                )}
+
                 {/* Filtrar por Fornecedor */}
                 {filterOption.includes(FilterOptions.supplier) && (
                     <Box sx={{ flex: 1, minWidth: '200px' }}>
@@ -290,7 +317,7 @@ const FilterTableComponent: React.FC<TableSearchProps> = ({ selectedRows, handle
                             isOptionEqualToValue={(option, value) =>
                                 option.personId === value?.personId
                             }
-                            onChange={(_, newValue) => setPurchaseParams((prev) => ({
+                            onChange={(_, newValue) => setParams((prev) => ({
                                 ...prev,
                                 personId: newValue?.personId || null
                             }))}
@@ -315,7 +342,7 @@ const FilterTableComponent: React.FC<TableSearchProps> = ({ selectedRows, handle
                             isOptionEqualToValue={(option, value) =>
                                 option.personId === value?.personId
                             }
-                            onChange={(_, newValue) => setPurchaseParams((prev) => ({
+                            onChange={(_, newValue) => setParams((prev) => ({
                                 ...prev,
                                 customerId: newValue?.personId || null
                             }))}
@@ -342,6 +369,30 @@ const FilterTableComponent: React.FC<TableSearchProps> = ({ selectedRows, handle
                         <Button variant="contained" onClick={applyNfeFilter}>
                             Pesquisar
                         </Button>
+                    </Box>
+                )}
+
+                {filterOption.includes(FilterOptions.status) && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <FormControl fullWidth size="small">
+                            <InputLabel id="status-label">Status</InputLabel>
+                            <Select
+                                labelId="status-label"
+                                id="status-select"
+                                value="Todos"
+                                label="Status"
+                                onChange={(event) => setParams((prev) => ({
+                                    ...prev,
+                                    status: event.target.value === "Todos" ? null : event.target.value as "Pago" | "Atrasado" | "Aberto" | null
+                                }))}
+                            >
+                                <MenuItem value="Todos">Todos</MenuItem>
+                                <MenuItem value="Pago">Pago</MenuItem>
+                                <MenuItem value="Atrasado">Atrasado</MenuItem>
+                                <MenuItem value="Aberto">Aberto</MenuItem>
+                            </Select>
+                        </FormControl>
+
                     </Box>
                 )}
 
