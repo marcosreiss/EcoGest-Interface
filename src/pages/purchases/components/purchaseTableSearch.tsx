@@ -9,6 +9,7 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { Box, Menu, Button, Select, MenuItem, Checkbox, TextField, InputLabel, FormControl, Autocomplete, ListItemText } from '@mui/material';
 
 import { useGetSuppliersBasicInfo } from 'src/hooks/useSupplier';
+import { useGetCustomersBasicInfo } from 'src/hooks/useCustomer';
 
 import ConfirmationDialog from 'src/components/confirmation-dialog/confirmationDialog';
 
@@ -29,15 +30,18 @@ interface TableSearchProps {
 enum FilterOptions {
     period,
     supplier,
+    customer,
     nfe,
     purchase,
+    sale,
 }
 
-const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleDelete, setPurchaseParams }) => {
+const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, handleDelete, setPurchaseParams, entityType }) => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [filterOption, setFilterOption] = useState<FilterOptions[]>([]);
     const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
+    const {data: customer, isLoading: loadingCustomers} = useGetCustomersBasicInfo();
     const [startDateValue, setStartDate] = useState('');
     const [endDateValue, setEndDate] = useState('');
 
@@ -170,13 +174,24 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
                         <ListItemText primary="Filtrar por Período" />
                     </MenuItem>
 
-                    <MenuItem
-                        onClick={() => toggleFilter(FilterOptions.supplier)}
-                        disabled={filterOption.includes(FilterOptions.purchase) || filterOption.includes(FilterOptions.nfe)}
-                    >
-                        <Checkbox checked={filterOption.includes(FilterOptions.supplier)} />
-                        <ListItemText primary="Filtrar por Fornecedor" />
-                    </MenuItem>
+                    {entityType === EntityType.purchase && (
+                        <MenuItem
+                            onClick={() => toggleFilter(FilterOptions.supplier)}
+                            disabled={filterOption.includes(FilterOptions.purchase) || filterOption.includes(FilterOptions.nfe)}
+                        >
+                            <Checkbox checked={filterOption.includes(FilterOptions.supplier)} />
+                            <ListItemText primary="Filtrar por Fornecedor" />
+                        </MenuItem>
+                    )}
+                    {entityType === EntityType.sale && (
+                        <MenuItem
+                            onClick={() => toggleFilter(FilterOptions.supplier)}
+                            disabled={filterOption.includes(FilterOptions.sale) || filterOption.includes(FilterOptions.nfe)}
+                        >
+                            <Checkbox checked={filterOption.includes(FilterOptions.customer)} />
+                            <ListItemText primary="Filtrar por Cliente" />
+                        </MenuItem>
+                    )}
 
                     <MenuItem
                         onClick={() => toggleFilter(FilterOptions.nfe)}

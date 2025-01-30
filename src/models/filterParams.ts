@@ -4,7 +4,7 @@ export interface FilterParams{
     nfe: string | null;
     order: "asc" | "desc" | null;
     personId: number | null;
-    id: number | null;
+    id: number | null; // purchase, sale, receive, payable
     startDate:string | null;
     endDate:string | null;
     dataVencimento: string | null;
