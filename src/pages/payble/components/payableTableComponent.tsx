@@ -207,12 +207,12 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
     return dateObj.toLocaleDateString("pt-BR");
   };
 
-  const formatPrice = (price: number | undefined): string => {
-    if (price === undefined) return "-";
-    return `R$ ${price.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
+  const formatPrice = (value?: number) => {
+    if (value === undefined) return "-";
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
   };
 
   return (
@@ -233,7 +233,7 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
-            <TableCell>ID</TableCell>
+            <TableCell>Cód</TableCell>
             <TableCell>Status</TableCell>
             <TableCell>Fornecedor</TableCell>
             <TableCell>NF-e</TableCell>

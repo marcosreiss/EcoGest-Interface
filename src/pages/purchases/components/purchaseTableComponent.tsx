@@ -176,7 +176,7 @@ const PurchaseTableComponent: React.FC<PurchaseTableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
-            <TableCell>ID</TableCell>
+            <TableCell>Cód</TableCell>
             <TableCell>Fornecedor</TableCell>
             <TableCell>Descrição</TableCell>
             <TableCell>Data</TableCell>
