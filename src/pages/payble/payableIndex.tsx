@@ -1,5 +1,4 @@
 import type { Payble } from "src/models/payable";
-import type { FilterParams } from "src/models/filterParams";
 
 import * as React from "react";
 import { useState, useEffect } from "react";
@@ -14,8 +13,10 @@ import { useDeletePayble, useGetPayblesPaged } from "src/hooks/usePayble";
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
+import { EntityType, type FilterParams } from "src/models/filterParams";
 
-import PaybleTableSearch from "./components/payableTableSearch";
+import FilterTableComponent from "src/components/table/filterTableComponent";
+
 import PaybleTableComponent from "./components/payableTableComponent";
 import TableFooterComponent from "../../components/table/tableFooterComponent";
 
@@ -89,10 +90,11 @@ export default function PayableIndex() {
             </Typography>
           </Grid>
           <Grid item xs={12}>
-            <PaybleTableSearch
+            <FilterTableComponent 
+              entityType={EntityType.payable}
               handleDelete={handleDeletePayble}
               selectedRows={selectedPaybles}
-              setSearchByPeriod={setPayableParams}
+              setParams={setPayableParams}
             />
 
             <TableContainer

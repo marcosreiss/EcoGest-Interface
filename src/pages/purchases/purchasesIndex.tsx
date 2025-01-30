@@ -14,11 +14,12 @@ import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useNotification } from 'src/context/NotificationContext';
 import { EntityType, type FilterParams } from 'src/models/filterParams';
+
 import TableFooterComponent from 'src/components/table/tableFooterComponent';
 import TableHeaderComponent from 'src/components/table/tableHeaderComponent';
 
-import FilterTableComponent from '../../components/table/filterTableComponent';
 import PurchaseTableComponent from './components/purchaseTableComponent';
+import FilterTableComponent from '../../components/table/filterTableComponent';
 
 // ----------------------------------------------------------------------
 

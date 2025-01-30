@@ -160,6 +160,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                             filterOption.includes(FilterOptions.sale) ||
                             filterOption.includes(FilterOptions.payable) ||
                             filterOption.includes(FilterOptions.receive) ||
+                            filterOption.includes(FilterOptions.dataVencimento) ||
                             filterOption.includes(FilterOptions.nfe)
                         }
                     >
@@ -174,18 +175,29 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                             onClick={() => toggleFilter(FilterOptions.dataVencimento)}
                             disabled={
                                 filterOption.includes(FilterOptions.purchase) ||
+                                filterOption.includes(FilterOptions.sale) ||
+                                filterOption.includes(FilterOptions.receive) ||
+                                filterOption.includes(FilterOptions.payable) ||
+                                filterOption.includes(FilterOptions.period) ||
+                                filterOption.includes(FilterOptions.status) ||
                                 filterOption.includes(FilterOptions.nfe)
                             }
                         >
-                            <Checkbox checked={filterOption.includes(FilterOptions.supplier)} />
+                            <Checkbox checked={filterOption.includes(FilterOptions.dataVencimento)} />
                             <ListItemText primary="Filtrar por Data de Vencimento" />
                         </MenuItem>
                     )}
 
-                    {(entityType === EntityType.purchase || EntityType.payable) && (
+                    {(entityType === EntityType.purchase || entityType === EntityType.payable) && (
                         <MenuItem
                             onClick={() => toggleFilter(FilterOptions.supplier)}
-                            disabled={filterOption.includes(FilterOptions.purchase) || filterOption.includes(FilterOptions.nfe)}
+                            disabled={
+                                filterOption.includes(FilterOptions.purchase) ||
+                                filterOption.includes(FilterOptions.sale) ||
+                                filterOption.includes(FilterOptions.receive) ||
+                                filterOption.includes(FilterOptions.payable) ||
+                                filterOption.includes(FilterOptions.nfe)
+                            }
                         >
                             <Checkbox checked={filterOption.includes(FilterOptions.supplier)} />
                             <ListItemText primary="Filtrar por Fornecedor" />
@@ -196,7 +208,10 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                         <MenuItem
                             onClick={() => toggleFilter(FilterOptions.customer)}
                             disabled={
+                                filterOption.includes(FilterOptions.purchase) ||
                                 filterOption.includes(FilterOptions.sale) ||
+                                filterOption.includes(FilterOptions.receive) ||
+                                filterOption.includes(FilterOptions.payable) ||
                                 filterOption.includes(FilterOptions.nfe)
                             }
                         >
@@ -225,11 +240,14 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                             onClick={() => toggleFilter(FilterOptions.status)}
                             disabled={
                                 filterOption.includes(FilterOptions.purchase) ||
-                                filterOption.includes(FilterOptions.supplier) ||
-                                filterOption.includes(FilterOptions.customer)
+                                filterOption.includes(FilterOptions.sale) ||
+                                filterOption.includes(FilterOptions.receive) ||
+                                filterOption.includes(FilterOptions.payable) ||
+                                filterOption.includes(FilterOptions.dataVencimento) ||
+                                filterOption.includes(FilterOptions.supplier)
                             }
                         >
-                            <Checkbox checked={filterOption.includes(FilterOptions.nfe)} />
+                            <Checkbox checked={filterOption.includes(FilterOptions.status)} />
                             <ListItemText primary="Filtrar por Status" />
                         </MenuItem>
                     )}
@@ -257,6 +275,8 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                             filterOption.includes(FilterOptions.period) ||
                             filterOption.includes(FilterOptions.nfe) ||
                             filterOption.includes(FilterOptions.supplier) ||
+                            filterOption.includes(FilterOptions.dataVencimento) ||
+                            filterOption.includes(FilterOptions.status) ||
                             filterOption.includes(FilterOptions.customer)
                         }
                     >
@@ -299,7 +319,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                             type="date"
                             InputLabelProps={{ shrink: true }}
                             value={startDateValue}
-                            onChange={(e) => setParams((prev)=> ({
+                            onChange={(e) => setParams((prev) => ({
                                 ...prev,
                                 dataVencimento: e.target.value
                             }))}

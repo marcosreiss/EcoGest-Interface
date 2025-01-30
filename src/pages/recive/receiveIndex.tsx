@@ -1,4 +1,4 @@
-import type { Receive, ReceiveParams } from "src/models/receive";
+import type { Receive } from "src/models/receive";
 
 import * as React from "react";
 import { useState } from "react";
@@ -13,9 +13,11 @@ import { useDeleteRecive, useGetRecivesPaged } from "src/hooks/useReceive";
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
-import TableFooterComponent from "src/components/table/tableFooterComponent";
+import { EntityType, type FilterParams } from "src/models/filterParams";
 
-import ReceiveTableSearch from "./components/receiveTableSearch";
+import TableFooterComponent from "src/components/table/tableFooterComponent";
+import FilterTableComponent from "src/components/table/filterTableComponent";
+
 import ReciveTableComponent from "./components/reciveTableComponent";
 
 // ----------------------------------------------------------------------
@@ -24,15 +26,21 @@ export default function RecivePage() {
   const [selectedRecives, setSelectedRecives] = useState<Receive[]>([]);
   const rowsPerPage = 25;
   const [page, setPage] = useState(0);
-  const [searchByPeriod, setSearchByPeriod] = useState<ReceiveParams>(
-    { skip: page * rowsPerPage,
-      take: rowsPerPage,
-      startDate: null,
-      endDate: null,
-      status: null});
+  const [receiveParams, setReceiveParams] = useState<FilterParams>({
+    skip: 0, // Início padrão
+    take: rowsPerPage,
+    startDate: null,
+    endDate: null,
+    id: null,
+    personId: null,
+    nfe: null,
+    order: "desc",
+    dataVencimento: null,
+    status: null,
+  });
 
   // Dados paginados
-  const { data: pagedData, isLoading: isPagedLoading } = useGetRecivesPaged(searchByPeriod);
+  const { data: pagedData, isLoading: isPagedLoading } = useGetRecivesPaged(receiveParams);
 
   const recives = pagedData?.data ?? [];
 
@@ -73,12 +81,12 @@ export default function RecivePage() {
             </Typography>
           </Grid>
           <Grid item xs={12}>
-            <ReceiveTableSearch
+            
+            <FilterTableComponent 
+              entityType={EntityType.receive}
               handleDelete={handleDeleteRecive}
               selectedRows={selectedRecives}
-              isSearchDisabled={false}
-              setSearchByPeriod={setSearchByPeriod}
-              handleSearchChange={() => null} // Opcional, dependendo da lógica de busca
+              setParams={setReceiveParams}
             />
 
             <TableContainer
