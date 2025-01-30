@@ -53,7 +53,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
 
     // Local states for NF-e and Purchase ID inputs
     const [nfeInput, setNfeInput] = useState<string>('');
-    const [purchaseIdInput, setPurchaseIdInput] = useState<string>('');
+    const [purchaseIdInput, setIdInput] = useState<string>('');
     const [orderValue, setOrderValue] = useState<string>('');
 
     const handleOpen = () => setDeleteModalOpen(true);
@@ -84,7 +84,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
             }
         ));
         setNfeInput('');
-        setPurchaseIdInput('');
+        setIdInput('');
         setStartDate("");
         setEndDate("");
         setOrderValue("");
@@ -98,7 +98,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
         }));
     };
 
-    const applyPurchaseIdFilter = () => {
+    const applyIdFilter = () => {
         const id = parseInt(purchaseIdInput, 10);
         setParams((prev) => ({
             ...prev,
@@ -364,7 +364,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                             }
                             onChange={(_, newValue) => setParams((prev) => ({
                                 ...prev,
-                                customerId: newValue?.personId || null
+                                personId: newValue?.personId || null
                             }))}
                             renderInput={(params) => (
                                 <TextField
@@ -416,7 +416,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                     </Box>
                 )}
 
-                {/* Filtrar por Código da Compra (ID) */}
+                {/* Filtrar por Código (ID) */}
                 {filterOption.includes(FilterOptions.purchase) && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                         <TextField
@@ -424,9 +424,9 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                             variant="outlined"
                             type="number"
                             value={purchaseIdInput}
-                            onChange={(e) => setPurchaseIdInput(e.target.value)}
+                            onChange={(e) => setIdInput(e.target.value)}
                         />
-                        <Button variant="contained" onClick={applyPurchaseIdFilter}>
+                        <Button variant="contained" onClick={applyIdFilter}>
                             Pesquisar
                         </Button>
                     </Box>
