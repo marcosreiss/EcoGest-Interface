@@ -392,6 +392,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                     </Box>
                 )}
 
+                {/* Filtrar por Status */}
                 {filterOption.includes(FilterOptions.status) && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                         <FormControl fullWidth size="small">
@@ -417,10 +418,15 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                 )}
 
                 {/* Filtrar por Código (ID) */}
-                {filterOption.includes(FilterOptions.purchase) && (
+                {(
+                    filterOption.includes(FilterOptions.purchase) ||
+                    filterOption.includes(FilterOptions.sale) ||
+                    filterOption.includes(FilterOptions.receive) ||
+                    filterOption.includes(FilterOptions.payable) 
+                ) && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                         <TextField
-                            label="Código da Compra"
+                            label="Código"
                             variant="outlined"
                             type="number"
                             value={purchaseIdInput}
