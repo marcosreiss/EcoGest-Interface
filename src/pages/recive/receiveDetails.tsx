@@ -1,34 +1,35 @@
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 
-import { Box, Grid, Typography, IconButton, LinearProgress } from "@mui/material";
-
-import { useRouter } from "src/routes/hooks";
+import {
+    Box,
+    Grid,
+    Card,
+    Typography,
+    CardContent,
+    LinearProgress,
+} from "@mui/material";
 
 import { useGetReceiveById } from "src/hooks/useReceive";
 
 import { CONFIG } from "src/config-global";
+import { EntryType } from "src/models/entry";
 import { DashboardContent } from "src/layouts/dashboard";
 
 // Função para formatar valores monetários em PT-BR
-const formatPrice = (price: number | string | undefined): string => {
-    if (price === undefined || price === null) return "-";
-    const parsedPrice = typeof price === "string" ? parseFloat(price) : price;
-    return `R$ ${parsedPrice.toLocaleString("pt-BR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    })}`;
+const formatPrice = (value?: number) => {
+    if (value === undefined) return "-";
+    return new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+    }).format(value);
 };
 
 // Função para formatar datas em PT-BR
-
 const formatDate = (date?: string) => {
     if (!date) return "-";
     const localDate = new Date(date);
-
-    // Adicionar 1 dia
     localDate.setDate(localDate.getDate() + 1);
-
     return localDate.toLocaleDateString("pt-BR");
 };
 
@@ -36,22 +37,8 @@ export default function ReceiveDetailsPage() {
     const { id } = useParams<{ id: string }>();
     const receiveId = parseInt(id!, 10);
 
-    const response = useGetReceiveById(receiveId);
-    const receive = response.data;
-    const { isLoading } = response;
+    const { data: receive, isLoading } = useGetReceiveById(receiveId);
 
-    const formStyle = {
-        mx: "auto",
-        p: 3,
-        boxShadow: 3,
-        borderRadius: 2,
-        bgcolor: "background.paper",
-    };
-
-    const navigate = useRouter();
-    const handleEditClick = () => {
-        navigate.replace(`/receives/edit/${id}`);
-    };
     return (
         <>
             <Helmet>
@@ -59,195 +46,272 @@ export default function ReceiveDetailsPage() {
             </Helmet>
             <DashboardContent maxWidth="lg">
                 {isLoading ? (
-                    <LinearProgress />
+                    <Box sx={{ py: 4, display: "flex", justifyContent: "center" }}>
+                        <LinearProgress sx={{ width: "50%" }} />
+                    </Box>
                 ) : (
                     <>
-                        <Grid item xs={6}>
-                            <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                mb: 3,
+                            }}
+                        >
+                            <Typography variant="h4" fontWeight="bold">
                                 Detalhes da Conta a Receber
                             </Typography>
-                        </Grid>
-                        <Grid container>
-                            <Grid item xs={12}>
-                                <Box sx={formStyle}>
-                                    <Grid container spacing={2}>
-                                        {/* ID */}
-                                        <Grid item xs={6}>
-                                            <Typography variant="body1" gutterBottom>
-                                                ID: {receive?.receiveId || "-"}
+                        </Box>
+                        <Card elevation={3} sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+                            <CardContent>
+                                <Grid container spacing={3}>
+                                    {/* ID */}
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            ID
+                                        </Typography>
+                                        <Box sx={{ ml: 1 }}>
+                                            <Typography variant="body1">
+                                                {receive?.receiveId || "-"}
                                             </Typography>
-                                        </Grid>
+                                        </Box>
+                                    </Grid>
 
-                                        {/* Botão de Editar */}
-                                        <Grid item xs={6}>
-                                            <IconButton onClick={handleEditClick}>
-                                                <img alt="icon" src="/assets/icons/ic-edit.svg" />
-                                            </IconButton>
-                                        </Grid>
-
-                                        {/* Status */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Status: {receive?.status || "-"}
+                                    {/* Status */}
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            Status
+                                        </Typography>
+                                        <Box sx={{ ml: 1 }}>
+                                            <Typography variant="body1">
+                                                {receive?.status || "-"}
                                             </Typography>
-                                        </Grid>
+                                        </Box>
+                                    </Grid>
 
-                                        {/* Data de Emissão */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Data de Emissão: {formatDate(receive?.dataEmissao)}
+                                    {/* Data de Emissão */}
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            Data de Emissão
+                                        </Typography>
+                                        <Box sx={{ ml: 1 }}>
+                                            <Typography variant="body1">
+                                                {formatDate(receive?.dataEmissao)}
                                             </Typography>
-                                        </Grid>
+                                        </Box>
+                                    </Grid>
 
-                                        {/* Data de Vencimento */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Data de Vencimento: {formatDate(receive?.dataVencimento)}
+                                    {/* Data de Vencimento */}
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            Data de Vencimento
+                                        </Typography>
+                                        <Box sx={{ ml: 1 }}>
+                                            <Typography variant="body1">
+                                                {formatDate(receive?.dataVencimento)}
                                             </Typography>
-                                        </Grid>
+                                        </Box>
+                                    </Grid>
 
-                                        {/* Data do Pagamento */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                            Data do Pagamento: {formatDate(receive?.dataPagamento)}
+                                    {/* Data do Pagamento */}
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            Data do Pagamento
+                                        </Typography>
+                                        <Box sx={{ ml: 1 }}>
+                                            <Typography variant="body1">
+                                                {formatDate(receive?.dataPagamento)}
                                             </Typography>
-                                        </Grid>
+                                        </Box>
+                                    </Grid>
 
-                                        {/* Valor Pago */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Valor Pago: {formatPrice(receive?.payedValue)}
+                                    {/* Valor Pago */}
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            Valor Pago
+                                        </Typography>
+                                        <Box sx={{ ml: 1 }}>
+                                            <Typography variant="body1">
+                                                {formatPrice(receive?.payedValue)}
                                             </Typography>
-                                        </Grid>
+                                        </Box>
+                                    </Grid>
 
-                                        {/* Valor Total */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1" gutterBottom>
-                                                Valor Total: {formatPrice(receive?.totalValue)}
+                                    {/* Valor Total */}
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            Valor Total
+                                        </Typography>
+                                        <Box sx={{ ml: 1 }}>
+                                            <Typography variant="body1">
+                                                {formatPrice(receive?.totalValue)}
                                             </Typography>
-                                        </Grid>
+                                        </Box>
+                                    </Grid>
 
-                                        {/* Recebimento relacionado a Entry ou Sale */}
-                                        {receive?.entry ? (
-                                            <>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="h6" gutterBottom>
-                                                        Lançamento
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Tipo de Entrada: {receive.entry.type}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Subtipo: {receive.entry.subtype || "-"}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Descrição: {receive.entry.description || "-"}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Valor: {formatPrice(receive.entry.value)}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Data e Hora: {formatDate(receive.entry.date_time)}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Criado em: {formatDate(receive.entry.createdAt)}
-                                                    </Typography>
-                                                </Grid>
-                                            </>
-                                        ) : receive?.sale ? (
-                                            <>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="h6" gutterBottom>
-                                                        Venda
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        ID da Venda: {receive.sale.saleId || "-"}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Cliente: {receive.sale.customer?.name || "-"}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Data e Hora: {formatDate(receive.sale.date_time)}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Descrição: {receive.sale.description || "-"}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        NF-e: {receive.sale.nfe || "-"}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Desconto: {formatPrice(receive.sale.discount)}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Preço Total: {formatPrice(receive.sale.totalPrice)}
-                                                    </Typography>
-                                                </Grid>
-                                                {/*  <Grid item xs={12}>
-                                                    <Typography variant="h6" gutterBottom>
-                                                        Produtos
-                                                    </Typography>
-                                                </Grid>
-                                                 {receive.sale.products.map((saleProduct, index) => (
-                                                    <Grid container key={index} spacing={1} sx={{ mb: 2 }}>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="body2" gutterBottom>
-                                                                Produto: {saleProduct.product.name || "-"}
-                                                            </Typography>
-                                                        </Grid>
-                                                        <Grid item xs={3}>
-                                                            <Typography variant="body2" gutterBottom>
-                                                                Quantidade: {saleProduct.quantity}
-                                                            </Typography>
-                                                        </Grid>
-                                                        <Grid item xs={3}>
-                                                            <Typography variant="body2" gutterBottom>
-                                                                Preço Total: {formatPrice(saleProduct.totalPrice)}
-                                                            </Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                ))} */}
-                                            </>
-                                        ) : (
+                                    {/* Recebimento relacionado a Entry ou Sale */}
+                                    {receive?.entry ? (
+                                        <>
                                             <Grid item xs={12}>
-                                                <Typography variant="body1" gutterBottom>
-                                                    Nenhuma entrada ou venda associada.
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Lançamento
                                                 </Typography>
                                             </Grid>
-                                        )}
-                                    </Grid>
-                                </Box>
-                            </Grid>
-                        </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Tipo de Entrada
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {receive.entry.type === EntryType.ganho
+                                                            ? "Entrada"
+                                                            : "Saída"}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Subtipo
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {receive.entry.subtype || "-"}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Descrição
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {receive.entry.description || "-"}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Valor
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {formatPrice(receive.entry.value)}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Data e Hora
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {formatDate(receive.entry.date_time)}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Criado em
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {formatDate(receive.entry.createdAt)}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                        </>
+                                    ) : receive?.sale ? (
+                                        <>
+                                            <Grid item xs={12}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Venda
+                                                </Typography>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    ID da Venda
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {receive.sale.saleId || "-"}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Cliente
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {receive.sale.customer?.name || "-"}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Data e Hora
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {formatDate(receive.sale.date_time)}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Descrição
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {receive.sale.description || "-"}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    NF-e
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {receive.sale.nfe || "-"}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Desconto
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {formatPrice(receive.sale.discount)}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                    Preço Total
+                                                </Typography>
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {formatPrice(receive.sale.totalPrice)}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                        </>
+                                    ) : (
+                                        <Grid item xs={12}>
+                                            <Typography variant="body1" gutterBottom>
+                                                Nenhuma entrada ou venda associada.
+                                            </Typography>
+                                        </Grid>
+                                    )}
+                                </Grid>
+                            </CardContent>
+                        </Card>
                     </>
                 )}
             </DashboardContent>
         </>
     );
 }
-

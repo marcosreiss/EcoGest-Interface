@@ -4,8 +4,10 @@ import { useParams } from "react-router-dom";
 import {
   Box,
   Grid,
+  Card,
+  Button,
   Typography,
-  IconButton,
+  CardContent,
   LinearProgress,
 } from "@mui/material";
 
@@ -21,15 +23,7 @@ export default function EntryDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const entryId = parseInt(id!, 10);
 
-  const { data: entry, isLoading } = useGetEntryById(entryId); // Reutilizando o hook para buscar entradas
-
-  const formStyle = {
-    mx: "auto",
-    p: 3,
-    boxShadow: 3,
-    borderRadius: 2,
-    bgcolor: "background.paper",
-  };
+  const { data: entry, isLoading } = useGetEntryById(entryId);
 
   const navigate = useRouter();
 
@@ -37,7 +31,6 @@ export default function EntryDetailsPage() {
     navigate.replace(`/entries/edit/${id}`);
   };
 
-  // Função para formatar valores numéricos em R$ (Real)
   const formatPrice = (value?: number) => {
     if (value === undefined) return "-";
     return new Intl.NumberFormat("pt-BR", {
@@ -49,84 +42,111 @@ export default function EntryDetailsPage() {
   const formatDate = (date?: string) => {
     if (!date) return "-";
     const localDate = new Date(date);
-  
-    // Adicionar 1 dia
     localDate.setDate(localDate.getDate() + 1);
-  
     return localDate.toLocaleDateString("pt-BR");
   };
-  
 
   return (
     <>
       <Helmet>
-        <title>{`Detalhes da Lançamento - ${CONFIG.appName}`}</title>
+        <title>{`Detalhes do Lançamento - ${CONFIG.appName}`}</title>
       </Helmet>
 
       <DashboardContent maxWidth="lg">
         {isLoading ? (
-          <LinearProgress />
+          <Box sx={{ py: 4, display: "flex", justifyContent: "center" }}>
+            <LinearProgress sx={{ width: "50%" }} />
+          </Box>
         ) : (
           <>
-            <Grid item xs={6}>
-              <Typography variant="h4" sx={{ mb: { xs: 3, md: 2 } }}>
-                Detalhes de Lançamento
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 3,
+              }}
+            >
+              <Typography variant="h4" fontWeight="bold">
+                Detalhes do Lançamento
               </Typography>
-            </Grid>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleEditClick}
+                sx={{ fontSize: 15 }}
+              >
+                Editar Lançamento
+              </Button>
+            </Box>
 
-            <Grid container>
-              <Grid item xs={12}>
-                <Box sx={formStyle}>
-                  <Grid container spacing={2}>
-
-                    {/* Tipo da Entrada */}
-                    <Grid item xs={6}>
-                      <Typography variant="h6" gutterBottom>
-                        Tipo: {entry?.type === EntryType.ganho ? "Entrada" : "Saída"}
+            <Card elevation={3} sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+              <CardContent>
+                <Grid container spacing={3}>
+                  {/* Tipo da Entrada */}
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                      Tipo
+                    </Typography>
+                    <Box sx={{ ml: 1 }}>
+                      <Typography variant="body1">
+                        {entry?.type === EntryType.ganho ? "Entrada" : "Saída"}
                       </Typography>
-                    </Grid>
-
-                    {/* Botão de Editar */}
-                    <Grid item xs={6}>
-                      <IconButton onClick={handleEditClick}>
-                        <img alt="icon" src="/assets/icons/ic-edit.svg" />
-                      </IconButton>
-                    </Grid>
-
-                    {/* Subtipo */}
-                    <Grid item xs={12}>
-                      <Typography variant="body1" gutterBottom>
-                        Subtipo: {entry?.subtype || "-"}
-                      </Typography>
-                    </Grid>
-
-                    {/* Descrição */}
-                    <Grid item xs={12}>
-                      <Typography variant="body1" gutterBottom>
-                        Descrição: {entry?.description || "-"}
-                      </Typography>
-                    </Grid>
-
-                    {/* Valor formatado */}
-                    <Grid item xs={12}>
-                      <Typography variant="body1" gutterBottom>
-                        Valor: {entry?.value !== undefined ? formatPrice(entry.value) : "-"}
-                      </Typography>
-                    </Grid>
-
-                    {/* Data e Hora */}
-                    {entry?.date_time && (
-                      <Grid item xs={12}>
-                        <Typography variant="body1" gutterBottom>
-                          Data: {formatDate(entry.date_time)}
-                        </Typography>
-                      </Grid>
-                    )}
-
+                    </Box>
                   </Grid>
-                </Box>
-              </Grid>
-            </Grid>
+
+                  {/* Subtipo */}
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                      Subtipo
+                    </Typography>
+                    <Box sx={{ ml: 1 }}>
+                      <Typography variant="body1">
+                        {entry?.subtype || "-"}
+                      </Typography>
+                    </Box>
+                  </Grid>
+
+                  {/* Descrição */}
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                      Descrição
+                    </Typography>
+                    <Box sx={{ ml: 1 }}>
+                      <Typography variant="body1">
+                        {entry?.description || "-"}
+                      </Typography>
+                    </Box>
+                  </Grid>
+
+                  {/* Valor */}
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                      Valor
+                    </Typography>
+                    <Box sx={{ ml: 1 }}>
+                      <Typography variant="body1">
+                        {entry?.value !== undefined ? formatPrice(entry.value) : "-"}
+                      </Typography>
+                    </Box>
+                  </Grid>
+
+                  {/* Data */}
+                  {entry?.date_time && (
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="h6" fontWeight="bold" gutterBottom>
+                        Data
+                      </Typography>
+                      <Box sx={{ ml: 1 }}>
+                        <Typography variant="body1">
+                          {formatDate(entry.date_time)}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  )}
+                </Grid>
+              </CardContent>
+            </Card>
           </>
         )}
       </DashboardContent>
