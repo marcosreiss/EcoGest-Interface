@@ -12,10 +12,18 @@ import { useGetSuppliersBasicInfo } from 'src/hooks/useSupplier';
 
 import ConfirmationDialog from 'src/components/confirmation-dialog/confirmationDialog';
 
+export enum EntityType {
+    purchase,
+    sale,
+    payable,
+    receive
+}
+
 interface TableSearchProps {
     selectedRows: any[];
     handleDelete: () => void;
     setPurchaseParams: Dispatch<SetStateAction<FilterParams>>;
+    entityType: EntityType;
 }
 
 enum FilterOptions {
@@ -77,6 +85,8 @@ const SalePurchaseTableSearch: React.FC<TableSearchProps> = ({ selectedRows, han
                 id: null,
                 startDate: null,
                 endDate: null,
+                dataVencimento: null,
+                status: null,
             }
         ));
         setNfeInput('');

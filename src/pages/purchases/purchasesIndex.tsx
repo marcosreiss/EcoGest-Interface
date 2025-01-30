@@ -16,7 +16,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { useNotification } from 'src/context/NotificationContext';
 import TableFooterComponent from 'src/layouts/components/tableFooterComponent';
 import TableHeaderComponent from 'src/layouts/components/tableHeaderComponent';
-import SalePurchaseTableSearch from 'src/pages/purchases/components/purchaseTableSearch';
+import SalePurchaseTableSearch, { EntityType } from 'src/pages/purchases/components/purchaseTableSearch';
 
 import PurchaseTableComponent from './components/purchaseTableComponent';
 
@@ -87,6 +87,7 @@ export default function PurchasePage() {
               handleDelete={handleDeletePurchase}
               selectedRows={selectedPurchases}
               setPurchaseParams={setPurchaseParams}
+              entityType={EntityType.purchase}
             />
             <TableContainer
               component={Paper}

@@ -19,7 +19,7 @@ import TableComponent from './components/salesTableComponent'; // Importando a n
 
 import SaleTableHeaderComponent from './components/salesTableHeaderComponent';
 import TableFooterComponent from '../../layouts/components/tableFooterComponent';
-import SalePurchaseTableSearch from '../purchases/components/purchaseTableSearch';
+import SalePurchaseTableSearch, { EntityType } from '../purchases/components/purchaseTableSearch';
 
 // ----------------------------------------------------------------------
 
@@ -77,6 +77,7 @@ export default function SalesIndex() {
                             handleDelete={handleDeleteSale}
                             selectedRows={selectedSales}
                             setPurchaseParams={setSalesParams}
+                            entityType={EntityType.sale}
                         />
 
                         <TableContainer component={Paper} sx={{ height: '65vh', display: 'flex', flexDirection: 'column' }}>
