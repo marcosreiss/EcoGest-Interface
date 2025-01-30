@@ -12,10 +12,10 @@ import { useDeleteProduct, useGetProductsPaged, useGetProductByName } from 'src/
 
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
-import TableSearch from 'src/layouts/components/tableSearch';
+import TableSearch from 'src/components/table/tableSearch';
 import { useNotification } from 'src/context/NotificationContext';
-import TableFooterComponent from 'src/layouts/components/tableFooterComponent';
-import TableHeaderComponent from 'src/layouts/components/tableHeaderComponent';
+import TableFooterComponent from 'src/components/table/tableFooterComponent';
+import TableHeaderComponent from 'src/components/table/tableHeaderComponent';
 
 import ProductTableComponent from './components/productTableComponent';
 

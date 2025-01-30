@@ -19,7 +19,7 @@ import TableComponent from './components/salesTableComponent'; // Importando a n
 
 import SaleTableHeaderComponent from './components/salesTableHeaderComponent';
 import FilterTableComponent from '../purchases/components/purchaseTableSearch';
-import TableFooterComponent from '../../layouts/components/tableFooterComponent';
+import TableFooterComponent from '../../components/table/tableFooterComponent';
 
 // ----------------------------------------------------------------------
 

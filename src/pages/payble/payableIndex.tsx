@@ -17,7 +17,7 @@ import { useNotification } from "src/context/NotificationContext";
 
 import PaybleTableSearch from "./components/payableTableSearch";
 import PaybleTableComponent from "./components/payableTableComponent";
-import TableFooterComponent from "../../layouts/components/tableFooterComponent";
+import TableFooterComponent from "../../components/table/tableFooterComponent";
 
 // ----------------------------------------------------------------------
 

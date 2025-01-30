@@ -14,8 +14,8 @@ import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useNotification } from 'src/context/NotificationContext';
 import { EntityType, type FilterParams } from 'src/models/filterParams';
-import TableFooterComponent from 'src/layouts/components/tableFooterComponent';
-import TableHeaderComponent from 'src/layouts/components/tableHeaderComponent';
+import TableFooterComponent from 'src/components/table/tableFooterComponent';
+import TableHeaderComponent from 'src/components/table/tableHeaderComponent';
 
 import FilterTableComponent from './components/purchaseTableSearch';
 import PurchaseTableComponent from './components/purchaseTableComponent';

@@ -14,10 +14,10 @@ import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useNotification } from 'src/context/NotificationContext';
 
-import TableSearch from '../../layouts/components/tableSearch';
+import TableSearch from '../../components/table/tableSearch';
 import TableComponet from './components/customerTableComponent';
-import TableHeaderComponent from '../../layouts/components/tableHeaderComponent';
-import TableFooterComponent from '../../layouts/components/tableFooterComponent';
+import TableHeaderComponent from '../../components/table/tableHeaderComponent';
+import TableFooterComponent from '../../components/table/tableFooterComponent';
 
 // ----------------------------------------------------------------------
 

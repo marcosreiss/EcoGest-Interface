@@ -20,8 +20,8 @@ import { useNotification } from 'src/context/NotificationContext';
 
 import TableComponent from './components/personTableComponent';
 import PersonTableSearch from './components/personTableSearch';
-import TableHeaderComponent from '../../layouts/components/tableHeaderComponent';
-import TableFooterComponent from '../../layouts/components/tableFooterComponent';
+import TableHeaderComponent from '../../components/table/tableHeaderComponent';
+import TableFooterComponent from '../../components/table/tableFooterComponent';
 
 // ----------------------------------------------------------------------
 

@@ -13,7 +13,7 @@ import { useDeleteRecive, useGetRecivesPaged } from "src/hooks/useReceive";
 import { CONFIG } from "src/config-global";
 import { DashboardContent } from "src/layouts/dashboard";
 import { useNotification } from "src/context/NotificationContext";
-import TableFooterComponent from "src/layouts/components/tableFooterComponent";
+import TableFooterComponent from "src/components/table/tableFooterComponent";
 
 import ReceiveTableSearch from "./components/receiveTableSearch";
 import ReciveTableComponent from "./components/reciveTableComponent";
