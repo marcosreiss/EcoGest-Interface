@@ -119,12 +119,59 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
 
     // Toggle filter option
     const toggleFilter = (option: FilterOptions) => {
+        if (filterOption.includes(option)) {
+            switch (option) {
+                case FilterOptions.customer:
+                case FilterOptions.supplier:
+                    setParams((prev) => ({
+                        ...prev,
+                        personId: null,
+                    }));
+                    break;
+                case FilterOptions.sale:
+                case FilterOptions.purchase:
+                case FilterOptions.receive:
+                case FilterOptions.payable:
+                    setParams((prev) => ({
+                        ...prev,
+                        id: null,
+                    }));
+                    break;
+                case FilterOptions.period:
+                    setParams((prev) => ({
+                        ...prev,
+                        startDate: null,
+                        endDate: null,
+                    }));
+                    break;
+                case FilterOptions.nfe:
+                    setParams((prev) => ({
+                        ...prev,
+                        nfe: null,
+                    }));
+                    break;
+                case FilterOptions.status:
+                    setParams((prev) => ({
+                        ...prev,
+                        status: null,
+                    }));
+                    break;
+                case FilterOptions.dataVencimento:
+                    setParams((prev) => ({
+                        ...prev,
+                        dataVencimento: null,
+                    }));
+                    break;
+                default:
+                    break;
+            }
+        }
+
         setFilterOption((prev) =>
-            prev.includes(option)
-                ? prev.filter(o => o !== option)
-                : [...prev, option]
+            prev.includes(option) ? prev.filter((o) => o !== option) : [...prev, option]
         );
     };
+
 
     return (
         <>
@@ -423,21 +470,21 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                     filterOption.includes(FilterOptions.purchase) ||
                     filterOption.includes(FilterOptions.sale) ||
                     filterOption.includes(FilterOptions.receive) ||
-                    filterOption.includes(FilterOptions.payable) 
+                    filterOption.includes(FilterOptions.payable)
                 ) && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <TextField
-                            label="Código"
-                            variant="outlined"
-                            type="number"
-                            value={purchaseIdInput}
-                            onChange={(e) => setIdInput(e.target.value)}
-                        />
-                        <Button variant="contained" onClick={applyIdFilter}>
-                            Pesquisar
-                        </Button>
-                    </Box>
-                )}
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <TextField
+                                label="Código"
+                                variant="outlined"
+                                type="number"
+                                value={purchaseIdInput}
+                                onChange={(e) => setIdInput(e.target.value)}
+                            />
+                            <Button variant="contained" onClick={applyIdFilter}>
+                                Pesquisar
+                            </Button>
+                        </Box>
+                    )}
 
                 <Box sx={{ display: 'flex', gap: 1 }}>
                     {/* Ordenação */}
