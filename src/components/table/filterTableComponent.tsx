@@ -22,11 +22,12 @@ interface FilterTableProps {
     handleDelete: () => void;
     setParams: Dispatch<SetStateAction<FilterParams>>;
     entityType: EntityType;
+    status: "Pago" | "Atrasado" | "Aberto" | null;
 }
 
 
 
-const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handleDelete, setParams, entityType }) => {
+const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handleDelete, setParams, entityType, status }) => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [filterOption, setFilterOption] = useState<FilterOptions[]>([]);
@@ -400,7 +401,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                             <Select
                                 labelId="status-label"
                                 id="status-select"
-                                value="Todos"
+                                value={status === null ? "Todos" : status}
                                 label="Status"
                                 onChange={(event) => setParams((prev) => ({
                                     ...prev,

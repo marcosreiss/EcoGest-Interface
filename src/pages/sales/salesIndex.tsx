@@ -78,6 +78,7 @@ export default function SalesIndex() {
                             selectedRows={selectedSales}
                             setParams={setSalesParams}
                             entityType={EntityType.sale}
+                            status={null}
                         />
 
                         <TableContainer component={Paper} sx={{ height: '65vh', display: 'flex', flexDirection: 'column' }}>
