@@ -89,7 +89,6 @@ export default function PurchasePage() {
               selectedRows={selectedPurchases}
               setParams={setPurchaseParams}
               entityType={EntityType.purchase}
-              status={null}
             />
             <TableContainer
               component={Paper}

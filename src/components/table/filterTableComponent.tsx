@@ -22,12 +22,20 @@ interface FilterTableProps {
     handleDelete: () => void;
     setParams: Dispatch<SetStateAction<FilterParams>>;
     entityType: EntityType;
-    status: "Pago" | "Atrasado" | "Aberto" | null;
+    status?: "Pago" | "Atrasado" | "Aberto" | null;
+    dataVencimento?: string | null;
 }
 
 
 
-const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handleDelete, setParams, entityType, status }) => {
+const FilterTableComponent: React.FC<FilterTableProps> = ({
+    selectedRows,
+    handleDelete,
+    setParams,
+    entityType,
+    status = null,
+    dataVencimento = null,
+}) => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [filterOption, setFilterOption] = useState<FilterOptions[]>([]);
@@ -366,7 +374,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                             label="Data de Vencimento"
                             type="date"
                             InputLabelProps={{ shrink: true }}
-                            value={startDateValue}
+                            value={dataVencimento}
                             onChange={(e) => setParams((prev) => ({
                                 ...prev,
                                 dataVencimento: e.target.value

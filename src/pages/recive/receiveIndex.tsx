@@ -88,6 +88,7 @@ export default function RecivePage() {
               selectedRows={selectedRecives}
               setParams={setReceiveParams}
               status={receiveParams.status}
+              dataVencimento={receiveParams.dataVencimento}
             />
 
             <TableContainer
