@@ -69,7 +69,7 @@ export default function ReceiveDetailsPage() {
                                     {/* ID */}
                                     <Grid item xs={12} sm={6}>
                                         <Typography variant="h6" fontWeight="bold" gutterBottom>
-                                            ID
+                                            Cód
                                         </Typography>
                                         <Box sx={{ ml: 1 }}>
                                             <Typography variant="body1">

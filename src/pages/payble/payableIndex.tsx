@@ -95,6 +95,8 @@ export default function PayableIndex() {
               handleDelete={handleDeletePayble}
               selectedRows={selectedPaybles}
               setParams={setPayableParams}
+              status={payablesParams.status}
+              dataVencimento={payablesParams.dataVencimento}
             />
 
             <TableContainer

@@ -22,11 +22,20 @@ interface FilterTableProps {
     handleDelete: () => void;
     setParams: Dispatch<SetStateAction<FilterParams>>;
     entityType: EntityType;
+    status?: "Pago" | "Atrasado" | "Aberto" | null;
+    dataVencimento?: string | null;
 }
 
 
 
-const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handleDelete, setParams, entityType }) => {
+const FilterTableComponent: React.FC<FilterTableProps> = ({
+    selectedRows,
+    handleDelete,
+    setParams,
+    entityType,
+    status = null,
+    dataVencimento = null,
+}) => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [filterOption, setFilterOption] = useState<FilterOptions[]>([]);
@@ -53,7 +62,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
 
     // Local states for NF-e and Purchase ID inputs
     const [nfeInput, setNfeInput] = useState<string>('');
-    const [purchaseIdInput, setPurchaseIdInput] = useState<string>('');
+    const [purchaseIdInput, setIdInput] = useState<string>('');
     const [orderValue, setOrderValue] = useState<string>('');
 
     const handleOpen = () => setDeleteModalOpen(true);
@@ -84,7 +93,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
             }
         ));
         setNfeInput('');
-        setPurchaseIdInput('');
+        setIdInput('');
         setStartDate("");
         setEndDate("");
         setOrderValue("");
@@ -98,7 +107,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
         }));
     };
 
-    const applyPurchaseIdFilter = () => {
+    const applyIdFilter = () => {
         const id = parseInt(purchaseIdInput, 10);
         setParams((prev) => ({
             ...prev,
@@ -118,12 +127,59 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
 
     // Toggle filter option
     const toggleFilter = (option: FilterOptions) => {
+        if (filterOption.includes(option)) {
+            switch (option) {
+                case FilterOptions.customer:
+                case FilterOptions.supplier:
+                    setParams((prev) => ({
+                        ...prev,
+                        personId: null,
+                    }));
+                    break;
+                case FilterOptions.sale:
+                case FilterOptions.purchase:
+                case FilterOptions.receive:
+                case FilterOptions.payable:
+                    setParams((prev) => ({
+                        ...prev,
+                        id: null,
+                    }));
+                    break;
+                case FilterOptions.period:
+                    setParams((prev) => ({
+                        ...prev,
+                        startDate: null,
+                        endDate: null,
+                    }));
+                    break;
+                case FilterOptions.nfe:
+                    setParams((prev) => ({
+                        ...prev,
+                        nfe: null,
+                    }));
+                    break;
+                case FilterOptions.status:
+                    setParams((prev) => ({
+                        ...prev,
+                        status: null,
+                    }));
+                    break;
+                case FilterOptions.dataVencimento:
+                    setParams((prev) => ({
+                        ...prev,
+                        dataVencimento: null,
+                    }));
+                    break;
+                default:
+                    break;
+            }
+        }
+
         setFilterOption((prev) =>
-            prev.includes(option)
-                ? prev.filter(o => o !== option)
-                : [...prev, option]
+            prev.includes(option) ? prev.filter((o) => o !== option) : [...prev, option]
         );
     };
+
 
     return (
         <>
@@ -318,7 +374,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                             label="Data de Vencimento"
                             type="date"
                             InputLabelProps={{ shrink: true }}
-                            value={startDateValue}
+                            value={dataVencimento}
                             onChange={(e) => setParams((prev) => ({
                                 ...prev,
                                 dataVencimento: e.target.value
@@ -364,7 +420,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                             }
                             onChange={(_, newValue) => setParams((prev) => ({
                                 ...prev,
-                                customerId: newValue?.personId || null
+                                personId: newValue?.personId || null
                             }))}
                             renderInput={(params) => (
                                 <TextField
@@ -392,6 +448,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                     </Box>
                 )}
 
+                {/* Filtrar por Status */}
                 {filterOption.includes(FilterOptions.status) && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                         <FormControl fullWidth size="small">
@@ -399,7 +456,7 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                             <Select
                                 labelId="status-label"
                                 id="status-select"
-                                value="Todos"
+                                value={status === null ? "Todos" : status}
                                 label="Status"
                                 onChange={(event) => setParams((prev) => ({
                                     ...prev,
@@ -416,21 +473,26 @@ const FilterTableComponent: React.FC<FilterTableProps> = ({ selectedRows, handle
                     </Box>
                 )}
 
-                {/* Filtrar por Código da Compra (ID) */}
-                {filterOption.includes(FilterOptions.purchase) && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <TextField
-                            label="Código da Compra"
-                            variant="outlined"
-                            type="number"
-                            value={purchaseIdInput}
-                            onChange={(e) => setPurchaseIdInput(e.target.value)}
-                        />
-                        <Button variant="contained" onClick={applyPurchaseIdFilter}>
-                            Pesquisar
-                        </Button>
-                    </Box>
-                )}
+                {/* Filtrar por Código (ID) */}
+                {(
+                    filterOption.includes(FilterOptions.purchase) ||
+                    filterOption.includes(FilterOptions.sale) ||
+                    filterOption.includes(FilterOptions.receive) ||
+                    filterOption.includes(FilterOptions.payable)
+                ) && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <TextField
+                                label="Código"
+                                variant="outlined"
+                                type="number"
+                                value={purchaseIdInput}
+                                onChange={(e) => setIdInput(e.target.value)}
+                            />
+                            <Button variant="contained" onClick={applyIdFilter}>
+                                Pesquisar
+                            </Button>
+                        </Box>
+                    )}
 
                 <Box sx={{ display: 'flex', gap: 1 }}>
                     {/* Ordenação */}

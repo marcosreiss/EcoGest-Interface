@@ -194,7 +194,7 @@ const SaleTableComponent: React.FC<TableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
-            <TableCell>ID</TableCell>
+            <TableCell>Cód</TableCell>
             <TableCell>Cliente</TableCell> {/* Nova coluna para o cliente */}
             <TableCell>Descrição</TableCell>
             <TableCell>Data</TableCell>

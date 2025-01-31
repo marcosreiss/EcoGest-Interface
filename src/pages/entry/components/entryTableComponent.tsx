@@ -170,7 +170,7 @@ const getTypeColor = (type: EntryType) => (type === EntryType.ganho ? "#2fba54" 
                 }}
               />
             </TableCell>
-            <TableCell>ID</TableCell>
+            <TableCell>Cód</TableCell>
             <TableCell>Tipo</TableCell>
             <TableCell>Subtipo</TableCell>
             <TableCell>Data</TableCell>

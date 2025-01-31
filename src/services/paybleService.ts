@@ -4,6 +4,7 @@ import api from "./api";
 
 
 export const getPayblesPagedService = async (params: PayableParams): Promise<PaybleList> => {
+  console.log(params);
   const response = await api.get<PaybleList>("/payables", { params });
   return response.data;
 };

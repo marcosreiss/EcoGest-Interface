@@ -235,7 +235,7 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                 onChange={handleSelectAll}
               />
             </TableCell>
-            <TableCell>ID</TableCell>
+            <TableCell>Cód</TableCell>
             <TableCell>Status</TableCell>
             <TableCell>Cliente</TableCell>
             <TableCell>NF-e</TableCell>

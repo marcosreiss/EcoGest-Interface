@@ -87,6 +87,8 @@ export default function RecivePage() {
               handleDelete={handleDeleteRecive}
               selectedRows={selectedRecives}
               setParams={setReceiveParams}
+              status={receiveParams.status}
+              dataVencimento={receiveParams.dataVencimento}
             />
 
             <TableContainer
