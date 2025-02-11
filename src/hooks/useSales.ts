@@ -46,11 +46,12 @@ export const useUpdateSale = () => {
     const queryClient = useQueryClient();
     return useMutation<SaleResponse, AxiosError<ApiErrorResponse>, { id: number; data: Partial<SalePayload> }>({
         mutationFn: ({ id, data }) => updateSaleService(data, id),
-        onSuccess: () => {
+        onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
                 queryKey: ['sales-list'],
             });
             queryClient.invalidateQueries({queryKey: ["recives-list"],});
+            queryClient.invalidateQueries({queryKey: ['sale', variables.id]});
         }
     });
 }
