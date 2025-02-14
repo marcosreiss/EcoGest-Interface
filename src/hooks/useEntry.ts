@@ -51,10 +51,11 @@ export const useUpdateEntry = () => {
 
     return useMutation<EntryResponse, AxiosError, { id: number; data: EntryPayload }>({
         mutationFn: ({ id, data }) => updateEntryService(id, data),
-        onSuccess: () => {
+        onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
                 queryKey: ["expenses-list"]
             });
+            queryClient.invalidateQueries({queryKey: ['expense', variables.id]});
         },
     });
 };

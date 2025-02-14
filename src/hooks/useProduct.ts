@@ -39,8 +39,9 @@ export const useUpdateProduct = () =>
 
   return useMutation<ProductResponse, AxiosError, { id: number; data: Product }>({
     mutationFn: ({ id, data }) => updateProductService(data, id),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['products-list'] });
+      queryClient.invalidateQueries({queryKey: ['product', variables.id]});
     }
   });
 }

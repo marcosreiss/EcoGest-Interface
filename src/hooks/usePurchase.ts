@@ -49,11 +49,12 @@ export const useUpdatePurchase = () => {
 
     return useMutation<PurchaseResponse, AxiosError, { id: number; data: PurchasePayload }>({
         mutationFn: ({ id, data }) => updatePurchaseService(id, data),
-        onSuccess: () => {
+        onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
                 queryKey: ["purchases-list"]
             });
             queryClient.invalidateQueries({ queryKey: ['paybles-list'] });
+            queryClient.invalidateQueries({queryKey: ['purchase', variables.id]});
         },
     });
 };
