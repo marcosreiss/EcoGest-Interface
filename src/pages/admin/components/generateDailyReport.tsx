@@ -1,4 +1,4 @@
-import type { DownloadPdfParams } from "src/models/kpiModel";
+import type { DownloadPdfByMonth } from "src/models/kpiModel";
 import type { SupplierBasicInfo } from "src/models/supplier";
 import type { CustomerBasicInfo } from "src/models/customers";
 
@@ -21,7 +21,7 @@ import {
   FormControlLabel,
 } from "@mui/material";
 
-import { useGetDownloadPdf } from "src/hooks/useKpi";
+import { useGetDownloadPdfByMonth } from "src/hooks/useKpi";
 import { useGetSuppliersBasicInfo } from "src/hooks/useSupplier";
 import { useGetCustomersBasicInfo } from "src/hooks/useCustomer";
 
@@ -51,14 +51,14 @@ const anos = Array.from({ length: 10 }, (_, i) => {
 export default function GenerateDailyReport() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isSupplier, setIsSupplier] = useState<boolean>(false);
-  const { control, setValue, handleSubmit, reset, formState: { errors } } = useForm<DownloadPdfParams>({
+  const { control, setValue, handleSubmit, reset, formState: { errors } } = useForm<DownloadPdfByMonth>({
     defaultValues: {
       month: undefined,
       year: undefined,
       personId: undefined,
     },
   });
-  const downloadPdf = useGetDownloadPdf();
+  const downloadPdf = useGetDownloadPdfByMonth();
   const notification = useNotification();
   const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
   const { data: customers, isLoading: loadingCustomers } = useGetCustomersBasicInfo();
@@ -77,7 +77,7 @@ export default function GenerateDailyReport() {
     setValue("personId", 0);
   };
 
-  const onSubmit = (params: DownloadPdfParams) => {
+  const onSubmit = (params: DownloadPdfByMonth) => {
     
     downloadPdf.mutate({ params }, {
       onSuccess: (blob) => {

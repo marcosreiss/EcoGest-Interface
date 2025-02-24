@@ -11,9 +11,15 @@ export interface KpiParams {
     period: "day" | "month" | "year" | null;
 }
 
-export interface DownloadPdfParams {
+export interface DownloadPdfByMonth {
     month: number;
     year: number;
+    personId: number;
+}
+
+export interface DownloadPdfByPeriod {
+    startDate: string;
+    endDate: string;
     personId: number;
 }
 
