@@ -21,7 +21,7 @@ import {
   FormControlLabel,
 } from "@mui/material";
 
-import { useGetDownloadPdfByMonth } from "src/hooks/useKpi";
+import { useGetDownloadPdfByMonth, useGetDownloadPdfByPeriod } from "src/hooks/useKpi";
 import { useGetSuppliersBasicInfo } from "src/hooks/useSupplier";
 import { useGetCustomersBasicInfo } from "src/hooks/useCustomer";
 
@@ -58,7 +58,8 @@ export default function GenerateDailyReport() {
       personId: undefined,
     },
   });
-  const downloadPdf = useGetDownloadPdfByMonth();
+  const downloadPdfByMonth = useGetDownloadPdfByMonth();
+  const downloadPdfByPeriod = useGetDownloadPdfByPeriod();
   const notification = useNotification();
   const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
   const { data: customers, isLoading: loadingCustomers } = useGetCustomersBasicInfo();
@@ -79,7 +80,7 @@ export default function GenerateDailyReport() {
 
   const onSubmit = (params: DownloadPdfByMonth) => {
     
-    downloadPdf.mutate({ params }, {
+    downloadPdfByMonth.mutate({ params }, {
       onSuccess: (blob) => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -298,9 +299,9 @@ export default function GenerateDailyReport() {
           <Button
             onClick={handleSubmit(onSubmit)}
             color="primary"
-            disabled={downloadPdf.isPending}
+            disabled={downloadPdfByMonth.isPending}
           >
-            {downloadPdf.isPending ? (
+            {downloadPdfByMonth.isPending ? (
               <CircularProgress size={20} sx={{ marginRight: "10px" }} />
             ) : null}
             Gerar Relatório
