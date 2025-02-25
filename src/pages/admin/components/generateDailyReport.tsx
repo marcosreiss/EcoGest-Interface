@@ -1,6 +1,6 @@
-import type { DownloadPdfByMonth } from "src/models/kpiModel";
 import type { SupplierBasicInfo } from "src/models/supplier";
 import type { CustomerBasicInfo } from "src/models/customers";
+import type { DownloadPdfByMonth, DownloadPdfByPeriod } from "src/models/kpiModel";
 
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -21,9 +21,9 @@ import {
   FormControlLabel,
 } from "@mui/material";
 
-import { useGetDownloadPdfByMonth, useGetDownloadPdfByPeriod } from "src/hooks/useKpi";
 import { useGetSuppliersBasicInfo } from "src/hooks/useSupplier";
 import { useGetCustomersBasicInfo } from "src/hooks/useCustomer";
+import { useGetDownloadPdfByMonth, useGetDownloadPdfByPeriod } from "src/hooks/useKpi";
 
 import { useNotification } from "src/context/NotificationContext";
 
@@ -46,15 +46,28 @@ const anos = Array.from({ length: 10 }, (_, i) => {
   return { ano };
 });
 
-
+// Utilizaremos um formulário que abrange ambos os cenários, mas renderizando apenas os campos relevantes
+interface FormValues {
+  // Campos para modo Mês
+  month?: number;
+  year?: number;
+  // Campos para modo Período
+  startDate?: string;
+  endDate?: string;
+  // Campo compartilhado
+  personId?: number;
+}
 
 export default function GenerateDailyReport() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isSupplier, setIsSupplier] = useState<boolean>(false);
-  const { control, setValue, handleSubmit, reset, formState: { errors } } = useForm<DownloadPdfByMonth>({
+  const [isPeriod, setIsPeriod] = useState<boolean>(false); // Toggle entre mês e período
+  const { control, setValue, handleSubmit, reset, formState: { errors } } = useForm<FormValues>({
     defaultValues: {
       month: undefined,
       year: undefined,
+      startDate: undefined,
+      endDate: undefined,
       personId: undefined,
     },
   });
@@ -71,31 +84,85 @@ export default function GenerateDailyReport() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     reset();
+    // Reseta os toggles se necessário
+    setIsPeriod(false);
+    setIsSupplier(false);
   };
 
   const toggleCustomerSupplier = () => {
     setIsSupplier(!isSupplier);
-    setValue("personId", 0);
+    setValue("personId", undefined);
   };
 
-  const onSubmit = (params: DownloadPdfByMonth) => {
-    
-    downloadPdfByMonth.mutate({ params }, {
-      onSuccess: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `RELATORIO-${params.month}-${params.year}-${params.personId}.pdf`;
-        link.click();
-        window.URL.revokeObjectURL(url);
+  // Toggle entre modo Mês e Período
+  const toggleMonthPeriod = () => {
+    setIsPeriod(!isPeriod);
+    // Reseta os campos que não serão usados
+    if (!isPeriod) {
+      setValue("month", undefined);
+      setValue("year", undefined);
+    } else {
+      setValue("startDate", undefined);
+      setValue("endDate", undefined);
+    }
+  };
 
-        notification.addNotification("Relatório gerado com sucesso!", "success");
-        handleCloseModal();
-      },
-      onError: () => {
-        notification.addNotification("Erro ao gerar o relatório.", "error");
-      },
-    });
+  const onSubmit = (data: FormValues) => {
+    if (isPeriod) {
+      // Validação simples para campos de período
+      if (!data.startDate || !data.endDate) {
+        notification.addNotification("Preencha as datas de início e fim.", "error");
+        return;
+      }
+      const params: DownloadPdfByPeriod = {
+        startDate: data.startDate,
+        endDate: data.endDate,
+        personId: data.personId,
+      };
+      downloadPdfByPeriod.mutate({ params }, {
+        onSuccess: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `RELATORIO-${data.startDate}-${data.endDate}-${data.personId}.pdf`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+
+          notification.addNotification("Relatório gerado com sucesso!", "success");
+          handleCloseModal();
+        },
+        onError: () => {
+          notification.addNotification("Erro ao gerar o relatório.", "error");
+        },
+      });
+    } else {
+      // Validação simples para campos de mês
+      if (!data.month || !data.year) {
+        notification.addNotification("Selecione o mês e o ano.", "error");
+        return;
+      }
+      const params: DownloadPdfByMonth = {
+        month: data.month,
+        year: data.year,
+        personId: data.personId,
+      };
+      downloadPdfByMonth.mutate({ params }, {
+        onSuccess: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `RELATORIO-${data.month}-${data.year}-${data.personId}.pdf`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+
+          notification.addNotification("Relatório gerado com sucesso!", "success");
+          handleCloseModal();
+        },
+        onError: () => {
+          notification.addNotification("Erro ao gerar o relatório.", "error");
+        },
+      });
+    }
   };
 
   return (
@@ -116,71 +183,131 @@ export default function GenerateDailyReport() {
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
 
-              {/* Campo de Mês */}
+              {/* Toggle Mês / Período */}
               <Grid item xs={12}>
-                <Controller
-                  name="month"
-                  control={control}
-                  rules={{ required: "Selecione um Mês" }}
-                  render={({ field }) => (
-                    <Autocomplete
-                      options={meses} // Referência ao array de meses já definido
-                      getOptionLabel={(option) => option.nome} // Exibe o nome do mês
-                      isOptionEqualToValue={(option, value) => option.numero === value.numero}
-                      onChange={(_, newValue) => {
-                        field.onChange(newValue ? newValue.numero : undefined); // Define o número do mês no form
-                      }}
-                      value={meses.find((mes) => mes.numero === field.value) || null} // Sincroniza o valor com o form
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Mês"
-                          variant="outlined"
-                          error={!!errors.month}
-                          helperText={errors.month?.message}
-                          InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                              <>
-                                {params.InputProps.endAdornment}
-                              </>
-                            ),
-                          }}
-                        />
-                      )}
+                <Typography component="span" fontSize={13.6} marginRight={2}>
+                  Mês
+                </Typography>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={isPeriod}
+                      onChange={toggleMonthPeriod}
+                      color="primary"
                     />
-                  )}
+                  }
+                  label="Período"
                 />
               </Grid>
 
-              {/* Ano */}
-              <Grid item xs={12}>
-                <Controller
-                  name="year"
-                  control={control}
-                  rules={{ required: "Selecione um Ano" }}
-                  render={({ field }) => (
-                    <Autocomplete
-                      options={anos} // Referencia o array de anos
-                      getOptionLabel={(option) => option.ano.toString()} // Exibe o ano como texto
-                      // isOptionEqualToValue={(option, value) => option.ano === value} // Compara corretamente o número do ano
-                      onChange={(_, newValue) => {
-                        field.onChange(newValue ? newValue.ano : undefined); // Armazena apenas o número do ano
-                      }}
-                      value={anos.find((ano) => ano.ano === field.value) || null} // Sincroniza o valor com o formulário
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Ano"
-                          variant="outlined"
-                          error={!!errors.year}
-                          helperText={errors.year?.message}
+              {/* Renderiza os campos de Mês e Ano se não estiver no modo Período */}
+              {!isPeriod && (
+                <>
+                  {/* Campo de Mês */}
+                  <Grid item xs={12}>
+                    <Controller
+                      name="month"
+                      control={control}
+                      rules={{ required: "Selecione um Mês" }}
+                      render={({ field }) => (
+                        <Autocomplete
+                          options={meses}
+                          getOptionLabel={(option) => option.nome}
+                          isOptionEqualToValue={(option, value) => option.numero === value.numero}
+                          onChange={(_, newValue) => {
+                            field.onChange(newValue ? newValue.numero : undefined);
+                          }}
+                          value={meses.find((mes) => mes.numero === field.value) || null}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Mês"
+                              variant="outlined"
+                              error={!!errors.month}
+                              helperText={errors.month?.message}
+                            />
+                          )}
                         />
                       )}
                     />
-                  )}
-                />
-              </Grid>
+                  </Grid>
+
+                  {/* Campo de Ano */}
+                  <Grid item xs={12}>
+                    <Controller
+                      name="year"
+                      control={control}
+                      rules={{ required: "Selecione um Ano" }}
+                      render={({ field }) => (
+                        <Autocomplete
+                          options={anos}
+                          getOptionLabel={(option) => option.ano.toString()}
+                          onChange={(_, newValue) => {
+                            field.onChange(newValue ? newValue.ano : undefined);
+                          }}
+                          value={anos.find((ano) => ano.ano === field.value) || null}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Ano"
+                              variant="outlined"
+                              error={!!errors.year}
+                              helperText={errors.year?.message}
+                            />
+                          )}
+                        />
+                      )}
+                    />
+                  </Grid>
+                </>
+              )}
+
+              {/* Renderiza os campos de Período se estiver no modo Período */}
+              {isPeriod && (
+                <>
+                  {/* Data de Início */}
+                  <Grid item xs={12}>
+                    <Controller
+                      name="startDate"
+                      control={control}
+                      rules={{ required: "Data de início é obrigatória" }}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="Data de Início"
+                          type="date"
+                          variant="outlined"
+                          InputLabelProps={{ shrink: true }}
+                          error={!!errors.startDate}
+                          helperText={errors.startDate?.message}
+                          fullWidth
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  {/* Data de Fim */}
+                  <Grid item xs={12}>
+                    <Controller
+                      name="endDate"
+                      control={control}
+                      rules={{ required: "Data de fim é obrigatória" }}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="Data de Fim"
+                          type="date"
+                          variant="outlined"
+                          InputLabelProps={{ shrink: true }}
+                          error={!!errors.endDate}
+                          helperText={errors.endDate?.message}
+                          fullWidth
+                        />
+                      )}
+                    />
+                  </Grid>
+                </>
+              )}
 
               {/* Toggle Cliente/Fornecedor */}
               <Grid item xs={12}>
@@ -217,9 +344,7 @@ export default function GenerateDailyReport() {
                         onChange={(_, newValue) => {
                           field.onChange(newValue ? newValue.personId : undefined);
                         }}
-                        value={
-                          suppliers?.data.find(supplier => supplier.personId === field.value) || null
-                        }
+                        value={suppliers?.data.find(supplier => supplier.personId === field.value) || null}
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -262,9 +387,7 @@ export default function GenerateDailyReport() {
                         onChange={(_, newValue) => {
                           field.onChange(newValue ? newValue.personId : undefined);
                         }}
-                        value={
-                          suppliers?.data.find(supplier => supplier.personId === field.value) || null
-                        }
+                        value={customers?.data.find(customer => customer.personId === field.value) || null}
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -276,7 +399,7 @@ export default function GenerateDailyReport() {
                               ...params.InputProps,
                               endAdornment: (
                                 <>
-                                  {loadingSuppliers ? <CircularProgress size={20} /> : null}
+                                  {loadingCustomers ? <CircularProgress size={20} /> : null}
                                   {params.InputProps.endAdornment}
                                 </>
                               ),
@@ -299,9 +422,9 @@ export default function GenerateDailyReport() {
           <Button
             onClick={handleSubmit(onSubmit)}
             color="primary"
-            disabled={downloadPdfByMonth.isPending}
+            disabled={downloadPdfByMonth.isPending || downloadPdfByPeriod.isPending}
           >
-            {downloadPdfByMonth.isPending ? (
+            {(downloadPdfByMonth.isPending || downloadPdfByPeriod.isPending) ? (
               <CircularProgress size={20} sx={{ marginRight: "10px" }} />
             ) : null}
             Gerar Relatório

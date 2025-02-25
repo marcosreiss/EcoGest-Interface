@@ -14,13 +14,13 @@ export interface KpiParams {
 export interface DownloadPdfByMonth {
     month: number;
     year: number;
-    personId: number;
+    personId: number | undefined;
 }
 
 export interface DownloadPdfByPeriod {
     startDate: string;
     endDate: string;
-    personId: number;
+    personId: number | undefined;
 }
 
 // Responses
