@@ -1,4 +1,4 @@
-import type { EntryRelatoryRequestParams } from "src/models/entry";
+import type { EntryRelatoryRequestByMonth } from "src/models/entry";
 
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -16,7 +16,7 @@ import {
     CircularProgress,
 } from "@mui/material";
 
-import { useGetEntryRelatory } from "src/hooks/useEntry";
+import { useGetEntryRelatoryByMonth } from "src/hooks/useEntry";
 
 import { useNotification } from "src/context/NotificationContext";
 
@@ -64,7 +64,7 @@ const anos = Array.from({ length: 10 }, (_, i) => {
 
 export default function GenerateEntryRelatory() {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const { control, handleSubmit, reset, formState: { errors } } = useForm<EntryRelatoryRequestParams>({
+    const { control, handleSubmit, reset, formState: { errors } } = useForm<EntryRelatoryRequestByMonth>({
         defaultValues: {
             month: undefined,
             year: undefined,
@@ -72,7 +72,7 @@ export default function GenerateEntryRelatory() {
         },
     });
 
-    const getEntryRelatory = useGetEntryRelatory();
+    const getEntryRelatory = useGetEntryRelatoryByMonth();
     const notification = useNotification();
 
     const handleOpenModal = () => {
@@ -84,7 +84,7 @@ export default function GenerateEntryRelatory() {
         reset();
     };
 
-    const onSubmit = (params: EntryRelatoryRequestParams) => {
+    const onSubmit = (params: EntryRelatoryRequestByMonth) => {
         getEntryRelatory.mutate(params, {
             onSuccess: (file) => {
                 const url = window.URL.createObjectURL(file);

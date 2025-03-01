@@ -7,7 +7,8 @@ import type {
     EntryListResponse,
     EntryPaginatedParams,
     CustomEntryReceiptInfo,
-    EntryRelatoryRequestParams,
+    EntryRelatoryRequestByMonth,
+    EntryRelatoryRequestByPeriod,
 } from "src/models/entry";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -18,10 +19,11 @@ import {
     deleteEntryService,
     getEntryByIdService,
     getEntryReceiptService,
-    getEntryRelatoryService,
     getEntryPaginatedService,
     getCustomEntryReceiptService,
     searchExpensesByPeriodService,
+    getEntryRelatoryByMonthService,
+    getEntryRelatoryByPeriodService,
 } from "src/services/entryService";
 
 // Hook para listar despesas paginadas
@@ -55,7 +57,7 @@ export const useUpdateEntry = () => {
             queryClient.invalidateQueries({
                 queryKey: ["expenses-list"]
             });
-            queryClient.invalidateQueries({queryKey: ['expense', variables.id]});
+            queryClient.invalidateQueries({ queryKey: ['expense', variables.id] });
         },
     });
 };
@@ -102,6 +104,10 @@ export const useSearchExpensesByPeriod = (payload: FilterParams) =>
     });
 
 // Hook para obter relatório de despesas
-export const useGetEntryRelatory = () => useMutation<Blob, AxiosError, EntryRelatoryRequestParams>({
-      mutationFn: (params) => getEntryRelatoryService(params),
-    });
+export const useGetEntryRelatoryByMonth = () => useMutation<Blob, AxiosError, EntryRelatoryRequestByMonth>({
+    mutationFn: (params) => getEntryRelatoryByMonthService(params),
+});
+
+export const useGetEntryRelatoryByPeriod = () => useMutation<Blob, AxiosError, EntryRelatoryRequestByPeriod>({
+    mutationFn: (params) => getEntryRelatoryByPeriodService(params),
+});
