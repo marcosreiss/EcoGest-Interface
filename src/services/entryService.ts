@@ -5,7 +5,8 @@ import type {
     EntryListResponse,
     EntryPaginatedParams,
     CustomEntryReceiptInfo,
-    EntryRelatoryRequestParams,
+    EntryRelatoryRequestByMonth,
+    EntryRelatoryRequestByPeriod,
 } from "src/models/entry";
 
 import api from "./api";
@@ -67,8 +68,16 @@ export const searchExpensesByPeriodService = async (startDate: string, endDate: 
     }
 };
 
-export const getEntryRelatoryService = async (params: EntryRelatoryRequestParams): Promise<Blob> => {
+export const getEntryRelatoryByMonthService = async (params: EntryRelatoryRequestByMonth): Promise<Blob> => {
     const response = await api.get("/entry/relatory", {
+        params,
+        responseType: "blob",
+    });
+    return response.data;
+};
+
+export const getEntryRelatoryByPeriodService = async (params: EntryRelatoryRequestByPeriod): Promise<Blob> => {
+    const response = await api.get("/entry/relatory/period", {
         params,
         responseType: "blob",
     });

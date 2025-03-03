@@ -44,8 +44,14 @@ export interface EntryPaginatedParams {
     subtype: string | null;
 }
 
-export interface EntryRelatoryRequestParams{
+export interface EntryRelatoryRequestByMonth{
     subtype: string;
     year: number;
     month:number;
+}
+
+export interface EntryRelatoryRequestByPeriod{
+    subtype: string;
+    startDate: string;
+    endDate:string;
 }
