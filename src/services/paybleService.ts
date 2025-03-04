@@ -28,7 +28,7 @@ export const updatePayabledataPagamentoService = async (dataPagamento: string, p
 };
 
 export const deletePaybleService = async (id: number): Promise<void> => {
-  await api.delete(`/payables/${id}`);
+  await api.delete(`/payables?id=${id}`);
 };
 
 export const searchPayblesByPeriodService = async (startDate: string, endDate: string): Promise<PaybleList> => {
