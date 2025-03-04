@@ -16,7 +16,7 @@ export const getReciveByIdService = async (id: number): Promise<Receive> => {
 };
 
 export const deleteReciveService = async (id: number): Promise<void> => {
-  await api.delete(`/receives/${id}`);
+  await api.delete(`/receives?id=${id}`);
 };
 
 export const updateReceiveStatusService = async (
