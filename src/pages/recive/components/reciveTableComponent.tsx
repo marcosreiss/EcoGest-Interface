@@ -124,12 +124,13 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
   };
 
   const handleDeleteClick = (reciveId: number) => {
-    setDeleteModalOpen(true);
     setSelectedItem(reciveId);
-    handleClose();
+    setDeleteModalOpen(true);
   };
 
+
   const handleDeleteRecive = (reciveId: number) => {
+    console.log('estamos aqui');
     deleteRecive.mutate(reciveId, {
       onSuccess: () => {
         notification.addNotification("Recebível deletado com sucesso", "success");
@@ -398,8 +399,15 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
           setDeleteModalOpen(false);
           setAnchorEl(null);
         }}
-        onConfirm={() => selectedItem && handleDeleteRecive(selectedItem)}
-        title="Deletar Recebível"
+        onConfirm={() => {
+          console.log("Tentando deletar:", selectedItem); // Verificar se o valor é válido
+          if (selectedItem !== null) {
+            handleDeleteRecive(selectedItem);
+          } else {
+            notification.addNotification("Erro ao deletar: item não encontrado", "error");
+          }
+        }}
+        title="Deletar conta a Receber"
       />
     </>
   );

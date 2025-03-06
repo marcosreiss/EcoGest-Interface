@@ -1,7 +1,7 @@
 import type { Receive } from "src/models/receive";
 
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 
 import Paper from "@mui/material/Paper";
@@ -66,6 +66,14 @@ export default function RecivePage() {
       });
     });
   };
+
+  useEffect(() => {
+    setReceiveParams((prev) => ({
+      ...prev,
+      skip: page * rowsPerPage,
+    }));
+  }, [page, rowsPerPage]);
+  
   
   return (
     <>

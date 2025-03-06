@@ -126,25 +126,27 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
   };
 
   const handleDeleteClick = (paybleId: number) => {
-    setDeleteModalOpen(true);
     setSelectedItem(paybleId);
-    handleClose();
+    setDeleteModalOpen(true);
   };
 
   const handleDeletePayble = () => {
+    console.log("Tentando deletar:", selectedItem); // Verificação para depuração
     if (selectedItem !== null) {
       deletePayble.mutate(selectedItem, {
         onSuccess: () => {
           notification.addNotification("Pagável deletado com sucesso", "success");
           setDeleteModalOpen(false);
-          // Opcional: atualizar a lista de paybles após a deleção
         },
         onError: () => {
           notification.addNotification("Erro ao deletar pagável", "error");
         },
       });
+    } else {
+      notification.addNotification("Erro ao deletar: item não encontrado", "error");
     }
   };
+
 
   const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -394,7 +396,7 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
         description="Tem certeza que deseja deletar este pagável?"
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleDeletePayble}
-        title="Deletar Pagável"
+        title="Deletar conta a Pagar"
       />
     </>
   );
