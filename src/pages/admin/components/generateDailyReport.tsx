@@ -27,6 +27,8 @@ import { useGetDownloadPdfByMonth, useGetDownloadPdfByPeriod } from "src/hooks/u
 
 import { useNotification } from "src/context/NotificationContext";
 
+import PdfViewerModal from "src/components/PdfViewerModal";
+
 const meses = [
   { nome: "Janeiro", numero: 1 },
   { nome: "Fevereiro", numero: 2 },
@@ -107,27 +109,27 @@ export default function GenerateDailyReport() {
     }
   };
 
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [pdfModalOpen, setPdfModalOpen] = useState(false);
+  const [pdfFileName, setPdfFileName] = useState<string>('');
   const onSubmit = (data: FormValues) => {
     if (isPeriod) {
-      // Validação simples para campos de período
       if (!data.startDate || !data.endDate) {
         notification.addNotification("Preencha as datas de início e fim.", "error");
         return;
       }
+
       const params: DownloadPdfByPeriod = {
         startDate: data.startDate,
         endDate: data.endDate,
         personId: data.personId,
       };
+
       downloadPdfByPeriod.mutate({ params }, {
         onSuccess: (blob) => {
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = `RELATORIO-${data.startDate}-${data.endDate}-${data.personId}.pdf`;
-          link.click();
-          window.URL.revokeObjectURL(url);
-
+          setPdfBlob(blob);
+          setPdfFileName(`RELATORIO-${data.startDate}-${data.endDate}-${data.personId}.pdf`);
+          setPdfModalOpen(true);
           notification.addNotification("Relatório gerado com sucesso!", "success");
           handleCloseModal();
         },
@@ -135,26 +137,24 @@ export default function GenerateDailyReport() {
           notification.addNotification("Erro ao gerar o relatório.", "error");
         },
       });
+
     } else {
-      // Validação simples para campos de mês
       if (!data.month || !data.year) {
         notification.addNotification("Selecione o mês e o ano.", "error");
         return;
       }
+
       const params: DownloadPdfByMonth = {
         month: data.month,
         year: data.year,
         personId: data.personId,
       };
+
       downloadPdfByMonth.mutate({ params }, {
         onSuccess: (blob) => {
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = `RELATORIO-${data.month}-${data.year}-${data.personId}.pdf`;
-          link.click();
-          window.URL.revokeObjectURL(url);
-
+          setPdfBlob(blob);
+          setPdfFileName(`RELATORIO-${data.month}-${data.year}-${data.personId}.pdf`);
+          setPdfModalOpen(true);
           notification.addNotification("Relatório gerado com sucesso!", "success");
           handleCloseModal();
         },
@@ -164,6 +164,7 @@ export default function GenerateDailyReport() {
       });
     }
   };
+
 
   return (
     <>
@@ -431,6 +432,16 @@ export default function GenerateDailyReport() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {pdfBlob && (
+        <PdfViewerModal
+          open={pdfModalOpen}
+          onClose={() => setPdfModalOpen(false)}
+          blob={pdfBlob}
+          fileName={pdfFileName}
+        />
+      )}
+
     </>
   );
 }

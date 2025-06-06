@@ -22,6 +22,8 @@ import { useGetEntryRelatoryByMonth, useGetEntryRelatoryByPeriod } from "src/hoo
 
 import { useNotification } from "src/context/NotificationContext";
 
+import PdfViewerModal from "src/components/PdfViewerModal";
+
 const predefinedSubtypes = [
   "Peças e Serviços",
   "Folha de pagamento",
@@ -121,6 +123,9 @@ export default function GenerateEntryRelatory() {
     }
   };
 
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [pdfModalOpen, setPdfModalOpen] = useState(false);
+  const [pdfFileName, setPdfFileName] = useState<string>('');
   const onSubmit = (data: FormValues) => {
     if (isPeriod) {
       if (!data.startDate || !data.endDate) {
@@ -134,13 +139,9 @@ export default function GenerateEntryRelatory() {
       };
       getEntryRelatoryByPeriod.mutate(params, {
         onSuccess: (file) => {
-          const url = window.URL.createObjectURL(file);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = `RELATORIO-${data.startDate}-${data.endDate}-${data.subtype}.pdf`;
-          link.click();
-          window.URL.revokeObjectURL(url);
-
+          setPdfBlob(file);
+          setPdfFileName(`RELATORIO-${data.startDate}-${data.endDate}-${data.subtype}.pdf`);
+          setPdfModalOpen(true);
           notification.addNotification("Relatório gerado com sucesso!", "success");
           handleCloseModal();
         },
@@ -160,13 +161,9 @@ export default function GenerateEntryRelatory() {
       };
       getEntryRelatoryByMonth.mutate(params, {
         onSuccess: (file) => {
-          const url = window.URL.createObjectURL(file);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = `RELATORIO-${data.month}-${data.year}-${data.subtype}.pdf`;
-          link.click();
-          window.URL.revokeObjectURL(url);
-
+          setPdfBlob(file);
+          setPdfFileName(`RELATORIO-${data.month}-${data.year}-${data.subtype}.pdf`);
+          setPdfModalOpen(true);
           notification.addNotification("Relatório gerado com sucesso!", "success");
           handleCloseModal();
         },
@@ -176,6 +173,7 @@ export default function GenerateEntryRelatory() {
       });
     }
   };
+
 
   return (
     <>
@@ -360,6 +358,16 @@ export default function GenerateEntryRelatory() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {pdfBlob && (
+        <PdfViewerModal
+          open={pdfModalOpen}
+          onClose={() => setPdfModalOpen(false)}
+          blob={pdfBlob}
+          fileName={pdfFileName}
+        />
+      )}
+
     </>
   );
 }
