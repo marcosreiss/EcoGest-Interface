@@ -1,7 +1,12 @@
-import type { AxiosError } from "axios";
-import type { Receive, ReceiveList, ReceiveParams } from "src/models/receive";
+import type { AxiosError } from 'axios';
+import type {
+  Receive,
+  ReceiveList,
+  ReceiveParams,
+  UpdateReceiveStatusParams,
+} from 'src/models/receive';
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
   deleteReciveService,
@@ -9,24 +14,23 @@ import {
   getRecivesPagedService,
   updateReceiveStatusService,
   updateReceiveDataPagamentoService,
-} from "src/services/reciveService";
+} from 'src/services/reciveService';
 
-/** 
+/**
  * Hook para obter uma lista paginada de recebíveis.
  */
 export const useGetRecivesPaged = (params: ReceiveParams) =>
   useQuery<ReceiveList, AxiosError>({
-    queryKey: ["recives-list", { params }],
+    queryKey: ['recives-list', { params }],
     queryFn: () => getRecivesPagedService(params),
   });
-
 
 /**
  * Hook para obter os detalhes de um recebível pelo ID.
  */
 export const useGetReceiveById = (id: number) =>
   useQuery<Receive, AxiosError>({
-    queryKey: ["recive", id],
+    queryKey: ['recive', id],
     queryFn: () => getReciveByIdService(id),
   });
 
@@ -39,10 +43,10 @@ export const useDeleteRecive = () => {
   return useMutation<void, AxiosError, number>({
     mutationFn: (id) => deleteReciveService(id),
     onMutate: (variables) => {
-      console.log("Deletando recebível com ID:", variables);
+      console.log('Deletando recebível com ID:', variables);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ["recives-list"],});
+      queryClient.invalidateQueries({ queryKey: ['recives-list'] });
     },
   });
 };
@@ -50,14 +54,14 @@ export const useDeleteRecive = () => {
 export const useUpdateReceiveStatus = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<number, AxiosError, { id: number }>({
-    mutationFn: ({ id }) => updateReceiveStatusService(id),
+  return useMutation<number, AxiosError, UpdateReceiveStatusParams>({
+    mutationFn: (params) => updateReceiveStatusService(params),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recives-list'] });
       queryClient.invalidateQueries({ queryKey: ['recive'] });
     },
     onError: (error) => {
-      console.error("Erro ao atualizar o status da conta a receber:", error);
+      console.error('Erro ao atualizar o status da conta a receber:', error);
     },
   });
 };
@@ -65,20 +69,15 @@ export const useUpdateReceiveStatus = () => {
 export const useUpdateDataPagamentoReceive = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<
-    Receive,
-    AxiosError,
-    { dataPagamento: string; receiveId: number }
-  >({
+  return useMutation<Receive, AxiosError, { dataPagamento: string; receiveId: number }>({
     mutationFn: ({ dataPagamento, receiveId }) =>
       updateReceiveDataPagamentoService(dataPagamento, receiveId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["recives-list"] });
+      queryClient.invalidateQueries({ queryKey: ['recives-list'] });
       queryClient.invalidateQueries({ queryKey: ['recive'] });
     },
     onError: (error) => {
-      console.error("Erro ao atualizar a data de pagamento do recebível:", error);
+      console.error('Erro ao atualizar a data de pagamento do recebível:', error);
     },
   });
 };
-

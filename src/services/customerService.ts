@@ -48,7 +48,6 @@ export const getCustomerByNameService = async (name: string): Promise<Customer[]
 
 export const getCustomersBasicInfoService = async (): Promise<PersonBasicInfoList> =>{
     const response = await api.get<PersonBasicInfoList>("/person/customers/basic-info");
-    console.log(response);
     return response.data;
 }
 

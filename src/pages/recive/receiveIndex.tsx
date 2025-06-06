@@ -73,8 +73,8 @@ export default function RecivePage() {
       skip: page * rowsPerPage,
     }));
   }, [page, rowsPerPage]);
-  
-  
+
+
   return (
     <>
       <Helmet>
@@ -89,8 +89,8 @@ export default function RecivePage() {
             </Typography>
           </Grid>
           <Grid item xs={12}>
-            
-            <FilterTableComponent 
+
+            <FilterTableComponent
               entityType={EntityType.receive}
               handleDelete={handleDeleteRecive}
               selectedRows={selectedRecives}
