@@ -17,6 +17,8 @@ import { useGenerateCustomSaleReceipt } from "src/hooks/useSales";
 
 import { useNotification } from "src/context/NotificationContext";
 
+import PdfViewerModal from "src/components/PdfViewerModal";
+
 interface HeaderComponentProps {
   title: string;
   addButtonName: string;
@@ -45,16 +47,14 @@ const SaleTableHeaderComponent: React.FC<HeaderComponentProps> = ({
     reset();
   };
 
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [pdfModalOpen, setPdfModalOpen] = useState(false);
+
   const onSubmit = (data: CustomSaleReceiptInfo) => {
     generateReceipt.mutate(data, {
       onSuccess: (receipt) => {
-        const url = window.URL.createObjectURL(receipt);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `RECIBO-DE-VENDA-CUSTOMIZADO.pdf`;
-        link.click();
-        window.URL.revokeObjectURL(url);
-
+        setPdfBlob(receipt);
+        setPdfModalOpen(true);
         notification.addNotification("Recibo gerado com sucesso!", "success");
         handleClose();
       },
@@ -63,6 +63,7 @@ const SaleTableHeaderComponent: React.FC<HeaderComponentProps> = ({
       },
     });
   };
+
 
   return (
     <>
@@ -73,8 +74,8 @@ const SaleTableHeaderComponent: React.FC<HeaderComponentProps> = ({
           </Typography>
         </Grid>
         <Grid item xs={6} container justifyContent="flex-end" spacing={2}>
-          
-        <Grid item>
+
+          <Grid item>
             <Button variant="contained" color="primary" onClick={handleOpen}>
               Gerar Recibo Personalizado
             </Button>
@@ -88,7 +89,7 @@ const SaleTableHeaderComponent: React.FC<HeaderComponentProps> = ({
               {addButtonName}
             </Button>
           </Grid>
-  
+
         </Grid>
       </Grid>
 
@@ -143,6 +144,15 @@ const SaleTableHeaderComponent: React.FC<HeaderComponentProps> = ({
           </Button>
         </DialogActions>
       </Dialog>
+      {pdfBlob && (
+        <PdfViewerModal
+          open={pdfModalOpen}
+          onClose={() => setPdfModalOpen(false)}
+          blob={pdfBlob}
+          fileName="RECIBO-DE-VENDA-CUSTOMIZADO.pdf"
+        />
+      )}
+
     </>
   );
 };
