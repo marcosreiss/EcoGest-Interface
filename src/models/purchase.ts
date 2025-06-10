@@ -1,58 +1,61 @@
-import type { Person } from "./person";
-import type { Product } from "./product";
+import type { Person } from './person';
+import type { Product } from './product';
 
 export interface Purchase {
-    purchaseId: number;
-    supplier: Person;
-    products: PurchaseProduct[];
-    description?: string | null;
-    date_time: string;
-    paymentSlip: { data: number[] } | null;
-    discount: number;
-    totalPrice: number;
-    nfe: string;
-    payable:{
-        dataVencimento: string;
-    }
+  purchaseId: number;
+  supplier: Person;
+  products: PurchaseProduct[];
+  description?: string | null;
+  date_time: string;
+  paymentSlip: { data: number[] } | null;
+  discount: number;
+  totalPrice: number;
+  nfe: string;
+  payable: {
+    dataVencimento: string;
+  };
+  addition: number;
 }
 
 export interface PurchasePayload {
-    personId: number;
-    products: PurchasePayloadProduct[];
-    description?: string | null;
-    date_time: string;
-    paymentSlip: Blob | null;
-    discount: number | null;
-    nfe: string;
-    dataVencimento: string;
+  personId: number;
+  products: PurchasePayloadProduct[];
+  description?: string | null;
+  date_time: string;
+  paymentSlip: Blob | null;
+  discount: number | null;
+  nfe: string;
+  dataVencimento: string;
+  addition: number | null;
 }
 
 export interface PurchaseProduct {
-    productId: number;
-    quantity: number;
-    price: number;
-    product: Product;
+  productId: number;
+  quantity: number;
+  price: number;
+  product: Product;
 }
 
 export interface PurchasePayloadProduct {
-    productId: number;
-    quantity: number;
-    price: number;
+  productId: number;
+  quantity: number;
+  price: number;
 }
 
 export interface PurchaseListResponse {
-    data: Purchase[];
-    meta: any;
+  data: Purchase[];
+  meta: any;
 }
 
 export interface PurchaseResponse {
-    data: Purchase;
+  data: Purchase;
 }
 
 export interface TotalPushchasesInPeriodRequest {
-    startDate: string;
-    endDate: string;
+  startDate: string;
+  endDate: string;
 }
+
 export interface TotalPushchasesInPeriodResponse {
-    totalPurchasesValue: number;
+  totalPurchasesValue: number;
 }
