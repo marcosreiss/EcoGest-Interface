@@ -5,7 +5,6 @@ import type {
   SaldoProjetado,
   FluxoCaixaDiario,
   FluxoCaixaMensal,
-  DownloadPdfByMonth,
   PaybleRecibleAmount,
   DownloadPdfByPeriod,
 } from 'src/models/kpiModel';
@@ -77,13 +76,13 @@ export const getVendasService = async (params?: KpiParams): Promise<GetVendas> =
   return response.data;
 };
 
-export const getDownloadPdfByMonth = async (params: DownloadPdfByMonth): Promise<Blob> => {
-  const response = await api.get<Blob>('/kpi/relatory?', {
-    params,
-    responseType: 'blob',
-  });
-  return response.data;
-};
+// export const getDownloadPdfByMonth = async (params: DownloadPdfByMonth): Promise<Blob> => {
+//   const response = await api.get<Blob>('/kpi/relatory?', {
+//     params,
+//     responseType: 'blob',
+//   });
+//   return response.data;
+// };
 
 export const getDownloadPdfByPeriod = async (params: DownloadPdfByPeriod): Promise<Blob> => {
   const response = await api.get<Blob>('/kpi/relatory/period?', {

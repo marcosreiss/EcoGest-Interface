@@ -1,6 +1,6 @@
 import type { SupplierBasicInfo } from "src/models/supplier";
 import type { CustomerBasicInfo } from "src/models/customers";
-import type { DownloadPdfByMonth, DownloadPdfByPeriod } from "src/models/kpiModel";
+import type { DownloadPdfByPeriod } from "src/models/kpiModel";
 
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -21,9 +21,9 @@ import {
   FormControlLabel,
 } from "@mui/material";
 
+import { useGetDownloadPdfByPeriod } from "src/hooks/useKpi";
 import { useGetSuppliersBasicInfo } from "src/hooks/useSupplier";
 import { useGetCustomersBasicInfo } from "src/hooks/useCustomer";
-import { useGetDownloadPdfByMonth, useGetDownloadPdfByPeriod } from "src/hooks/useKpi";
 
 import { useNotification } from "src/context/NotificationContext";
 
@@ -73,7 +73,6 @@ export default function GenerateDailyReport() {
       personId: undefined,
     },
   });
-  const downloadPdfByMonth = useGetDownloadPdfByMonth();
   const downloadPdfByPeriod = useGetDownloadPdfByPeriod();
   const notification = useNotification();
   const { data: suppliers, isLoading: loadingSuppliers } = useGetSuppliersBasicInfo();
@@ -144,16 +143,19 @@ export default function GenerateDailyReport() {
         return;
       }
 
-      const params: DownloadPdfByMonth = {
-        month: data.month,
-        year: data.year,
+      const startDate = new Date(data.year, data.month - 1, 1);
+      const endDate = new Date(data.year, data.month, 0); // último dia do mês
+
+      const params: DownloadPdfByPeriod = {
+        startDate: startDate.toISOString().split("T")[0],
+        endDate: endDate.toISOString().split("T")[0],
         personId: data.personId,
       };
 
-      downloadPdfByMonth.mutate({ params }, {
+      downloadPdfByPeriod.mutate({ params }, {
         onSuccess: (blob) => {
           setPdfBlob(blob);
-          setPdfFileName(`RELATORIO-${data.month}-${data.year}-${data.personId}.pdf`);
+          setPdfFileName(`RELATORIO-${params.startDate}-${params.endDate}-${params.personId}.pdf`);
           setPdfModalOpen(true);
           notification.addNotification("Relatório gerado com sucesso!", "success");
           handleCloseModal();
@@ -163,6 +165,7 @@ export default function GenerateDailyReport() {
         },
       });
     }
+
   };
 
 
@@ -175,11 +178,11 @@ export default function GenerateDailyReport() {
         startIcon={<DownloadIcon />}
         sx={{ mt: { xs: 2, sm: 2 } }}
       >
-        Gerar Relatório Diário
+        Gerar Relatório por período
       </Button>
 
       <Dialog open={isModalOpen} onClose={handleCloseModal} fullWidth maxWidth="md">
-        <DialogTitle>Gerar Relatório Diário</DialogTitle>
+        <DialogTitle>Gerar Relatório por período</DialogTitle>
         <DialogContent sx={{ margin: 1 }}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
@@ -423,9 +426,9 @@ export default function GenerateDailyReport() {
           <Button
             onClick={handleSubmit(onSubmit)}
             color="primary"
-            disabled={downloadPdfByMonth.isPending || downloadPdfByPeriod.isPending}
+            disabled={downloadPdfByPeriod.isPending}
           >
-            {(downloadPdfByMonth.isPending || downloadPdfByPeriod.isPending) ? (
+            {downloadPdfByPeriod.isPending ? (
               <CircularProgress size={20} sx={{ marginRight: "10px" }} />
             ) : null}
             Gerar Relatório

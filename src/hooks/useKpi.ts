@@ -6,7 +6,6 @@ import type {
   SaldoProjetado,
   FluxoCaixaMensal,
   FluxoCaixaDiario,
-  DownloadPdfByMonth,
   PaybleRecibleAmount,
   DownloadPdfByPeriod,
 } from 'src/models/kpiModel';
@@ -16,7 +15,6 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import {
   getVendasService,
   getDespesasService,
-  getDownloadPdfByMonth,
   getDownloadPdfByPeriod,
   getSaldoProjetadoService,
   getFluxoCaixaMensalService,
@@ -72,10 +70,10 @@ export const useGetVendas = (params?: KpiParams) =>
   });
 
 // Hook para fazer download de PDF
-export const useGetDownloadPdfByMonth = () =>
-  useMutation<Blob, AxiosError, { params: DownloadPdfByMonth }>({
-    mutationFn: ({ params }) => getDownloadPdfByMonth(params),
-  });
+// export const useGetDownloadPdfByMonth = () =>
+//   useMutation<Blob, AxiosError, { params: DownloadPdfByMonth }>({
+//     mutationFn: ({ params }) => getDownloadPdfByMonth(params),
+//   });
 
 export const useGetDownloadPdfByPeriod = () =>
   useMutation<Blob, AxiosError, { params: DownloadPdfByPeriod }>({
