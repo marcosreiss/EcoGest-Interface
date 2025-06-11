@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import {
+  Box,
   Menu,
   Table,
   TableRow,
@@ -10,8 +11,7 @@ import {
   TableCell,
   TableBody,
   IconButton,
-  LinearProgress,
-  Box
+  LinearProgress
 } from "@mui/material";
 
 import { useRouter } from "src/routes/hooks";
@@ -57,19 +57,19 @@ const ExpenseTableComponent: React.FC<ExpenseTableComponentProps> = ({
   const formatDate = (date?: string) => {
     if (!date) return "-";
     const localDate = new Date(date);
-  
+
     // Adicionar 1 dia
     localDate.setDate(localDate.getDate() + 1);
-  
+
     return localDate.toLocaleDateString("pt-BR");
   };
 
-    // Função para determinar a cor com base no tipo
- // Função para determinar a cor com base no tipo
-const getTypeColor = (type: EntryType) => (type === EntryType.ganho ? "#2fba54" : "#f72d2d");
+  // Função para determinar a cor com base no tipo
+  // Função para determinar a cor com base no tipo
+  const getTypeColor = (type: EntryType) => (type === EntryType.ganho ? "#2fba54" : "#f72d2d");
 
-  
-  
+
+
   const handleClick = (event: React.MouseEvent<HTMLElement>, expenseId: number) => {
     setAnchorEl(event.currentTarget);
     setSelectedItem(expenseId);
@@ -147,8 +147,8 @@ const getTypeColor = (type: EntryType) => (type === EntryType.ganho ? "#2fba54" 
       setSelectedExpenses((prev) => prev.filter((e) => e.entryId !== expense.entryId));
     }
   };
-  
-  
+
+
   return (
     <>
       <Table stickyHeader aria-label="expenses table">

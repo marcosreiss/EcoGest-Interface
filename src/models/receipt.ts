@@ -1,18 +1,18 @@
 export interface Receipt {
-    id: number;
-    saleProductId: number;
-    saleCustomerId: number;
+  id: number;
+  saleProductId: number;
+  saleCustomerId: number;
 }
 
 export interface ReceiptListResponse {
-    data: Receipt[];
+  data: Receipt[];
 }
 
 export interface ReceiptResponse {
-    data: Receipt;
+  data: Receipt;
 }
 
-export interface CreateReceiptPayload{
-    saleProductId: number;
-    saleCustomerId: number;
+export interface CreateReceiptPayload {
+  saleProductId: number;
+  saleCustomerId: number;
 }

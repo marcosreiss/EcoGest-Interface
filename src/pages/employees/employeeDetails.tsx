@@ -30,7 +30,7 @@ export default function EmployeeDetails() {
     const handleEditClick = () => {
         navigate.replace(`/employee/edit/${id}`);
     };
-    
+
     return (
         <>
             <Helmet>

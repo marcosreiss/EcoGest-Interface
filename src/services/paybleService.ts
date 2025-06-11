@@ -1,4 +1,9 @@
-import type { Payble, PaybleList, PayableParams, UpdatePayableStatusParams } from 'src/models/payable';
+import type {
+  Payble,
+  PaybleList,
+  PayableParams,
+  UpdatePayableStatusParams,
+} from 'src/models/payable';
 
 import api from './api';
 

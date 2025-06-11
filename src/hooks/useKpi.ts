@@ -1,4 +1,4 @@
-import type { AxiosError } from "axios";
+import type { AxiosError } from 'axios';
 import type {
   GetVendas,
   KpiParams,
@@ -9,9 +9,9 @@ import type {
   DownloadPdfByMonth,
   PaybleRecibleAmount,
   DownloadPdfByPeriod,
-} from "src/models/kpiModel";
+} from 'src/models/kpiModel';
 
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation } from '@tanstack/react-query';
 
 import {
   getVendasService,
@@ -22,12 +22,12 @@ import {
   getFluxoCaixaMensalService,
   getFluxoCaixaDiarioService,
   getPaybleRecibleAmountService,
-} from "src/services/kpiService";
+} from 'src/services/kpiService';
 
 // Hook para obter fluxo de caixa mensal
 export const useGetFluxoCaixaMensal = (year?: number) =>
   useQuery<FluxoCaixaMensal, AxiosError>({
-    queryKey: ["fluxoCaixaMensal", year],
+    queryKey: ['fluxoCaixaMensal', year],
     queryFn: () => getFluxoCaixaMensalService(year),
   });
 
@@ -39,36 +39,35 @@ export const useGetFluxoCaixaDiario = (
   productId?: number
 ) =>
   useQuery<FluxoCaixaDiario, AxiosError>({
-    queryKey: ["fluxoCaixaDiario", { year, month, personId, productId }],
-    queryFn: () =>
-      getFluxoCaixaDiarioService(year, month, personId, productId),
+    queryKey: ['fluxoCaixaDiario', { year, month, personId, productId }],
+    queryFn: () => getFluxoCaixaDiarioService(year, month, personId, productId),
   });
 
 // Hook para obter a contagem de pagáveis e recebíveis
 export const useGetPaybleRecibleAmount = () =>
   useQuery<PaybleRecibleAmount, AxiosError>({
-    queryKey: ["paybleRecibleAmount"],
+    queryKey: ['paybleRecibleAmount'],
     queryFn: getPaybleRecibleAmountService,
   });
 
 // Hook para obter saldo projetado
 export const useGetSaldoProjetado = (params?: KpiParams) =>
   useQuery<SaldoProjetado, AxiosError>({
-    queryKey: ["saldoProjetado", params],
+    queryKey: ['saldoProjetado', params],
     queryFn: () => getSaldoProjetadoService(params),
   });
 
 // Hook para obter despesas
 export const useGetDespesas = (params?: KpiParams) =>
   useQuery<GetDespesas, AxiosError>({
-    queryKey: ["despesas", params],
+    queryKey: ['despesas', params],
     queryFn: () => getDespesasService(params),
   });
 
 // Hook para obter vendas
 export const useGetVendas = (params?: KpiParams) =>
   useQuery<GetVendas, AxiosError>({
-    queryKey: ["vendas", params],
+    queryKey: ['vendas', params],
     queryFn: () => getVendasService(params),
   });
 

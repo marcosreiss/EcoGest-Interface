@@ -1,4 +1,9 @@
-import type { Receive, ReceiveList, ReceiveParams, UpdateReceiveStatusParams } from 'src/models/receive';
+import type {
+  Receive,
+  ReceiveList,
+  ReceiveParams,
+  UpdateReceiveStatusParams,
+} from 'src/models/receive';
 
 import api from './api';
 
@@ -25,7 +30,7 @@ export const updateReceiveStatusService = async (
   query.append('status', params.status);
   if (params.date) query.append('date', params.date);
   if (params.payedValue !== undefined) query.append('payedValue', params.payedValue.toString());
-  
+
   const response = await api.put(`/receives/status?${query.toString()}`);
   return response.status;
 };

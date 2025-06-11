@@ -41,7 +41,7 @@ export const useUpdatePayableStatus = () => {
     mutationFn: (params) => updatePayableStatusService(params),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['paybles-list'] });
-      queryClient.invalidateQueries({ queryKey: ["payble"] });
+      queryClient.invalidateQueries({ queryKey: ['payble'] });
     },
     onError: (error) => {
       console.error('Erro ao atualizar o status da conta a pagar:', error);
