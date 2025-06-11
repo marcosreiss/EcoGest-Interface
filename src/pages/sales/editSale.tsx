@@ -64,6 +64,7 @@ export default function EditSalePage() {
   } = useForm<SalePayload>({
     defaultValues: {
       discount: 0,
+      addition: 0,
     },
   });
 
@@ -96,6 +97,7 @@ export default function EditSalePage() {
       setValue("description", sale.description);
       setValue("date_time", sale.date_time ? sale.date_time.split("T")[0] : "");
       setValue("discount", sale.discount);
+      setValue("addition", sale.addition);
       setValue("nfe", sale.nfe);
       setValue("dataVencimento", sale.receive.dataVencimento ? sale.receive.dataVencimento.split("T")[0] : "");
 
@@ -117,7 +119,8 @@ export default function EditSalePage() {
       0
     );
     const discount = parseFloat(String(watch("discount")) || "0");
-    return Math.max(total - discount, 0); // Evita valores negativos
+    const addition = parseFloat(String(watch("addition")) || "0");
+    return Math.max(total - discount + addition, 0);
   };
 
   // Função para adicionar ou editar um produto na venda
@@ -329,6 +332,20 @@ export default function EditSalePage() {
                     {...register("dataVencimento", { required: "Data é obrigatória." })}
                     error={!!errors.dataVencimento}
                     helperText={errors.dataVencimento?.message}
+                  />
+                </Grid>
+                {/* Acréscimo */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Acréscimo (R$)"
+                    type="number"
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+                    }}
+                    {...register("addition", {
+                      setValueAs: (v) => (v === "" ? 0 : parseFloat(v)),
+                    })}
                   />
                 </Grid>
 

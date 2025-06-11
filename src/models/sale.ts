@@ -8,6 +8,7 @@ export interface Sale {
   date_time: string;
   description: string;
   discount: number;
+  addition: number;
   totalPrice: number;
   products: SaleProduct[];
   nfe: string;
@@ -15,6 +16,7 @@ export interface Sale {
     dataVencimento: string;
   };
 }
+
 export interface SaleProduct {
   product: Product;
   quantity: number;
@@ -37,6 +39,7 @@ export interface SalePayload {
   description: string;
   products: SaleProductPayload[];
   discount: number;
+  addition: number;
   nfe: string;
   dataVencimento: string;
 }

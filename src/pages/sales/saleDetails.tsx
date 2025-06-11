@@ -141,6 +141,9 @@ export default function SaleDetailsPage() {
                     <Typography><strong>Desconto:</strong> {formatPrice(sale?.discount)}</Typography>
                   </Grid>
                   <Grid item xs={12} sm={4}>
+                    <Typography><strong>Acréscimo:</strong> {formatPrice(sale?.addition)}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
                     <Typography><strong>Preço Total:</strong> {formatPrice(sale?.totalPrice)}</Typography>
                   </Grid>
                 </Grid>
