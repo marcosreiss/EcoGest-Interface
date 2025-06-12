@@ -20,6 +20,8 @@ import { useGenerateCustomExpenseReceipt } from "src/hooks/useEntry";
 
 import { useNotification } from "src/context/NotificationContext";
 
+import PdfViewerModal from "src/components/PdfViewerModal";
+
 import GenerateEntryRelatory from "./generateEntryRelatory";
 
 interface HeaderComponentProps {
@@ -47,15 +49,14 @@ const ExpensesTableHeaderComponent: React.FC<HeaderComponentProps> = ({
     reset();
   };
 
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [pdfModalOpen, setPdfModalOpen] = useState(false);
+
   const onSubmit = async (data: CustomEntryReceiptInfo) => {
     generateReceipt.mutate(data, {
       onSuccess: (receipt) => {
-        const url = window.URL.createObjectURL(receipt);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `RECIBO-DE-LANÇAMENTO-CUSTOMIZADO.pdf`;
-        link.click();
-        window.URL.revokeObjectURL(url);
+        setPdfBlob(receipt);
+        setPdfModalOpen(true);
 
         notification.addNotification("Recibo gerado com sucesso!", "success");
         handleClose();
@@ -65,6 +66,7 @@ const ExpensesTableHeaderComponent: React.FC<HeaderComponentProps> = ({
       },
     });
   };
+
 
   return (
     <>
@@ -146,6 +148,15 @@ const ExpensesTableHeaderComponent: React.FC<HeaderComponentProps> = ({
           </Button>
         </DialogActions>
       </Dialog>
+      {pdfBlob && (
+        <PdfViewerModal
+          open={pdfModalOpen}
+          onClose={() => setPdfModalOpen(false)}
+          blob={pdfBlob}
+          fileName="RECIBO-DE-LANCAMENTO-CUSTOMIZADO.pdf"
+        />
+      )}
+
     </>
   );
 };

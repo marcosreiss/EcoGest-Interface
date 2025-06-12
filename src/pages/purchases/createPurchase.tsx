@@ -58,6 +58,7 @@ export default function CreatePurchasePage() {
   } = useForm<PurchasePayload>({
     defaultValues: {
       discount: 0,
+      addition: 0,
     },
   });
 
@@ -109,8 +110,9 @@ export default function CreatePurchasePage() {
       (acc, product) => acc + product.price * product.quantity,
       0
     );
-    const discount = parseFloat(String(watch("discount")) || "0"); // Força o valor para string
-    return Math.max(total - discount, 0); // Evita valores negativos no total
+    const discount = parseFloat(String(watch("discount")) || "0");
+    const addition = parseFloat(String(watch("addition")) || "0");
+    return Math.max(total - discount + addition, 0);
   };
 
   const handleAddProduct = (data: PurchasePayloadProduct) => {
@@ -312,6 +314,19 @@ export default function CreatePurchasePage() {
                       startAdornment: <InputAdornment position="end">R$</InputAdornment>,
                     }}
                     {...register("discount", { setValueAs: (v) => (v === "" ? 0 : parseFloat(v)) })}
+                  />
+                </Grid>
+
+                {/* acrescimeo */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Acréscimo (R$)"
+                    type="number"
+                    InputProps={{
+                      startAdornment: <InputAdornment position="end">R$</InputAdornment>,
+                    }}
+                    {...register("addition", { setValueAs: (v) => (v === "" ? 0 : parseFloat(v)) })}
                   />
                 </Grid>
 

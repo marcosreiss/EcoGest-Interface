@@ -35,6 +35,8 @@ import { useNotification } from "src/context/NotificationContext";
 
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
 
+import UpdateReceiveStatusModal from "./UpdateReceiveStatusModal";
+
 interface TableComponentProps {
   recives: Receive[];
   isLoading: boolean;
@@ -51,10 +53,19 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [editPaymentModalOpen, setEditPaymentModalOpen] = useState(false);
 
   const [selectedReciveIds, setSelectedReciveIds] = useState<number[]>([]);
+
+  const [updateStatusModalOpen, setUpdateStatusModalOpen] = useState(false);
+  const [currentReceiveTotal, setCurrentReceiveTotal] = useState<number>(0);
+  const [updateStatusDefaults, setUpdateStatusDefaults] = useState<{
+    status?: 'Pago' | 'Parcial';
+    payedValue?: number;
+    date?: string;
+  }>({});
+
+
 
   const navigate = useRouter();
   const deleteRecive = useDeleteRecive();
@@ -83,8 +94,10 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
         return "#f72d2d";
       case "Aberto":
         return "#2fba54";
+      case "Parcial":
+        return "#f5c542"; // Amarelo
       default:
-        return "gray"; // Caso o status seja indefinido ou desconhecido
+        return "gray";
     }
   };
 
@@ -130,7 +143,6 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
 
 
   const handleDeleteRecive = (reciveId: number) => {
-    console.log('estamos aqui');
     deleteRecive.mutate(reciveId, {
       onSuccess: () => {
         notification.addNotification("Recebível deletado com sucesso", "success");
@@ -175,18 +187,26 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
   };
 
   // Função para confirmar a alteração de status
-  const handleConfirmStatusChange = () => {
+  const handleConfirmStatusChange = (data: {
+    status: 'Pago' | 'Parcial';
+    payedValue?: number;
+    date?: string;
+  }) => {
     if (selectedItem !== null) {
       updateReceiveStatus.mutate(
-        { id: selectedItem },
+        {
+          id: selectedItem,
+          status: data.status,
+          payedValue: data.payedValue,
+          date: data.date,
+        },
         {
           onSuccess: () => {
-            notification.addNotification("Baixa realizada com sucesso!", "success");
-            setStatusModalOpen(false);
-            // Opcional: atualizar a lista de recives após a alteração
+            notification.addNotification("Status atualizado com sucesso!", "success");
+            setUpdateStatusModalOpen(false);
           },
           onError: () => {
-            notification.addNotification("Erro ao realizar a baixa", "error");
+            notification.addNotification("Erro ao atualizar status", "error");
           },
         }
       );
@@ -303,16 +323,41 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
                       horizontal: "right",
                     }}
                   >
-                    <MenuItem onClick={() => handleDetailsClick(recive.receiveId)}>
+                    <MenuItem onClick={() => {
+                      handleClose();
+                      handleDetailsClick(recive.receiveId);
+                    }
+
+                    }>
                       Detalhes
                     </MenuItem>
                     {recive.status !== "Pago" && (
-                      <MenuItem onClick={() => setStatusModalOpen(true)}>Dar Baixa</MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          handleClose();
+                          setSelectedItem(recive.receiveId);
+                          setCurrentReceiveTotal(recive.totalValue);
+                          setUpdateStatusModalOpen(true);
+                          setUpdateStatusDefaults({
+                            status: recive.status === 'Parcial' ? 'Parcial' : 'Pago',
+                            payedValue: recive.payedValue || undefined,
+                            date: recive.dataPagamento.split('T')[0] || undefined,
+                          })
+                        }}
+                      >
+                        Dar Baixa
+                      </MenuItem>
                     )}
-                    <MenuItem onClick={() => handleEditDataPagamentoClick(recive)}>
+                    <MenuItem onClick={() => {
+                      handleClose();
+                      handleEditDataPagamentoClick(recive)
+                    }}>
                       Editar Data do Pagamento
                     </MenuItem>
-                    <MenuItem onClick={() => handleDeleteClick(recive.receiveId)}>
+                    <MenuItem onClick={() => {
+                      handleClose();
+                      handleDeleteClick(recive.receiveId)
+                    }}>
                       Deletar
                     </MenuItem>
                   </Menu>
@@ -380,15 +425,15 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
         </form>
       </Dialog>
 
-      {/* Modal de Confirmação para Dar Baixa */}
-      <ConfirmationDialog
-        open={statusModalOpen}
-        confirmButtonText="Confirmar"
-        description="Tem certeza que deseja dar baixa neste recebível?"
-        onClose={() => setStatusModalOpen(false)}
+      {/* Modal para Dar Baixa */}
+      <UpdateReceiveStatusModal
+        open={updateStatusModalOpen}
+        onClose={() => setUpdateStatusModalOpen(false)}
         onConfirm={handleConfirmStatusChange}
-        title="Dar Baixa"
+        totalValue={currentReceiveTotal}
+        defaultValues={updateStatusDefaults}
       />
+
 
       {/* Modal de Confirmação para Deletar */}
       <ConfirmationDialog
@@ -400,7 +445,6 @@ const ReciveTableComponent: React.FC<TableComponentProps> = ({
           setAnchorEl(null);
         }}
         onConfirm={() => {
-          console.log("Tentando deletar:", selectedItem); // Verificar se o valor é válido
           if (selectedItem !== null) {
             handleDeleteRecive(selectedItem);
           } else {

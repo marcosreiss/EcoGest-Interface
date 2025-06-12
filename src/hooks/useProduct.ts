@@ -1,7 +1,14 @@
-import type { AxiosError } from "axios";
-import type { Product, ProductResponse, ProductListResponse, CreateProductPayload, ProductBasicInfoList, TotalProductsInStock } from "src/models/product";
+import type { AxiosError } from 'axios';
+import type {
+  Product,
+  ProductResponse,
+  ProductListResponse,
+  CreateProductPayload,
+  ProductBasicInfoList,
+  TotalProductsInStock,
+} from 'src/models/product';
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
   createProductService,
@@ -12,7 +19,7 @@ import {
   getProductByNameService,
   getTotalProductsInStock,
   getProductsBasicInfoService,
-} from "src/services/productService";
+} from 'src/services/productService';
 
 export const useGetProductsPaged = (skip: number, take: number) =>
   useQuery<ProductListResponse, AxiosError>({
@@ -29,23 +36,21 @@ export const useCreateProduct = () => {
       queryClient.invalidateQueries({
         queryKey: ['products-list'],
       });
-    }
+    },
   });
 };
 
-export const useUpdateProduct = () =>
-{
+export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
 
   return useMutation<ProductResponse, AxiosError, { id: number; data: Product }>({
     mutationFn: ({ id, data }) => updateProductService(data, id),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['products-list'] });
-      queryClient.invalidateQueries({queryKey: ['product', variables.id]});
-    }
+      queryClient.invalidateQueries({ queryKey: ['product', variables.id] });
+    },
   });
-}
-  
+};
 
 export const useDeleteProduct = () => {
   const queryClient = useQueryClient();
@@ -56,7 +61,7 @@ export const useDeleteProduct = () => {
       queryClient.invalidateQueries({
         queryKey: ['products-list'],
       });
-    }
+    },
   });
 };
 
@@ -66,25 +71,24 @@ export const useGetProductById = (id: number) =>
     queryFn: () => getProductByIdService(id),
   });
 
-  export const useGetProductByName = (name: string) =>
-    useQuery<ProductListResponse, AxiosError>({
-      queryKey: ['products-by-name', name],
-      queryFn: () => getProductByNameService(name),
-      enabled: name.length >= 3,
-    });
+export const useGetProductByName = (name: string) =>
+  useQuery<ProductListResponse, AxiosError>({
+    queryKey: ['products-by-name', name],
+    queryFn: () => getProductByNameService(name),
+    enabled: name.length >= 3,
+  });
 
-  export const useGetProductsBasicInfo = () => 
-    useQuery<ProductBasicInfoList, AxiosError>({
-      queryKey: ['products-basic-info'],
-      queryFn: () => getProductsBasicInfoService(),
-    });
+export const useGetProductsBasicInfo = () =>
+  useQuery<ProductBasicInfoList, AxiosError>({
+    queryKey: ['products-basic-info'],
+    queryFn: () => getProductsBasicInfoService(),
+  });
 
 /**
  * Hook para obter o total de produtos em estoque.
  */
 export const useGetTotalProductsInStock = () =>
   useQuery<TotalProductsInStock, AxiosError>({
-    queryKey: ["total-products-in-stock"],
+    queryKey: ['total-products-in-stock'],
     queryFn: getTotalProductsInStock,
-  });   
-  
+  });

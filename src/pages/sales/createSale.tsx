@@ -4,7 +4,7 @@ import type { ProductBasicInfo } from "src/models/product";
 import type { ApiErrorResponse } from "src/models/errorResponse";
 import type { SalePayload, SaleProductPayload } from "src/models/sale";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useForm, Controller } from "react-hook-form";
 
@@ -70,6 +70,7 @@ export default function CreateSalePage() {
   } = useForm<SalePayload>({
     defaultValues: {
       discount: 0,
+      addition: 0,
     },
   });
 
@@ -94,7 +95,8 @@ export default function CreateSalePage() {
       0
     );
     const discount = parseFloat(String(watch("discount")) || "0");
-    return Math.max(total - discount, 0); // Evita valores negativos
+    const addition = parseFloat(String(watch("addition")) || "0");
+    return Math.max(total - discount + addition, 0);
   };
 
   // Função para adicionar ou editar um produto na venda
@@ -310,6 +312,21 @@ export default function CreateSalePage() {
                     {...register("dataVencimento", { required: "Data é obrigatória." })}
                     error={!!errors.dataVencimento}
                     helperText={errors.dataVencimento?.message}
+                  />
+                </Grid>
+
+                {/* Acréscimo */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Acréscimo (R$)"
+                    type="number"
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+                    }}
+                    {...register("addition", {
+                      setValueAs: (v) => (v === "" ? 0 : parseFloat(v)),
+                    })}
                   />
                 </Grid>
 

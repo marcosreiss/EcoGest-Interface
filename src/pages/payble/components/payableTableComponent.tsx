@@ -27,7 +27,7 @@ import { useRouter } from "src/routes/hooks";
 
 import {
   useDeletePayble,
-  useUpdatePaybleStatus,
+  useUpdatePayableStatus,
   useUpdateDataPagamentoPayable,
 } from "src/hooks/usePayble";
 
@@ -35,10 +35,12 @@ import { useNotification } from "src/context/NotificationContext";
 
 import ConfirmationDialog from "src/components/confirmation-dialog/confirmationDialog";
 
+import UpdatePayableStatusModal from "./UpdatePayableStatusModal";
+
 interface PaybleTableComponentProps {
   paybles: Payble[];
   isLoading: boolean;
-  isSearching?: boolean; // Adicionado para alinhamento com ReciveTableComponent
+  isSearching?: boolean;
   setSelectedPaybles: React.Dispatch<React.SetStateAction<Payble[]>>;
 }
 
@@ -51,14 +53,20 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [editPaymentModalOpen, setEditPaymentModalOpen] = useState(false);
+  const [updateStatusModalOpen, setUpdateStatusModalOpen] = useState(false);
+  const [updateStatusDefaults, setUpdateStatusDefaults] = useState<{
+    status?: 'Pago' | 'Parcial';
+    payedValue?: number;
+    date?: string;
+  }>({});
+  const [currentPayableTotal, setCurrentPayableTotal] = useState<number>(0);
 
   const [selectedPaybleIds, setSelectedPaybleIds] = useState<number[]>([]);
 
   const router = useRouter();
   const deletePayble = useDeletePayble();
-  const updatePaybleStatus = useUpdatePaybleStatus();
+  const updatePaybleStatus = useUpdatePayableStatus();
   const updateDataPagamentoPayable = useUpdateDataPagamentoPayable();
   const notification = useNotification();
 
@@ -74,24 +82,17 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
     },
   });
 
-  // Função para determinar a cor com base no status
   const getStatusColor = (status: string | undefined) => {
     switch (status) {
-      case "Pago":
-        return "#4287f5";
-      case "Atrasado":
-        return "#f72d2d";
-      case "Aberto":
-        return "#2fba54";
-      default:
-        return "gray"; // Caso o status seja indefinido ou desconhecido
+      case "Pago": return "#4287f5";
+      case "Atrasado": return "#f72d2d";
+      case "Aberto": return "#2fba54";
+      case "Parcial": return "#f5c542";
+      default: return "gray";
     }
   };
 
-  const handleClick = (
-    event: React.MouseEvent<HTMLElement>,
-    paybleId: number
-  ) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>, paybleId: number) => {
     setAnchorEl(event.currentTarget);
     setSelectedItem(paybleId);
   };
@@ -106,16 +107,21 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
     handleClose();
   };
 
-  // Função para confirmar a alteração de status
-  const handleConfirmStatusChange = () => {
+  const handleConfirmStatusChange = (data: {
+    status: 'Pago' | 'Parcial';
+    payedValue?: number;
+    date?: string;
+  }) => {
     if (selectedItem !== null) {
       updatePaybleStatus.mutate(
-        { id: selectedItem },
+        {
+          id: selectedItem,
+          ...data
+        },
         {
           onSuccess: () => {
             notification.addNotification("Baixa realizada com sucesso!", "success");
-            setStatusModalOpen(false);
-            // Opcional: atualizar a lista de paybles após a alteração
+            setUpdateStatusModalOpen(false);
           },
           onError: () => {
             notification.addNotification("Erro ao realizar a baixa", "error");
@@ -128,10 +134,10 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
   const handleDeleteClick = (paybleId: number) => {
     setSelectedItem(paybleId);
     setDeleteModalOpen(true);
+    handleClose();
   };
 
   const handleDeletePayble = () => {
-    console.log("Tentando deletar:", selectedItem); // Verificação para depuração
     if (selectedItem !== null) {
       deletePayble.mutate(selectedItem, {
         onSuccess: () => {
@@ -147,7 +153,6 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
     }
   };
 
-
   const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const allIds = paybles.map((p) => p.payableId);
@@ -159,20 +164,13 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
     }
   };
 
-  const handleSelectPayble = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    payble: Payble
-  ) => {
+  const handleSelectPayble = (event: React.ChangeEvent<HTMLInputElement>, payble: Payble) => {
     if (event.target.checked) {
       setSelectedPaybleIds((prev) => [...prev, payble.payableId]);
       setSelectedPaybles((prev) => [...prev, payble]);
     } else {
-      setSelectedPaybleIds((prev) =>
-        prev.filter((id) => id !== payble.payableId)
-      );
-      setSelectedPaybles((prev) =>
-        prev.filter((p) => p.payableId !== payble.payableId)
-      );
+      setSelectedPaybleIds((prev) => prev.filter((id) => id !== payble.payableId));
+      setSelectedPaybles((prev) => prev.filter((p) => p.payableId !== payble.payableId));
     }
   };
 
@@ -180,6 +178,7 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
     setValue("dataPagamento", payable.dataPagamento?.split("T")[0] || "");
     setSelectedItem(payable.payableId);
     setEditPaymentModalOpen(true);
+    handleClose();
   };
 
   const onSubmitEditPayment = (data: { dataPagamento: string }) => {
@@ -190,7 +189,6 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
           onSuccess: () => {
             notification.addNotification("Data de pagamento atualizada com sucesso!", "success");
             setEditPaymentModalOpen(false);
-            // Opcional: atualizar a lista de paybles após a alteração
             reset();
           },
           onError: () => {
@@ -201,7 +199,6 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
     }
   };
 
-  // Função para formatar a data no formato pt-BR
   const formatDate = (dateStr?: string | Date) => {
     if (!dateStr) return "-";
     const dateObj = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
@@ -222,16 +219,10 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
       <Table stickyHeader aria-label="paybles table">
         <TableHead>
           <TableRow>
-            <TableCell sx={{ width: "5%", minWidth: "50px" }}>
+            <TableCell>
               <Checkbox
-                checked={
-                  paybles.length > 0 &&
-                  selectedPaybleIds.length === paybles.length
-                }
-                indeterminate={
-                  selectedPaybleIds.length > 0 &&
-                  selectedPaybleIds.length < paybles.length
-                }
+                checked={paybles.length > 0 && selectedPaybleIds.length === paybles.length}
+                indeterminate={selectedPaybleIds.length > 0 && selectedPaybleIds.length < paybles.length}
                 onChange={handleSelectAll}
               />
             </TableCell>
@@ -247,7 +238,7 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {isLoading || isSearching ? (
+          {(isLoading || isSearching) ? (
             <TableRow>
               <TableCell colSpan={10} sx={{ padding: 0 }}>
                 <LinearProgress sx={{ width: "100%" }} />
@@ -264,20 +255,15 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
                 </TableCell>
                 <TableCell>{payble.payableId}</TableCell>
                 <TableCell>
-                  {/* Shape colorido atrás do texto */}
                   <Box
                     sx={{
-                      position: "relative",
-                      display: "inline-block",
-                      px: 2, // Padding horizontal para espaçamento do texto
-                      py: 0.5, // Padding vertical para altura do "botão"
-                      borderRadius: 8, // Arredondamento do "botão"
-                      color: "white", // Cor do texto
+                      px: 2,
+                      py: 0.5,
+                      borderRadius: 8,
+                      backgroundColor: getStatusColor(payble.status),
+                      color: "white",
                       fontWeight: "bold",
                       textAlign: "center",
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
-                      backgroundColor: getStatusColor(payble.status), // Cor de fundo baseada no status
                     }}
                   >
                     {payble.status || "-"}
@@ -287,33 +273,38 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
                 <TableCell>{payble.purchase?.nfe || "-"}</TableCell>
                 <TableCell>{formatDate(payble.dataEmissao)}</TableCell>
                 <TableCell>{formatDate(payble.dataVencimento)}</TableCell>
-                <TableCell>
-                  {payble.entry?.description || payble.purchase?.description || "-"}
-                </TableCell>
+                <TableCell>{payble.entry?.description || payble.purchase?.description || "-"}</TableCell>
                 <TableCell>{formatPrice(payble.totalValue)}</TableCell>
                 <TableCell>
-                  <IconButton
-                    onClick={(event) => handleClick(event, payble.payableId)}
-                  >
+                  <IconButton onClick={(event) => handleClick(event, payble.payableId)}>
                     ︙
                   </IconButton>
                   <Menu
                     anchorEl={anchorEl}
-                    open={Boolean(
-                      anchorEl && selectedItem === payble.payableId
-                    )}
+                    open={Boolean(anchorEl && selectedItem === payble.payableId)}
                     onClose={handleClose}
                     anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
+                    transformOrigin={{ vertical: "top", horizontal: "right" }}
                   >
                     <MenuItem onClick={() => handleDetailsClick(payble.payableId)}>Detalhes</MenuItem>
                     {payble.status !== "Pago" && (
-                      <MenuItem onClick={() => setStatusModalOpen(true)}>Dar Baixa</MenuItem>
+                      <MenuItem onClick={() => {
+                        handleClose();
+                        setSelectedItem(payble.payableId);
+                        setCurrentPayableTotal(payble.totalValue);
+                        setUpdateStatusDefaults({
+                          status: payble.status === 'Parcial' ? 'Parcial' : 'Pago',
+                          payedValue: payble.payedValue || undefined,
+                          date: payble.dataPagamento?.split("T")[0] || undefined,
+                        });
+                        setUpdateStatusModalOpen(true);
+                      }}>
+                        Dar Baixa
+                      </MenuItem>
                     )}
-                    <MenuItem onClick={() => handleEditDataPagamentoClick(payble)}>Editar Data do Pagamento</MenuItem>
+                    <MenuItem onClick={() => handleEditDataPagamentoClick(payble)}>
+                      Editar Data do Pagamento
+                    </MenuItem>
                     <MenuItem onClick={() => handleDeleteClick(payble.payableId)}>Deletar</MenuItem>
                   </Menu>
                 </TableCell>
@@ -323,11 +314,7 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
             <TableRow>
               <TableCell colSpan={10} align="center">
                 <div style={{ textAlign: "center", padding: "20px" }}>
-                  <img
-                    src="/assets/icons/ic-content.svg"
-                    alt="Sem dados"
-                    style={{ maxWidth: "150px", marginBottom: "10px" }}
-                  />
+                  <img src="/assets/icons/ic-content.svg" alt="Sem dados" style={{ maxWidth: "150px", marginBottom: "10px" }} />
                   <p>Nenhuma conta a pagar registrada</p>
                 </div>
               </TableCell>
@@ -336,14 +323,7 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
         </TableBody>
       </Table>
 
-      {/* Modal para editar a data de pagamento */}
-      <Dialog
-        open={editPaymentModalOpen}
-        onClose={() => {
-          setEditPaymentModalOpen(false);
-          reset();
-        }}
-      >
+      <Dialog open={editPaymentModalOpen} onClose={() => { setEditPaymentModalOpen(false); reset(); }}>
         <DialogTitle>Editar Data do Pagamento</DialogTitle>
         <form onSubmit={handleSubmit(onSubmitEditPayment)}>
           <DialogContent>
@@ -365,29 +345,18 @@ const PaybleTableComponent: React.FC<PaybleTableComponentProps> = ({
             />
           </DialogContent>
           <DialogActions>
-            <Button
-              onClick={() => {
-                setEditPaymentModalOpen(false);
-                reset();
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button type="submit" variant="contained" color="primary">
-              Atualizar
-            </Button>
+            <Button onClick={() => { setEditPaymentModalOpen(false); reset(); }}>Cancelar</Button>
+            <Button type="submit" variant="contained" color="primary">Atualizar</Button>
           </DialogActions>
         </form>
       </Dialog>
 
-      {/* Modais de confirmação permanecem os mesmos */}
-      <ConfirmationDialog
-        open={statusModalOpen}
-        confirmButtonText="Confirmar"
-        description="Tem certeza que deseja dar baixa neste pagável?"
-        onClose={() => setStatusModalOpen(false)}
+      <UpdatePayableStatusModal
+        open={updateStatusModalOpen}
+        onClose={() => setUpdateStatusModalOpen(false)}
         onConfirm={handleConfirmStatusChange}
-        title="Dar Baixa"
+        totalValue={currentPayableTotal}
+        defaultValues={updateStatusDefaults}
       />
 
       <ConfirmationDialog

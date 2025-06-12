@@ -1,4 +1,4 @@
-import api from "./api";
+import api from './api';
 
 export interface LoginPayload {
   username: string;
@@ -16,6 +16,6 @@ export interface LoginResponse {
 }
 
 export const loginService = async (payload: LoginPayload): Promise<LoginResponse> => {
-    const response = await api.post<LoginResponse>("/login", payload);
-    return response.data;
-  };
+  const response = await api.post<LoginResponse>('/login', payload);
+  return response.data;
+};

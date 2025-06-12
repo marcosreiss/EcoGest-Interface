@@ -1,19 +1,19 @@
+import InfoIcon from "@mui/icons-material/Info";
+import WarningIcon from "@mui/icons-material/Warning";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import {
   Box,
   Grid,
   Card,
-  Typography,
-  CardContent,
-  LinearProgress,
   Avatar,
   Tooltip,
+  Typography,
   IconButton,
+  LinearProgress,
 } from "@mui/material";
-import InfoIcon from "@mui/icons-material/Info";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import WarningIcon from "@mui/icons-material/Warning";
+
 import { useGetSaldoProjetado, useGetPaybleRecibleAmount } from "src/hooks/useKpi";
 
 export default function VisaoGeralComponent() {
@@ -266,7 +266,7 @@ export default function VisaoGeralComponent() {
                     <Typography variant="h6">
                       Contas A Pagar Atrasadas
                       <Tooltip title="Total de contas a pagar com prazo de vencimento expirado." arrow>
-                        <IconButton sx={{ml: 1 }}>
+                        <IconButton sx={{ ml: 1 }}>
                           <InfoIcon />
                         </IconButton>
                       </Tooltip>

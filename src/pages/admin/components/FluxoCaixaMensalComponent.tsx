@@ -157,7 +157,7 @@ export default function FluxoCaixaMensalComponent() {
               </TableRow>
             </TableHead>
             <TableBody>
-            {data.data.months.map((month, index) => (
+              {data.data.months.map((month, index) => (
                 <TableRow
                   key={month.month}
                   sx={{

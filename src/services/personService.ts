@@ -1,14 +1,14 @@
 // src/services/personsService.ts
 
 import type {
-    Person,
-    PersonPayload,
-    PersonResponse,
-    PersonListResponse,
-    PersonBasicInfoList
-} from "src/models/person";
+  Person,
+  PersonPayload,
+  PersonResponse,
+  PersonListResponse,
+  PersonBasicInfoList,
+} from 'src/models/person';
 
-import api from "./api";
+import api from './api';
 
 /**
  * Obter lista de pessoas com paginação.
@@ -16,9 +16,12 @@ import api from "./api";
  * @param take Número de registros a obter.
  * @returns Lista paginada de pessoas.
  */
-export const getPersonsPagedService = async (skip: number, take: number): Promise<PersonListResponse> => {
-    const response = await api.get<PersonListResponse>("/person", { params: { skip, take } });
-    return response.data;
+export const getPersonsPagedService = async (
+  skip: number,
+  take: number
+): Promise<PersonListResponse> => {
+  const response = await api.get<PersonListResponse>('/person', { params: { skip, take } });
+  return response.data;
 };
 
 /**
@@ -27,8 +30,8 @@ export const getPersonsPagedService = async (skip: number, take: number): Promis
  * @returns Dados da pessoa criada.
  */
 export const createPersonService = async (payload: PersonPayload): Promise<PersonResponse> => {
-    const response = await api.post<PersonResponse>("/person", payload);
-    return response.data;
+  const response = await api.post<PersonResponse>('/person', payload);
+  return response.data;
 };
 
 /**
@@ -38,8 +41,8 @@ export const createPersonService = async (payload: PersonPayload): Promise<Perso
  * @returns Dados da pessoa atualizada.
  */
 export const updatePersonService = async (payload: Person, id: number): Promise<PersonResponse> => {
-    const response = await api.put<PersonResponse>(`/person?id=${id}`, payload);
-    return response.data;
+  const response = await api.put<PersonResponse>(`/person?id=${id}`, payload);
+  return response.data;
 };
 
 /**
@@ -47,7 +50,7 @@ export const updatePersonService = async (payload: Person, id: number): Promise<
  * @param id ID da pessoa a ser deletada.
  */
 export const deletePersonService = async (id: number): Promise<void> => {
-    await api.delete(`/person?id=${id}`);
+  await api.delete(`/person?id=${id}`);
 };
 
 /**
@@ -56,10 +59,10 @@ export const deletePersonService = async (id: number): Promise<void> => {
  * @returns Dados da pessoa.
  */
 export const getPersonByIdService = async (id: number): Promise<Person> => {
-    console.log(id);
-    
-    const response = await api.get<Person>(`/person/search/by-id?id=${id}`);
-    return response.data;
+  console.log(id);
+
+  const response = await api.get<Person>(`/person/search/by-id?id=${id}`);
+  return response.data;
 };
 
 /**
@@ -68,8 +71,8 @@ export const getPersonByIdService = async (id: number): Promise<Person> => {
  * @returns Lista de pessoas que correspondem ao nome.
  */
 export const getPersonByNameService = async (name: string): Promise<Person[]> => {
-    const response = await api.get<Person[]>(`/person/search/by-name`, { params: { name } });
-    return response.data;
+  const response = await api.get<Person[]>(`/person/search/by-name`, { params: { name } });
+  return response.data;
 };
 
 /**
@@ -77,8 +80,8 @@ export const getPersonByNameService = async (name: string): Promise<Person[]> =>
  * @returns Lista de informações básicas das pessoas.
  */
 export const getPersonsBasicInfoService = async (): Promise<PersonBasicInfoList> => {
-    const response = await api.get<PersonBasicInfoList>("/person/basic-info");
-    return response.data;
+  const response = await api.get<PersonBasicInfoList>('/person/basic-info');
+  return response.data;
 };
 
 /**
@@ -86,8 +89,8 @@ export const getPersonsBasicInfoService = async (): Promise<PersonBasicInfoList>
  * @returns Lista de informações básicas das pessoas.
  */
 export const getSuppliersBasicInfoService = async (): Promise<PersonBasicInfoList> => {
-    const response = await api.get<PersonBasicInfoList>("/suppliers/basic-info");
-    return response.data;
+  const response = await api.get<PersonBasicInfoList>('/suppliers/basic-info');
+  return response.data;
 };
 
 /**
@@ -95,6 +98,6 @@ export const getSuppliersBasicInfoService = async (): Promise<PersonBasicInfoLis
  * @returns Lista de informações básicas das pessoas.
  */
 export const getCustomersBasicInfoService = async (): Promise<PersonBasicInfoList> => {
-    const response = await api.get<PersonBasicInfoList>("/clients/basic-info");
-    return response.data;
+  const response = await api.get<PersonBasicInfoList>('/clients/basic-info');
+  return response.data;
 };

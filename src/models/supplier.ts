@@ -1,35 +1,35 @@
 export interface Supplier {
-    supplierId: number;
-    name: string;
-    cpf?: string | null;
-    cnpj?: string | null;
-    address?: string | null;
-    contact?: string | null;
+  supplierId: number;
+  name: string;
+  cpf?: string | null;
+  cnpj?: string | null;
+  address?: string | null;
+  contact?: string | null;
 }
 
 export interface SupplierListResponse {
-    data: Supplier[];
-    meta: any;
+  data: Supplier[];
+  meta: any;
 }
 
 export interface SupplierResponse {
-    data: Supplier;
+  data: Supplier;
 }
 
-export interface CreateSupplierPayload{
-    name: string;
-    cpf?: string | null;
-    cnpj?: string | null;
-    personType: string;
-    address?: string | null;
-    contact?: string | null;
+export interface CreateSupplierPayload {
+  name: string;
+  cpf?: string | null;
+  cnpj?: string | null;
+  personType: string;
+  address?: string | null;
+  contact?: string | null;
 }
 
-export interface SupplierBasicInfo{
-    personId: number;
-    name: string;
+export interface SupplierBasicInfo {
+  personId: number;
+  name: string;
 }
 
-export interface SuppliersBasicInfoList{
-    data: SupplierBasicInfo[];
+export interface SuppliersBasicInfoList {
+  data: SupplierBasicInfo[];
 }

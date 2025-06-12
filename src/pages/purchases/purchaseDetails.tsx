@@ -167,6 +167,9 @@ export default function PurchaseDetailsPage() {
                       <Typography variant="body1" sx={{ mb: 1 }}>
                         <strong>Desconto:</strong> {formatPrice(purchase?.discount)}
                       </Typography>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>Acréscimo:</strong> {formatPrice(purchase?.addition)}
+                      </Typography>
                       <Typography variant="body1">
                         <strong>Preço Total:</strong> {formatPrice(purchase?.totalPrice)}
                       </Typography>

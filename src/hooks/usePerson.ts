@@ -1,13 +1,13 @@
-import type { AxiosError } from "axios";
-import type { 
-  Person, 
-  PersonPayload, 
-  PersonResponse, 
-  PersonListResponse, 
-  PersonBasicInfoList 
-} from "src/models/person";
+import type { AxiosError } from 'axios';
+import type {
+  Person,
+  PersonPayload,
+  PersonResponse,
+  PersonListResponse,
+  PersonBasicInfoList,
+} from 'src/models/person';
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
   createPersonService,
@@ -17,7 +17,7 @@ import {
   getPersonByNameService,
   getPersonsPagedService,
   getPersonsBasicInfoService,
-} from "src/services/personService";
+} from 'src/services/personService';
 
 /**
  * Hook para obter uma lista paginada de pessoas.
@@ -53,12 +53,11 @@ export const useUpdatePerson = () => {
   return useMutation<PersonResponse, AxiosError, { id: number; data: Person }>({
     mutationFn: ({ id, data }) => updatePersonService(data, id),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['persons-list']});
-      queryClient.invalidateQueries({ queryKey: ['person', variables.id]});
+      queryClient.invalidateQueries({ queryKey: ['persons-list'] });
+      queryClient.invalidateQueries({ queryKey: ['person', variables.id] });
     },
   });
 };
-
 
 /**
  * Hook para deletar uma pessoa.

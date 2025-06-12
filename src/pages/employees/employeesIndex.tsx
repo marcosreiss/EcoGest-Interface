@@ -12,8 +12,9 @@ import { useDeleteEmployee, useGetEmployeeByName, useGetEmployeesPaged } from 's
 
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
-import TableSearch from 'src/components/table/tableSearch';
 import { useNotification } from 'src/context/NotificationContext';
+
+import TableSearch from 'src/components/table/tableSearch';
 import TableFooterComponent from 'src/components/table/tableFooterComponent';
 import TableHeaderComponent from 'src/components/table/tableHeaderComponent';
 
@@ -71,7 +72,7 @@ export default function EmployeePage() {
   };
 
   const employees = debouncedSearchString.length >= 3 ? searchResults : data?.data;
-  
+
   return (
     <>
       <Helmet>
