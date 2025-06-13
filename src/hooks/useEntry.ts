@@ -7,7 +7,6 @@ import type {
   EntryListResponse,
   EntryPaginatedParams,
   CustomEntryReceiptInfo,
-  EntryRelatoryRequestByMonth,
   EntryRelatoryRequestByPeriod,
 } from 'src/models/entry';
 
@@ -22,7 +21,6 @@ import {
   getEntryPaginatedService,
   getCustomEntryReceiptService,
   searchExpensesByPeriodService,
-  getEntryRelatoryByMonthService,
   getEntryRelatoryByPeriodService,
 } from 'src/services/entryService';
 
@@ -104,10 +102,10 @@ export const useSearchExpensesByPeriod = (payload: FilterParams) =>
   });
 
 // Hook para obter relatório de despesas
-export const useGetEntryRelatoryByMonth = () =>
-  useMutation<Blob, AxiosError, EntryRelatoryRequestByMonth>({
-    mutationFn: (params) => getEntryRelatoryByMonthService(params),
-  });
+// export const useGetEntryRelatoryByMonth = () =>
+//   useMutation<Blob, AxiosError, EntryRelatoryRequestByMonth>({
+//     mutationFn: (params) => getEntryRelatoryByMonthService(params),
+//   });
 
 export const useGetEntryRelatoryByPeriod = () =>
   useMutation<Blob, AxiosError, EntryRelatoryRequestByPeriod>({
