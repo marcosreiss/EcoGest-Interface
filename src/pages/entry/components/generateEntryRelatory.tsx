@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 
@@ -18,47 +17,26 @@ import {
   FormControlLabel,
 } from "@mui/material";
 
-import { useGetEntryRelatoryByMonth, useGetEntryRelatoryByPeriod } from "src/hooks/useEntry";
+import { useGetEntryRelatoryByPeriod } from "src/hooks/useEntry";
 
 import { useNotification } from "src/context/NotificationContext";
 
 import PdfViewerModal from "src/components/PdfViewerModal";
 
 const predefinedSubtypes = [
-  "Peças e Serviços",
-  "Folha de pagamento",
-  "Diárias",
-  "Mercedes 710 - HPP1C70",
-  "Mercedes 709 - JKW6I19",
-  "Mercedes 708 - LVR7727",
-  "Imposto ICMS Frete",
-  "Pag Frete",
-  "Vale Transporte",
-  "Impostos Federais",
-  "Trabalhos Profissionais",
-  "Suprimentos",
-  "EPIs",
-  "Manutenção Prensa",
-  "Manutenção Empilhadeira",
-  "Pagamento a fornecedores",
-  "Gastos com energia e internet",
-  "Sócios",
-  "Outro"
+  "Peças e Serviços", "Folha de pagamento", "Diárias",
+  "Mercedes 710 - HPP1C70", "Mercedes 709 - JKW6I19", "Mercedes 708 - LVR7727",
+  "Imposto ICMS Frete", "Pag Frete", "Vale Transporte", "Impostos Federais",
+  "Trabalhos Profissionais", "Suprimentos", "EPIs", "Manutenção Prensa",
+  "Manutenção Empilhadeira", "Pagamento a fornecedores",
+  "Gastos com energia e internet", "Sócios", "Outro"
 ];
 
 const meses = [
-  { nome: "Janeiro", numero: 1 },
-  { nome: "Fevereiro", numero: 2 },
-  { nome: "Março", numero: 3 },
-  { nome: "Abril", numero: 4 },
-  { nome: "Maio", numero: 5 },
-  { nome: "Junho", numero: 6 },
-  { nome: "Julho", numero: 7 },
-  { nome: "Agosto", numero: 8 },
-  { nome: "Setembro", numero: 9 },
-  { nome: "Outubro", numero: 10 },
-  { nome: "Novembro", numero: 11 },
-  { nome: "Dezembro", numero: 12 },
+  { nome: "Janeiro", numero: 1 }, { nome: "Fevereiro", numero: 2 }, { nome: "Março", numero: 3 },
+  { nome: "Abril", numero: 4 }, { nome: "Maio", numero: 5 }, { nome: "Junho", numero: 6 },
+  { nome: "Julho", numero: 7 }, { nome: "Agosto", numero: 8 }, { nome: "Setembro", numero: 9 },
+  { nome: "Outubro", numero: 10 }, { nome: "Novembro", numero: 11 }, { nome: "Dezembro", numero: 12 },
 ];
 
 const anos = Array.from({ length: 10 }, (_, i) => {
@@ -67,19 +45,16 @@ const anos = Array.from({ length: 10 }, (_, i) => {
 });
 
 interface FormValues {
-  // Para o modo mês
   month?: number;
   year?: number;
-  // Para o modo período
   startDate?: string;
   endDate?: string;
-  // Campo compartilhado
   subtype: string;
 }
 
 export default function GenerateEntryRelatory() {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [isPeriod, setIsPeriod] = useState<boolean>(false); // Toggle entre mês e período
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPeriod, setIsPeriod] = useState(false);
 
   const {
     control,
@@ -97,13 +72,14 @@ export default function GenerateEntryRelatory() {
     },
   });
 
-  const getEntryRelatoryByMonth = useGetEntryRelatoryByMonth();
   const getEntryRelatoryByPeriod = useGetEntryRelatoryByPeriod();
   const notification = useNotification();
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [pdfModalOpen, setPdfModalOpen] = useState(false);
+  const [pdfFileName, setPdfFileName] = useState("");
+
+  const handleOpenModal = () => setIsModalOpen(true);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -112,8 +88,7 @@ export default function GenerateEntryRelatory() {
   };
 
   const toggleMonthPeriod = () => {
-    setIsPeriod(!isPeriod);
-    // Reseta os campos que não serão usados
+    setIsPeriod((prev) => !prev);
     if (!isPeriod) {
       setValue("month", undefined);
       setValue("year", undefined);
@@ -123,57 +98,52 @@ export default function GenerateEntryRelatory() {
     }
   };
 
-  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
-  const [pdfModalOpen, setPdfModalOpen] = useState(false);
-  const [pdfFileName, setPdfFileName] = useState<string>('');
+  const formatDate = (date: Date) =>
+    date.toISOString().split("T")[0];
+
   const onSubmit = (data: FormValues) => {
+    const { startDate: rawStartDate, endDate: rawEndDate, month, year, subtype } = data;
+
+    let startDate: string;
+    let endDate: string;
+
     if (isPeriod) {
-      if (!data.startDate || !data.endDate) {
+      if (!rawStartDate || !rawEndDate) {
         notification.addNotification("Preencha as datas de início e fim.", "error");
         return;
       }
-      const params = {
-        startDate: data.startDate,
-        endDate: data.endDate,
-        subtype: data.subtype,
-      };
-      getEntryRelatoryByPeriod.mutate(params, {
-        onSuccess: (file) => {
-          setPdfBlob(file);
-          setPdfFileName(`RELATORIO-${data.startDate}-${data.endDate}-${data.subtype}.pdf`);
-          setPdfModalOpen(true);
-          notification.addNotification("Relatório gerado com sucesso!", "success");
-          handleCloseModal();
-        },
-        onError: () => {
-          notification.addNotification("Erro ao gerar o relatório.", "error");
-        },
-      });
+      startDate = rawStartDate;
+      endDate = rawEndDate;
     } else {
-      if (!data.month || !data.year) {
+      if (!month || !year) {
         notification.addNotification("Selecione o mês e o ano.", "error");
         return;
       }
-      const params = {
-        month: data.month,
-        year: data.year,
-        subtype: data.subtype,
-      };
-      getEntryRelatoryByMonth.mutate(params, {
-        onSuccess: (file) => {
-          setPdfBlob(file);
-          setPdfFileName(`RELATORIO-${data.month}-${data.year}-${data.subtype}.pdf`);
-          setPdfModalOpen(true);
-          notification.addNotification("Relatório gerado com sucesso!", "success");
-          handleCloseModal();
-        },
-        onError: () => {
-          notification.addNotification("Erro ao gerar o relatório.", "error");
-        },
-      });
+      const start = new Date(year, month - 1, 1);
+      const end = new Date(year, month, 0);
+      startDate = formatDate(start);
+      endDate = formatDate(end);
     }
-  };
 
+    const params = {
+      subtype,
+      startDate,
+      endDate,
+    };
+
+    getEntryRelatoryByPeriod.mutate(params, {
+      onSuccess: (blob) => {
+        setPdfBlob(blob);
+        setPdfFileName(`RELATORIO-${startDate}-${endDate}-${subtype}.pdf`);
+        setPdfModalOpen(true);
+        notification.addNotification("Relatório gerado com sucesso!", "success");
+        handleCloseModal();
+      },
+      onError: () => {
+        notification.addNotification("Erro ao gerar o relatório.", "error");
+      },
+    });
+  };
 
   return (
     <>
@@ -191,7 +161,6 @@ export default function GenerateEntryRelatory() {
         <DialogContent sx={{ margin: 1 }}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
-              {/* Toggle Mês / Período */}
               <Grid item xs={12}>
                 <Typography component="span" fontSize={13.6} marginRight={2}>
                   Mês
@@ -208,8 +177,7 @@ export default function GenerateEntryRelatory() {
                 />
               </Grid>
 
-              {/* Campo de Tipo (Subtipo) */}
-              <Grid item xs={12} sx={{ marginTop: 1 }}>
+              <Grid item xs={12}>
                 <Controller
                   name="subtype"
                   control={control}
@@ -237,7 +205,6 @@ export default function GenerateEntryRelatory() {
                 />
               </Grid>
 
-              {/* Renderiza os campos de Mês e Ano se não estiver no modo Período */}
               {!isPeriod && (
                 <>
                   <Grid item xs={12}>
@@ -253,7 +220,7 @@ export default function GenerateEntryRelatory() {
                           onChange={(_, newValue) => {
                             field.onChange(newValue ? newValue.numero : undefined);
                           }}
-                          value={meses.find((mes) => mes.numero === field.value) || null}
+                          value={meses.find((m) => m.numero === field.value) || null}
                           renderInput={(params) => (
                             <TextField
                               {...params}
@@ -279,7 +246,7 @@ export default function GenerateEntryRelatory() {
                           onChange={(_, newValue) => {
                             field.onChange(newValue ? newValue.ano : undefined);
                           }}
-                          value={anos.find((ano) => ano.ano === field.value) || null}
+                          value={anos.find((y) => y.ano === field.value) || null}
                           renderInput={(params) => (
                             <TextField
                               {...params}
@@ -296,7 +263,6 @@ export default function GenerateEntryRelatory() {
                 </>
               )}
 
-              {/* Renderiza os campos de Período se estiver no modo Período */}
               {isPeriod && (
                 <>
                   <Grid item xs={12}>
@@ -349,9 +315,9 @@ export default function GenerateEntryRelatory() {
           <Button
             onClick={handleSubmit(onSubmit)}
             color="primary"
-            disabled={getEntryRelatoryByMonth.isPending}
+            disabled={getEntryRelatoryByPeriod.isPending}
           >
-            {getEntryRelatoryByMonth.isPending && (
+            {getEntryRelatoryByPeriod.isPending && (
               <CircularProgress size={20} sx={{ marginRight: "10px" }} />
             )}
             Gerar Relatório
@@ -367,7 +333,6 @@ export default function GenerateEntryRelatory() {
           fileName={pdfFileName}
         />
       )}
-
     </>
   );
 }

@@ -44,11 +44,11 @@ export interface EntryPaginatedParams {
   subtype: string | null;
 }
 
-export interface EntryRelatoryRequestByMonth {
-  subtype: string;
-  year: number;
-  month: number;
-}
+// export interface EntryRelatoryRequestByMonth {
+//   subtype: string;
+//   year: number;
+//   month: number;
+// }
 
 export interface EntryRelatoryRequestByPeriod {
   subtype: string;
